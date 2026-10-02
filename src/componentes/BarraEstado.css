@@ -1,0 +1,10 @@
+.barra-estado {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  /* Igual al margen superior de las pantallas: así en reposo coincide con el banner. */
+  height: var(--safe-top);
+  z-index: 100;
+  pointer-events: none;
+}

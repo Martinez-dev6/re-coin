@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Detalle del movimiento</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 844px; box-sizing: border-box; overflow: hidden; background: {{pageBg}}; color: {{text}}; font-family: 'Plus Jakarta Sans', system-ui, sans-serif">
+<div data-statusbar style="position: absolute; top: 0; left: 0; right: 0; height: 59px; z-index: 5; pointer-events: none; color: {{onBanner}}"><div style="position: absolute; left: 50%; margin-left: -62px; top: 11px; width: 124px; height: 36px; border-radius: 18px; background: #000000"></div><div style="position: absolute; left: 0; top: 11px; width: 140px; height: 36px; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700">9:41</div><div style="position: absolute; right: 0; top: 11px; width: 140px; height: 36px; display: flex; align-items: center; justify-content: center; gap: 6px"><svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg><svg width="17" height="12" viewBox="0 0 17 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M1.5 4.2a10 10 0 0 1 14 0M4 7a6.4 6.4 0 0 1 9 0"/><circle cx="8.5" cy="10" r="1.2" fill="currentColor" stroke="none"/></svg><svg width="27" height="13" viewBox="0 0 27 13" fill="none"><rect x="0.6" y="0.6" width="22.8" height="11.8" rx="3.6" stroke="currentColor" stroke-opacity="0.45"/><rect x="2" y="2" width="20" height="9" rx="2.4" fill="currentColor"/><path d="M25 4.5v4c.9-.3 1.5-1.1 1.5-2s-.6-1.7-1.5-2z" fill="currentColor" fill-opacity="0.5"/></svg></div></div>
+
+<div style="background: {{bannerBg}}; color: {{onBanner}}; border-radius: 0 0 32px 32px; box-shadow: 0 0 0 1px {{bannerRing}}; padding: 59px 16px 18px 16px; box-sizing: border-box">
+<div style="display: flex; align-items: center; justify-content: space-between; height: 48px">
+<button aria-label="Volver" style="width: 44px; height: 44px; border-radius: 22px; border: 0; background: {{chipBg}}; color: {{onBanner}}; display: flex; align-items: center; justify-content: center; padding: 0"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" ><path d="M15 6l-6 6 6 6"/></svg></button>
+<div style="font-size: 17px; font-weight: 600">Detalle</div>
+<div style="width: 44px"></div>
+</div>
+<div style="margin-top: 6px; text-align: center"><div style="font-size: 13px; color: {{onBannerMuted}}">Gasolina</div><div style="font-size: 40px; font-weight: 700; letter-spacing: -0.02em; margin-top: 2px">- $ 50.000</div><div style="display: inline-flex; align-items: center; gap: 5px; margin-top: 6px; height: 26px; padding: 0 10px; border-radius: 13px; background: {{chipBg}}; font-size: 12px; font-weight: 600"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" ><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.7 2.7L16 9.5"/></svg>Pagado</div></div>
+</div>
+<div style="padding: 14px 16px 0 16px"><div style="background: {{surface}}; border: 1px solid {{line}}; box-shadow: {{shadow}}; border-radius: 22px; padding: 0 14px"><div style="display: flex; align-items: center; gap: 12px; height: 54px; border-bottom: 1px solid {{divider}};">
+<div style="width: 34px; height: 34px; border-radius: 17px; display: flex; align-items: center; justify-content: center; background: {{accentSoft}}; color: {{accentText}}; flex-shrink: 0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" ><rect x="4" y="4" width="6.5" height="6.5" rx="1.8"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.8"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.8"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.8"/></svg></div>
+<div style="font-size: 14px; color: {{muted}}; min-width: 84px; white-space: nowrap; flex-shrink: 0">Categoría</div>
+<div style="flex-grow: 1; min-width: 0; display: flex; align-items: center; justify-content: flex-end; gap: 8px; font-size: 15px; font-weight: 600; text-align: right"><span style="width: 26px; height: 26px; border-radius: 13px; background: {{catASoft}}; color: {{catA}}; display: inline-flex; align-items: center; justify-content: center"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" ><path d="M5 21V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v16M4 21h12M8 8h4M15 10h2a2 2 0 0 1 2 2v4a1.5 1.5 0 0 0 3 0V9l-3-3"/></svg></span>Transporte</div>
+
+</div>
+<div style="display: flex; align-items: center; gap: 12px; height: 54px; border-bottom: 1px solid {{divider}};">
+<div style="width: 34px; height: 34px; border-radius: 17px; display: flex; align-items: center; justify-content: center; background: {{accentSoft}}; color: {{accentText}}; flex-shrink: 0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" ><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></svg></div>
+<div style="font-size: 14px; color: {{muted}}; min-width: 84px; white-space: nowrap; flex-shrink: 0">Cuenta</div>
+<div style="flex-grow: 1; min-width: 0; display: flex; align-items: center; justify-content: flex-end; gap: 8px; font-size: 15px; font-weight: 600; text-align: right">Billetera digital</div>
+
+</div>
+<div style="display: flex; align-items: center; gap: 12px; height: 54px; border-bottom: 1px solid {{divider}};">
+<div style="width: 34px; height: 34px; border-radius: 17px; display: flex; align-items: center; justify-content: center; background: {{accentSoft}}; color: {{accentText}}; flex-shrink: 0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" ><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg></div>
+<div style="font-size: 14px; color: {{muted}}; min-width: 84px; white-space: nowrap; flex-shrink: 0">Fecha</div>
+<div style="flex-grow: 1; min-width: 0; display: flex; align-items: center; justify-content: flex-end; gap: 8px; font-size: 15px; font-weight: 600; text-align: right">30 de septiembre</div>
+
+</div>
+<div style="display: flex; align-items: center; gap: 12px; height: 54px; border-bottom: 1px solid {{divider}};">
+<div style="width: 34px; height: 34px; border-radius: 17px; display: flex; align-items: center; justify-content: center; background: {{accentSoft}}; color: {{accentText}}; flex-shrink: 0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" ><path d="M3 12V4h8l10 10-8 8z"/><circle cx="7.5" cy="8.5" r="1.2"/></svg></div>
+<div style="font-size: 14px; color: {{muted}}; min-width: 84px; white-space: nowrap; flex-shrink: 0">Etiquetas</div>
+<div style="flex-grow: 1; min-width: 0; display: flex; align-items: center; justify-content: flex-end; gap: 8px; font-size: 15px; font-weight: 600; text-align: right">Carro</div>
+
+</div>
+<div style="display: flex; align-items: center; gap: 12px; height: 54px; border-bottom: 1px solid {{divider}};">
+<div style="width: 34px; height: 34px; border-radius: 17px; display: flex; align-items: center; justify-content: center; background: {{accentSoft}}; color: {{accentText}}; flex-shrink: 0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" ><path d="M17 2l3 3-3 3M3 11V9a4 4 0 0 1 4-4h13M7 22l-3-3 3-3M21 13v2a4 4 0 0 1-4 4H4"/></svg></div>
+<div style="font-size: 14px; color: {{muted}}; min-width: 84px; white-space: nowrap; flex-shrink: 0">Repetir</div>
+<div style="flex-grow: 1; min-width: 0; display: flex; align-items: center; justify-content: flex-end; gap: 8px; font-size: 15px; font-weight: 600; text-align: right">Cada semana</div>
+
+</div>
+<div style="display: flex; align-items: center; gap: 12px; height: 54px; ">
+<div style="width: 34px; height: 34px; border-radius: 17px; display: flex; align-items: center; justify-content: center; background: {{accentSoft}}; color: {{accentText}}; flex-shrink: 0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" ><path d="M5 4h14v12l-5 5H5z"/><path d="M14 21v-5h5M8 9h8M8 13h4"/></svg></div>
+<div style="font-size: 14px; color: {{muted}}; min-width: 84px; white-space: nowrap; flex-shrink: 0">Observación</div>
+<div style="flex-grow: 1; min-width: 0; display: flex; align-items: center; justify-content: flex-end; gap: 8px; font-size: 15px; font-weight: 600; text-align: right">Tanqueada completa</div>
+
+</div>
+</div>
+</div>
+<div style="position: absolute; left: 16px; right: 16px; bottom: 34px; display: flex; gap: 10px">
+<button style="flex-grow: 1; flex-basis: 0; height: 54px; border-radius: 27px; border: 1.5px solid {{expense}}; background: transparent; color: {{expense}}; font-family: inherit; font-size: 16px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" ><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v6M14 11v6"/></svg>Eliminar</button>
+<button style="flex-grow: 1; flex-basis: 0; height: 54px; border-radius: 27px; border: 0; background: {{bannerBg}}; box-shadow: 0 0 0 1px {{bannerRing}}; color: {{onBanner}}; font-family: inherit; font-size: 16px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" ><path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16z"/></svg>Editar</button>
+</div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#2a4dff","options":["#2a4dff","#1e3a8a","#8b2fc9","#c2185b","#d32f2f","#7a1f3d","#6d4530","#0a7f77","#166534","#14151c"]},"mode":{"editor":"enum","default":"light","options":["light","dark"]},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+renderVals() {
+const dark = (this.props.mode ?? 'light') === 'dark';
+const a = this.props.accent ?? '#2a4dff';
+const h = a.replace('#', '');
+const n = parseInt(h.length === 3 ? h.split('').map((c) => c + c).join('') : h, 16);
+const rgb = [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+const lin = (v) => { v = v / 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); };
+const lum = (c) => 0.2126 * lin(c[0]) + 0.7152 * lin(c[1]) + 0.0722 * lin(c[2]);
+const rgba = (c, al) => 'rgba(' + Math.round(c[0]) + ',' + Math.round(c[1]) + ',' + Math.round(c[2]) + ',' + al + ')';
+const hex = (c) => '#' + c.map((v) => Math.round(v).toString(16).padStart(2, '0')).join('');
+const fromHex = (s) => { const m = parseInt(s.slice(1), 16); return [(m >> 16) & 255, (m >> 8) & 255, m & 255]; };
+const mx = Math.max(rgb[0], rgb[1], rgb[2]), mn = Math.min(rgb[0], rgb[1], rgb[2]);
+let hue = 0;
+if (mx !== mn) { const d = mx - mn; hue = mx === rgb[0] ? ((rgb[1] - rgb[2]) / d + 6) % 6 : mx === rgb[1] ? (rgb[2] - rgb[0]) / d + 2 : (rgb[0] - rgb[1]) / d + 4; hue *= 60; }
+const isRed = mx !== mn && (mx - mn) / mx > 0.4 && (hue >= 350 || hue <= 10);
+const blackish = lum(rgb) < 0.03;
+let banner = rgb;
+if (dark && blackish) banner = [43, 45, 55];
+const bl = lum(banner);
+const lightText = (bl + 0.05) / 0.055 <= 1.05 / (bl + 0.05);
+let at = rgb;
+if (dark) {
+if (blackish) {
+at = [244, 244, 247];
+} else {
+let t = 0;
+while ((lum(at) + 0.05) / 0.0589 < 4.5 && t < 1) {
+t += 0.05;
+at = [rgb[0] + (255 - rgb[0]) * t, rgb[1] + (255 - rgb[1]) * t, rgb[2] + (255 - rgb[2]) * t];
+}
+}
+}
+const hsl2rgb = (h, s, l) => { const c = (1 - Math.abs(2 * l - 1)) * s, hp = (((h % 360) + 360) % 360) / 60, x = c * (1 - Math.abs((hp % 2) - 1)), m = l - c / 2; const t = hp < 1 ? [c, x, 0] : hp < 2 ? [x, c, 0] : hp < 3 ? [0, c, x] : hp < 4 ? [0, x, c] : hp < 5 ? [x, 0, c] : [c, 0, x]; return t.map((v) => (v + m) * 255); };
+const bn = banner.map((v) => v / 255), bmx = Math.max(bn[0], bn[1], bn[2]), bmn = Math.min(bn[0], bn[1], bn[2]), bdl = bmx - bmn, bl2 = (bmx + bmn) / 2;
+const bs = bdl === 0 ? 0 : bdl / (1 - Math.abs(2 * bl2 - 1));
+let bh = 0; if (bdl !== 0) { bh = bmx === bn[0] ? (((bn[1] - bn[2]) / bdl) + 6) % 6 : bmx === bn[1] ? (bn[2] - bn[0]) / bdl + 2 : (bn[0] - bn[1]) / bdl + 4; bh *= 60; }
+const ts = bs < 0.15 ? bs : Math.max(bs, 0.9);
+let tl = 0.7, tr = hsl2rgb(bh - 12, ts, tl);
+while (1.05 / (lum(tr) + 0.05) < 4.5 && tl > 0.2) { tl -= 0.02; tr = hsl2rgb(bh - 12, ts, tl); }
+const cats = dark ? ['#fb923c', '#22d3ee', '#a78bfa', '#fbbf24'] : ['#c2410c', '#0e7490', '#6d28d9', '#b45309'];
+return {
+pageBg: dark ? '#0e0e13' : '#f3f4f8',
+pageBg0: dark ? 'rgba(14,14,19,0)' : 'rgba(243,244,248,0)',
+surface: dark ? '#17171e' : '#ffffff',
+line: dark ? '#24242d' : '#e7e9f0',
+divider: dark ? '#25252e' : '#eceef4',
+shadow: dark ? 'none' : '0 1px 2px rgba(20,21,28,0.06)',
+text: dark ? '#f4f4f7' : '#14151c',
+muted: dark ? '#a0a0ae' : '#5b5f70',
+income: dark ? '#5fd39a' : '#0b7a43',
+expense: dark ? (isRed ? '#f9a8d4' : '#ff8a80') : (isRed ? '#a3195b' : '#c62828'),
+expenseOnWhite: isRed ? '#a3195b' : '#c62828',
+pending: dark ? '#fbbf24' : '#b45309',
+track: dark ? '#2a2a34' : '#e7e9f0',
+swRing: dark ? 'rgba(255,255,255,0.22)' : 'rgba(0,0,0,0.10)',
+swBg: dark ? hex(at) : '#9a9eb0',
+swKnob: dark ? '#0e0e13' : '#ffffff',
+swPos: dark ? '20px' : '2px',
+navBg: dark ? '#14141a' : '#ffffff',
+navInactive: dark ? '#a0a0ae' : '#5b5f70',
+accentText: hex(at),
+transferBg: dark ? hex(banner.map((v) => v + (255 - v) * 0.45)) : hex(tr),
+transferText: dark ? ((lum(banner.map((v) => v + (255 - v) * 0.45)) + 0.05) / 0.055 <= 1.05 / (lum(banner.map((v) => v + (255 - v) * 0.45)) + 0.05) ? "#ffffff" : "#0f1020") : "#ffffff",
+onExpense: dark ? "#1a0f0f" : "#ffffff",
+onIncome: dark ? "#0e1a13" : "#ffffff",
+accentLight: hex(banner.map((v) => v + (255 - v) * 0.45)),
+onAccentLight: (lum(banner.map((v) => v + (255 - v) * 0.45)) + 0.05) / 0.055 <= 1.05 / (lum(banner.map((v) => v + (255 - v) * 0.45)) + 0.05) ? "#ffffff" : "#0f1020",
+swOff: dark ? "#3a3b47" : "#c5c8d6",
+catE: dark ? "#f472b6" : "#be185d",
+catESoft: dark ? "rgba(244,114,182,0.14)" : "rgba(190,24,93,0.14)",
+catF: dark ? "#4ade80" : "#15803d",
+catFSoft: dark ? "rgba(74,222,128,0.14)" : "rgba(21,128,61,0.14)",
+catG: dark ? "#60a5fa" : "#1d4ed8",
+catGSoft: dark ? "rgba(96,165,250,0.14)" : "rgba(29,78,216,0.14)",
+ch1: dark ? "#199e70" : "#1baf7a",
+ch2: dark ? "#d95926" : "#eb6834",
+ch3: dark ? "#9085e9" : "#4a3aa7",
+ch4: dark ? "#c98500" : "#eda100",
+chOther: dark ? "#6b6f80" : "#8a8fa3",
+grid: dark ? "#2a2a34" : "#e7e9f0",
+expenseSoft: rgba(fromHex(dark ? (isRed ? "#f9a8d4" : "#ff8a80") : (isRed ? "#a3195b" : "#c62828")), 0.14),
+accentSoft: rgba(at, dark ? 0.16 : 0.12),
+bannerBg: hex(banner),
+fabGlow: rgba(banner, dark ? 0.55 : 0.45),
+bannerRing: dark ? 'rgba(255,255,255,0.10)' : 'rgba(0,0,0,0)',
+onBanner: lightText ? '#ffffff' : '#0f1020',
+onBannerMuted: lightText ? 'rgba(255,255,255,0.88)' : 'rgba(15,16,32,0.78)',
+bannerLine: lightText ? 'rgba(255,255,255,0.28)' : 'rgba(15,16,32,0.22)',
+chipBg: lightText ? 'rgba(255,255,255,0.18)' : 'rgba(15,16,32,0.10)',
+catA: cats[0],
+catB: cats[1],
+catC: cats[2],
+catD: cats[3],
+catASoft: rgba(fromHex(cats[0]), 0.14),
+catBSoft: rgba(fromHex(cats[1]), 0.14),
+catCSoft: rgba(fromHex(cats[2]), 0.14),
+catDSoft: rgba(fromHex(cats[3]), 0.14)
+};
+}
+}
+</script>
+</body>
+</html>

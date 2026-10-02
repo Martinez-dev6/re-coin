@@ -1,0 +1,84 @@
+.provisional {
+  min-height: 100dvh;
+  padding-bottom: calc(24px + var(--safe-bottom));
+}
+
+/* Medidas tomadas de design/html/Main.html: 59 px de zona reservada (aquí la real),
+   fila de 48 px, radios inferiores de 32 px, márgenes de 16 px. */
+.provisional-banner {
+  background: var(--banner-bg);
+  color: var(--on-banner);
+  border-radius: 0 0 32px 32px;
+  padding: var(--safe-top) 16px 24px;
+  text-align: center;
+}
+
+.provisional-fila {
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.provisional-titulo {
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.provisional-etiqueta {
+  margin: 12px 0 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--on-banner-muted);
+}
+
+.provisional-saldo {
+  margin: 2px 0 0;
+  font-size: 40px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.provisional-contenido {
+  padding: 24px 16px 0;
+}
+
+.provisional-tarjeta {
+  background: var(--surface);
+  border-radius: 20px;
+  box-shadow: var(--shadow);
+  padding: 18px 16px;
+}
+
+.provisional-tarjeta h2 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.provisional-tarjeta p {
+  margin: 6px 0 0;
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.provisional-tarjeta dl {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px 12px;
+  margin: 16px 0 0;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+  font-size: 14px;
+}
+
+.provisional-tarjeta dt {
+  color: var(--muted);
+}
+
+.provisional-tarjeta dd {
+  margin: 0;
+  font-weight: 600;
+  text-align: right;
+}

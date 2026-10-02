@@ -1,0 +1,996 @@
+{
+  "v": 3,
+  "createdOnFiles": {
+    "v": 1,
+    "at": "2026-10-02T04:55:00Z"
+  },
+  "title": "Dashboard finanzas claro y oscuro",
+  "launch": {
+    "view": "canvas"
+  },
+  "pages": [],
+  "boards": {
+    "Main.dc.html": {
+      "x": 0,
+      "y": 0,
+      "w": 390,
+      "h": 844,
+      "title": "Claro · 1 Azul eléctrico (predeterminado)",
+      "radius": 28
+    },
+    "Claro-AzulMarino.dc.html": {
+      "x": 470,
+      "y": 0,
+      "w": 390,
+      "h": 844,
+      "title": "Claro · 2 Azul marino",
+      "radius": 28
+    },
+    "Claro-Purpura.dc.html": {
+      "x": 940,
+      "y": 0,
+      "w": 390,
+      "h": 844,
+      "title": "Claro · 3 Púrpura",
+      "radius": 28
+    },
+    "Claro-Fucsia.dc.html": {
+      "x": 1410,
+      "y": 0,
+      "w": 390,
+      "h": 844,
+      "title": "Claro · 4 Fucsia",
+      "radius": 28
+    },
+    "Claro-Rojo.dc.html": {
+      "x": 1880,
+      "y": 0,
+      "w": 390,
+      "h": 844,
+      "title": "Claro · 5 Rojo",
+      "radius": 28
+    },
+    "Claro-Vinotinto.dc.html": {
+      "x": 0,
+      "y": 964,
+      "w": 390,
+      "h": 844,
+      "title": "Claro · 6 Vinotinto",
+      "radius": 28
+    },
+    "Claro-Marron.dc.html": {
+      "x": 470,
+      "y": 964,
+      "w": 390,
+      "h": 844,
+      "title": "Claro · 7 Marrón",
+      "radius": 28
+    },
+    "Claro-Turquesa.dc.html": {
+      "x": 940,
+      "y": 964,
+      "w": 390,
+      "h": 844,
+      "title": "Claro · 8 Verde turquesa",
+      "radius": 28
+    },
+    "Claro-Bosque.dc.html": {
+      "x": 1410,
+      "y": 964,
+      "w": 390,
+      "h": 844,
+      "title": "Claro · 9 Verde bosque",
+      "radius": 28
+    },
+    "Claro-Negro.dc.html": {
+      "x": 1880,
+      "y": 964,
+      "w": 390,
+      "h": 844,
+      "title": "Claro · 10 Negro",
+      "radius": 28
+    },
+    "Oscuro-AzulElectrico.dc.html": {
+      "x": 0,
+      "y": 2228,
+      "w": 390,
+      "h": 844,
+      "title": "Oscuro · 1 Azul eléctrico (predeterminado)",
+      "radius": 28
+    },
+    "Oscuro-AzulMarino.dc.html": {
+      "x": 470,
+      "y": 2228,
+      "w": 390,
+      "h": 844,
+      "title": "Oscuro · 2 Azul marino",
+      "radius": 28
+    },
+    "Oscuro-Purpura.dc.html": {
+      "x": 940,
+      "y": 2228,
+      "w": 390,
+      "h": 844,
+      "title": "Oscuro · 3 Púrpura",
+      "radius": 28
+    },
+    "Oscuro-Fucsia.dc.html": {
+      "x": 1410,
+      "y": 2228,
+      "w": 390,
+      "h": 844,
+      "title": "Oscuro · 4 Fucsia",
+      "radius": 28
+    },
+    "Oscuro-Rojo.dc.html": {
+      "x": 1880,
+      "y": 2228,
+      "w": 390,
+      "h": 844,
+      "title": "Oscuro · 5 Rojo",
+      "radius": 28
+    },
+    "Oscuro-Vinotinto.dc.html": {
+      "x": 0,
+      "y": 3192,
+      "w": 390,
+      "h": 844,
+      "title": "Oscuro · 6 Vinotinto",
+      "radius": 28
+    },
+    "Oscuro-Marron.dc.html": {
+      "x": 470,
+      "y": 3192,
+      "w": 390,
+      "h": 844,
+      "title": "Oscuro · 7 Marrón",
+      "radius": 28
+    },
+    "Oscuro-Turquesa.dc.html": {
+      "x": 940,
+      "y": 3192,
+      "w": 390,
+      "h": 844,
+      "title": "Oscuro · 8 Verde turquesa",
+      "radius": 28
+    },
+    "Oscuro-Bosque.dc.html": {
+      "x": 1410,
+      "y": 3192,
+      "w": 390,
+      "h": 844,
+      "title": "Oscuro · 9 Verde bosque",
+      "radius": 28
+    },
+    "Oscuro-Negro.dc.html": {
+      "x": 1880,
+      "y": 3192,
+      "w": 390,
+      "h": 844,
+      "title": "Oscuro · 10 Negro",
+      "radius": 28
+    },
+    "Transacciones.dc.html": {
+      "x": 2750,
+      "y": 0,
+      "w": 390,
+      "h": 844,
+      "title": "Transacciones · Claro",
+      "radius": 28
+    },
+    "Transacciones-Oscuro.dc.html": {
+      "x": 3220,
+      "y": 0,
+      "w": 390,
+      "h": 844,
+      "title": "Transacciones · Oscuro",
+      "radius": 28
+    },
+    "Planes-Presupuestos.dc.html": {
+      "x": 3700,
+      "y": 0,
+      "w": 390,
+      "h": 844,
+      "title": "Planes · Presupuestos · Claro",
+      "radius": 28
+    },
+    "Planes-Presupuestos-Oscuro.dc.html": {
+      "x": 3700,
+      "y": 964,
+      "w": 390,
+      "h": 844,
+      "title": "Planes · Presupuestos · Oscuro",
+      "radius": 28
+    },
+    "Planes-Metas.dc.html": {
+      "x": 4170,
+      "y": 0,
+      "w": 390,
+      "h": 844,
+      "title": "Planes · Metas · Claro",
+      "radius": 28
+    },
+    "Planes-Metas-Oscuro.dc.html": {
+      "x": 4170,
+      "y": 964,
+      "w": 390,
+      "h": 844,
+      "title": "Planes · Metas · Oscuro",
+      "radius": 28
+    },
+    "Planes-Programados.dc.html": {
+      "x": 4640,
+      "y": 0,
+      "w": 390,
+      "h": 844,
+      "title": "Planes · Programados · Claro",
+      "radius": 28
+    },
+    "Planes-Programados-Oscuro.dc.html": {
+      "x": 4640,
+      "y": 964,
+      "w": 390,
+      "h": 844,
+      "title": "Planes · Programados · Oscuro",
+      "radius": 28
+    },
+    "Planes-Calendario.dc.html": {
+      "x": 5110,
+      "y": 0,
+      "w": 390,
+      "h": 844,
+      "title": "Planes · Calendario · Claro",
+      "radius": 28
+    },
+    "Planes-Calendario-Oscuro.dc.html": {
+      "x": 5110,
+      "y": 964,
+      "w": 390,
+      "h": 844,
+      "title": "Planes · Calendario · Oscuro",
+      "radius": 28
+    },
+    "MiEspacio.dc.html": {
+      "x": 5580,
+      "y": 0,
+      "w": 390,
+      "h": 844,
+      "title": "Mi espacio · Claro",
+      "radius": 28
+    },
+    "MiEspacio-Oscuro.dc.html": {
+      "x": 5580,
+      "y": 964,
+      "w": 390,
+      "h": 844,
+      "title": "Mi espacio · Oscuro",
+      "radius": 28
+    },
+    "Apariencia.dc.html": {
+      "x": 6050,
+      "y": 0,
+      "w": 390,
+      "h": 844,
+      "title": "Apariencia · Claro",
+      "radius": 28
+    },
+    "Apariencia-Oscuro.dc.html": {
+      "x": 6050,
+      "y": 964,
+      "w": 390,
+      "h": 844,
+      "title": "Apariencia · Oscuro",
+      "radius": 28
+    },
+    "MenuMas.dc.html": {
+      "x": 6520,
+      "y": 0,
+      "w": 390,
+      "h": 844,
+      "title": "Menú + · Claro",
+      "radius": 28
+    },
+    "MenuMas-Oscuro.dc.html": {
+      "x": 6520,
+      "y": 964,
+      "w": 390,
+      "h": 844,
+      "title": "Menú + · Oscuro",
+      "radius": 28
+    },
+    "NuevoGasto.dc.html": {
+      "x": 6990,
+      "y": 0,
+      "w": 390,
+      "h": 844,
+      "title": "Nuevo gasto · Claro",
+      "radius": 28
+    },
+    "NuevoGasto-Oscuro.dc.html": {
+      "x": 6990,
+      "y": 964,
+      "w": 390,
+      "h": 844,
+      "title": "Nuevo gasto · Oscuro",
+      "radius": 28
+    },
+    "Cuentas.dc.html": {
+      "x": 7460,
+      "y": 0,
+      "w": 390,
+      "h": 844,
+      "title": "Cuentas · Claro",
+      "radius": 28
+    },
+    "Cuentas-Oscuro.dc.html": {
+      "x": 7460,
+      "y": 964,
+      "w": 390,
+      "h": 844,
+      "title": "Cuentas · Oscuro",
+      "radius": 28
+    },
+    "NuevaCuenta.dc.html": {
+      "x": 7930,
+      "y": 0,
+      "w": 390,
+      "h": 844,
+      "title": "Nueva cuenta · Claro",
+      "radius": 28
+    },
+    "NuevaCuenta-Oscuro.dc.html": {
+      "x": 7930,
+      "y": 964,
+      "w": 390,
+      "h": 844,
+      "title": "Nueva cuenta · Oscuro",
+      "radius": 28
+    },
+    "Tarjetas.dc.html": {
+      "x": 8400,
+      "y": 0,
+      "w": 390,
+      "h": 844,
+      "title": "Tarjetas · Claro",
+      "radius": 28
+    },
+    "Tarjetas-Oscuro.dc.html": {
+      "x": 8400,
+      "y": 964,
+      "w": 390,
+      "h": 844,
+      "title": "Tarjetas · Oscuro",
+      "radius": 28
+    },
+    "NuevaTarjeta.dc.html": {
+      "x": 8870,
+      "y": 0,
+      "w": 390,
+      "h": 844,
+      "title": "Nueva tarjeta · Claro",
+      "radius": 28
+    },
+    "NuevaTarjeta-Oscuro.dc.html": {
+      "x": 8870,
+      "y": 964,
+      "w": 390,
+      "h": 844,
+      "title": "Nueva tarjeta · Oscuro",
+      "radius": 28
+    },
+    "NuevoIngreso.dc.html": {
+      "x": 9340,
+      "y": 0,
+      "w": 390,
+      "h": 844,
+      "title": "Nuevo ingreso · Claro",
+      "radius": 28
+    },
+    "NuevoIngreso-Oscuro.dc.html": {
+      "x": 9340,
+      "y": 964,
+      "w": 390,
+      "h": 844,
+      "title": "Nuevo ingreso · Oscuro",
+      "radius": 28
+    },
+    "NuevaTransferencia.dc.html": {
+      "x": 9810,
+      "y": 0,
+      "w": 390,
+      "h": 844,
+      "title": "Transferencia · Claro",
+      "radius": 28
+    },
+    "NuevaTransferencia-Oscuro.dc.html": {
+      "x": 9810,
+      "y": 964,
+      "w": 390,
+      "h": 844,
+      "title": "Transferencia · Oscuro",
+      "radius": 28
+    },
+    "GastoTarjeta.dc.html": {
+      "x": 10280,
+      "y": 0,
+      "w": 390,
+      "h": 844,
+      "title": "Gasto con tarjeta · Claro",
+      "radius": 28
+    },
+    "GastoTarjeta-Oscuro.dc.html": {
+      "x": 10280,
+      "y": 964,
+      "w": 390,
+      "h": 844,
+      "title": "Gasto con tarjeta · Oscuro",
+      "radius": 28
+    },
+    "Categorias.dc.html": {
+      "x": 2750,
+      "y": 2228,
+      "w": 390,
+      "h": 844,
+      "title": "Categorías · Claro",
+      "radius": 28
+    },
+    "Categorias-Oscuro.dc.html": {
+      "x": 2750,
+      "y": 3192,
+      "w": 390,
+      "h": 844,
+      "title": "Categorías · Oscuro",
+      "radius": 28
+    },
+    "NuevaCategoria.dc.html": {
+      "x": 3220,
+      "y": 2228,
+      "w": 390,
+      "h": 844,
+      "title": "Nueva categoría · Claro",
+      "radius": 28
+    },
+    "NuevaCategoria-Oscuro.dc.html": {
+      "x": 3220,
+      "y": 3192,
+      "w": 390,
+      "h": 844,
+      "title": "Nueva categoría · Oscuro",
+      "radius": 28
+    },
+    "Etiquetas.dc.html": {
+      "x": 3690,
+      "y": 2228,
+      "w": 390,
+      "h": 844,
+      "title": "Etiquetas · Claro",
+      "radius": 28
+    },
+    "Etiquetas-Oscuro.dc.html": {
+      "x": 3690,
+      "y": 3192,
+      "w": 390,
+      "h": 844,
+      "title": "Etiquetas · Oscuro",
+      "radius": 28
+    },
+    "NuevoPresupuesto.dc.html": {
+      "x": 4160,
+      "y": 2228,
+      "w": 390,
+      "h": 844,
+      "title": "Nuevo presupuesto · Claro",
+      "radius": 28
+    },
+    "NuevoPresupuesto-Oscuro.dc.html": {
+      "x": 4160,
+      "y": 3192,
+      "w": 390,
+      "h": 844,
+      "title": "Nuevo presupuesto · Oscuro",
+      "radius": 28
+    },
+    "NuevaMeta.dc.html": {
+      "x": 4630,
+      "y": 2228,
+      "w": 390,
+      "h": 844,
+      "title": "Nueva meta · Claro",
+      "radius": 28
+    },
+    "NuevaMeta-Oscuro.dc.html": {
+      "x": 4630,
+      "y": 3192,
+      "w": 390,
+      "h": 844,
+      "title": "Nueva meta · Oscuro",
+      "radius": 28
+    },
+    "NuevoProgramado.dc.html": {
+      "x": 5100,
+      "y": 2228,
+      "w": 390,
+      "h": 844,
+      "title": "Nuevo programado · Claro",
+      "radius": 28
+    },
+    "NuevoProgramado-Oscuro.dc.html": {
+      "x": 5100,
+      "y": 3192,
+      "w": 390,
+      "h": 844,
+      "title": "Nuevo programado · Oscuro",
+      "radius": 28
+    },
+    "ImportarExportar.dc.html": {
+      "x": 5570,
+      "y": 2228,
+      "w": 390,
+      "h": 844,
+      "title": "Importar y exportar · Claro",
+      "radius": 28
+    },
+    "ImportarExportar-Oscuro.dc.html": {
+      "x": 5570,
+      "y": 3192,
+      "w": 390,
+      "h": 844,
+      "title": "Importar y exportar · Oscuro",
+      "radius": 28
+    },
+    "Recordatorio.dc.html": {
+      "x": 6040,
+      "y": 2228,
+      "w": 390,
+      "h": 844,
+      "title": "Recordatorio diario · Claro",
+      "radius": 28
+    },
+    "Recordatorio-Oscuro.dc.html": {
+      "x": 6040,
+      "y": 3192,
+      "w": 390,
+      "h": 844,
+      "title": "Recordatorio diario · Oscuro",
+      "radius": 28
+    },
+    "Ajustes.dc.html": {
+      "x": 6510,
+      "y": 2228,
+      "w": 390,
+      "h": 844,
+      "title": "Ajustes · Claro",
+      "radius": 28
+    },
+    "Ajustes-Oscuro.dc.html": {
+      "x": 6510,
+      "y": 3192,
+      "w": 390,
+      "h": 844,
+      "title": "Ajustes · Oscuro",
+      "radius": 28
+    },
+    "Ayuda.dc.html": {
+      "x": 6980,
+      "y": 2228,
+      "w": 390,
+      "h": 844,
+      "title": "Ayuda y soporte · Claro",
+      "radius": 28
+    },
+    "Ayuda-Oscuro.dc.html": {
+      "x": 6980,
+      "y": 3192,
+      "w": 390,
+      "h": 844,
+      "title": "Ayuda y soporte · Oscuro",
+      "radius": 28
+    },
+    "DetalleMovimiento.dc.html": {
+      "x": 7450,
+      "y": 2228,
+      "w": 390,
+      "h": 844,
+      "title": "Detalle del movimiento · Claro",
+      "radius": 28
+    },
+    "DetalleMovimiento-Oscuro.dc.html": {
+      "x": 7450,
+      "y": 3192,
+      "w": 390,
+      "h": 844,
+      "title": "Detalle del movimiento · Oscuro",
+      "radius": 28
+    },
+    "PantallaInicio.dc.html": {
+      "x": 7920,
+      "y": 2228,
+      "w": 390,
+      "h": 844,
+      "title": "Pantalla de inicio · Claro",
+      "radius": 28
+    },
+    "PantallaInicio-Oscuro.dc.html": {
+      "x": 7920,
+      "y": 3192,
+      "w": 390,
+      "h": 844,
+      "title": "Pantalla de inicio · Oscuro",
+      "radius": 28
+    },
+    "InicioVacio.dc.html": {
+      "x": 8390,
+      "y": 2228,
+      "w": 390,
+      "h": 844,
+      "title": "Inicio sin datos · Claro",
+      "radius": 28
+    },
+    "InicioVacio-Oscuro.dc.html": {
+      "x": 8390,
+      "y": 3192,
+      "w": 390,
+      "h": 844,
+      "title": "Inicio sin datos · Oscuro",
+      "radius": 28
+    },
+    "Graficos.dc.html": {
+      "x": 8860,
+      "y": 2228,
+      "w": 390,
+      "h": 844,
+      "title": "Gráficos · Claro",
+      "radius": 28
+    },
+    "Graficos-Oscuro.dc.html": {
+      "x": 8860,
+      "y": 3192,
+      "w": 390,
+      "h": 844,
+      "title": "Gráficos · Oscuro",
+      "radius": 28
+    },
+    "Rendimiento.dc.html": {
+      "x": 9330,
+      "y": 2228,
+      "w": 390,
+      "h": 844,
+      "title": "Rendimiento · Claro",
+      "radius": 28
+    },
+    "Rendimiento-Oscuro.dc.html": {
+      "x": 9330,
+      "y": 3192,
+      "w": 390,
+      "h": 844,
+      "title": "Rendimiento · Oscuro",
+      "radius": 28
+    },
+    "Filtros.dc.html": {
+      "x": 9800,
+      "y": 2228,
+      "w": 390,
+      "h": 844,
+      "title": "Filtros · Claro",
+      "radius": 28
+    },
+    "Filtros-Oscuro.dc.html": {
+      "x": 9800,
+      "y": 3192,
+      "w": 390,
+      "h": 844,
+      "title": "Filtros · Oscuro",
+      "radius": 28
+    },
+    "Busqueda.dc.html": {
+      "x": 10270,
+      "y": 2228,
+      "w": 390,
+      "h": 844,
+      "title": "Búsqueda · Claro",
+      "radius": 28
+    },
+    "Busqueda-Oscuro.dc.html": {
+      "x": 10270,
+      "y": 3192,
+      "w": 390,
+      "h": 844,
+      "title": "Búsqueda · Oscuro",
+      "radius": 28
+    },
+    "Perfil.dc.html": {
+      "x": 10740,
+      "y": 2228,
+      "w": 390,
+      "h": 844,
+      "title": "Perfil · Claro",
+      "radius": 28
+    },
+    "Perfil-Oscuro.dc.html": {
+      "x": 10740,
+      "y": 3192,
+      "w": 390,
+      "h": 844,
+      "title": "Perfil · Oscuro",
+      "radius": 28
+    },
+    "SelectorMes.dc.html": {
+      "x": 11210,
+      "y": 2228,
+      "w": 390,
+      "h": 844,
+      "title": "Elegir mes · Claro",
+      "radius": 28
+    },
+    "SelectorMes-Oscuro.dc.html": {
+      "x": 11210,
+      "y": 3192,
+      "w": 390,
+      "h": 844,
+      "title": "Elegir mes · Oscuro",
+      "radius": 28
+    },
+    "SelectorCategoria.dc.html": {
+      "x": 11680,
+      "y": 2228,
+      "w": 390,
+      "h": 844,
+      "title": "Elegir categoría · Claro",
+      "radius": 28
+    },
+    "SelectorCategoria-Oscuro.dc.html": {
+      "x": 11680,
+      "y": 3192,
+      "w": 390,
+      "h": 844,
+      "title": "Elegir categoría · Oscuro",
+      "radius": 28
+    },
+    "SelectorCuenta.dc.html": {
+      "x": 12150,
+      "y": 2228,
+      "w": 390,
+      "h": 844,
+      "title": "Elegir cuenta · Claro",
+      "radius": 28
+    },
+    "SelectorCuenta-Oscuro.dc.html": {
+      "x": 12150,
+      "y": 3192,
+      "w": 390,
+      "h": 844,
+      "title": "Elegir cuenta · Oscuro",
+      "radius": 28
+    },
+    "InicioOculto.dc.html": {
+      "x": 12620,
+      "y": 2228,
+      "w": 390,
+      "h": 844,
+      "title": "Inicio con saldos ocultos · Claro",
+      "radius": 28
+    },
+    "InicioOculto-Oscuro.dc.html": {
+      "x": 12620,
+      "y": 3192,
+      "w": 390,
+      "h": 844,
+      "title": "Inicio con saldos ocultos · Oscuro",
+      "radius": 28
+    },
+    "CategoriasIngresos.dc.html": {
+      "x": 13090,
+      "y": 2228,
+      "w": 390,
+      "h": 844,
+      "title": "Categorías de ingresos · Claro",
+      "radius": 28
+    },
+    "CategoriasIngresos-Oscuro.dc.html": {
+      "x": 13090,
+      "y": 3192,
+      "w": 390,
+      "h": 844,
+      "title": "Categorías de ingresos · Oscuro",
+      "radius": 28
+    },
+    "GraficosIngresos.dc.html": {
+      "x": 13560,
+      "y": 2228,
+      "w": 390,
+      "h": 844,
+      "title": "Gráficos de ingresos · Claro",
+      "radius": 28
+    },
+    "GraficosIngresos-Oscuro.dc.html": {
+      "x": 13560,
+      "y": 3192,
+      "w": 390,
+      "h": 844,
+      "title": "Gráficos de ingresos · Oscuro",
+      "radius": 28
+    }
+  },
+  "order": [
+    "Main.dc.html",
+    "Claro-AzulMarino.dc.html",
+    "Claro-Purpura.dc.html",
+    "Claro-Fucsia.dc.html",
+    "Claro-Rojo.dc.html",
+    "Claro-Vinotinto.dc.html",
+    "Claro-Marron.dc.html",
+    "Claro-Turquesa.dc.html",
+    "Claro-Bosque.dc.html",
+    "Claro-Negro.dc.html",
+    "Oscuro-AzulElectrico.dc.html",
+    "Oscuro-AzulMarino.dc.html",
+    "Oscuro-Purpura.dc.html",
+    "Oscuro-Fucsia.dc.html",
+    "Oscuro-Rojo.dc.html",
+    "Oscuro-Vinotinto.dc.html",
+    "Oscuro-Marron.dc.html",
+    "Oscuro-Turquesa.dc.html",
+    "Oscuro-Bosque.dc.html",
+    "Oscuro-Negro.dc.html",
+    "Transacciones.dc.html",
+    "Transacciones-Oscuro.dc.html",
+    "Planes-Presupuestos.dc.html",
+    "Planes-Presupuestos-Oscuro.dc.html",
+    "Planes-Metas.dc.html",
+    "Planes-Metas-Oscuro.dc.html",
+    "Planes-Programados.dc.html",
+    "Planes-Programados-Oscuro.dc.html",
+    "Planes-Calendario.dc.html",
+    "Planes-Calendario-Oscuro.dc.html",
+    "MiEspacio.dc.html",
+    "MiEspacio-Oscuro.dc.html",
+    "Apariencia.dc.html",
+    "Apariencia-Oscuro.dc.html",
+    "MenuMas.dc.html",
+    "MenuMas-Oscuro.dc.html",
+    "NuevoGasto.dc.html",
+    "NuevoGasto-Oscuro.dc.html",
+    "Cuentas.dc.html",
+    "Cuentas-Oscuro.dc.html",
+    "NuevaCuenta.dc.html",
+    "NuevaCuenta-Oscuro.dc.html",
+    "Tarjetas.dc.html",
+    "Tarjetas-Oscuro.dc.html",
+    "NuevaTarjeta.dc.html",
+    "NuevaTarjeta-Oscuro.dc.html",
+    "NuevoIngreso.dc.html",
+    "NuevoIngreso-Oscuro.dc.html",
+    "NuevaTransferencia.dc.html",
+    "NuevaTransferencia-Oscuro.dc.html",
+    "GastoTarjeta.dc.html",
+    "GastoTarjeta-Oscuro.dc.html",
+    "Categorias.dc.html",
+    "Categorias-Oscuro.dc.html",
+    "NuevaCategoria.dc.html",
+    "NuevaCategoria-Oscuro.dc.html",
+    "Etiquetas.dc.html",
+    "Etiquetas-Oscuro.dc.html",
+    "NuevoPresupuesto.dc.html",
+    "NuevoPresupuesto-Oscuro.dc.html",
+    "NuevaMeta.dc.html",
+    "NuevaMeta-Oscuro.dc.html",
+    "NuevoProgramado.dc.html",
+    "NuevoProgramado-Oscuro.dc.html",
+    "ImportarExportar.dc.html",
+    "ImportarExportar-Oscuro.dc.html",
+    "Recordatorio.dc.html",
+    "Recordatorio-Oscuro.dc.html",
+    "Ajustes.dc.html",
+    "Ajustes-Oscuro.dc.html",
+    "Ayuda.dc.html",
+    "Ayuda-Oscuro.dc.html",
+    "DetalleMovimiento.dc.html",
+    "DetalleMovimiento-Oscuro.dc.html",
+    "PantallaInicio.dc.html",
+    "PantallaInicio-Oscuro.dc.html",
+    "InicioVacio.dc.html",
+    "InicioVacio-Oscuro.dc.html",
+    "Graficos.dc.html",
+    "Graficos-Oscuro.dc.html",
+    "Rendimiento.dc.html",
+    "Rendimiento-Oscuro.dc.html",
+    "Filtros.dc.html",
+    "Filtros-Oscuro.dc.html",
+    "Busqueda.dc.html",
+    "Busqueda-Oscuro.dc.html",
+    "Perfil.dc.html",
+    "Perfil-Oscuro.dc.html",
+    "SelectorMes.dc.html",
+    "SelectorMes-Oscuro.dc.html",
+    "SelectorCategoria.dc.html",
+    "SelectorCategoria-Oscuro.dc.html",
+    "SelectorCuenta.dc.html",
+    "SelectorCuenta-Oscuro.dc.html",
+    "InicioOculto.dc.html",
+    "InicioOculto-Oscuro.dc.html",
+    "CategoriasIngresos.dc.html",
+    "CategoriasIngresos-Oscuro.dc.html",
+    "GraficosIngresos.dc.html",
+    "GraficosIngresos-Oscuro.dc.html"
+  ],
+  "notes": {
+    "claro": {
+      "x": 0,
+      "y": -300,
+      "text": "Modo claro",
+      "kind": "title1",
+      "maxW": 2270
+    },
+    "oscuro": {
+      "x": 0,
+      "y": 1928,
+      "text": "Modo oscuro",
+      "kind": "title1",
+      "maxW": 2270
+    },
+    "pantallas": {
+      "x": 2750,
+      "y": -300,
+      "text": "Transacciones",
+      "kind": "title1",
+      "maxW": 860
+    },
+    "planes": {
+      "x": 3700,
+      "y": -300,
+      "text": "Planes",
+      "kind": "title1",
+      "maxW": 1800
+    },
+    "miespacio": {
+      "x": 5580,
+      "y": -300,
+      "text": "Mi espacio",
+      "kind": "title1",
+      "maxW": 390
+    },
+    "apariencia": {
+      "x": 6050,
+      "y": -300,
+      "text": "Apariencia",
+      "kind": "title1",
+      "maxW": 390
+    },
+    "mas": {
+      "x": 6520,
+      "y": -300,
+      "text": "Menú +",
+      "kind": "title1",
+      "maxW": 390
+    },
+    "nuevogasto": {
+      "x": 6990,
+      "y": -300,
+      "text": "Nuevo gasto",
+      "kind": "title1",
+      "maxW": 390
+    },
+    "cuentas": {
+      "x": 7460,
+      "y": -300,
+      "text": "Cuentas y tarjetas",
+      "kind": "title1",
+      "maxW": 1830
+    },
+    "forms": {
+      "x": 9340,
+      "y": -300,
+      "text": "Más formularios",
+      "kind": "title1",
+      "maxW": 1330
+    },
+    "resto": {
+      "x": 2750,
+      "y": 1928,
+      "text": "Más pantallas",
+      "kind": "title1",
+      "maxW": 11200
+    }
+  },
+  "designSystems": []
+}

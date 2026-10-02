@@ -1,0 +1,7 @@
+# Finales de línea normalizados (evita diferencias falsas entre Windows y otros sistemas)
+* text=auto eol=lf
+
+# Binarios
+*.png binary
+*.ico binary
+*.woff2 binary

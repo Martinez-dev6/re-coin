@@ -1,0 +1,28 @@
+{
+  "name": "finanzas-pwa",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "dev:red": "vite --host",
+    "build": "vite build",
+    "preview": "vite preview",
+    "preview:red": "vite preview --host",
+    "iconos": "pwa-assets-generator",
+    "publicar": "vercel --prod"
+  },
+  "dependencies": {
+    "@fontsource/plus-jakarta-sans": "^5.3.0",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "react-router-dom": "^7.18.4"
+  },
+  "devDependencies": {
+    "@vite-pwa/assets-generator": "^1.0.4",
+    "@vitejs/plugin-react": "^6.1.1",
+    "vercel": "^62.2.0",
+    "vite": "^8.3.2",
+    "vite-plugin-pwa": "^1.3.0"
+  }
+}
