@@ -4,9 +4,9 @@
 const CLAVE = 'sendo.pruebaFranja';
 
 export const VARIANTES_FRANJA = [
-  { valor: 'capas', titulo: 'A · Dos capas', detalle: 'La versión publicada ahora' },
-  { valor: 'bajo', titulo: 'B · Bajo el oscurecido', detalle: 'Muestra invisible para la isla' },
-  { valor: 'bajo-1', titulo: 'C · Bajo el oscurecido (1 %)', detalle: 'Muestra casi invisible para la isla' },
+  { valor: 'capas', titulo: 'A · Dos capas', detalle: 'La de ahora' },
+  { valor: 'unico', titulo: 'D · Un solo oscurecido', detalle: 'La franja queda bajo el mismo oscurecido' },
+  { valor: 'ritmo', titulo: 'E · Mismo ritmo', detalle: 'Fondo y franja cambian en el mismo cuadro' },
 ];
 
 export function leerVarianteFranja() {

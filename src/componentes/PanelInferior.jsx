@@ -51,6 +51,8 @@ export default function PanelInferior({ abierto, alCerrar, titulo, accion, child
   return createPortal(
     <div className={'panel-capa' + (visible ? ' visible' : '')}>
       <div className="panel-fondo" onClick={() => alCerrarRef.current()} />
+      {/* PRUEBA TEMPORAL (variante D de pruebaFranja.js): cierra al tocar fuera sin cubrir el borde superior. */}
+      <div className="panel-toque" onClick={() => alCerrarRef.current()} />
       <div
         ref={panel}
         className="panel-inferior"
