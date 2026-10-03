@@ -11,6 +11,7 @@
 // la nueva vuelve al scroll normal de la página.
 // La barra inferior va fuera de las pantallas para que no se mueva con ellas.
 import { Component, createRef } from 'react';
+import { flushSync } from 'react-dom';
 import { useLocation, useNavigationType } from 'react-router-dom';
 import { CURVA_ENTRAR, CURVA_SUAVE, sinMovimiento } from '../utilidades/movimiento.js';
 import './TransicionPantallas.css';
@@ -209,10 +210,13 @@ class Pila extends Component {
     transicion.copia.remove();
     const pantalla = this.pantalla.current;
     if (!pantalla) return; // la app se estaba cerrando o recargando
+    // La barra retenida se quita antes de que el formulario deje su capa (por encima de ella),
+    // en el mismo cuadro. Con setState normal se quitaba en el cuadro siguiente y durante ese
+    // cuadro la barra se veía encima del formulario (video del iPhone, 2026-10-03).
+    if (soltarBarra && this.state.retenerBarra) flushSync(() => this.setState({ retenerBarra: false }));
     delete pantalla.dataset.transicion;
     delete pantalla.dataset.capa;
     window.scrollTo(0, transicion.scroll);
-    if (soltarBarra && this.state.retenerBarra) this.setState({ retenerBarra: false });
   }
 
   render() {
