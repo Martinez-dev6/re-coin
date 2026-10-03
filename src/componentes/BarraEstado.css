@@ -12,12 +12,14 @@
   background: var(--franja);
 }
 
-.barra-estado[data-tono='banner'] {
+.barra-estado[data-tono='banner'],
+.barra-estado-muestra[data-tono='banner'] {
   --franja: var(--banner-bg);
   --franja-dim: var(--banner-dim);
 }
 
-.barra-estado[data-tono='pagina'] {
+.barra-estado[data-tono='pagina'],
+.barra-estado-muestra[data-tono='pagina'] {
   --franja: var(--page-bg);
   --franja-dim: var(--page-dim);
 }
@@ -76,4 +78,46 @@
   opacity: 0;
   z-index: 2;
   transition: opacity 0.22s ease;
+}
+
+/* ---- PRUEBA TEMPORAL (src/estado/pruebaFranja.js) ----
+   B y C: la franja se queda con su color normal debajo del fondo oscurecido, que la
+   oscurece igual que al resto de la pantalla porque es la misma capa. Para que iOS siga
+   oscureciendo la isla, encima va una "muestra" de la misma medida con el color oscurecido,
+   invisible (B) o casi (C, 1 %). No se sabe si iOS acepta un elemento invisible: es lo que
+   se prueba. */
+.barra-estado-muestra {
+  display: none;
+}
+
+:root[data-franja^='bajo'] .barra-estado,
+:root[data-franja^='bajo'][data-capa-oscura] .barra-estado,
+:root[data-franja^='bajo'][data-oscurecido] .barra-estado {
+  z-index: 100;
+  background: var(--franja);
+}
+
+:root[data-franja^='bajo'] .barra-estado::before,
+:root[data-franja^='bajo'] .barra-estado::after {
+  display: none;
+}
+
+:root[data-franja^='bajo'] .barra-estado-muestra {
+  display: block;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--safe-top);
+  z-index: 300;
+  background: var(--franja);
+  opacity: 0;
+}
+
+:root[data-franja^='bajo'][data-oscurecido] .barra-estado-muestra {
+  background: var(--franja-dim);
+}
+
+:root[data-franja='bajo-1'] .barra-estado-muestra {
+  opacity: 0.01;
 }
