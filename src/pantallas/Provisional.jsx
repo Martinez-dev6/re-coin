@@ -1,6 +1,7 @@
 // Pantalla temporal del paso 1: sirve para comprobar en el iPhone la zona segura,
 // la fuente y el modo instalado. Se reemplaza por Inicio en el paso 3.
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import BarraEstado from '../componentes/BarraEstado.jsx';
 import './Provisional.css';
 
@@ -57,6 +58,10 @@ export default function Provisional() {
             </dl>
           )}
         </section>
+        {/* Acceso temporal: la barra de navegación llega en el paso 3. */}
+        <Link to="/mi-espacio" className="tarjeta provisional-enlace">
+          Abrir Mi espacio →
+        </Link>
       </main>
     </div>
   );

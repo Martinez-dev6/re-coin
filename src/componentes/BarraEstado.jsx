@@ -3,8 +3,9 @@
 // position: fixed pegado arriba, de ancho completo, con fondo opaco y al menos ~6 px
 // de alto; si no lo encuentra, usa el fondo de la página. Cada pantalla pasa el color
 // de lo que tiene arriba (el banner, o el fondo en pantallas sin banner).
+// Con un panel inferior abierto se oscurece igual que la pantalla (ver BarraEstado.css).
 import './BarraEstado.css';
 
 export default function BarraEstado({ color }) {
-  return <div className="barra-estado" style={{ background: color }} aria-hidden="true" />;
+  return <div className="barra-estado" style={{ '--barra-color': color }} aria-hidden="true" />;
 }

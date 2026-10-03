@@ -1,0 +1,110 @@
+/* Medidas de design/html/MiEspacio.html */
+
+.mi-espacio-cabecera {
+  padding-bottom: 14px;
+}
+
+.mi-espacio-perfil {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 48px;
+}
+
+.mi-espacio-avatar {
+  width: 46px;
+  height: 46px;
+  flex-shrink: 0;
+  border-radius: 23px;
+  background: var(--chip-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.mi-espacio-nombre {
+  flex-grow: 1;
+  min-width: 0;
+}
+
+.mi-espacio-nombre h1 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.mi-espacio-nombre p {
+  margin: 1px 0 0;
+  font-size: 13px;
+  color: var(--on-banner-muted);
+}
+
+.mi-espacio-contenido {
+  padding: 4px 16px calc(32px + var(--safe-bottom));
+}
+
+.mi-espacio-grupo-titulo {
+  height: 16px;
+  margin: 6px 0 3px 4px;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 16px;
+  color: var(--muted);
+}
+
+section:first-child .mi-espacio-grupo-titulo {
+  margin-top: 2px;
+}
+
+.mi-espacio-grupo {
+  padding: 0 14px;
+}
+
+.mi-espacio-grupo-suelto {
+  margin-top: 8px;
+}
+
+/* Fila de menú: 44 px, ícono, texto, valor opcional y flecha. */
+.fila-menu {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-bottom: 1px solid var(--divider);
+  background: transparent;
+  text-align: left;
+}
+
+.fila-menu:last-child {
+  border-bottom: 0;
+}
+
+.fila-menu-texto {
+  flex-grow: 1;
+  min-width: 0;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.fila-menu-valor {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.fila-menu-color {
+  width: 20px;
+  height: 20px;
+  margin-right: 2px;
+  border-radius: 10px;
+  box-shadow: 0 0 0 1px var(--sw-ring);
+}
+
+.fila-menu-flecha {
+  display: flex;
+  color: var(--muted);
+}

@@ -7,4 +7,12 @@
   height: var(--safe-top);
   z-index: 100;
   pointer-events: none;
+  background: var(--barra-color);
+  transition: background-color 0.2s ease;
+}
+
+/* Panel inferior abierto: mismo oscurecido que el fondo, pero opaco
+   (iOS solo toma el color de un elemento con fondo opaco). */
+:root[data-panel-abierto] .barra-estado {
+  background: color-mix(in srgb, var(--barra-color), var(--scrim-color) var(--scrim-alpha));
 }

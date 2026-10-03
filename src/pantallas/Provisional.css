@@ -82,3 +82,14 @@
   font-weight: 600;
   text-align: right;
 }
+
+.provisional-enlace {
+  display: block;
+  margin-top: 12px;
+  padding: 16px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--accent-text);
+  text-decoration: none;
+  text-align: center;
+}

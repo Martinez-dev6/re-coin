@@ -1,0 +1,85 @@
+/* Piezas visuales que se repiten entre pantallas (medidas de design/html). */
+
+/* Banner de color superior: radios inferiores de 32 px. */
+.banner {
+  background: var(--banner-bg);
+  color: var(--on-banner);
+  border-radius: 0 0 32px 32px;
+  box-shadow: 0 0 0 1px var(--banner-ring);
+  padding: var(--safe-top) 16px 18px;
+}
+
+/* Botón redondo de 44 px sobre el banner (volver, editar, perfil…). */
+.boton-banner {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  border: 0;
+  border-radius: 22px;
+  padding: 0;
+  background: var(--chip-bg);
+  color: var(--on-banner);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Contenido bajo el banner. */
+.contenido {
+  padding: 0 16px calc(32px + var(--safe-bottom));
+}
+
+/* Título pequeño encima de una tarjeta ("Personalizar", "Color principal"…). */
+.titulo-seccion {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+  margin: 14px 0 6px 4px;
+}
+
+/* Tarjeta blanca (o superficie oscura) con borde y radio de 22 px. */
+.tarjeta {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+  border-radius: 22px;
+}
+
+/* Círculo de ícono con el color del tema suave detrás. */
+.icono-circulo {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent-soft);
+  color: var(--accent-text);
+}
+
+.icono-circulo.grande {
+  width: 40px;
+  height: 40px;
+  border-radius: 20px;
+}
+
+/* Botón de texto con el color del tema ("Restablecer", "+ Nueva"…). */
+.boton-texto {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--accent-text);
+}
+
+/* Texto solo para lectores de pantalla. */
+.solo-lector {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}

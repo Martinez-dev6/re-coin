@@ -1,0 +1,106 @@
+.panel-capa {
+  position: fixed;
+  inset: 0;
+  z-index: 200; /* por encima de la franja de la barra de estado */
+}
+
+.panel-fondo {
+  position: absolute;
+  inset: 0;
+  background: var(--scrim);
+  opacity: 0;
+  transition: opacity 0.22s ease;
+}
+
+.panel-inferior {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--surface);
+  color: var(--text);
+  border-radius: 28px 28px 0 0;
+  padding: 10px 16px calc(24px + var(--safe-bottom));
+  box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.25);
+  transform: translateY(100%);
+  transition: transform 0.22s cubic-bezier(0.2, 0.8, 0.2, 1);
+  outline: none;
+}
+
+.panel-capa.visible .panel-fondo {
+  opacity: 1;
+}
+
+.panel-capa.visible .panel-inferior {
+  transform: translateY(0);
+}
+
+.panel-asa {
+  width: 40px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--sw-off);
+  margin: 0 auto;
+}
+
+.panel-titulo {
+  display: flex;
+  align-items: center;
+  height: 44px;
+  margin: 12px 0 0;
+  font-size: 19px;
+  font-weight: 700;
+}
+
+/* Opción con radio a la derecha (como en SelectorCuenta). */
+.panel-opcion {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  height: 64px;
+  padding: 0;
+  border: 0;
+  border-bottom: 1px solid var(--divider);
+  background: transparent;
+  text-align: left;
+}
+
+.panel-opcion:last-child {
+  border-bottom: 0;
+}
+
+.panel-opcion-textos {
+  flex-grow: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.panel-opcion-titulo {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.panel-opcion-detalle {
+  margin-top: 1px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.radio {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  border-radius: 12px;
+  border: 2px solid var(--sw-off);
+}
+
+.radio.marcado {
+  border: 0;
+  background: var(--banner-bg);
+  color: var(--on-banner);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

@@ -1,0 +1,149 @@
+/* Medidas de design/html/Apariencia.html */
+
+/* 10 círculos en dos filas de 5, repartidos a lo ancho. */
+.apariencia-colores {
+  display: grid;
+  grid-template-columns: repeat(5, 48px);
+  justify-content: space-between;
+  row-gap: 18px;
+  padding: 18px 14px 16px;
+}
+
+.apariencia-color {
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  border: 0;
+  border-radius: 24px;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset 0 0 0 1px var(--sw-ring);
+  transition: box-shadow 0.15s ease;
+}
+
+.apariencia-color.elegido {
+  box-shadow:
+    inset 0 0 0 1px var(--sw-ring),
+    0 0 0 2px var(--surface),
+    0 0 0 4px var(--text);
+}
+
+.apariencia-vista {
+  padding: 14px 14px 16px;
+}
+
+.apariencia-vista-banner {
+  padding: 14px 16px;
+  border-radius: 20px;
+  background: var(--banner-bg);
+  color: var(--on-banner);
+  box-shadow: 0 0 0 1px var(--banner-ring);
+  text-align: center;
+}
+
+.apariencia-vista-etiqueta {
+  font-size: 12px;
+  color: var(--on-banner-muted);
+}
+
+.apariencia-vista-saldo {
+  margin-top: 2px;
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.apariencia-vista-controles {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.apariencia-chip {
+  display: flex;
+  align-items: center;
+  height: 34px;
+  padding: 0 14px;
+  border-radius: 17px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.apariencia-chip.activo {
+  border: 0;
+  background: var(--banner-bg);
+  color: var(--on-banner);
+  box-shadow: 0 0 0 1px var(--banner-ring);
+  font-weight: 700;
+}
+
+.apariencia-progreso {
+  flex-grow: 1;
+  height: 8px;
+  border-radius: 4px;
+  background: var(--track);
+  overflow: hidden;
+}
+
+.apariencia-progreso span {
+  display: block;
+  width: 62%;
+  height: 100%;
+  background: var(--accent-text);
+}
+
+.apariencia-vista-separador {
+  height: 1px;
+  margin-top: 12px;
+  background: var(--divider);
+}
+
+.apariencia-cuenta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 56px;
+  border-bottom: 1px solid var(--divider);
+}
+
+.apariencia-cuenta:last-child {
+  border-bottom: 0;
+}
+
+.apariencia-cuenta-textos {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.apariencia-cuenta-nombre {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.apariencia-cuenta-saldo {
+  margin-top: 1px;
+  font-size: 14px;
+  color: var(--income);
+}
+
+.apariencia-cuenta-mas {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent-text);
+}
+
+.apariencia-restablecer {
+  width: 100%;
+  height: 48px;
+  margin-top: 8px;
+}

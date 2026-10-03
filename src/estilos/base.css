@@ -1,5 +1,6 @@
-/* Base global. Los colores son los tokens fijos del modo claro;
-   en el paso 2 se generarán desde tema() y cambiarán con el acento y el modo. */
+/* Base global. Los colores reales los pone src/tema/aplicarTema.js como variables
+   en <html> (todas las de tema(): --page-bg, --surface, --accent-text, --banner-bg…).
+   Estos valores son solo el respaldo del tema claro azul antes de que cargue el JS. */
 :root {
   --page-bg: #f3f4f8;
   --surface: #ffffff;

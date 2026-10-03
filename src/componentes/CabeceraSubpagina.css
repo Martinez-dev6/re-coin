@@ -1,0 +1,13 @@
+.cabecera-subpagina-fila {
+  display: flex;
+  align-items: center;
+  height: 48px;
+}
+
+.cabecera-subpagina-titulo {
+  flex-grow: 1;
+  margin: 0 44px 0 0; /* compensa el botón Volver para que el título quede centrado */
+  text-align: center;
+  font-size: 17px;
+  font-weight: 600;
+}

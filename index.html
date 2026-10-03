@@ -22,6 +22,18 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="Sendo" />
+
+    <!-- Fondo oscuro desde el primer instante si corresponde (evita un destello claro al abrir).
+         Lee la misma clave que src/tema/preferencias.js; el resto del tema lo aplica la app. -->
+    <script>
+      try {
+        var p = JSON.parse(localStorage.getItem('sendo.tema') || '{}');
+        if (p.modo === 'oscuro' || (p.modo === 'auto' && matchMedia('(prefers-color-scheme: dark)').matches)) {
+          document.documentElement.style.setProperty('--page-bg', '#0e0e13');
+          document.documentElement.style.colorScheme = 'dark';
+        }
+      } catch (e) {}
+    </script>
   </head>
   <body>
     <div id="root"></div>
