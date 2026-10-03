@@ -180,8 +180,23 @@ class Pila extends Component {
     this.transicion = transicion;
     const alTerminar = () => this.transicion === transicion && this.terminar(true);
     Promise.all(animaciones.map((animacion) => animacion.finished)).then(alTerminar, () => {});
-    // Por si el navegador congela las animaciones (por ejemplo, con la app en segundo plano).
-    transicion.espera = setTimeout(alTerminar, receta.duracion + 200);
+
+    // Las animaciones quedan quietas en su primer cuadro y arrancan cuando el navegador ya pintó
+    // la pantalla nueva. Si arrancaran ya, el reloj correría mientras el teléfono arma esa
+    // pantalla (y la copia, y el color de la cuenta): en el video del iPhone el primer cuadro
+    // pintado ya iba por un tercio del recorrido y el formulario aparecía de golpe abajo.
+    // Si el navegador no da cuadros (app en segundo plano), arrancan igual a los 150 ms.
+    animaciones.forEach((animacion) => animacion.pause());
+    const arrancar = () => {
+      if (this.transicion !== transicion || transicion.arranco) return;
+      transicion.arranco = true;
+      clearTimeout(transicion.espera);
+      animaciones.forEach((animacion) => animacion.play());
+      // Por si el navegador congela las animaciones (por ejemplo, con la app en segundo plano).
+      transicion.espera = setTimeout(alTerminar, receta.duracion + 200);
+    };
+    requestAnimationFrame(() => requestAnimationFrame(arrancar));
+    transicion.espera = setTimeout(arrancar, 150);
   }
 
   // Quita la copia y devuelve la pantalla nueva al scroll normal, en el mismo cuadro.

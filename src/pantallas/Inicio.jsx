@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useLayoutEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import BarraEstado from '../componentes/BarraEstado.jsx';
 import Deslizar from '../componentes/Deslizar.jsx';
@@ -42,14 +42,66 @@ export default function Inicio() {
   const listaCuentas = useRef(null);
   useFilasAnimadas(listaCuentas);
 
-  // Barra compacta: aparece cuando el banner grande sale de la pantalla al hacer scroll.
+  // Al hacer scroll el banner se reduce: se desplaza con el dedo hasta dejar solo la fila de
+  // arriba (perfil, mes, ojo), que nunca se mueve. Lo que pasa por debajo de esa fila se
+  // desvanece antes de llegar a ella, y el saldo grande, al irse, aparece pequeño en el centro
+  // de la fila en lugar del mes. Antes el banner entero se iba y sus botones pasaban por debajo
+  // de la franja de la barra de estado y se veían cortados (iPhone, 2026-10-03).
+  const cabecera = useRef(null);
   const banner = useRef(null);
-  const [compacta, setCompacta] = useState(false);
-  useEffect(() => {
-    const revisar = () => setCompacta((banner.current?.getBoundingClientRect().bottom ?? 0) < 120);
-    window.addEventListener('scroll', revisar, { passive: true });
-    revisar();
-    return () => window.removeEventListener('scroll', revisar);
+  const fila = useRef(null);
+  const etiquetaSaldo = useRef(null);
+  const montoSaldo = useRef(null);
+  const resumen = useRef(null);
+  const botonMes = useRef(null);
+  const compacto = useRef(null);
+  useLayoutEffect(() => {
+    // 1 en reposo; se desvanece en los 20 px antes de quedar 8 px metido en la fila. (En reposo
+    // la etiqueta está a 12 px de la fila: empieza a desvanecerse apenas se mueve.)
+    const visibilidad = (elemento, bordeFila) => {
+      if (!elemento) return 1;
+      const arriba = elemento.getBoundingClientRect().top;
+      return Math.min(1, Math.max(0, (arriba - bordeFila + 8) / 20));
+    };
+    const revisar = () => {
+      if (!fila.current) return;
+      const bordeFila = fila.current.getBoundingClientRect().bottom;
+      const verSaldo = visibilidad(montoSaldo.current, bordeFila);
+      // El mes se va en la primera mitad y el saldo pequeño llega en la segunda: no se enciman.
+      const verCompacto = Math.max(0, 1 - verSaldo * 2);
+      const valores = [
+        [etiquetaSaldo.current, visibilidad(etiquetaSaldo.current, bordeFila)],
+        [montoSaldo.current, verSaldo],
+        [resumen.current, visibilidad(resumen.current, bordeFila)],
+        [botonMes.current, Math.max(0, verSaldo * 2 - 1)],
+        [compacto.current, verCompacto],
+      ];
+      for (const [elemento, valor] of valores) {
+        if (!elemento) continue;
+        elemento.style.opacity = valor;
+        elemento.style.visibility = valor === 0 ? 'hidden' : 'visible';
+      }
+      // El saldo pequeño sube un poco al aparecer.
+      if (compacto.current) compacto.current.style.transform = `translateY(${(1 - verCompacto) * 6}px)`;
+    };
+    // El banner se desplaza su alto menos el de la fila (ver .inicio-cabecera en Inicio.css).
+    const medir = () => {
+      if (cabecera.current && banner.current) {
+        cabecera.current.style.setProperty('--inicio-alto', banner.current.offsetHeight + 'px');
+      }
+      revisar();
+    };
+    const observador = new ResizeObserver(medir);
+    observador.observe(banner.current);
+    // En captura, para oír también el scroll de la caja que usa TransicionPantallas mientras
+    // anima: al volver a Inicio, la pantalla llega ya desplazada dentro de esa caja.
+    const opciones = { capture: true, passive: true };
+    document.addEventListener('scroll', revisar, opciones);
+    medir();
+    return () => {
+      observador.disconnect();
+      document.removeEventListener('scroll', revisar, opciones);
+    };
   }, []);
 
   const delMes = MOVIMIENTOS.filter((m) => enMes(m.fecha, anio, mes));
@@ -65,76 +117,79 @@ export default function Inicio() {
   // Al elegir otro mes, lo que depende del mes entra deslizándose desde ese lado.
   const posicionMes = anio * 12 + mes;
 
-  const botonPerfil = (
-    <button type="button" className="boton-banner" aria-label="Perfil" onClick={() => navegar('/pendiente/perfil')}>
-      <IconoPerfil />
-    </button>
-  );
-  const botonOjo = (
-    <button
-      type="button"
-      className="boton-banner"
-      aria-label={ocultos ? 'Mostrar saldos' : 'Ocultar saldos'}
-      onClick={alternarOcultos}
-    >
-      {ocultos ? <IconoOjoTachado /> : <IconoOjo />}
-    </button>
-  );
-
   return (
     <div className="inicio">
       <BarraEstado />
 
-      <div className={'inicio-compacta' + (compacta ? ' visible' : '')} aria-hidden={!compacta}>
-        <div className="banner inicio-compacta-banner">
-          <div className="inicio-fila">
-            {botonPerfil}
-            <div className="inicio-compacta-centro">
-              <span>Saldo actual</span>
-              <strong>{pesos(saldo)}</strong>
-            </div>
-            {botonOjo}
+      <div ref={cabecera} className="encabezado-fijo inicio-cabecera">
+        <header ref={banner} className="banner inicio-banner">
+          {/* Lugar de la fila de arriba, que va fija aparte (m\u00e1s abajo). */}
+          <div className="inicio-fila" />
+          <div ref={etiquetaSaldo} className="inicio-saldo-etiqueta">
+            Saldo actual en cuentas
           </div>
-        </div>
+          <div ref={montoSaldo} className="inicio-saldo">
+            {cargando ? '\u00a0' : pesos(saldo)}
+          </div>
+          {!sinCuentas && (
+            <div ref={resumen}>
+              <Deslizar posicion={posicionMes} distancia={16} className="inicio-resumen">
+                <div className="inicio-resumen-dato">
+                  <span className="inicio-resumen-icono" style={{ color: 'var(--income-on-white)' }}>
+                    <IconoFlechaArriba />
+                  </span>
+                  <div>
+                    <div className="inicio-resumen-etiqueta">Ingresos</div>
+                    <div className="inicio-resumen-valor">{pesos(sumar(ingresos))}</div>
+                  </div>
+                </div>
+                <div className="inicio-resumen-dato">
+                  <span className="inicio-resumen-icono" style={{ color: 'var(--expense-on-white)' }}>
+                    <IconoFlechaAbajo />
+                  </span>
+                  <div>
+                    <div className="inicio-resumen-etiqueta">Gastos</div>
+                    <div className="inicio-resumen-valor">{pesos(sumar(gastos))}</div>
+                  </div>
+                </div>
+              </Deslizar>
+            </div>
+          )}
+        </header>
       </div>
 
-
-      <header ref={banner} className="banner inicio-banner">
-        <div className="inicio-fila">
-          {botonPerfil}
-          <button type="button" className="inicio-mes" aria-label="Cambiar mes" onClick={() => setPanelMes(true)}>
+      {/* Fila de arriba: fija, por encima del banner. */}
+      <div ref={fila} className="inicio-fila inicio-fila-fija">
+        <button type="button" className="boton-banner" aria-label="Perfil" onClick={() => navegar('/pendiente/perfil')}>
+          <IconoPerfil />
+        </button>
+        <div className="inicio-fila-centro">
+          <button
+            ref={botonMes}
+            type="button"
+            className="inicio-mes"
+            aria-label="Cambiar mes"
+            onClick={() => setPanelMes(true)}
+          >
             <Deslizar as="span" posicion={posicionMes} distancia={16}>
               {tituloMes}
             </Deslizar>
             <IconoAbajo />
           </button>
-          {botonOjo}
+          <div ref={compacto} className="inicio-compacto" aria-hidden="true">
+            <span>Saldo actual</span>
+            <strong>{pesos(saldo)}</strong>
+          </div>
         </div>
-        <div className="inicio-saldo-etiqueta">Saldo actual en cuentas</div>
-        <div className="inicio-saldo">{cargando ? '\u00a0' : pesos(saldo)}</div>
-        {!sinCuentas && (
-          <Deslizar posicion={posicionMes} distancia={16} className="inicio-resumen">
-            <div className="inicio-resumen-dato">
-              <span className="inicio-resumen-icono" style={{ color: 'var(--income-on-white)' }}>
-                <IconoFlechaArriba />
-              </span>
-              <div>
-                <div className="inicio-resumen-etiqueta">Ingresos</div>
-                <div className="inicio-resumen-valor">{pesos(sumar(ingresos))}</div>
-              </div>
-            </div>
-            <div className="inicio-resumen-dato">
-              <span className="inicio-resumen-icono" style={{ color: 'var(--expense-on-white)' }}>
-                <IconoFlechaAbajo />
-              </span>
-              <div>
-                <div className="inicio-resumen-etiqueta">Gastos</div>
-                <div className="inicio-resumen-valor">{pesos(sumar(gastos))}</div>
-              </div>
-            </div>
-          </Deslizar>
-        )}
-      </header>
+        <button
+          type="button"
+          className="boton-banner"
+          aria-label={ocultos ? 'Mostrar saldos' : 'Ocultar saldos'}
+          onClick={alternarOcultos}
+        >
+          {ocultos ? <IconoOjoTachado /> : <IconoOjo />}
+        </button>
+      </div>
 
       {/* Sin cuentas: design/capturas/InicioVacio.png */}
       {sinCuentas && (
