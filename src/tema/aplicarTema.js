@@ -14,22 +14,9 @@ function extras(oscuro) {
   };
 }
 
-// Duración del fundido al cambiar de color o de modo (debe coincidir con base.css).
-const DURACION_TRANSICION_MS = 350;
-let finTransicion;
-
-// animar: fundido de todos los colores a la vez (banner, franja de la barra de estado,
-// tarjetas, textos). No se anima la primera aplicación al abrir la app.
-export function aplicarTema(acento, oscuro, { animar = false } = {}) {
+function escribirVariables(acento, oscuro) {
   const raiz = document.documentElement;
   const colores = { ...tema(acento, oscuro ? 'dark' : 'light'), ...extras(oscuro) };
-
-  if (animar && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    // El atributo activa las transiciones en el mismo cuadro en que cambian las variables.
-    raiz.dataset.transicionTema = '';
-    clearTimeout(finTransicion);
-    finTransicion = setTimeout(() => delete raiz.dataset.transicionTema, DURACION_TRANSICION_MS + 50);
-  }
 
   for (const [clave, valor] of Object.entries(colores)) {
     raiz.style.setProperty(aVariable(clave), valor);
@@ -39,4 +26,28 @@ export function aplicarTema(acento, oscuro, { animar = false } = {}) {
 
   // iOS 26+ ignora theme-color (ver BarraEstado), pero otros navegadores lo usan.
   document.querySelector('meta[name="theme-color"]')?.setAttribute('content', colores.bannerBg);
+}
+
+// animar: fundido de toda la pantalla de una sola vez (View Transitions): el navegador
+// toma una imagen antes y otra después y las mezcla, así textos, fondos e íconos cambian
+// exactamente al mismo tiempo. La franja de la barra de estado no sale en esa imagen
+// (iOS pinta la barra copiando su color), así que hace su propia transición de la misma
+// duración (ver BarraEstado.css y base.css). Sin soporte o con "Reducir movimiento",
+// el cambio es directo.
+export function aplicarTema(acento, oscuro, { animar = false } = {}) {
+  const raiz = document.documentElement;
+  const sinAnimacion =
+    !animar || !document.startViewTransition || window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (sinAnimacion) {
+    escribirVariables(acento, oscuro);
+    return;
+  }
+
+  raiz.dataset.transicionTema = '';
+  const transicion = document.startViewTransition(() => escribirVariables(acento, oscuro));
+  // Si el navegador omite la animación (app en segundo plano, otro cambio encima),
+  // los colores igual se aplican; solo se ignora el aviso.
+  transicion.ready.catch(() => {});
+  transicion.finished.finally(() => delete raiz.dataset.transicionTema);
 }

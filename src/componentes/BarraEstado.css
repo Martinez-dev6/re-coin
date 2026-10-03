@@ -11,6 +11,12 @@
   transition: background-color 0.2s ease;
 }
 
+/* Cambio de color o de modo: misma duración que el fundido de la pantalla (base.css),
+   para que la barra de estado del iPhone cambie al ritmo del banner. */
+:root[data-transicion-tema] .barra-estado {
+  transition-duration: 0.35s;
+}
+
 /* Panel inferior abierto: mismo oscurecido que el fondo, pero opaco
    (iOS solo toma el color de un elemento con fondo opaco). */
 :root[data-panel-abierto] .barra-estado {
