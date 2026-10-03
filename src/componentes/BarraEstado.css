@@ -12,11 +12,11 @@
   transition: background-color 0.22s ease;
 }
 
-.barra-estado.banner {
+.barra-estado[data-tono='banner'] {
   background: var(--banner-bg);
 }
 
-.barra-estado.pagina {
+.barra-estado[data-tono='pagina'] {
   background: var(--page-bg);
 }
 
@@ -27,10 +27,10 @@
   z-index: 300;
 }
 
-:root[data-panel-abierto] .barra-estado.banner {
+:root[data-panel-abierto] .barra-estado[data-tono='banner'] {
   background: var(--banner-dim);
 }
 
-:root[data-panel-abierto] .barra-estado.pagina {
+:root[data-panel-abierto] .barra-estado[data-tono='pagina'] {
   background: var(--page-dim);
 }

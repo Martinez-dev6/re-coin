@@ -2,7 +2,9 @@
 // Desde iOS/Safari 26 el sistema ignora theme-color: copia el color del elemento fijo
 // que encuentra en el centro del borde superior (unos 4 px hacia adentro); si no hay,
 // usa el fondo de la página. Esta franja es ese elemento.
-// tono: 'banner' (pantallas con banner de color) o 'pagina' (pantallas sin banner).
+// tono: 'banner' (pantallas con banner de color) o 'pagina' (pantallas sin banner). Va en
+// data-tono y no como clase: la clase global .banner (comunes.css) le pondría relleno y
+// esquinas redondeadas, y la franja crecería hasta tapar los botones del encabezado.
 // Con un panel o el menú del "+" abierto, la franja pasa por encima del fondo oscurecido
 // con el color ya oscurecido, para que la isla se oscurezca igual (ver BarraEstado.css).
 // Se monta directamente en <body> (portal): si quedara dentro de un encabezado fijo, su
@@ -11,5 +13,5 @@ import { createPortal } from 'react-dom';
 import './BarraEstado.css';
 
 export default function BarraEstado({ tono = 'banner' }) {
-  return createPortal(<div className={'barra-estado ' + tono} aria-hidden="true" />, document.body);
+  return createPortal(<div className="barra-estado" data-tono={tono} aria-hidden="true" />, document.body);
 }
