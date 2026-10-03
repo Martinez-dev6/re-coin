@@ -359,3 +359,7 @@
 .inicio-cuentas-total strong.negativo {
   color: var(--expense);
 }
+
+.inicio-cuenta-saldo.negativo {
+  color: var(--expense);
+}

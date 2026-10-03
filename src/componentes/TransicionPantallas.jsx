@@ -26,16 +26,19 @@ window.addEventListener('popstate', (evento) => {
   navegadorYaAnimo = Boolean(evento.hasUAVisualTransition);
 });
 
-// Pestañas de la barra inferior, en orden, y formularios (sin barra; ver App.jsx).
+// Pestañas de la barra inferior, en orden; formularios (suben desde abajo, sin barra) y
+// subpantallas sin barra (entran desde la derecha por encima de ella). Ver App.jsx.
 const PESTANAS = ['/', '/transacciones', '/planes', '/mi-espacio'];
-const FORMULARIOS = ['/nuevo/', '/cuentas/', '/categorias/'];
+const FORMULARIOS = [/^\/nuevo\//, /^\/cuentas\//, /^\/categorias\//, /^\/etiquetas\//, /^\/movimientos\/[^/]+\/editar$/];
+const SIN_BARRA = [/^\/movimientos\/[^/]+$/];
 
 // pestana: índice en PESTANAS (−1 si no es de ninguna). raiz: la pantalla principal de la
-// pestaña (las secciones de Planes también lo son).
+// pestaña (las secciones de Planes también lo son). sinBarra: no muestra la barra inferior.
 function describir(ruta) {
-  if (FORMULARIOS.some((inicio) => ruta.startsWith(inicio))) return { formulario: true, pestana: -1, raiz: false };
+  if (FORMULARIOS.some((patron) => patron.test(ruta))) return { formulario: true, sinBarra: true, pestana: -1, raiz: false };
+  if (SIN_BARRA.some((patron) => patron.test(ruta))) return { formulario: false, sinBarra: true, pestana: -1, raiz: false };
   const pestana = PESTANAS.findIndex((p) => ruta === p || (p !== '/' && ruta.startsWith(p + '/')));
-  return { formulario: false, pestana, raiz: ruta === PESTANAS[pestana] || ruta.startsWith('/planes/') };
+  return { formulario: false, sinBarra: false, pestana, raiz: ruta === PESTANAS[pestana] || ruta.startsWith('/planes/') };
 }
 
 // arriba: cuál va encima (la que se mueve). sobreBarra: también por encima de la barra inferior.
@@ -84,6 +87,13 @@ const cambioDePestana = (lado) => ({
 function elegirTransicion(desde, hacia, accion) {
   const a = describir(desde.pathname);
   const b = describir(hacia.pathname);
+  const receta = elegirReceta(a, b, accion);
+  // Entre una pantalla con barra y una sin ella, la que se mueve pasa por encima de la barra.
+  if (receta && a.sinBarra !== b.sinBarra) return { ...receta, sobreBarra: true };
+  return receta;
+}
+
+function elegirReceta(a, b, accion) {
   if (a.formulario !== b.formulario) return b.formulario ? RECETAS.presentar : RECETAS.cerrar;
   if (a.raiz && b.raiz) return a.pestana === b.pestana ? null : cambioDePestana(Math.sign(b.pestana - a.pestana));
   // POP: atrás en el historial. REPLACE: volver() cuando no hay historial propio.
@@ -128,7 +138,7 @@ class Pila extends Component {
   // por encima de ella. Si se quitara antes, desaparecería de golpe.
   static getDerivedStateFromProps({ ubicacion }, estado) {
     if (ubicacion.key === estado.clave) return null;
-    const retenerBarra = !describir(estado.ruta).formulario && describir(ubicacion.pathname).formulario;
+    const retenerBarra = !describir(estado.ruta).sinBarra && describir(ubicacion.pathname).sinBarra;
     return { clave: ubicacion.key, ruta: ubicacion.pathname, retenerBarra };
   }
 
@@ -221,7 +231,7 @@ class Pila extends Component {
 
   render() {
     const { ubicacion, barra, children } = this.props;
-    const conBarra = !describir(ubicacion.pathname).formulario || this.state.retenerBarra;
+    const conBarra = !describir(ubicacion.pathname).sinBarra || this.state.retenerBarra;
     return (
       <>
         <div ref={this.pantalla} className="pantalla">

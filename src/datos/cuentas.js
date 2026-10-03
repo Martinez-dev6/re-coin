@@ -1,6 +1,7 @@
 // Cuentas: tipos, saldo y guardado.
 import { esAcento } from '../tema/colores.js';
 import { db, nuevoId, ordenAlFinal } from './db.js';
+import { movimientosDeCuenta } from './movimientos.js';
 
 // corto: lo que se ve bajo el nombre en las listas (design/capturas/Cuentas.png).
 export const TIPOS_CUENTA = [
@@ -14,8 +15,8 @@ export const TIPOS_CUENTA = [
 
 export const tipoCuenta = (valor) => TIPOS_CUENTA.find((t) => t.valor === valor) ?? TIPOS_CUENTA.at(-1);
 
-// Por ahora el saldo es el inicial; con los movimientos (paso 5) se les sumarán.
-export const saldoDeCuenta = (cuenta) => cuenta.saldoInicial;
+// El saldo de cada cuenta (inicial + movimientos pagados) lo calcula DatosContext con
+// saldosPorCuenta (movimientos.js).
 
 // Saldo de las cuentas marcadas "En el saldo".
 export const saldoTotal = (cuentas) => cuentas.reduce((total, c) => total + (c.incluirEnSaldo ? c.saldo : 0), 0);
@@ -41,4 +42,11 @@ export async function guardarCuenta(id, datos) {
   return nueva.id;
 }
 
-export const eliminarCuenta = (id) => db.cuentas.delete(id);
+// Se borran también sus movimientos (los que salen de ella o llegan a ella), en una sola
+// operación. El panel de confirmación avisa cuántos son.
+export function eliminarCuenta(id) {
+  return db.transaction('rw', db.cuentas, db.movimientos, async () => {
+    await db.movimientos.bulkDelete(await movimientosDeCuenta(id));
+    await db.cuentas.delete(id);
+  });
+}

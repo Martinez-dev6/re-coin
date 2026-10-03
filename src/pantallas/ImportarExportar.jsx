@@ -84,7 +84,7 @@ export default function ImportarExportar() {
           <Fila
             Icono={IconoEscudoCheck}
             titulo="Copia de seguridad"
-            detalle="Guarda tus cuentas y categorías"
+            detalle="Guarda tus cuentas, categorías y movimientos"
             alTocar={exportar}
             ocupado={ocupado || !datos}
           />
@@ -118,7 +118,8 @@ export default function ImportarExportar() {
         {resumen && (
           <p className="panel-texto">
             Copia del {resumen.creada.toLocaleDateString('es-CO', { day: 'numeric', month: 'long', year: 'numeric' })} con{' '}
-            {plural(resumen.cuentas, 'cuenta', 'cuentas')} y {plural(resumen.categorias, 'categoría', 'categorías')}. Lo que
+            {plural(resumen.cuentas, 'cuenta', 'cuentas')}, {plural(resumen.categorias, 'categoría', 'categorías')} y{' '}
+            {plural(resumen.movimientos, 'movimiento', 'movimientos')}. Lo que
             tienes ahora en el teléfono se reemplaza.
           </p>
         )}

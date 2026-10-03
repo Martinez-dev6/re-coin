@@ -5,8 +5,12 @@ import TransicionPantallas from './componentes/TransicionPantallas.jsx';
 import Apariencia from './pantallas/Apariencia.jsx';
 import Categorias from './pantallas/Categorias.jsx';
 import Cuentas from './pantallas/Cuentas.jsx';
+import DetalleMovimiento from './pantallas/DetalleMovimiento.jsx';
+import Etiquetas from './pantallas/Etiquetas.jsx';
 import FormularioCategoria from './pantallas/FormularioCategoria.jsx';
 import FormularioCuenta from './pantallas/FormularioCuenta.jsx';
+import FormularioEtiqueta from './pantallas/FormularioEtiqueta.jsx';
+import FormularioMovimiento from './pantallas/FormularioMovimiento.jsx';
 import ImportarExportar from './pantallas/ImportarExportar.jsx';
 import Inicio from './pantallas/Inicio.jsx';
 import MiEspacio from './pantallas/MiEspacio.jsx';
@@ -14,8 +18,9 @@ import Pendiente from './pantallas/Pendiente.jsx';
 import Planes from './pantallas/Planes.jsx';
 import Transacciones from './pantallas/Transacciones.jsx';
 
-// Si se agrega un formulario o una pestaña, actualizar también FORMULARIOS y PESTANAS en
-// TransicionPantallas.jsx (deciden la animación y si se muestra la barra inferior).
+// Si se agrega un formulario, una pantalla sin barra o una pestaña, actualizar también
+// FORMULARIOS, SIN_BARRA y PESTANAS en TransicionPantallas.jsx (deciden la animación y si se
+// muestra la barra inferior).
 export default function App() {
   return (
     <TransicionPantallas barra={<BarraNavegacion />}>
@@ -30,14 +35,19 @@ export default function App() {
           <Route path="/mi-espacio/apariencia" element={<Apariencia />} />
           <Route path="/mi-espacio/cuentas" element={<Cuentas />} />
           <Route path="/mi-espacio/categorias" element={<Categorias />} />
+          <Route path="/mi-espacio/etiquetas" element={<Etiquetas />} />
           <Route path="/mi-espacio/importar-exportar" element={<ImportarExportar />} />
           <Route path="/pendiente/:pantalla" element={<Pendiente />} />
         </Route>
 
-        {/* Formularios: sin barra inferior */}
-        <Route path="/nuevo/:pantalla" element={<Pendiente formulario />} />
+        {/* Sin barra inferior: el detalle de un movimiento y los formularios */}
+        <Route path="/movimientos/:id" element={<DetalleMovimiento />} />
+        <Route path="/nuevo/gasto-tarjeta" element={<Pendiente formulario />} />
+        <Route path="/nuevo/:pantalla" element={<FormularioMovimiento />} />
+        <Route path="/movimientos/:id/editar" element={<FormularioMovimiento />} />
         <Route path="/cuentas/:id" element={<FormularioCuenta />} />
         <Route path="/categorias/:id" element={<FormularioCategoria />} />
+        <Route path="/etiquetas/:id" element={<FormularioEtiqueta />} />
 
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

@@ -1,0 +1,228 @@
+/* Formulario de movimientos (FormularioMovimiento.jsx). Medidas de design/html/NuevoGasto.html,
+   SelectorCategoria.html y SelectorCuenta.html. */
+
+/* Texto gris de las filas sin valor ("Elegir", "Agregar nota"). */
+.campo-vacio {
+  font-weight: 400;
+  color: var(--muted);
+}
+
+/* Valor largo de una fila (categoría, etiquetas, nota): una línea con puntos suspensivos. */
+.campo-recortado {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Botón Guardar: gasto en rojo, ingreso en verde, transferencia en un tono vecino del acento. */
+.boton-principal.guardar-gasto {
+  background: var(--expense);
+  box-shadow: none;
+  color: var(--on-expense);
+}
+
+.boton-principal.guardar-ingreso {
+  background: var(--income);
+  box-shadow: none;
+  color: var(--on-income);
+}
+
+.boton-principal.guardar-transferencia {
+  background: var(--transfer-bg);
+  box-shadow: none;
+  color: var(--transfer-text);
+}
+
+/* "Elige una categoría.": sobre el botón Guardar. */
+.movimiento-aviso {
+  margin: 0 0 10px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--expense);
+  animation: movimiento-aviso 0.2s var(--curva-entrar);
+}
+
+@keyframes movimiento-aviso {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+.movimiento-sin-cuentas {
+  padding: 20px 18px;
+  text-align: center;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--muted);
+}
+
+.movimiento-sin-cuentas p {
+  margin: 0;
+}
+
+/* ---- Panel Categoría: rejilla de 4 ---- */
+
+.rejilla-categorias {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  row-gap: 14px;
+  padding: 8px 0 4px;
+}
+
+.rejilla-categorias-opcion {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  padding: 0 2px;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  font-size: 12px;
+}
+
+.rejilla-categorias-opcion > span:last-child {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rejilla-categorias-opcion .circulo-categoria {
+  transition: box-shadow 0.2s ease;
+}
+
+.rejilla-categorias-opcion[aria-checked='true'] .circulo-categoria {
+  box-shadow:
+    0 0 0 2px var(--surface),
+    0 0 0 4px var(--accent-text);
+}
+
+.rejilla-categorias-opcion[aria-checked='true'] > span:last-child {
+  font-weight: 700;
+}
+
+.rejilla-categorias-nueva {
+  width: 56px;
+  height: 56px;
+  border-radius: 28px;
+  border: 1.5px dashed var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent-text);
+}
+
+.rejilla-categorias-opcion.nueva {
+  color: var(--accent-text);
+  font-weight: 600;
+}
+
+/* ---- Panel Cuenta ---- */
+
+.saldo-positivo {
+  color: var(--income);
+}
+
+.saldo-negativo {
+  color: var(--expense);
+}
+
+.panel-opcion-nueva {
+  color: var(--accent-text);
+}
+
+/* ---- Panel Etiquetas ---- */
+
+.etiqueta-opcion {
+  height: 56px;
+  color: var(--text);
+}
+
+.casilla {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  border-radius: 7px;
+  border: 2px solid var(--sw-off);
+}
+
+.casilla.marcada {
+  border: 0;
+  background: var(--banner-bg);
+  color: var(--on-banner);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.etiqueta-nueva {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 56px;
+  margin-top: 6px;
+  padding: 0 6px 0 14px;
+  border-radius: 18px;
+  background: var(--page-bg);
+}
+
+/* 16 px: con menos, el iPhone hace zoom al escribir. */
+.etiqueta-nueva input {
+  flex-grow: 1;
+  min-width: 0;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  font-size: 16px;
+  outline: none;
+}
+
+.etiqueta-nueva input::placeholder {
+  color: var(--muted);
+}
+
+.etiqueta-nueva .boton-texto {
+  height: 44px;
+  padding: 0 10px;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.etiqueta-nueva .boton-texto:disabled {
+  opacity: 0.4;
+}
+
+.etiqueta-error {
+  margin: 8px 4px 0;
+  font-size: 13px;
+  color: var(--expense);
+}
+
+/* ---- Panel Observación ---- */
+
+.movimiento-nota {
+  display: block;
+  width: 100%;
+  margin-top: 6px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--page-bg);
+  color: var(--text);
+  font: inherit;
+  font-size: 16px;
+  line-height: 22px;
+  resize: none;
+  outline: none;
+}
+
+.movimiento-nota::placeholder {
+  color: var(--muted);
+}

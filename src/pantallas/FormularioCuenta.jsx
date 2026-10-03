@@ -35,6 +35,10 @@ export default function FormularioCuenta() {
 
 function Campos({ cuenta }) {
   const navegar = useNavigate();
+  const { movimientos } = useDatos();
+  const usos = cuenta
+    ? movimientos.filter((m) => m.cuentaId === cuenta.id || m.cuentaDestinoId === cuenta.id).length
+    : 0;
   const [datos, setDatos] = useState(
     () =>
       cuenta ?? { nombre: '', tipo: 'banco', saldoInicial: 0, icono: tipoCuenta('banco').icono, color: null, incluirEnSaldo: true },
@@ -156,7 +160,10 @@ function Campos({ cuenta }) {
       </PanelInferior>
 
       <PanelInferior abierto={panelEliminar} alCerrar={() => setPanelEliminar(false)} titulo="¿Eliminar la cuenta?">
-        <p className="panel-texto">Se borra «{cuenta?.nombre}» de este teléfono. No se puede deshacer.</p>
+        <p className="panel-texto">
+          Se borra «{cuenta?.nombre}» de este teléfono
+          {usos > 0 && ` con ${usos === 1 ? 'su movimiento' : `sus ${usos} movimientos`}`}. No se puede deshacer.
+        </p>
         <button type="button" className="boton-peligro" onClick={eliminar}>
           Eliminar
         </button>

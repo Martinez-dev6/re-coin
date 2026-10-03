@@ -7,6 +7,16 @@
   border-bottom: 1px solid var(--divider);
 }
 
+/* Como botón (abre el detalle). */
+button.fila-movimiento {
+  width: 100%;
+  padding: 0;
+  border-width: 0 0 1px;
+  background: transparent;
+  color: var(--text);
+  text-align: left;
+}
+
 .fila-movimiento:last-child {
   border-bottom: 0;
 }
@@ -23,6 +33,12 @@
   font-size: 15px;
   font-weight: 600;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fila-movimiento-texto {
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
 }

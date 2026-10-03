@@ -59,7 +59,9 @@ export default function Cuentas() {
                     {!cuenta.incluirEnSaldo && ' · Fuera del saldo'}
                   </span>
                 </span>
-                <span className="cuentas-saldo">{formatearPesos(cuenta.saldo)}</span>
+                <span className={'cuentas-saldo' + (cuenta.saldo < 0 ? ' negativo' : '')}>
+                  {formatearPesos(cuenta.saldo)}
+                </span>
                 <span className="cuentas-flecha">
                   <IconoFlecha />
                 </span>

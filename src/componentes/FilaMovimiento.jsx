@@ -1,6 +1,7 @@
 // Fila de 64 px de un movimiento: círculo de categoría, descripción, detalle, valor y estado.
 // La usan Transacciones y Planes → Programados.
 import { useDatos } from '../datos/DatosContext.jsx';
+import { tituloMovimiento } from '../datos/movimientos.js';
 import { formatearPesos } from '../utilidades/formato.js';
 import CirculoCategoria from './CirculoCategoria.jsx';
 import { IconoCheckCirculo, IconoReloj, IconoRepetir, IconoTransferencia } from './iconos.jsx';
@@ -10,9 +11,12 @@ const SIGNO = { gasto: '- ', ingreso: '+ ', transferencia: '' };
 
 // detalle: texto pequeño bajo la descripción (o un nodo, p. ej. "Cada semana" con ícono).
 // estado: 'pendiente' | 'pagado' | texto libre (p. ej. "En 13 días").
-export default function FilaMovimiento({ movimiento, detalle, estado, mostrarRepetir = false }) {
-  const { tipo, valor, descripcion, categoriaId, programado } = movimiento;
-  const categoria = useDatos().categoria(categoriaId);
+// alTocar: la fila es un botón (abre el detalle).
+export default function FilaMovimiento({ movimiento, detalle, estado, mostrarRepetir = false, alTocar }) {
+  const { tipo, valor, categoriaId, programado } = movimiento;
+  const buscarCategoria = useDatos().categoria;
+  const categoria = buscarCategoria(categoriaId);
+  const Fila = alTocar ? 'button' : 'div';
 
   const circulo =
     tipo === 'transferencia' ? (
@@ -28,11 +32,11 @@ export default function FilaMovimiento({ movimiento, detalle, estado, mostrarRep
     );
 
   return (
-    <div className="fila-movimiento">
+    <Fila {...(alTocar && { type: 'button', onClick: alTocar })} className="fila-movimiento">
       {circulo}
       <div className="fila-movimiento-textos">
         <div className="fila-movimiento-titulo">
-          {descripcion}
+          <span className="fila-movimiento-texto">{tituloMovimiento(movimiento, buscarCategoria)}</span>
           {mostrarRepetir && programado && (
             <span className="fila-movimiento-repetir" title="Programado">
               <IconoRepetir tamano={13} />
@@ -55,13 +59,13 @@ export default function FilaMovimiento({ movimiento, detalle, estado, mostrarRep
         {estado === 'pagado' && (
           <div className="fila-movimiento-estado pagado">
             <IconoCheckCirculo />
-            Pagado
+            {tipo === 'ingreso' ? 'Recibido' : 'Pagado'}
           </div>
         )}
         {estado && estado !== 'pendiente' && estado !== 'pagado' && (
           <div className="fila-movimiento-estado">{estado}</div>
         )}
       </div>
-    </div>
+    </Fila>
   );
 }

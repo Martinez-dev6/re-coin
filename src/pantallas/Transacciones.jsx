@@ -18,11 +18,8 @@ const FILTROS = [
   { valor: 'transferencia', texto: 'Transferencias' },
 ];
 
-// Los movimientos llegan en el paso 5; mientras tanto, ninguno.
-const MOVIMIENTOS = [];
-
-function detalle(m, { cuentas, categoria }) {
-  const nombreCuenta = (id) => cuentas.find((c) => c.id === id)?.nombre ?? '';
+function detalle(m, { cuenta, categoria }) {
+  const nombreCuenta = (id) => cuenta(id)?.nombre ?? 'Cuenta eliminada';
   if (m.tipo === 'transferencia') return `${nombreCuenta(m.cuentaId)} → ${nombreCuenta(m.cuentaDestinoId)}`;
   return `${categoria(m.categoriaId)?.nombre ?? 'Sin categoría'} · ${nombreCuenta(m.cuentaId)}`;
 }
@@ -39,9 +36,8 @@ export default function Transacciones() {
   const [filtro, setFiltro] = useState('todo');
   const datos = useDatos();
 
-  const visibles = MOVIMIENTOS.filter((m) => enMes(m.fecha, anio, mes) && (filtro === 'todo' || m.tipo === filtro)).sort(
-    (a, b) => b.fecha.localeCompare(a.fecha),
-  );
+  // datos.movimientos ya viene ordenado: más recientes primero.
+  const visibles = datos.movimientos.filter((m) => enMes(m.fecha, anio, mes) && (filtro === 'todo' || m.tipo === filtro));
 
   const porDia = [];
   for (const m of visibles) {
@@ -92,7 +88,7 @@ export default function Transacciones() {
       </div>
 
       <Deslizar posicion={posicion} className="transacciones-lista">
-        {porDia.length === 0 && <div className="tarjeta vacio">No hay movimientos en este mes.</div>}
+        {!datos.cargando && porDia.length === 0 && <div className="tarjeta vacio">No hay movimientos en este mes.</div>}
         {porDia.map(({ fecha, movimientos }) => (
           <section key={fecha}>
             <h2 className="titulo-dia">{etiquetaDia(fecha)}</h2>
@@ -102,8 +98,9 @@ export default function Transacciones() {
                   key={m.id}
                   movimiento={m}
                   detalle={detalle(m, datos)}
-                  estado={m.pagado ? 'pagado' : 'pendiente'}
+                  estado={m.tipo === 'transferencia' ? undefined : m.pagado ? 'pagado' : 'pendiente'}
                   mostrarRepetir
+                  alTocar={() => navegar('/movimientos/' + m.id)}
                 />
               ))}
             </div>

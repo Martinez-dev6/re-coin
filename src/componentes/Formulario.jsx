@@ -3,6 +3,7 @@
 import { useNavigate } from 'react-router-dom';
 import { ACENTOS } from '../tema/colores.js';
 import { useTema } from '../tema/TemaContext.jsx';
+import { etiquetaDia } from '../utilidades/fechas.js';
 import { formatearPesos } from '../utilidades/formato.js';
 import { volver } from '../utilidades/navegacion.js';
 import BarraEstado from './BarraEstado.jsx';
@@ -43,11 +44,12 @@ const cursorAlFinal = (evento) => {
 // En cero el campo queda vacío y "$ 0" es solo el texto de ejemplo: antes, al tocar justo
 // sobre el 0 el cursor quedaba antes de él, lo escrito quedaba delante ("50" en vez de "5")
 // y había que borrar el cero.
-export function MontoEditable({ etiqueta, valor, alCambiar }) {
+export function MontoEditable({ etiqueta, valor, alCambiar, ref }) {
   return (
     <label className="cabecera-cifra">
       <span className="cabecera-cifra-etiqueta">{etiqueta}</span>
       <input
+        ref={ref}
         className="cabecera-cifra-valor formulario-monto"
         type="text"
         inputMode="numeric"
@@ -66,7 +68,8 @@ export function MontoEditable({ etiqueta, valor, alCambiar }) {
 }
 
 // Fila de 54 px: ícono, etiqueta y valor. Con alTocar es un botón con flecha.
-export function Campo({ Icono, etiqueta, alTocar, children }) {
+// conFlecha: la flecha sin alTocar (cuando lo que se toca es un campo encima, como la fecha).
+export function Campo({ Icono, etiqueta, alTocar, conFlecha = Boolean(alTocar), children }) {
   const contenido = (
     <>
       <span className="campo-icono">
@@ -74,7 +77,7 @@ export function Campo({ Icono, etiqueta, alTocar, children }) {
       </span>
       <span className="campo-etiqueta">{etiqueta}</span>
       <span className="campo-valor">{children}</span>
-      {alTocar && (
+      {conFlecha && (
         <span className="campo-flecha">
           <IconoFlecha />
         </span>
@@ -104,6 +107,34 @@ export function EntradaTexto({ valor, alCambiar, ejemplo, maximo = 40 }) {
       onChange={(evento) => alCambiar(evento.target.value)}
       onKeyDown={(evento) => evento.key === 'Enter' && evento.currentTarget.blur()}
     />
+  );
+}
+
+// Fecha dentro de un Campo (con conFlecha): se ve el texto ("Hoy · 2 de octubre") y encima hay
+// un campo de fecha invisible que ocupa toda la fila; al tocarlo, el iPhone abre su selector.
+// valor: 'AAAA-MM-DD'.
+export function EntradaFecha({ valor, alCambiar }) {
+  const anio = Number(valor.slice(0, 4));
+  const abrir = (evento) => {
+    try {
+      evento.currentTarget.showPicker?.();
+    } catch {
+      // Ya estaba abierto o el navegador no lo permite: el toque lo abre igual.
+    }
+  };
+  return (
+    <>
+      {etiquetaDia(valor) + (anio !== new Date().getFullYear() ? ` de ${anio}` : '')}
+      <input
+        className="campo-fecha"
+        type="date"
+        required
+        aria-label="Fecha"
+        value={valor}
+        onClick={abrir}
+        onChange={(evento) => evento.target.value && alCambiar(evento.target.value)}
+      />
+    </>
   );
 }
 

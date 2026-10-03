@@ -1,0 +1,20 @@
+/* Medidas de design/html/Etiquetas.html (las filas y "Nueva etiqueta" usan Cuentas.css). */
+
+.etiquetas-fila {
+  height: 58px;
+}
+
+.etiquetas-nota {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 12px 4px 0;
+  font-size: 12px;
+  line-height: 17px;
+  color: var(--muted);
+}
+
+.etiquetas-nota > svg {
+  flex-shrink: 0;
+  margin-top: 1px;
+}

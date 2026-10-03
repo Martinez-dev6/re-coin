@@ -17,6 +17,15 @@ const VALIDAR = {
     (c.tipo === 'gasto' || c.tipo === 'ingreso') &&
     esTexto(c.icono) &&
     esNumero(c.orden),
+  etiquetas: (e) => esTexto(e.id) && esTexto(e.nombre) && esNumero(e.orden),
+  movimientos: (m) =>
+    esTexto(m.id) &&
+    ['gasto', 'ingreso', 'transferencia'].includes(m.tipo) &&
+    esNumero(m.valor) &&
+    esTexto(m.cuentaId) &&
+    /^\d{4}-\d{2}-\d{2}$/.test(m.fecha) &&
+    typeof m.pagado === 'boolean' &&
+    Array.isArray(m.etiquetaIds),
 };
 
 // Todas las tablas. La pantalla la tiene leída de antemano (useLiveQuery) para que al tocar
@@ -88,6 +97,7 @@ export async function leerCopia(archivo) {
       creada: new Date(copia.creada),
       cuentas: copia.datos.cuentas?.length ?? 0,
       categorias: copia.datos.categorias?.length ?? 0,
+      movimientos: copia.datos.movimientos?.length ?? 0,
     },
   };
 }

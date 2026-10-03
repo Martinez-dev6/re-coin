@@ -40,6 +40,8 @@ export default function FormularioCategoria() {
 
 function Campos({ categoria, tipoInicial }) {
   const navegar = useNavigate();
+  const { movimientos } = useDatos();
+  const usos = categoria ? movimientos.filter((m) => m.categoriaId === categoria.id).length : 0;
   const [datos, setDatos] = useState(() => categoria ?? { nombre: '', tipo: tipoInicial, color: 'e', icono: 'corazon' });
   const [panelEliminar, setPanelEliminar] = useState(false);
   const [guardando, setGuardando] = useState(false);
@@ -114,7 +116,11 @@ function Campos({ categoria, tipoInicial }) {
       </PieFormulario>
 
       <PanelInferior abierto={panelEliminar} alCerrar={() => setPanelEliminar(false)} titulo="¿Eliminar la categoría?">
-        <p className="panel-texto">Se borra «{categoria?.nombre}» de este teléfono. No se puede deshacer.</p>
+        <p className="panel-texto">
+          Se borra «{categoria?.nombre}» de este teléfono.{' '}
+          {usos > 0 && `${usos === 1 ? 'Su movimiento queda' : `Sus ${usos} movimientos quedan`} sin categoría. `}
+          No se puede deshacer.
+        </p>
         <button type="button" className="boton-peligro" onClick={eliminar}>
           Eliminar
         </button>

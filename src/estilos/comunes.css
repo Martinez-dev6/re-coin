@@ -112,6 +112,18 @@
   border-radius: 20px;
 }
 
+.circulo-categoria.chico {
+  width: 28px;
+  height: 28px;
+  border-radius: 14px;
+}
+
+.circulo-categoria.grande {
+  width: 56px;
+  height: 56px;
+  border-radius: 28px;
+}
+
 /* Tarjeta de lista (radio 24, filas separadas por líneas). */
 .tarjeta-lista {
   background: var(--surface);

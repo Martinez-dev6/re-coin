@@ -15,6 +15,18 @@ db.version(1).stores({
   categorias: 'id, tipo, orden',
 });
 
+// Paso 5 (2026-10-03).
+//   movimientos: id, tipo ('gasto' | 'ingreso' | 'transferencia'), valor (pesos, entero > 0),
+//                descripcion, categoriaId (null en transferencias), cuentaId (en transferencias,
+//                la de origen), cuentaDestinoId (solo transferencias), fecha ('AAAA-MM-DD'),
+//                pagado (las transferencias siempre true), etiquetaIds [], observacion, creado
+//                (Date.now(), para ordenar los del mismo día)
+//   etiquetas:   id, nombre, orden
+db.version(2).stores({
+  movimientos: 'id, fecha, cuentaId, cuentaDestinoId, categoriaId, *etiquetaIds',
+  etiquetas: 'id, orden',
+});
+
 // Solo la primera vez que se crea la base de datos. Las nuevas toman orden = Date.now()
 // (ordenAlFinal), así que "Otros" lleva un orden mayor para seguir de último.
 const ORDEN_ULTIMAS = 9e15;

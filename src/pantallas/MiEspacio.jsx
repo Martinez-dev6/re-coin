@@ -102,7 +102,7 @@ export default function MiEspacio() {
           <Fila Icono={IconoCuentas} texto="Cuentas" onClick={() => navegar('/mi-espacio/cuentas')} />
           <Fila Icono={IconoTarjeta} texto="Tarjetas de crédito" onClick={pendiente('tarjetas')} />
           <Fila Icono={IconoCategorias} texto="Categorías" onClick={() => navegar('/mi-espacio/categorias')} />
-          <Fila Icono={IconoEtiqueta} texto="Etiquetas" onClick={pendiente('etiquetas')} />
+          <Fila Icono={IconoEtiqueta} texto="Etiquetas" onClick={() => navegar('/mi-espacio/etiquetas')} />
         </Grupo>
 
         <Grupo titulo="Analizar">

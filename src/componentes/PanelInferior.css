@@ -151,3 +151,10 @@
   font-size: 15px;
   font-weight: 600;
 }
+
+/* Contenido largo (muchas cuentas o categorías): se desplaza dentro del panel. */
+.panel-desplazable {
+  max-height: 58vh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}

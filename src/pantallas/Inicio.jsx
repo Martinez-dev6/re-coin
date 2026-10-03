@@ -26,15 +26,12 @@ import './Inicio.css';
 
 const OCULTO = '$ •••••';
 
-// Los movimientos llegan en el paso 5; mientras tanto, ninguno.
-const MOVIMIENTOS = [];
-
 const sumar = (lista) => lista.reduce((total, m) => total + m.valor, 0);
 
 export default function Inicio() {
   const navegar = useNavigate();
   const { anio, mes } = useMes();
-  const { cuentas, cargando } = useDatos();
+  const { cuentas, movimientos, cargando } = useDatos();
   const sinCuentas = !cargando && cuentas.length === 0;
   const [ocultos, alternarOcultos] = useSaldosOcultos();
   const [panelMes, setPanelMes] = useState(false);
@@ -104,7 +101,8 @@ export default function Inicio() {
     };
   }, []);
 
-  const delMes = MOVIMIENTOS.filter((m) => enMes(m.fecha, anio, mes));
+  // Las transferencias no son ingresos ni gastos (decisión del dueño, 2026-10-03).
+  const delMes = movimientos.filter((m) => enMes(m.fecha, anio, mes));
   const ingresos = delMes.filter((m) => m.tipo === 'ingreso');
   const gastos = delMes.filter((m) => m.tipo === 'gasto');
   const gastosPendientes = gastos.filter((m) => !m.pagado);
@@ -266,14 +264,14 @@ export default function Inicio() {
                   </span>
                   <span className="inicio-cuenta-textos">
                     <span className="inicio-cuenta-nombre">{nombre}</span>
-                    <span className="inicio-cuenta-saldo">{pesos(saldoCuenta)}</span>
+                    <span className={'inicio-cuenta-saldo' + (saldoCuenta < 0 ? ' negativo' : '')}>{pesos(saldoCuenta)}</span>
                   </span>
                 </button>
                 <button
                   type="button"
                   className="inicio-cuenta-mas"
                   aria-label={`Agregar movimiento a ${nombre}`}
-                  onClick={() => navegar('/nuevo/gasto')}
+                  onClick={() => navegar('/nuevo/gasto?cuenta=' + id)}
                 >
                   <IconoMas />
                 </button>

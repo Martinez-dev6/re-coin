@@ -33,6 +33,7 @@ import {
   Landmark,
   LayoutGrid,
   List,
+  NotebookText,
   ListFilter,
   Moon,
   Palette,
@@ -78,6 +79,7 @@ export const IconoOjoTachado = crear(EyeOff, 20);
 export const IconoBasura = crear(Trash2, 18);
 export const IconoInfo = crear(Info, 15);
 export const IconoTexto = crear(TextAlignStart, 18);
+export const IconoNota = crear(NotebookText, 18);
 export const IconoMasOpciones = crear(Ellipsis, 22);
 
 // Barra inferior
