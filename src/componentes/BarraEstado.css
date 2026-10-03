@@ -28,51 +28,52 @@
   z-index: 300;
 }
 
-/* Oscurecer y aclarar: el color de la franja (el que copia iOS a la isla) cambia de golpe
-   al primer cuadro, para que iOS empiece a cambiar la isla enseguida. Lo que se ve se
-   suaviza con ::before, que lleva el color anterior y se desvanece con la misma duración y
-   curva que el fondo oscurecido. Las dos son animaciones de opacidad, que el iPhone hace
-   aparte y en el mismo cuadro.
-   Antes la franja animaba su color (background-color): eso se calcula cuadro a cuadro en
-   el hilo principal, que en ese momento está ocupado montando el panel, y la franja
-   arrancaba después del fondo; iOS, que copia el color de la franja, iba todavía después. */
+/* Oscurecer y aclarar.
+   - El fondo de la franja es el color que iOS copia a la isla. Cambia de golpe al primer
+     cuadro para que iOS empiece enseguida. Nunca se ve: siempre lo tapa una de las dos capas.
+   - Lo que se ve son dos capas que existen siempre: ::before con el color normal y ::after
+     con el oscurecido. En cada cambio, la de arriba es la que ya está opaca con el color
+     anterior y se desvanece (opacidad, igual que el fondo oscurecido); la de abajo pasa de
+     golpe al color nuevo sin que se note.
+   Así, si Safari tarda un cuadro en arrancar el desvanecimiento, la capa de arriba se queda
+   opaca ese cuadro y no asoma nada. Antes la capa se creaba al empezar y en ese hueco se veía
+   un instante el color nuevo (un "corto"). */
+.barra-estado::before,
+.barra-estado::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  will-change: opacity;
+}
+
+.barra-estado::before {
+  background: var(--franja);
+  opacity: 1;
+  z-index: 1;
+}
+
+.barra-estado::after {
+  background: var(--franja-dim);
+  opacity: 0;
+}
+
 :root[data-oscurecido] .barra-estado {
   background: var(--franja-dim);
 }
 
-.barra-estado::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-}
-
+/* Al abrir: ::before (normal, arriba) se desvanece; ::after (oscuro) aparece debajo. */
 :root[data-oscurecido] .barra-estado::before {
-  background: var(--franja);
-  animation: franja-oscurece 0.22s ease both;
+  opacity: 0;
+  transition: opacity 0.22s ease;
 }
 
-:root[data-aclarando] .barra-estado::before {
-  background: var(--franja-dim);
-  animation: franja-aclara 0.22s ease both;
+:root[data-oscurecido] .barra-estado::after {
+  opacity: 1;
 }
 
-/* Iguales, pero con nombres distintos para que la animación vuelva a empezar al pasar de
-   oscurecer a aclarar. */
-@keyframes franja-oscurece {
-  from {
-    opacity: 1;
-  }
-  to {
-    opacity: 0;
-  }
-}
-
-@keyframes franja-aclara {
-  from {
-    opacity: 1;
-  }
-  to {
-    opacity: 0;
-  }
+/* Al cerrar: ::after (oscuro) sube arriba y se desvanece; ::before (normal) aparece debajo. */
+:root[data-aclarando] .barra-estado::after {
+  opacity: 0;
+  z-index: 2;
+  transition: opacity 0.22s ease;
 }
