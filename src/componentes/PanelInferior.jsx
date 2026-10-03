@@ -8,7 +8,7 @@ import './PanelInferior.css';
 
 // Lo que tarda en bajar al cerrarse. Quien navega después de cerrar un panel espera esto,
 // para que no desaparezca de golpe con la pantalla.
-export const DURACION_PANEL_MS = 220;
+export const DURACION_PANEL_MS = 260;
 
 export default function PanelInferior({ abierto, alCerrar, titulo, accion, children }) {
   const [montado, setMontado] = useState(abierto);

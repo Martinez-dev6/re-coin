@@ -18,6 +18,7 @@ import { saldoTotal } from '../datos/cuentas.js';
 import { useDatos } from '../datos/DatosContext.jsx';
 import { useMes } from '../estado/MesContext.jsx';
 import { useSaldosOcultos } from '../estado/useSaldosOcultos.js';
+import { estiloIconoCuenta } from '../tema/colores.js';
 import { enMes, nombreMes } from '../utilidades/fechas.js';
 import { formatearPesos } from '../utilidades/formato.js';
 import { useFilasAnimadas } from '../utilidades/movimiento.js';
@@ -198,15 +199,18 @@ export default function Inicio() {
             </button>
           </div>
           <div ref={listaCuentas} className="inicio-cuentas">
-            {cuentas.map(({ id, nombre, icono, saldo: saldoCuenta }) => (
+            {cuentas.map(({ id, nombre, icono, color, saldo: saldoCuenta }) => (
               <div key={id} data-clave={id} className="inicio-cuenta">
-                <span className="icono-circulo grande">
-                  <IconoPorNombre nombre={icono} tamano={20} />
-                </span>
-                <div className="inicio-cuenta-textos">
-                  <div className="inicio-cuenta-nombre">{nombre}</div>
-                  <div className="inicio-cuenta-saldo">{pesos(saldoCuenta)}</div>
-                </div>
+                {/* Toda la fila (menos el "+") abre la cuenta, como en Mi espacio → Cuentas. */}
+                <button type="button" className="inicio-cuenta-abrir" onClick={() => navegar('/cuentas/' + id)}>
+                  <span className="icono-circulo grande" style={estiloIconoCuenta(color)}>
+                    <IconoPorNombre nombre={icono} tamano={20} />
+                  </span>
+                  <span className="inicio-cuenta-textos">
+                    <span className="inicio-cuenta-nombre">{nombre}</span>
+                    <span className="inicio-cuenta-saldo">{pesos(saldoCuenta)}</span>
+                  </span>
+                </button>
                 <button
                   type="button"
                   className="inicio-cuenta-mas"

@@ -1,4 +1,5 @@
 // Cuentas: tipos, saldo y guardado.
+import { esAcento } from '../tema/colores.js';
 import { db, nuevoId, ordenAlFinal } from './db.js';
 
 // corto: lo que se ve bajo el nombre en las listas (design/capturas/Cuentas.png).
@@ -19,7 +20,8 @@ export const saldoDeCuenta = (cuenta) => cuenta.saldoInicial;
 // Saldo de las cuentas marcadas "En el saldo".
 export const saldoTotal = (cuentas) => cuentas.reduce((total, c) => total + (c.incluirEnSaldo ? c.saldo : 0), 0);
 
-// datos: { nombre, tipo, saldoInicial, icono, incluirEnSaldo }. Sin id = cuenta nueva.
+// datos: { nombre, tipo, saldoInicial, icono, color, incluirEnSaldo }. Sin id = cuenta nueva.
+// color: uno de los 10 colores del tema (colores.js) o null = Predeterminado (el del tema).
 export async function guardarCuenta(id, datos) {
   const nombre = datos.nombre.trim() || tipoCuenta(datos.tipo).texto;
   const campos = {
@@ -27,6 +29,7 @@ export async function guardarCuenta(id, datos) {
     tipo: datos.tipo,
     saldoInicial: Math.max(0, Math.round(datos.saldoInicial) || 0),
     icono: datos.icono,
+    color: esAcento(datos.color) ? datos.color : null,
     incluirEnSaldo: Boolean(datos.incluirEnSaldo),
   };
   if (id) {

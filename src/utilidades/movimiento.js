@@ -1,14 +1,19 @@
 // Ritmo de los deslizamientos: pantallas, pestañas, selectores y filas de las listas.
 import { useLayoutEffect, useRef } from 'react';
 
-// Arranca rápido y frena suave al final, como las animaciones del iPhone. La misma curva está
-// en base.css como --curva-deslizar para las transiciones hechas solo con CSS.
-export const CURVA_DESLIZAR = 'cubic-bezier(0.32, 0.72, 0, 1)';
+// Curvas de los deslizamientos (las mismas están en base.css para las transiciones de CSS).
+// Las dos arrancan con velocidad cero: la anterior (0.32, 0.72, 0, 1) salía de golpe y en
+// el video del iPhone la pantalla ya había recorrido un 20 % en el primer cuadro; al cerrar,
+// bajaba casi entera en uno o dos cuadros y quedaba una franja arrastrándose al final.
+// - ENTRAR: acelera y frena largo, como un resorte sin rebote (lo que llega).
+// - SUAVE: arranca y termina suave, sin cola larga (lo que sale, vuelve o se mueve de sitio).
+export const CURVA_ENTRAR = 'cubic-bezier(0.2, 0, 0, 1)';
+export const CURVA_SUAVE = 'cubic-bezier(0.4, 0, 0.2, 1)';
 
 // Quien activó "Reducir movimiento" en el teléfono no ve deslizamientos.
 export const sinMovimiento = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-const DURACION_FILA_MS = 280;
+const DURACION_FILA_MS = 300;
 
 function leerFilas(caja) {
   const filas = new Map();
@@ -26,7 +31,7 @@ function animarAlto(fila, desde, hasta, alTerminar) {
       { height: `${desde}px`, minHeight: '0px', opacity: desde ? 1 : 0 },
       { height: `${hasta}px`, minHeight: '0px', opacity: hasta ? 1 : 0 },
     ],
-    { duration: DURACION_FILA_MS, easing: CURVA_DESLIZAR, fill: hasta ? 'none' : 'forwards' },
+    { duration: DURACION_FILA_MS, easing: hasta ? CURVA_ENTRAR : CURVA_SUAVE, fill: hasta ? 'none' : 'forwards' },
   );
   const fin = () => {
     fila.style.overflow = '';

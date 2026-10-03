@@ -212,7 +212,7 @@
   border-radius: 22px;
   background: #ffffff;
   transform: translateX(calc(var(--i) * (100% + 4px)));
-  transition: transform 0.32s var(--curva-deslizar);
+  transition: transform 0.34s var(--curva-suave);
 }
 
 /* Aviso que aparece subiendo un poco ("Copia lista", errores…). */

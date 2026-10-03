@@ -8,12 +8,12 @@ import {
   EntradaTexto,
   PieFormulario,
   RejillaColores,
-  RejillaIconos,
   Segmentado,
 } from '../componentes/Formulario.jsx';
 import { IconoBasura, IconoTexto } from '../componentes/iconos.jsx';
 import { ICONOS_CATEGORIA } from '../componentes/iconosPorNombre.jsx';
 import PanelInferior, { DURACION_PANEL_MS } from '../componentes/PanelInferior.jsx';
+import SelectorIcono from '../componentes/SelectorIcono.jsx';
 import { COLORES_CATEGORIA, eliminarCategoria, guardarCategoria } from '../datos/categorias.js';
 import { useDatos } from '../datos/DatosContext.jsx';
 import { volver } from '../utilidades/navegacion.js';
@@ -92,12 +92,7 @@ function Campos({ categoria, tipoInicial }) {
         <RejillaColores colores={COLORES_CATEGORIA} elegido={datos.color} alElegir={(color) => cambiar({ color })} />
 
         <h2 className="titulo-seccion">Ícono</h2>
-        <RejillaIconos
-          nombres={ICONOS_CATEGORIA}
-          elegido={datos.icono}
-          etiqueta="Ícono"
-          alElegir={(icono) => cambiar({ icono })}
-        />
+        <SelectorIcono sugeridos={ICONOS_CATEGORIA} elegido={datos.icono} alElegir={(icono) => cambiar({ icono })} />
 
         {categoria && (
           <button type="button" className="formulario-eliminar" onClick={() => setPanelEliminar(true)}>

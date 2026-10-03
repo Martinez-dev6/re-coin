@@ -1,11 +1,12 @@
 // Piezas de los formularios (pantallas con botón Guardar y sin barra inferior).
 // Medidas de design/html/NuevaCuenta.html y NuevaCategoria.html.
 import { useNavigate } from 'react-router-dom';
+import { ACENTOS } from '../tema/colores.js';
+import { useTema } from '../tema/TemaContext.jsx';
 import { formatearPesos } from '../utilidades/formato.js';
 import { volver } from '../utilidades/navegacion.js';
 import BarraEstado from './BarraEstado.jsx';
 import { IconoCerrar, IconoCheck, IconoFlecha } from './iconos.jsx';
-import { ETIQUETAS_ICONO, IconoPorNombre } from './iconosPorNombre.jsx';
 import './CabeceraSubpagina.css';
 import './Formulario.css';
 
@@ -128,25 +129,6 @@ export function Segmentado({ opciones, valor, alCambiar, etiqueta, bloqueado = f
   );
 }
 
-export function RejillaIconos({ nombres, elegido, alElegir, etiqueta }) {
-  return (
-    <div className="tarjeta rejilla-iconos" role="radiogroup" aria-label={etiqueta}>
-      {nombres.map((nombre) => (
-        <button
-          key={nombre}
-          type="button"
-          role="radio"
-          aria-checked={nombre === elegido}
-          aria-label={ETIQUETAS_ICONO[nombre] ?? nombre}
-          onClick={() => alElegir(nombre)}
-        >
-          <IconoPorNombre nombre={nombre} tamano={26} />
-        </button>
-      ))}
-    </div>
-  );
-}
-
 // colores: [{ valor, nombre }] con valor = letra del par --cat-X del tema.
 export function RejillaColores({ colores, elegido, alElegir }) {
   return (
@@ -164,6 +146,48 @@ export function RejillaColores({ colores, elegido, alElegir }) {
           {valor === elegido && <IconoCheck />}
         </button>
       ))}
+    </div>
+  );
+}
+
+// Color de una cuenta: Predeterminado (null: sigue el color del tema, aunque después cambie)
+// o uno de los 10 colores. Solo círculos: la interfaz no muestra nombres de colores (van como
+// aria-label). El círculo de Predeterminado muestra el color del tema elegido en Apariencia.
+export function SelectorColorCuenta({ valor, alCambiar }) {
+  const { acento } = useTema();
+  const predeterminado = !valor;
+  return (
+    <div className="tarjeta selector-color" role="radiogroup" aria-label="Color de la cuenta">
+      <button
+        type="button"
+        role="radio"
+        aria-checked={predeterminado}
+        className="selector-color-predeterminado"
+        onClick={() => alCambiar(null)}
+      >
+        <span className="selector-color-tema" style={{ background: acento }} aria-hidden="true" />
+        <span className="panel-opcion-textos">
+          <span className="panel-opcion-titulo">Predeterminado</span>
+          <span className="panel-opcion-detalle">Usa el color del tema</span>
+        </span>
+        <span className={'radio' + (predeterminado ? ' marcado' : '')}>{predeterminado && <IconoCheck tamano={14} />}</span>
+      </button>
+      <div className="selector-color-circulos">
+        {ACENTOS.map(({ valor: color, nombre }) => (
+          <button
+            key={color}
+            type="button"
+            role="radio"
+            aria-checked={color === valor}
+            aria-label={nombre}
+            className="selector-color-circulo"
+            style={{ background: color }}
+            onClick={() => alCambiar(color)}
+          >
+            {color === valor && <IconoCheck tamano={20} />}
+          </button>
+        ))}
+      </div>
     </div>
   );
 }

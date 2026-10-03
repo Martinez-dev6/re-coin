@@ -136,6 +136,12 @@
   z-index: 200;
 }
 
+/* Al elegir una opción: por encima de la barra (60) y por debajo del formulario que sube (70,
+   TransicionPantallas.css), que lo va tapando mientras el menú se cierra. */
+.menu-nuevo.bajo-formulario {
+  z-index: 65;
+}
+
 /* Fijo y de pantalla completa (no absolute): iOS solo tiene en cuenta un oscurecido así.
    Se anima su color de fondo (de transparente al oscurecido) y no su opacidad: Safari
    calcula ese cambio cuadro a cuadro junto con la franja de la barra de estado, así que

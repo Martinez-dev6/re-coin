@@ -1,4 +1,5 @@
 // Vuelca los colores de tema() a variables CSS en <html>: pageBg -> --page-bg, catASoft -> --cat-a-soft…
+import { ACENTOS } from './colores.js';
 import { tema } from './tema.js';
 
 const aVariable = (clave) => '--' + clave.replace(/[A-Z]/g, (letra) => '-' + letra.toLowerCase());
@@ -40,6 +41,19 @@ function extras(oscuro, colores) {
   };
 }
 
+// Fondo suave y color de ícono de cada uno de los 10 colores, para las cuentas con color propio
+// (estiloIconoCuenta en colores.js): --acento0-suave, --acento0-texto… Cambian con el modo
+// oscuro y se animan junto con el resto del tema.
+function coloresDeCuentas(oscuro) {
+  const variables = {};
+  ACENTOS.forEach(({ valor }, indice) => {
+    const colores = tema(valor, oscuro ? 'dark' : 'light');
+    variables[`acento${indice}Suave`] = colores.accentSoft;
+    variables[`acento${indice}Texto`] = colores.accentText;
+  });
+  return variables;
+}
+
 // Fundido del tema: las variables de color se registran como colores (@property) y se
 // animan una sola vez, en <html>. Todo lo que las usa cambia en el mismo cuadro y al mismo
 // ritmo. Antes se animaba el color de cada elemento (transiciones en "*"), y en Safari un
@@ -61,7 +75,7 @@ function registrarColor(nombre, valor) {
 function escribirVariables(acento, oscuro) {
   const raiz = document.documentElement;
   const base = tema(acento, oscuro ? 'dark' : 'light');
-  const colores = { ...base, ...extras(oscuro, base) };
+  const colores = { ...base, ...extras(oscuro, base), ...coloresDeCuentas(oscuro) };
 
   for (const [clave, valor] of Object.entries(colores)) {
     registrarColor(aVariable(clave), valor);

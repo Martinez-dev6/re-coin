@@ -174,38 +174,7 @@
   opacity: 0.55;
 }
 
-/* ---- Rejillas de íconos y colores ---- */
-
-.rejilla-iconos {
-  display: grid;
-  grid-template-columns: repeat(4, 56px);
-  justify-content: space-between;
-  row-gap: 14px;
-  padding: 14px 16px 16px;
-}
-
-.rejilla-iconos > button {
-  width: 56px;
-  height: 56px;
-  padding: 0;
-  border: 0;
-  border-radius: 28px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--page-bg);
-  color: var(--muted);
-  transition:
-    background-color 0.2s ease,
-    color 0.2s ease,
-    box-shadow 0.2s ease;
-}
-
-.rejilla-iconos > button[aria-checked='true'] {
-  background: var(--accent-soft);
-  color: var(--accent-text);
-  box-shadow: 0 0 0 2px var(--accent-text);
-}
+/* ---- Rejilla de colores (categorías) ---- */
 
 .rejilla-colores {
   display: flex;
@@ -228,6 +197,60 @@
 
 .rejilla-colores > button[aria-checked='true'] {
   box-shadow:
+    0 0 0 2px var(--surface),
+    0 0 0 4px var(--text);
+}
+
+/* ---- Color de una cuenta: Predeterminado y los 10 colores ---- */
+
+.selector-color-predeterminado {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  height: 64px;
+  padding: 0 14px;
+  border: 0;
+  border-bottom: 1px solid var(--divider);
+  background: transparent;
+  color: var(--text);
+  text-align: left;
+}
+
+/* Círculo con el color del tema (el de Apariencia). */
+.selector-color-tema {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  border-radius: 16px;
+  box-shadow: inset 0 0 0 1px var(--sw-ring);
+}
+
+.selector-color-circulos {
+  display: grid;
+  grid-template-columns: repeat(5, 44px);
+  justify-content: space-between;
+  row-gap: 16px;
+  padding: 16px 16px 18px;
+}
+
+.selector-color-circulo {
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  box-shadow: inset 0 0 0 1px var(--sw-ring);
+  transition: box-shadow 0.2s ease;
+}
+
+.selector-color-circulo[aria-checked='true'] {
+  box-shadow:
+    inset 0 0 0 1px var(--sw-ring),
     0 0 0 2px var(--surface),
     0 0 0 4px var(--text);
 }

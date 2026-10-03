@@ -72,7 +72,7 @@
   color: var(--text);
   font-size: 14px;
   line-height: 20px;
-  animation: aparecer-subiendo 0.3s var(--curva-deslizar);
+  animation: aparecer-subiendo 0.34s var(--curva-entrar);
 }
 
 .respaldo-aviso.error {

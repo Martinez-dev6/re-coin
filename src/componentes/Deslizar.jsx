@@ -3,7 +3,7 @@
 // sube y desde la izquierda si baja. posicion es un número o una lista de números que se
 // comparan en orden ([sección, mes]: manda la que cambió).
 import { useLayoutEffect, useRef } from 'react';
-import { CURVA_DESLIZAR, sinMovimiento } from '../utilidades/movimiento.js';
+import { CURVA_ENTRAR, sinMovimiento } from '../utilidades/movimiento.js';
 
 function comparar(a, b) {
   const x = [].concat(a);
@@ -27,7 +27,7 @@ export default function Deslizar({ posicion, distancia = 24, as: Etiqueta = 'div
         { transform: `translateX(${lado * distancia}px)`, opacity: 0 },
         { transform: 'none', opacity: 1 },
       ],
-      { duration: 300, easing: CURVA_DESLIZAR },
+      { duration: 340, easing: CURVA_ENTRAR },
     );
   });
 

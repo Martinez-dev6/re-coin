@@ -6,6 +6,7 @@ import { IconoFlecha, IconoMas } from '../componentes/iconos.jsx';
 import { IconoPorNombre } from '../componentes/iconosPorNombre.jsx';
 import { saldoTotal, tipoCuenta } from '../datos/cuentas.js';
 import { useDatos } from '../datos/DatosContext.jsx';
+import { estiloIconoCuenta } from '../tema/colores.js';
 import { formatearPesos } from '../utilidades/formato.js';
 import { useFilasAnimadas } from '../utilidades/movimiento.js';
 import './Cuentas.css';
@@ -48,7 +49,7 @@ export default function Cuentas() {
                 className="cuentas-fila"
                 onClick={() => navegar('/cuentas/' + cuenta.id)}
               >
-                <span className="icono-circulo grande">
+                <span className="icono-circulo grande" style={estiloIconoCuenta(cuenta.color)}>
                   <IconoPorNombre nombre={cuenta.icono} tamano={20} />
                 </span>
                 <span className="cuentas-textos">

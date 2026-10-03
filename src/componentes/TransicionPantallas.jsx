@@ -12,7 +12,7 @@
 // La barra inferior va fuera de las pantallas para que no se mueva con ellas.
 import { Component, createRef } from 'react';
 import { useLocation, useNavigationType } from 'react-router-dom';
-import { CURVA_DESLIZAR, sinMovimiento } from '../utilidades/movimiento.js';
+import { CURVA_ENTRAR, CURVA_SUAVE, sinMovimiento } from '../utilidades/movimiento.js';
 import './TransicionPantallas.css';
 
 // El scroll al ir y volver lo maneja este componente, no el navegador.
@@ -38,32 +38,35 @@ function describir(ruta) {
 }
 
 // arriba: cuál va encima (la que se mueve). sobreBarra: también por encima de la barra inferior.
+// Lo que llega usa CURVA_ENTRAR y lo que sale o vuelve, CURVA_SUAVE (ver movimiento.js).
+// Sin sombra en el borde: al subir un formulario, la sombra quedaba al final justo bajo la
+// barra de estado como una franja más oscura (video del iPhone, 2026-10-03).
 const RECETAS = {
   entrar: {
-    duracion: 400,
+    duracion: 460,
+    curva: CURVA_ENTRAR,
     arriba: 'nueva',
-    sombra: 'lado',
     nueva: [{ transform: 'translateX(100%)' }, { transform: 'none' }],
     anterior: [{ transform: 'none' }, { transform: 'translateX(-30%)' }],
   },
   volver: {
-    duracion: 400,
+    duracion: 420,
+    curva: CURVA_SUAVE,
     arriba: 'anterior',
-    sombra: 'lado',
     nueva: [{ transform: 'translateX(-30%)' }, { transform: 'none' }],
     anterior: [{ transform: 'none' }, { transform: 'translateX(100%)' }],
   },
   presentar: {
-    duracion: 420,
+    duracion: 480,
+    curva: CURVA_ENTRAR,
     arriba: 'nueva',
-    sombra: 'arriba',
     sobreBarra: true,
     nueva: [{ transform: 'translateY(100%)' }, { transform: 'none' }],
   },
   cerrar: {
-    duracion: 360,
+    duracion: 420,
+    curva: CURVA_SUAVE,
     arriba: 'anterior',
-    sombra: 'arriba',
     sobreBarra: true,
     anterior: [{ transform: 'none' }, { transform: 'translateY(100%)' }],
   },
@@ -71,7 +74,8 @@ const RECETAS = {
 
 // lado: 1 si la pestaña nueva está a la derecha de la anterior, −1 a la izquierda, 0 sin saberlo.
 const cambioDePestana = (lado) => ({
-  duracion: 260,
+  duracion: 300,
+  curva: CURVA_ENTRAR,
   arriba: 'nueva',
   nueva: [{ transform: `translateX(${lado * 24}px)`, opacity: 0 }, { transform: 'none', opacity: 1 }],
 });
@@ -161,14 +165,13 @@ class Pila extends Component {
     const nueva = this.pantalla.current;
     const arriba = receta.arriba === 'nueva' ? nueva : copia;
     arriba.dataset.capa = receta.sobreBarra ? 'sobre-barra' : 'arriba';
-    if (receta.sombra) arriba.dataset.sombra = receta.sombra;
     nueva.dataset.transicion = '';
     copia.dataset.transicion = '';
     document.body.append(copia);
     copia.firstElementChild.scrollTop = scrollAnterior;
     this.contenido.current.scrollTop = scroll;
 
-    const opciones = { duration: receta.duracion, easing: CURVA_DESLIZAR, fill: 'both' };
+    const opciones = { duration: receta.duracion, easing: receta.curva, fill: 'both' };
     const animaciones = [];
     if (receta.nueva) animaciones.push(nueva.animate(receta.nueva, opciones));
     if (receta.anterior) animaciones.push(copia.animate(receta.anterior, opciones));
@@ -192,7 +195,6 @@ class Pila extends Component {
     const pantalla = this.pantalla.current;
     delete pantalla.dataset.transicion;
     delete pantalla.dataset.capa;
-    delete pantalla.dataset.sombra;
     window.scrollTo(0, transicion.scroll);
     if (soltarBarra && this.state.retenerBarra) this.setState({ retenerBarra: false });
   }

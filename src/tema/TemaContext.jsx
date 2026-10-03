@@ -19,6 +19,10 @@ export function TemaProvider({ children }) {
 
   const oscuro = preferencias.modo === 'oscuro' || (preferencias.modo === 'auto' && sistemaOscuro);
 
+  // Color de la pantalla abierta (useAcentoPantalla), si tiene uno propio; si no, el del tema.
+  const [acentoPantalla, setAcentoPantalla] = useState(null);
+  const acentoAplicado = acentoPantalla ?? preferencias.acento;
+
   // main.jsx ya aplicó el tema al arrancar: aquí solo se aplican (con fundido) los cambios.
   const primeraVez = useRef(true);
   useLayoutEffect(() => {
@@ -26,8 +30,8 @@ export function TemaProvider({ children }) {
       primeraVez.current = false;
       return;
     }
-    aplicarTema(preferencias.acento, oscuro, { animar: true });
-  }, [preferencias.acento, oscuro]);
+    aplicarTema(acentoAplicado, oscuro, { animar: true });
+  }, [acentoAplicado, oscuro]);
 
   useEffect(() => {
     guardarPreferencias(preferencias);
@@ -43,6 +47,7 @@ export function TemaProvider({ children }) {
       },
       cambiarModo: (modo) => setPreferencias((p) => ({ ...p, modo })),
       restablecerAcento: () => setPreferencias((p) => ({ ...p, acento: ACENTO_PREDETERMINADO })),
+      fijarAcentoPantalla: setAcentoPantalla,
     }),
     [preferencias, oscuro],
   );
@@ -52,4 +57,15 @@ export function TemaProvider({ children }) {
 
 export function useTema() {
   return useContext(TemaContext);
+}
+
+// Una pantalla puede pedir su propio color principal mientras está abierta (la de una cuenta
+// con color propio): toda la interfaz pasa a ese color con el fundido del tema, a la vez que
+// la pantalla entra, y vuelve al color del tema al salir de ella. null = el color del tema.
+export function useAcentoPantalla(color) {
+  const { fijarAcentoPantalla } = useContext(TemaContext);
+  useLayoutEffect(() => {
+    fijarAcentoPantalla(ACENTOS.some((a) => a.valor === color) ? color : null);
+    return () => fijarAcentoPantalla(null);
+  }, [color, fijarAcentoPantalla]);
 }

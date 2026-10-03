@@ -15,6 +15,15 @@ export const ACENTOS = [
 
 export const ACENTO_PREDETERMINADO = ACENTOS[0].valor;
 
+export const esAcento = (color) => ACENTOS.some((a) => a.valor === color);
+
+// Círculo del ícono de una cuenta con color propio (variables de aplicarTema.js). Sin color
+// propio (Predeterminado) no hace falta: .icono-circulo ya usa el color del tema.
+export function estiloIconoCuenta(color) {
+  const indice = ACENTOS.findIndex((a) => a.valor === color);
+  return indice < 0 ? undefined : { background: `var(--acento${indice}-suave)`, color: `var(--acento${indice}-texto)` };
+}
+
 // 'claro' | 'oscuro' | 'auto' (igual que el iPhone)
 export const MODOS = ['claro', 'oscuro', 'auto'];
 export const MODO_PREDETERMINADO = 'claro';

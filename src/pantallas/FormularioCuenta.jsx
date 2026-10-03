@@ -8,13 +8,15 @@ import {
   Interruptor,
   MontoEditable,
   PieFormulario,
-  RejillaIconos,
+  SelectorColorCuenta,
 } from '../componentes/Formulario.jsx';
 import { IconoBanco, IconoBasura, IconoCheck, IconoOjo, IconoTexto } from '../componentes/iconos.jsx';
 import { ICONOS_CUENTA, IconoPorNombre } from '../componentes/iconosPorNombre.jsx';
 import PanelInferior, { DURACION_PANEL_MS } from '../componentes/PanelInferior.jsx';
+import SelectorIcono from '../componentes/SelectorIcono.jsx';
 import { eliminarCuenta, guardarCuenta, TIPOS_CUENTA, tipoCuenta } from '../datos/cuentas.js';
 import { useDatos } from '../datos/DatosContext.jsx';
+import { useAcentoPantalla } from '../tema/TemaContext.jsx';
 import { volver } from '../utilidades/navegacion.js';
 
 const LISTA = '/mi-espacio/cuentas';
@@ -35,8 +37,10 @@ function Campos({ cuenta }) {
   const navegar = useNavigate();
   const [datos, setDatos] = useState(
     () =>
-      cuenta ?? { nombre: '', tipo: 'banco', saldoInicial: 0, icono: tipoCuenta('banco').icono, incluirEnSaldo: true },
+      cuenta ?? { nombre: '', tipo: 'banco', saldoInicial: 0, icono: tipoCuenta('banco').icono, color: null, incluirEnSaldo: true },
   );
+  // Dentro de la cuenta, toda la interfaz va con su color (y se ve en vivo al elegirlo).
+  useAcentoPantalla(datos.color);
   // Mientras no se elija un ícono a mano, sigue al tipo (Efectivo → billete…).
   const [iconoAMano, setIconoAMano] = useState(Boolean(cuenta));
   const [panelTipo, setPanelTipo] = useState(false);
@@ -93,15 +97,17 @@ function Campos({ cuenta }) {
         </div>
 
         <h2 className="titulo-seccion">Ícono</h2>
-        <RejillaIconos
-          nombres={ICONOS_CUENTA}
+        <SelectorIcono
+          sugeridos={ICONOS_CUENTA}
           elegido={datos.icono}
-          etiqueta="Ícono"
           alElegir={(icono) => {
             setIconoAMano(true);
             cambiar({ icono });
           }}
         />
+
+        <h2 className="titulo-seccion">Color</h2>
+        <SelectorColorCuenta valor={datos.color} alCambiar={(color) => cambiar({ color })} />
 
         {cuenta && (
           <button type="button" className="formulario-eliminar" onClick={() => setPanelEliminar(true)}>

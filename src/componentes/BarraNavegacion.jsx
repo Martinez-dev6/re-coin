@@ -38,11 +38,16 @@ function MenuNuevo({ abierto, alCerrar }) {
   const navegar = useNavigate();
   const [montado, setMontado] = useState(abierto);
   const [visible, setVisible] = useState(false);
+  // Al elegir una opción, el formulario sube por encima del menú mientras este se cierra. Si
+  // el menú quedara encima, su botón "+" se veía flotando sobre el formulario y desaparecía
+  // de golpe (video del iPhone, 2026-10-03).
+  const [bajoFormulario, setBajoFormulario] = useState(false);
   const alCerrarRef = useRef(alCerrar);
   alCerrarRef.current = alCerrar;
 
   useEffect(() => {
     if (abierto) {
+      setBajoFormulario(false);
       setMontado(true);
       // Dos cuadros, para que el navegador pinte el estado inicial antes de animar. Se
       // cancela el que esté pendiente: si se cerrara entre los dos, "visible" quedaría encendido.
@@ -70,7 +75,12 @@ function MenuNuevo({ abierto, alCerrar }) {
   if (!montado) return null;
 
   return createPortal(
-    <div className={'menu-nuevo' + (visible ? ' visible' : '')} role="dialog" aria-modal="true" aria-label="Nuevo movimiento">
+    <div
+      className={'menu-nuevo' + (visible ? ' visible' : '') + (bajoFormulario ? ' bajo-formulario' : '')}
+      role="dialog"
+      aria-modal="true"
+      aria-label="Nuevo movimiento"
+    >
       <div className="menu-nuevo-fondo" onClick={() => alCerrarRef.current()} />
       <div className="menu-nuevo-titulo">Nuevo movimiento</div>
       {OPCIONES.map(({ texto, ruta, Icono, color, dx, dy }, indice) => (
@@ -90,6 +100,7 @@ function MenuNuevo({ abierto, alCerrar }) {
             style={{ color }}
             aria-label={texto}
             onClick={() => {
+              setBajoFormulario(true);
               alCerrarRef.current();
               navegar(ruta);
             }}

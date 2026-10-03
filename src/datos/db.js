@@ -8,7 +8,7 @@ export const db = new Dexie('sendo');
 
 // Solo se indexan los campos por los que se busca u ordena. Para añadir tablas o índices
 // se declara una versión nueva (db.version(2)…) y no se toca esta.
-//   cuentas:    id, nombre, tipo, saldoInicial, icono, incluirEnSaldo, orden
+//   cuentas:    id, nombre, tipo, saldoInicial, icono, color (null = el del tema), incluirEnSaldo, orden
 //   categorias: id, nombre, tipo ('gasto' | 'ingreso'), color, icono, orden
 db.version(1).stores({
   cuentas: 'id, orden',
