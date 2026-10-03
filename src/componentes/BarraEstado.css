@@ -20,17 +20,19 @@
   background: var(--page-bg);
 }
 
-/* Panel inferior o menú del "+" abiertos: la franja sube por encima del fondo
-   oscurecido (z-index 200) y toma el color ya oscurecido, opaco. Así se ve igual que el
-   banner oscurecido que tiene debajo y iOS copia ese mismo color a la isla. */
-:root[data-panel-abierto] .barra-estado {
+/* Panel inferior o menú del "+" (src/estado/useOscurecido.js): mientras la capa existe,
+   también al cerrarse, la franja va por encima del fondo oscurecido (z-index 200). */
+:root[data-capa-oscura] .barra-estado {
   z-index: 300;
 }
 
-:root[data-panel-abierto] .barra-estado[data-tono='banner'] {
+/* Mientras el oscurecido está visible, la franja toma ese mismo color ya mezclado y opaco,
+   con la misma duración y curva que el fondo (opacity 0.22s ease). Así se ve igual que el
+   banner oscurecido que tiene debajo y iOS copia ese mismo color a la isla. */
+:root[data-oscurecido] .barra-estado[data-tono='banner'] {
   background: var(--banner-dim);
 }
 
-:root[data-panel-abierto] .barra-estado[data-tono='pagina'] {
+:root[data-oscurecido] .barra-estado[data-tono='pagina'] {
   background: var(--page-dim);
 }

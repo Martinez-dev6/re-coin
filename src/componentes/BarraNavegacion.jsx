@@ -14,6 +14,7 @@ import {
   IconoTarjeta,
   IconoTransferencia,
 } from './iconos.jsx';
+import { useOscurecido } from '../estado/useOscurecido.js';
 import './BarraNavegacion.css';
 
 const PESTANAS = [
@@ -51,14 +52,13 @@ function MenuNuevo({ abierto, alCerrar }) {
     return () => clearTimeout(espera);
   }, [abierto]);
 
+  useOscurecido(montado, visible); // la franja de la barra de estado acompaña al oscurecido
+
   useEffect(() => {
     if (!abierto) return;
-    const raiz = document.documentElement;
-    raiz.dataset.panelAbierto = ''; // oscurece también la barra de estado
     const alPulsar = (evento) => evento.key === 'Escape' && alCerrarRef.current();
     window.addEventListener('keydown', alPulsar);
     return () => {
-      delete raiz.dataset.panelAbierto;
       window.removeEventListener('keydown', alPulsar);
     };
   }, [abierto]);

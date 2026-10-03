@@ -33,7 +33,29 @@ function extras(oscuro, colores) {
     // lo usa la franja de la barra de estado con un panel abierto (ver BarraEstado.css).
     bannerDim: mezclar(colores.bannerBg, scrimRgb, scrimAlfa),
     pageDim: mezclar(colores.pageBg, scrimRgb, scrimAlfa),
+    // Sombra de las tarjetas: en oscuro tema() da 'none', que no se puede animar. Se deja la
+    // misma sombra y se anima solo su color (transparente en oscuro), que sí es un color.
+    shadow: '0 1px 2px var(--sombra-color)',
+    sombraColor: oscuro ? 'rgba(20,21,28,0)' : 'rgba(20,21,28,0.06)',
   };
+}
+
+// Fundido del tema: las variables de color se registran como colores (@property) y se
+// animan una sola vez, en <html>. Todo lo que las usa cambia en el mismo cuadro y al mismo
+// ritmo. Antes se animaba el color de cada elemento (transiciones en "*"), y en Safari un
+// texto que hereda el color de un padre que también se está animando va detrás de él:
+// cuanto más adentro está el texto, más tarde cambia.
+const registradas = new Set();
+
+function registrarColor(nombre, valor) {
+  if (registradas.has(nombre) || !window.CSS?.registerProperty || !CSS.supports('color', valor)) return;
+  try {
+    CSS.registerProperty({ name: nombre, syntax: '<color>', inherits: true, initialValue: valor });
+    registradas.add(nombre);
+  } catch (error) {
+    // Ya estaba registrada (recarga en caliente de Vite).
+    if (error.name === 'InvalidModificationError') registradas.add(nombre);
+  }
 }
 
 function escribirVariables(acento, oscuro) {
@@ -42,6 +64,7 @@ function escribirVariables(acento, oscuro) {
   const colores = { ...base, ...extras(oscuro, base) };
 
   for (const [clave, valor] of Object.entries(colores)) {
+    registrarColor(aVariable(clave), valor);
     raiz.style.setProperty(aVariable(clave), valor);
   }
   raiz.style.colorScheme = oscuro ? 'dark' : 'light';
@@ -51,20 +74,27 @@ function escribirVariables(acento, oscuro) {
   document.querySelector('meta[name="theme-color"]')?.setAttribute('content', colores.bannerBg);
 }
 
-// Duración del fundido (debe coincidir con base.css).
 const DURACION_TRANSICION_MS = 350;
+// Pasa muy rápido por la mitad: al cambiar de claro a oscuro, texto y fondo se cruzan en un
+// gris medio y con una curva suave el texto "desaparecía" un momento.
+const CURVA_TRANSICION = 'cubic-bezier(0.75, 0, 0.25, 1)';
 let finTransicion;
 
-// animar: fundido de todos los colores a la vez con transiciones CSS (base.css).
+// animar: fundido de 350 ms de todos los colores a la vez.
 // No se usa View Transitions: pone una capa encima de la página durante el fundido y
 // iOS deja de ver la franja de la barra de estado, así que la isla cambiaba al final.
 export function aplicarTema(acento, oscuro, { animar = false } = {}) {
   const raiz = document.documentElement;
-  if (animar && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    // El atributo activa las transiciones en el mismo cuadro en que cambian las variables.
+  if (animar && registradas.size && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    // La transición se pone en el mismo cuadro en que cambian las variables. El atributo
+    // apaga mientras tanto las transiciones de color propias de cada elemento (base.css).
+    raiz.style.transition = [...registradas].map((nombre) => `${nombre} ${DURACION_TRANSICION_MS}ms ${CURVA_TRANSICION}`).join(', ');
     raiz.dataset.transicionTema = '';
     clearTimeout(finTransicion);
-    finTransicion = setTimeout(() => delete raiz.dataset.transicionTema, DURACION_TRANSICION_MS + 50);
+    finTransicion = setTimeout(() => {
+      raiz.style.transition = '';
+      delete raiz.dataset.transicionTema;
+    }, DURACION_TRANSICION_MS + 50);
   }
   escribirVariables(acento, oscuro);
 }

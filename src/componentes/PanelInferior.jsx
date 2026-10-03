@@ -3,6 +3,7 @@
 // (accion: { texto, alTocar }, en la posición del "+ Nueva" del diseño).
 import { useEffect, useId, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { useOscurecido } from '../estado/useOscurecido.js';
 import './PanelInferior.css';
 
 const DURACION_MS = 220;
@@ -27,16 +28,15 @@ export default function PanelInferior({ abierto, alCerrar, titulo, accion, child
     return () => clearTimeout(espera);
   }, [abierto]);
 
+  useOscurecido(montado, visible); // la franja de la barra de estado acompaña al oscurecido
+
   useEffect(() => {
     if (!abierto) return;
-    const raiz = document.documentElement;
-    raiz.dataset.panelAbierto = ''; // oscurece también la barra de estado
     document.body.style.overflow = 'hidden';
     const alPulsar = (evento) => evento.key === 'Escape' && alCerrarRef.current();
     window.addEventListener('keydown', alPulsar);
     panel.current?.focus();
     return () => {
-      delete raiz.dataset.panelAbierto;
       document.body.style.overflow = '';
       window.removeEventListener('keydown', alPulsar);
     };
