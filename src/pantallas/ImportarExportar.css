@@ -1,0 +1,79 @@
+/* Medidas de design/html/ImportarExportar.html */
+
+.respaldo-grupo {
+  padding: 0 14px;
+}
+
+.respaldo-fila {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 56px;
+  padding: 8px 0;
+  border: 0;
+  border-bottom: 1px solid var(--divider);
+  background: transparent;
+  color: var(--text);
+  text-align: left;
+}
+
+.respaldo-fila:last-child {
+  border-bottom: 0;
+}
+
+.respaldo-fila:disabled {
+  opacity: 0.5;
+}
+
+.respaldo-textos {
+  flex-grow: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.respaldo-titulo {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.respaldo-detalle {
+  margin-top: 1px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.respaldo-flecha {
+  display: flex;
+  color: var(--muted);
+}
+
+.respaldo-nota {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 12px 4px 0;
+  font-size: 12px;
+  line-height: 17px;
+  color: var(--muted);
+}
+
+.respaldo-nota > svg {
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.respaldo-aviso {
+  margin: 16px 0 0;
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: var(--accent-soft);
+  color: var(--text);
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.respaldo-aviso.error {
+  background: var(--expense-soft);
+}

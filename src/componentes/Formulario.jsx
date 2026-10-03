@@ -1,0 +1,172 @@
+// Piezas de los formularios (pantallas con botón Guardar y sin barra inferior).
+// Medidas de design/html/NuevaCuenta.html y NuevaCategoria.html.
+import { useNavigate } from 'react-router-dom';
+import { formatearPesos } from '../utilidades/formato.js';
+import { volver } from '../utilidades/navegacion.js';
+import BarraEstado from './BarraEstado.jsx';
+import { IconoCerrar, IconoCheck, IconoFlecha } from './iconos.jsx';
+import { ETIQUETAS_ICONO, IconoPorNombre } from './iconosPorNombre.jsx';
+import './CabeceraSubpagina.css';
+import './Formulario.css';
+
+// Banner con la X para cerrar sin guardar, el título y contenido opcional debajo.
+export function CabeceraFormulario({ titulo, volverA, children }) {
+  const navegar = useNavigate();
+  return (
+    <div className="encabezado-fijo">
+      <BarraEstado />
+      <header className="banner formulario-cabecera">
+        <div className="cabecera-subpagina-fila">
+          <button type="button" className="boton-banner" aria-label="Cerrar" onClick={() => volver(navegar, volverA)}>
+            <IconoCerrar tamano={20} grosor={2.2} />
+          </button>
+          <h1 className="cabecera-subpagina-titulo">{titulo}</h1>
+          <span className="cabecera-subpagina-hueco" />
+        </div>
+        {children}
+      </header>
+    </div>
+  );
+}
+
+// Monto grande del banner. Usa el teclado numérico del iPhone (solo cifras, sin decimales).
+export function MontoEditable({ etiqueta, valor, alCambiar }) {
+  return (
+    <label className="cabecera-cifra">
+      <span className="cabecera-cifra-etiqueta">{etiqueta}</span>
+      <input
+        className="cabecera-cifra-valor formulario-monto"
+        type="text"
+        inputMode="numeric"
+        pattern="[0-9]*"
+        enterKeyHint="done"
+        autoComplete="off"
+        value={formatearPesos(valor)}
+        onChange={(evento) => alCambiar(Number(evento.target.value.replace(/\D/g, '').slice(0, 12)) || 0)}
+        onKeyDown={(evento) => evento.key === 'Enter' && evento.currentTarget.blur()}
+      />
+    </label>
+  );
+}
+
+// Fila de 54 px: ícono, etiqueta y valor. Con alTocar es un botón con flecha.
+export function Campo({ Icono, etiqueta, alTocar, children }) {
+  const contenido = (
+    <>
+      <span className="campo-icono">
+        <Icono />
+      </span>
+      <span className="campo-etiqueta">{etiqueta}</span>
+      <span className="campo-valor">{children}</span>
+      {alTocar && (
+        <span className="campo-flecha">
+          <IconoFlecha />
+        </span>
+      )}
+    </>
+  );
+  return alTocar ? (
+    <button type="button" className="campo" onClick={alTocar}>
+      {contenido}
+    </button>
+  ) : (
+    <label className="campo">{contenido}</label>
+  );
+}
+
+// Texto dentro de un Campo. 16 px: con menos, el iPhone hace zoom al escribir.
+export function EntradaTexto({ valor, alCambiar, ejemplo, maximo = 40 }) {
+  return (
+    <input
+      className="campo-entrada"
+      type="text"
+      enterKeyHint="done"
+      autoComplete="off"
+      maxLength={maximo}
+      placeholder={ejemplo}
+      value={valor}
+      onChange={(evento) => alCambiar(evento.target.value)}
+      onKeyDown={(evento) => evento.key === 'Enter' && evento.currentTarget.blur()}
+    />
+  );
+}
+
+export function Interruptor({ activo, alCambiar, etiqueta }) {
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={activo}
+      aria-label={etiqueta}
+      className={'interruptor' + (activo ? ' activo' : '')}
+      onClick={() => alCambiar(!activo)}
+    >
+      <span />
+    </button>
+  );
+}
+
+// Dos opciones dentro del banner (Gasto | Ingreso).
+export function Segmentado({ opciones, valor, alCambiar, etiqueta, bloqueado = false }) {
+  return (
+    <div className="segmentado" role="radiogroup" aria-label={etiqueta}>
+      {opciones.map((opcion) => (
+        <button
+          key={opcion.valor}
+          type="button"
+          role="radio"
+          aria-checked={opcion.valor === valor}
+          disabled={bloqueado && opcion.valor !== valor}
+          onClick={() => alCambiar(opcion.valor)}
+        >
+          {opcion.texto}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+export function RejillaIconos({ nombres, elegido, alElegir, etiqueta }) {
+  return (
+    <div className="tarjeta rejilla-iconos" role="radiogroup" aria-label={etiqueta}>
+      {nombres.map((nombre) => (
+        <button
+          key={nombre}
+          type="button"
+          role="radio"
+          aria-checked={nombre === elegido}
+          aria-label={ETIQUETAS_ICONO[nombre] ?? nombre}
+          onClick={() => alElegir(nombre)}
+        >
+          <IconoPorNombre nombre={nombre} tamano={26} />
+        </button>
+      ))}
+    </div>
+  );
+}
+
+// colores: [{ valor, nombre }] con valor = letra del par --cat-X del tema.
+export function RejillaColores({ colores, elegido, alElegir }) {
+  return (
+    <div className="tarjeta rejilla-colores" role="radiogroup" aria-label="Color">
+      {colores.map(({ valor, nombre }) => (
+        <button
+          key={valor}
+          type="button"
+          role="radio"
+          aria-checked={valor === elegido}
+          aria-label={nombre}
+          style={{ background: `var(--cat-${valor})` }}
+          onClick={() => alElegir(valor)}
+        >
+          {valor === elegido && <IconoCheck />}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+// Botón Guardar fijo abajo.
+export function PieFormulario({ children }) {
+  return <div className="formulario-pie">{children}</div>;
+}

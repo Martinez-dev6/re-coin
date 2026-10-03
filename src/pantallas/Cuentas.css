@@ -1,0 +1,76 @@
+/* Medidas de design/html/Cuentas.html */
+
+.cuentas-contenido {
+  padding-top: 14px;
+}
+
+.cuentas-lista {
+  padding: 0 14px;
+}
+
+.cuentas-fila {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  height: 64px;
+  padding: 0;
+  border: 0;
+  border-bottom: 1px solid var(--divider);
+  background: transparent;
+  color: var(--text);
+  text-align: left;
+}
+
+.cuentas-fila:last-child {
+  border-bottom: 0;
+}
+
+.cuentas-textos {
+  flex-grow: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.cuentas-nombre {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.cuentas-detalle {
+  margin-top: 1px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.cuentas-saldo {
+  white-space: nowrap;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--income);
+}
+
+.cuentas-flecha {
+  display: flex;
+  color: var(--muted);
+}
+
+.cuentas-nueva {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  height: 52px;
+  margin-top: 12px;
+  border: 1.5px dashed var(--line);
+  border-radius: 22px;
+  background: transparent;
+  color: var(--accent-text);
+  font-size: 15px;
+  font-weight: 700;
+}

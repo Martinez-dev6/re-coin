@@ -1,6 +1,6 @@
 // Fila de 64 px de un movimiento: círculo de categoría, descripción, detalle, valor y estado.
 // La usan Transacciones y Planes → Programados.
-import { CATEGORIAS } from '../datos/prueba.js';
+import { useDatos } from '../datos/DatosContext.jsx';
 import { formatearPesos } from '../utilidades/formato.js';
 import CirculoCategoria from './CirculoCategoria.jsx';
 import { IconoCheckCirculo, IconoReloj, IconoRepetir, IconoTransferencia } from './iconos.jsx';
@@ -12,7 +12,7 @@ const SIGNO = { gasto: '- ', ingreso: '+ ', transferencia: '' };
 // estado: 'pendiente' | 'pagado' | texto libre (p. ej. "En 13 días").
 export default function FilaMovimiento({ movimiento, detalle, estado, mostrarRepetir = false }) {
   const { tipo, valor, descripcion, categoriaId, programado } = movimiento;
-  const categoria = CATEGORIAS[categoriaId];
+  const categoria = useDatos().categoria(categoriaId);
 
   const circulo =
     tipo === 'transferencia' ? (

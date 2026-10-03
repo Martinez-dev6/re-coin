@@ -1,0 +1,42 @@
+/* Medidas de design/html/Categorias.html */
+
+.categorias-contenido {
+  padding-top: 14px;
+}
+
+.categorias-lista {
+  padding: 0 14px;
+}
+
+.categorias-fila {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 56px;
+  padding: 0;
+  border: 0;
+  border-bottom: 1px solid var(--divider);
+  background: transparent;
+  color: var(--text);
+  text-align: left;
+}
+
+.categorias-fila:last-child {
+  border-bottom: 0;
+}
+
+.categorias-nombre {
+  flex-grow: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.categorias-flecha {
+  display: flex;
+  color: var(--muted);
+}

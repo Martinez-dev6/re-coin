@@ -39,12 +39,19 @@ export default function PanelInferior({ abierto, alCerrar, titulo, accion, child
     document.body.style.overflow = 'hidden';
     const alPulsar = (evento) => evento.key === 'Escape' && alCerrarRef.current();
     window.addEventListener('keydown', alPulsar);
-    panel.current?.focus();
     return () => {
       document.body.style.overflow = '';
       window.removeEventListener('keydown', alPulsar);
     };
   }, [abierto]);
+
+  // Al abrir, el foco pasa al panel: el campo que lo tenía lo suelta y en el iPhone se
+  // cierra el teclado (si no, quedaría encima del panel). Espera a que el panel exista.
+  useEffect(() => {
+    if (!montado || !abierto) return;
+    if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
+    panel.current?.focus({ preventScroll: true });
+  }, [montado, abierto]);
 
   if (!montado) return null;
 

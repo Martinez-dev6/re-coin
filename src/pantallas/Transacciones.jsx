@@ -4,7 +4,7 @@ import BarraEstado from '../componentes/BarraEstado.jsx';
 import FilaMovimiento from '../componentes/FilaMovimiento.jsx';
 import { IconoBuscar, IconoFiltros } from '../componentes/iconos.jsx';
 import { MesConFlechas } from '../componentes/SelectorMes.jsx';
-import { CATEGORIAS, CUENTAS, MOVIMIENTOS } from '../datos/prueba.js';
+import { useDatos } from '../datos/DatosContext.jsx';
 import { useMes } from '../estado/MesContext.jsx';
 import { enMes, etiquetaDia } from '../utilidades/fechas.js';
 import { formatearPesos } from '../utilidades/formato.js';
@@ -17,11 +17,13 @@ const FILTROS = [
   { valor: 'transferencia', texto: 'Transferencias' },
 ];
 
-const nombreCuenta = (id) => CUENTAS.find((c) => c.id === id)?.nombre ?? '';
+// Los movimientos llegan en el paso 5; mientras tanto, ninguno.
+const MOVIMIENTOS = [];
 
-function detalle(m) {
+function detalle(m, { cuentas, categoria }) {
+  const nombreCuenta = (id) => cuentas.find((c) => c.id === id)?.nombre ?? '';
   if (m.tipo === 'transferencia') return `${nombreCuenta(m.cuentaId)} → ${nombreCuenta(m.cuentaDestinoId)}`;
-  return `${CATEGORIAS[m.categoriaId]?.nombre ?? 'Sin categoría'} · ${nombreCuenta(m.cuentaId)}`;
+  return `${categoria(m.categoriaId)?.nombre ?? 'Sin categoría'} · ${nombreCuenta(m.cuentaId)}`;
 }
 
 // En "Todo" el banner muestra el neto (ingresos − gastos); en los demás, la suma del tipo.
@@ -34,6 +36,7 @@ export default function Transacciones() {
   const navegar = useNavigate();
   const { anio, mes } = useMes();
   const [filtro, setFiltro] = useState('todo');
+  const datos = useDatos();
 
   const visibles = MOVIMIENTOS.filter((m) => enMes(m.fecha, anio, mes) && (filtro === 'todo' || m.tipo === filtro)).sort(
     (a, b) => b.fecha.localeCompare(a.fecha),
@@ -95,7 +98,7 @@ export default function Transacciones() {
                 <FilaMovimiento
                   key={m.id}
                   movimiento={m}
-                  detalle={detalle(m)}
+                  detalle={detalle(m, datos)}
                   estado={m.pagado ? 'pagado' : 'pendiente'}
                   mostrarRepetir
                 />

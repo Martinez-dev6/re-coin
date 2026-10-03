@@ -16,6 +16,8 @@ import { aplicarTema } from './tema/aplicarTema.js';
 import { esOscuro, leerPreferencias } from './tema/preferencias.js';
 import { TemaProvider } from './tema/TemaContext.jsx';
 import { MesProvider } from './estado/MesContext.jsx';
+import { DatosProvider } from './datos/DatosContext.jsx';
+import { pedirAlmacenamientoPersistente } from './datos/db.js';
 import App from './App.jsx';
 
 // Service worker: guarda la app para usarla sin conexión. Cuando hay una versión
@@ -26,14 +28,18 @@ registerSW({ immediate: true });
 const preferencias = leerPreferencias();
 aplicarTema(preferencias.acento, esOscuro(preferencias.modo));
 
+pedirAlmacenamientoPersistente();
+
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <TemaProvider>
-      <MesProvider>
-        <BrowserRouter>
-          <App />
-        </BrowserRouter>
-      </MesProvider>
+      <DatosProvider>
+        <MesProvider>
+          <BrowserRouter>
+            <App />
+          </BrowserRouter>
+        </MesProvider>
+      </DatosProvider>
     </TemaProvider>
   </StrictMode>,
 );

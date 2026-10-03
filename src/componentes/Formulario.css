@@ -1,0 +1,265 @@
+/* Formularios: medidas de design/html/NuevaCuenta.html y NuevaCategoria.html. */
+
+.formulario-cabecera {
+  padding-bottom: 18px;
+}
+
+/* El monto del banner es un campo de texto con el aspecto de la cifra grande. */
+.formulario-monto {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  text-align: center;
+  caret-color: currentColor;
+  outline: none;
+}
+
+.formulario-contenido {
+  /* Espacio para que lo último no quede bajo el botón Guardar fijo. */
+  padding: 14px 16px calc(110px + var(--safe-bottom));
+}
+
+/* ---- Filas de campos ---- */
+
+.campos {
+  padding: 0 14px;
+}
+
+.campo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  height: 54px;
+  padding: 0;
+  border: 0;
+  border-bottom: 1px solid var(--divider);
+  background: transparent;
+  color: var(--text);
+  text-align: left;
+}
+
+.campo:last-child {
+  border-bottom: 0;
+}
+
+.campo-icono {
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  border-radius: 17px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent-soft);
+  color: var(--accent-text);
+}
+
+.campo-etiqueta {
+  min-width: 84px;
+  flex-shrink: 0;
+  white-space: nowrap;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.campo-valor {
+  flex-grow: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  text-align: right;
+}
+
+.campo-flecha {
+  display: flex;
+  color: var(--muted);
+}
+
+/* 16 px y no 15: con menos, el iPhone hace zoom al escribir. */
+.campo-entrada {
+  width: 100%;
+  min-width: 0;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  font-size: 16px;
+  font-weight: 600;
+  text-align: right;
+  outline: none;
+}
+
+.campo-entrada::placeholder {
+  font-weight: 400;
+  color: var(--muted);
+}
+
+/* ---- Interruptor (46 × 28) ---- */
+
+.interruptor {
+  position: relative;
+  width: 46px;
+  height: 28px;
+  flex-shrink: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 14px;
+  background: var(--sw-off);
+  transition: background-color 0.2s ease;
+}
+
+.interruptor.activo {
+  background: var(--banner-bg);
+  box-shadow: 0 0 0 1px var(--banner-ring);
+}
+
+.interruptor > span {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 24px;
+  height: 24px;
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease;
+}
+
+.interruptor.activo > span {
+  transform: translateX(18px);
+}
+
+/* ---- Dos opciones dentro del banner (Gasto | Ingreso) ---- */
+
+.segmentado {
+  display: flex;
+  gap: 4px;
+  margin-top: 14px;
+  padding: 4px;
+  border-radius: 26px;
+  background: var(--chip-bg);
+}
+
+.segmentado > button {
+  flex: 1 1 0;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 22px;
+  background: transparent;
+  color: var(--on-banner);
+  font-size: 13px;
+  font-weight: 600;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.segmentado > button[aria-checked='true'] {
+  background: #ffffff;
+  color: var(--banner-bg);
+  font-weight: 700;
+}
+
+.segmentado > button:disabled {
+  opacity: 0.55;
+}
+
+/* ---- Rejillas de íconos y colores ---- */
+
+.rejilla-iconos {
+  display: grid;
+  grid-template-columns: repeat(4, 56px);
+  justify-content: space-between;
+  row-gap: 14px;
+  padding: 14px 16px 16px;
+}
+
+.rejilla-iconos > button {
+  width: 56px;
+  height: 56px;
+  padding: 0;
+  border: 0;
+  border-radius: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--page-bg);
+  color: var(--muted);
+}
+
+.rejilla-iconos > button[aria-checked='true'] {
+  background: var(--accent-soft);
+  color: var(--accent-text);
+  box-shadow: 0 0 0 2px var(--accent-text);
+}
+
+.rejilla-colores {
+  display: flex;
+  justify-content: space-between;
+  padding: 16px;
+}
+
+.rejilla-colores > button {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 0;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+}
+
+.rejilla-colores > button[aria-checked='true'] {
+  box-shadow:
+    0 0 0 2px var(--surface),
+    0 0 0 4px var(--text);
+}
+
+/* ---- Eliminar (al editar) ---- */
+
+.formulario-eliminar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  height: 48px;
+  margin-top: 18px;
+  border: 0;
+  background: transparent;
+  color: var(--expense);
+  font-size: 15px;
+  font-weight: 600;
+}
+
+/* ---- Botón Guardar fijo abajo ---- */
+
+.formulario-pie {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 40;
+  padding: 18px 16px calc(16px + var(--safe-bottom));
+  background: linear-gradient(to bottom, var(--page-bg0) 0%, var(--page-bg) 30%);
+}
+
+.formulario-pie .boton-principal {
+  margin-top: 0;
+}
+
+.formulario-pie .boton-principal:disabled {
+  opacity: 0.45;
+}

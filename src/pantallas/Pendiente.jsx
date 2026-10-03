@@ -5,13 +5,10 @@ import CabeceraSubpagina from '../componentes/CabeceraSubpagina.jsx';
 const TITULOS = {
   perfil: 'Perfil',
   'pantalla-inicio': 'Pantalla de inicio',
-  cuentas: 'Cuentas',
   tarjetas: 'Tarjetas de crédito',
-  categorias: 'Categorías',
   etiquetas: 'Etiquetas',
   graficos: 'Gráficos',
   rendimiento: 'Rendimiento',
-  'importar-exportar': 'Importar y exportar',
   recordatorio: 'Recordatorio diario',
   ajustes: 'Ajustes',
   ayuda: 'Ayuda y soporte',

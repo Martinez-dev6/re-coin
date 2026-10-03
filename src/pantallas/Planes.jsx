@@ -13,7 +13,7 @@ import {
   IconoRepetir,
 } from '../componentes/iconos.jsx';
 import { MesConFlechas } from '../componentes/SelectorMes.jsx';
-import { CATEGORIAS, METAS, PRESUPUESTOS, PROGRAMADOS } from '../datos/prueba.js';
+import { useDatos } from '../datos/DatosContext.jsx';
 import { useMes } from '../estado/MesContext.jsx';
 import { aFecha, diasHasta, enMes, etiquetaDia, fechaCorta, hoyTexto } from '../utilidades/fechas.js';
 import { formatearPesos } from '../utilidades/formato.js';
@@ -25,6 +25,11 @@ const SECCIONES = [
   { valor: 'metas', texto: 'Metas', nuevo: 'nueva-meta' },
   { valor: 'programados', texto: 'Programados', nuevo: 'nuevo-programado' },
 ];
+
+// Presupuestos, metas y programados llegan con la base de datos en el paso 7.
+const PRESUPUESTOS = [];
+const METAS = [];
+const PROGRAMADOS = [];
 
 const porcentaje = (parte, todo) => (todo > 0 ? Math.round((parte / todo) * 100) : 0);
 
@@ -73,6 +78,7 @@ function FilaPresupuesto({ nombre, icono, color, gastado, limite }) {
 }
 
 function Presupuestos({ lista }) {
+  const { categoria: buscarCategoria } = useDatos();
   if (lista.length === 0) return <div className="tarjeta vacio">No hay presupuestos para este mes.</div>;
   const gastado = lista.reduce((t, p) => t + p.gastado, 0);
   const limite = lista.reduce((t, p) => t + p.limite, 0);
@@ -80,13 +86,13 @@ function Presupuestos({ lista }) {
     <div className="tarjeta-lista">
       <FilaPresupuesto nombre="General" icono="pastel" color="acento" gastado={gastado} limite={limite} />
       {lista.map((p) => {
-        const categoria = CATEGORIAS[p.categoriaId];
+        const categoria = buscarCategoria(p.categoriaId);
         return (
           <FilaPresupuesto
             key={p.id}
-            nombre={categoria.nombre}
-            icono={categoria.icono}
-            color={categoria.color}
+            nombre={categoria?.nombre ?? 'Sin categoría'}
+            icono={categoria?.icono}
+            color={categoria?.color}
             gastado={p.gastado}
             limite={p.limite}
           />
@@ -108,6 +114,7 @@ function mesesRestantes(fechaLimite) {
 const ahorroMensual = (m) => Math.max(0, Math.ceil((m.objetivo - m.ahorrado) / mesesRestantes(m.fechaLimite)));
 
 function Metas({ navegar }) {
+  if (METAS.length === 0) return <div className="tarjeta vacio">Aún no tienes metas de ahorro.</div>;
   const ahorrado = METAS.reduce((t, m) => t + m.ahorrado, 0);
   const objetivo = METAS.reduce((t, m) => t + m.objetivo, 0);
   const mensual = METAS.reduce((t, m) => t + ahorroMensual(m), 0);
@@ -238,8 +245,7 @@ export default function Planes() {
   const { anio, mes } = useMes();
   const actual = SECCIONES.find((s) => s.valor === seccion) ?? SECCIONES[0];
 
-  // Los datos de prueba de presupuestos son de octubre de 2026.
-  const presupuestos = anio === 2026 && mes === 9 ? PRESUPUESTOS : [];
+  const presupuestos = PRESUPUESTOS;
   const programados = PROGRAMADOS.filter((p) => enMes(p.proxima, anio, mes));
 
   let resumen;

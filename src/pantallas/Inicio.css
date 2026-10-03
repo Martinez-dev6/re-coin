@@ -248,3 +248,44 @@
   align-items: center;
   justify-content: center;
 }
+
+/* Sin cuentas (design/html/InicioVacio.html). */
+.inicio-vacio {
+  padding: 28px 22px;
+  text-align: center;
+}
+
+.inicio-vacio-icono {
+  width: 72px;
+  height: 72px;
+  margin: 0 auto;
+  border-radius: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent-soft);
+  color: var(--accent-text);
+}
+
+.inicio-vacio-titulo {
+  margin: 16px 0 0;
+  font-size: 19px;
+  font-weight: 700;
+}
+
+.inicio-vacio-texto {
+  margin: 8px 0 0;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--muted);
+}
+
+.inicio-vacio-boton {
+  height: 52px;
+  border-radius: 26px;
+}
+
+.inicio-vacio-importar {
+  height: 44px;
+  margin-top: 8px;
+}

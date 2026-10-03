@@ -398,3 +398,98 @@ export const IconoAvion = (p) => (
     <path d="M10 14L21 3M21 3l-6.5 18-3.5-8-8-3.5z" />
   </Svg>
 );
+
+// --- Categorías y cuentas (design/html/Categorias*, NuevaCategoria, NuevaCuenta) ---
+
+export const IconoCorazon = (p) => (
+  <Svg tamano={22} {...p}>
+    <path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z" />
+  </Svg>
+);
+
+export const IconoEstrella = (p) => (
+  <Svg tamano={22} {...p}>
+    <path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z" />
+  </Svg>
+);
+
+export const IconoCasa = (p) => (
+  <Svg tamano={22} {...p}>
+    <path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z" />
+  </Svg>
+);
+
+export const IconoRegalo = (p) => (
+  <Svg tamano={22} {...p}>
+    <rect x="3" y="8" width="18" height="4" rx="1" />
+    <path d="M12 8v13M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7M7.5 8a2.5 2.5 0 0 1 0-5C11 3 12 8 12 8s1-5 4.5-5a2.5 2.5 0 0 1 0 5" />
+  </Svg>
+);
+
+export const IconoMaletin = (p) => (
+  <Svg tamano={22} {...p}>
+    <path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
+    <rect x="2" y="6" width="20" height="14" rx="2" />
+  </Svg>
+);
+
+export const IconoBolsa = (p) => (
+  <Svg tamano={22} {...p}>
+    <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+    <path d="M3 6h18M16 10a4 4 0 0 1-8 0" />
+  </Svg>
+);
+
+export const IconoTendencia = (p) => (
+  <Svg tamano={22} {...p}>
+    <path d="M22 7l-8.5 8.5-5-5L2 17" />
+    <path d="M16 7h6v6" />
+  </Svg>
+);
+
+export const IconoAlcancia = (p) => (
+  <Svg tamano={22} {...p}>
+    <path d="M19 5c-1.5 0-2.8 1.4-3 2-3.5-1.5-11-.3-11 5 0 1.8 0 3 2 4.5V20h4v-2h3v2h4v-4c1-.5 1.7-1 2-2h2v-4h-2c0-1-.5-1.5-1-2V5z" />
+    <path d="M2 9v1c0 1.1.9 2 2 2h1M16 11h.01" />
+  </Svg>
+);
+
+export const IconoMoneda = (p) => (
+  <Svg tamano={22} {...p}>
+    <circle cx="12" cy="12" r="10" />
+    <path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8M12 18V6" />
+  </Svg>
+);
+
+// Líneas de texto: fila "Nombre" de los formularios.
+export const IconoTexto = (p) => (
+  <Svg {...p}>
+    <path d="M4 7h16M4 12h16M4 17h10" />
+  </Svg>
+);
+
+export const IconoBasura = (p) => (
+  <Svg {...p}>
+    <path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3" />
+  </Svg>
+);
+
+export const IconoBajar = (p) => (
+  <Svg tamano={20} {...p}>
+    <path d="M12 4v11M7 11l5 5 5-5M5 20h14" />
+  </Svg>
+);
+
+export const IconoEscudoCheck = (p) => (
+  <Svg tamano={20} {...p}>
+    <path d="M12 3l8 3v6c0 4.5-3.2 7.8-8 9-4.8-1.2-8-4.5-8-9V6z" />
+    <path d="M9 12l2 2 4-4" />
+  </Svg>
+);
+
+export const IconoInfo = (p) => (
+  <Svg tamano={15} {...p}>
+    <circle cx="12" cy="12" r="9" />
+    <path d="M12 11v6M12 7.5v.01" />
+  </Svg>
+);

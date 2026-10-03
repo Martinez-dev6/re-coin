@@ -22,6 +22,7 @@ import {
   IconoSol,
   IconoTarjeta,
 } from '../componentes/iconos.jsx';
+import { useDatos } from '../datos/DatosContext.jsx';
 import { useTema } from '../tema/TemaContext.jsx';
 import './MiEspacio.css';
 
@@ -61,6 +62,7 @@ function Grupo({ titulo, children }) {
 export default function MiEspacio() {
   const navegar = useNavigate();
   const { acento, modo, cambiarModo } = useTema();
+  const { cuentas } = useDatos();
   const [panelModo, setPanelModo] = useState(false);
   const pendiente = (clave) => () => navegar('/pendiente/' + clave);
   const modoActual = OPCIONES_MODO.find((o) => o.valor === modo);
@@ -76,7 +78,7 @@ export default function MiEspacio() {
             </div>
             <div className="mi-espacio-nombre">
               <h1>{PERFIL.nombre}</h1>
-              <p>0 cuentas · 0 tarjetas</p>
+              <p>{cuentas.length === 1 ? '1 cuenta' : `${cuentas.length} cuentas`} · 0 tarjetas</p>
             </div>
             <button type="button" className="boton-banner" aria-label="Editar perfil" onClick={pendiente('perfil')}>
               <IconoLapiz />
@@ -97,9 +99,9 @@ export default function MiEspacio() {
         </Grupo>
 
         <Grupo titulo="Gestionar">
-          <Fila Icono={IconoCuentas} texto="Cuentas" onClick={pendiente('cuentas')} />
+          <Fila Icono={IconoCuentas} texto="Cuentas" onClick={() => navegar('/mi-espacio/cuentas')} />
           <Fila Icono={IconoTarjeta} texto="Tarjetas de crédito" onClick={pendiente('tarjetas')} />
-          <Fila Icono={IconoCategorias} texto="Categorías" onClick={pendiente('categorias')} />
+          <Fila Icono={IconoCategorias} texto="Categorías" onClick={() => navegar('/mi-espacio/categorias')} />
           <Fila Icono={IconoEtiqueta} texto="Etiquetas" onClick={pendiente('etiquetas')} />
         </Grupo>
 
@@ -109,7 +111,7 @@ export default function MiEspacio() {
         </Grupo>
 
         <Grupo titulo="Herramientas">
-          <Fila Icono={IconoImportar} texto="Importar y exportar" onClick={pendiente('importar-exportar')} />
+          <Fila Icono={IconoImportar} texto="Importar y exportar" onClick={() => navegar('/mi-espacio/importar-exportar')} />
           <Fila Icono={IconoCampana} texto="Recordatorio diario" onClick={pendiente('recordatorio')} />
         </Grupo>
 

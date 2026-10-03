@@ -105,6 +105,13 @@
   justify-content: center;
 }
 
+/* 40 px: lista de Categorías (design/html/Categorias.html). */
+.circulo-categoria.mediano {
+  width: 40px;
+  height: 40px;
+  border-radius: 20px;
+}
+
 /* Tarjeta de lista (radio 24, filas separadas por líneas). */
 .tarjeta-lista {
   background: var(--surface);

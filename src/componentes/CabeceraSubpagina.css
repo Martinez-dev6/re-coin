@@ -6,8 +6,40 @@
 
 .cabecera-subpagina-titulo {
   flex-grow: 1;
-  margin: 0 44px 0 0; /* compensa el botón Volver para que el título quede centrado */
+  min-width: 0;
+  margin: 0;
   text-align: center;
   font-size: 17px;
   font-weight: 600;
+}
+
+/* Del ancho de un botón, para que el título quede centrado cuando no hay botón a la derecha. */
+.cabecera-subpagina-hueco {
+  width: 44px;
+  flex-shrink: 0;
+}
+
+/* Saldo bajo el título (Cuentas, formularios): medidas de design/html/Cuentas.html. */
+.cabecera-cifra {
+  display: block;
+  margin-top: 6px;
+  text-align: center;
+}
+
+.cabecera-cifra-etiqueta {
+  font-size: 13px;
+  color: var(--on-banner-muted);
+}
+
+.cabecera-cifra-valor {
+  margin-top: 2px;
+  font-size: 36px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.cabecera-cifra-nota {
+  margin-top: 2px;
+  font-size: 13px;
+  color: var(--on-banner-muted);
 }
