@@ -1,0 +1,64 @@
+.mes-flechas {
+  display: flex;
+  align-items: center;
+}
+
+.mes-flecha {
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mes-flechas-texto {
+  min-width: 120px;
+  text-align: center;
+  font-size: 17px;
+  font-weight: 600;
+}
+
+/* Panel "Elegir mes" (design/html/SelectorMes.html) */
+.elegir-mes-anio {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 4px;
+  font-size: 19px;
+  font-weight: 700;
+}
+
+.elegir-mes-anio span {
+  min-width: 64px;
+  text-align: center;
+}
+
+.elegir-mes-rejilla {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.elegir-mes-boton {
+  height: 48px;
+  padding: 0;
+  border: 0;
+  border-radius: 24px;
+  background: var(--page-bg);
+  color: var(--text);
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.elegir-mes-boton.elegido {
+  background: var(--banner-bg);
+  color: var(--on-banner);
+  box-shadow: 0 0 0 1px var(--banner-ring);
+  font-weight: 700;
+}

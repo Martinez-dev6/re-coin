@@ -108,3 +108,10 @@ section:first-child .mi-espacio-grupo-titulo {
   display: flex;
   color: var(--muted);
 }
+
+.mi-espacio-version {
+  margin: 16px 0 0;
+  text-align: center;
+  font-size: 12px;
+  color: var(--muted);
+}

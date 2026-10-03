@@ -117,6 +117,9 @@ export default function MiEspacio() {
           <Fila Icono={IconoAjustes} texto="Ajustes" onClick={pendiente('ajustes')} />
           <Fila Icono={IconoAyuda} texto="Ayuda y soporte" onClick={pendiente('ayuda')} />
         </div>
+
+        {/* Para comprobar qué versión tiene abierta el teléfono. */}
+        <p className="mi-espacio-version">Sendo · versión {__COMPILACION__}</p>
       </div>
 
       {/* El panel queda abierto al elegir: así se ve el cambio en vivo. */}

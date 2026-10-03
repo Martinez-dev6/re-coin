@@ -1,0 +1,58 @@
+/* Medidas de design/html/Transacciones.html */
+
+.transacciones-banner {
+  padding-bottom: 22px;
+}
+
+.transacciones-fila {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 48px;
+}
+
+/* Dos cifras separadas por una línea (también en Planes → Programados). */
+.totales-banner {
+  display: flex;
+  align-items: center;
+  margin-top: 14px;
+}
+
+.totales-banner > div {
+  flex: 1 1 0;
+  min-width: 0;
+  text-align: center;
+}
+
+.totales-banner-divisor {
+  width: 1px;
+  height: 44px;
+  background: var(--banner-line);
+}
+
+.totales-banner-etiqueta {
+  font-size: 13px;
+  color: var(--on-banner-muted);
+}
+
+.totales-banner-valor {
+  margin-top: 2px;
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+/* Si los cuatro chips no caben (teléfonos angostos), se desplazan de lado. */
+.transacciones-chips {
+  padding: 10px 16px 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.transacciones-chips::-webkit-scrollbar {
+  display: none;
+}
+
+.transacciones-lista {
+  padding: 4px 16px 0;
+}

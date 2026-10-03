@@ -1,0 +1,83 @@
+/* Medidas de design/html/Transacciones.html */
+.fila-movimiento {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 64px;
+  border-bottom: 1px solid var(--divider);
+}
+
+.fila-movimiento:last-child {
+  border-bottom: 0;
+}
+
+.fila-movimiento-textos {
+  flex-grow: 1;
+  min-width: 0;
+}
+
+.fila-movimiento-titulo {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 15px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fila-movimiento-repetir {
+  display: flex;
+  flex-shrink: 0;
+  color: var(--muted);
+}
+
+.fila-movimiento-detalle {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 1px;
+  font-size: 12px;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fila-movimiento-cifras {
+  flex-shrink: 0;
+  text-align: right;
+}
+
+.fila-movimiento-valor {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.fila-movimiento-valor.gasto {
+  color: var(--expense);
+}
+
+.fila-movimiento-valor.ingreso {
+  color: var(--income);
+}
+
+.fila-movimiento-estado {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  margin-top: 2px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.fila-movimiento-estado.pendiente {
+  color: var(--pending);
+}
+
+.fila-movimiento-estado.pagado {
+  color: var(--income);
+}

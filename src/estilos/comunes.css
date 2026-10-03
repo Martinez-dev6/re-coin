@@ -93,3 +93,106 @@
   clip: rect(0 0 0 0);
   white-space: nowrap;
 }
+
+/* Círculo de 44 px de categoría / cuenta / meta en listas. */
+.circulo-categoria {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  border-radius: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Tarjeta de lista (radio 24, filas separadas por líneas). */
+.tarjeta-lista {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+  border-radius: 24px;
+  padding: 0 16px;
+}
+
+/* "Hoy · 2 de octubre" encima de cada grupo. */
+.titulo-dia {
+  margin: 8px 0 8px 4px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+/* Chips de filtro ("Todo", "Gastos"…): el botón mide 44 de alto para el dedo,
+   el chip visible 34. */
+.chips {
+  display: flex;
+  gap: 6px;
+}
+
+.chip {
+  height: 44px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  flex-shrink: 0;
+}
+
+.chip > span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 34px;
+  padding: 0 12px;
+  border-radius: 17px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.chip[aria-pressed='true'] > span {
+  background: var(--banner-bg);
+  border-color: var(--banner-bg);
+  color: var(--on-banner);
+  font-weight: 700;
+}
+
+/* Barra de progreso de 8 px. */
+.barra-progreso {
+  height: 8px;
+  border-radius: 4px;
+  background: var(--track);
+  overflow: hidden;
+}
+
+.barra-progreso > span {
+  display: block;
+  height: 100%;
+  border-radius: 4px;
+  background: var(--accent-text);
+}
+
+/* Botón grande de ancho completo ("Ver octubre 2026", "Guardar"…). */
+.boton-principal {
+  width: 100%;
+  height: 54px;
+  margin-top: 20px;
+  border: 0;
+  border-radius: 27px;
+  background: var(--banner-bg);
+  box-shadow: 0 0 0 1px var(--banner-ring);
+  color: var(--on-banner);
+  font-size: 16px;
+  font-weight: 700;
+}
+
+/* Mensaje de lista vacía. */
+.vacio {
+  margin-top: 12px;
+  padding: 24px 16px;
+  text-align: center;
+  font-size: 14px;
+  color: var(--muted);
+}

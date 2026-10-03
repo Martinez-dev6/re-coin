@@ -169,3 +169,232 @@ export const IconoBilletera = (p) => (
     <circle cx="16" cy="14" r="1.2" />
   </Svg>
 );
+
+// --- Navegación y banner ---
+
+export const IconoPerfil = (p) => (
+  <Svg tamano={20} {...p}>
+    <circle cx="12" cy="8" r="4" />
+    <path d="M4 21c0-4 4-6 8-6s8 2 8 6" />
+  </Svg>
+);
+
+export const IconoOjo = (p) => (
+  <Svg tamano={20} {...p}>
+    <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z" />
+    <circle cx="12" cy="12" r="3" />
+  </Svg>
+);
+
+export const IconoOjoTachado = (p) => (
+  <Svg tamano={20} {...p}>
+    <path d="M3 3l18 18" />
+    <path d="M10.6 5.2A10 10 0 0 1 12 5c6.5 0 10 7 10 7a17 17 0 0 1-3.3 4.1M6.3 6.8A16.5 16.5 0 0 0 2 12s3.5 7 10 7c1.6 0 3-.4 4.2-1" />
+    <path d="M9.9 9.9a3 3 0 0 0 4.2 4.2" />
+  </Svg>
+);
+
+export const IconoAbajo = (p) => (
+  <Svg tamano={18} grosor={2.2} {...p}>
+    <path d="M6 9l6 6 6-6" />
+  </Svg>
+);
+
+export const IconoAnterior = (p) => (
+  <Svg tamano={20} grosor={2.2} {...p}>
+    <path d="M15 6l-6 6 6 6" />
+  </Svg>
+);
+
+export const IconoSiguiente = (p) => (
+  <Svg tamano={20} grosor={2.2} {...p}>
+    <path d="M9 6l6 6-6 6" />
+  </Svg>
+);
+
+export const IconoFlechaArriba = (p) => (
+  <Svg tamano={20} grosor={2.2} {...p}>
+    <path d="M12 19V5M5 12l7-7 7 7" />
+  </Svg>
+);
+
+export const IconoFlechaAbajo = (p) => (
+  <Svg tamano={20} grosor={2.2} {...p}>
+    <path d="M12 5v14M5 12l7 7 7-7" />
+  </Svg>
+);
+
+export const IconoBuscar = (p) => (
+  <Svg tamano={20} {...p}>
+    <circle cx="11" cy="11" r="7" />
+    <path d="M20 20l-3.5-3.5" />
+  </Svg>
+);
+
+export const IconoFiltros = (p) => (
+  <Svg tamano={20} {...p}>
+    <path d="M4 6h16M7 12h10M10 18h4" />
+  </Svg>
+);
+
+export const IconoInicio = (p) => (
+  <Svg tamano={22} {...p}>
+    <path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z" />
+  </Svg>
+);
+
+export const IconoLista = (p) => (
+  <Svg tamano={22} {...p}>
+    <path d="M8 6h13M8 12h13M8 18h13" />
+    <circle cx="4" cy="6" r="1" />
+    <circle cx="4" cy="12" r="1" />
+    <circle cx="4" cy="18" r="1" />
+  </Svg>
+);
+
+export const IconoPlanes = (p) => (
+  <Svg tamano={22} {...p}>
+    <rect x="3.5" y="5" width="17" height="15.5" rx="3" />
+    <path d="M3.5 10h17M8 3v4M16 3v4M9 15l2 2 4-4" />
+  </Svg>
+);
+
+export const IconoCalendario = (p) => (
+  <Svg tamano={14} grosor={2.2} {...p}>
+    <rect x="3.5" y="5" width="17" height="15.5" rx="3" />
+    <path d="M3.5 10h17M8 3v4M16 3v4" />
+  </Svg>
+);
+
+export const IconoCerrar = (p) => (
+  <Svg tamano={28} grosor={2.6} {...p}>
+    <path d="M6 6l12 12M18 6L6 18" />
+  </Svg>
+);
+
+// --- Menú del "+" ---
+
+export const IconoIngresoDiagonal = (p) => (
+  <Svg tamano={26} grosor={2.2} {...p}>
+    <path d="M17 7L7 17M7 9v8h8" />
+  </Svg>
+);
+
+export const IconoGastoDiagonal = (p) => (
+  <Svg tamano={26} grosor={2.2} {...p}>
+    <path d="M7 17L17 7M9 7h8v8" />
+  </Svg>
+);
+
+export const IconoTransferencia = (p) => (
+  <Svg tamano={26} grosor={2.2} {...p}>
+    <path d="M4 8h14l-3-3M20 16H6l3 3" />
+  </Svg>
+);
+
+// --- Estados de movimientos y presupuestos (12–13 px) ---
+
+export const IconoRepetir = (p) => (
+  <Svg tamano={12} grosor={2.2} {...p}>
+    <path d="M17 2l3 3-3 3M3 11V9a4 4 0 0 1 4-4h13M7 22l-3-3 3-3M21 13v2a4 4 0 0 1-4 4H4" />
+  </Svg>
+);
+
+export const IconoReloj = (p) => (
+  <Svg tamano={12} grosor={2.4} {...p}>
+    <circle cx="12" cy="12" r="9" />
+    <path d="M12 7v5l3 2" />
+  </Svg>
+);
+
+export const IconoCheckCirculo = (p) => (
+  <Svg tamano={12} grosor={2.4} {...p}>
+    <circle cx="12" cy="12" r="9" />
+    <path d="M8 12.5l2.7 2.7L16 9.5" />
+  </Svg>
+);
+
+export const IconoAviso = (p) => (
+  <Svg tamano={12} grosor={2.4} {...p}>
+    <circle cx="12" cy="12" r="9" />
+    <path d="M12 8v5M12 16.5v.01" />
+  </Svg>
+);
+
+export const IconoAlerta = (p) => (
+  <Svg tamano={12} grosor={2.4} {...p}>
+    <path d="M12 4l9 16H3z" />
+    <path d="M12 10v4M12 17.5v.01" />
+  </Svg>
+);
+
+// --- Íconos de categorías, cuentas y metas (22 px en listas) ---
+
+export const IconoEfectivo = (p) => (
+  <Svg tamano={20} {...p}>
+    <rect x="2" y="6" width="20" height="12" rx="2" />
+    <circle cx="12" cy="12" r="2.5" />
+    <path d="M6 12h.01M18 12h.01" />
+  </Svg>
+);
+
+export const IconoCarrito = (p) => (
+  <Svg tamano={22} {...p}>
+    <circle cx="9" cy="20" r="1.5" />
+    <circle cx="18" cy="20" r="1.5" />
+    <path d="M3 4h2l2.4 11.2a1 1 0 0 0 1 .8h8.8a1 1 0 0 0 1-.8L20 8H6" />
+  </Svg>
+);
+
+export const IconoGasolina = (p) => (
+  <Svg tamano={22} {...p}>
+    <path d="M5 21V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v16M4 21h12M8 8h4M15 10h2a2 2 0 0 1 2 2v4a1.5 1.5 0 0 0 3 0V9l-3-3" />
+  </Svg>
+);
+
+export const IconoLibro = (p) => (
+  <Svg tamano={22} {...p}>
+    <path d="M3 5.5C5 4 8 4 12 6c4-2 7-2 9-.5V19c-2-1.5-5-1.5-9 .5-4-2-7-2-9-.5z" />
+    <path d="M12 6v13.5" />
+  </Svg>
+);
+
+export const IconoRayo = (p) => (
+  <Svg tamano={22} {...p}>
+    <path d="M13 2L4 14h7l-1 8 9-12h-7z" />
+  </Svg>
+);
+
+export const IconoPastel = (p) => (
+  <Svg tamano={22} {...p}>
+    <path d="M12 3a9 9 0 1 0 9 9h-9z" />
+    <path d="M15 3.5A9 9 0 0 1 20.5 9H15z" />
+  </Svg>
+);
+
+export const IconoDiana = (p) => (
+  <Svg tamano={22} {...p}>
+    <circle cx="12" cy="12" r="9" />
+    <circle cx="12" cy="12" r="5" />
+    <circle cx="12" cy="12" r="1.2" />
+  </Svg>
+);
+
+export const IconoEscudo = (p) => (
+  <Svg tamano={22} {...p}>
+    <path d="M12 3l8 3v6c0 4.5-3.2 7.8-8 9-4.8-1.2-8-4.5-8-9V6z" />
+  </Svg>
+);
+
+export const IconoPortatil = (p) => (
+  <Svg tamano={22} {...p}>
+    <rect x="5" y="5" width="14" height="10" rx="2" />
+    <path d="M3 19h18" />
+  </Svg>
+);
+
+export const IconoAvion = (p) => (
+  <Svg tamano={22} {...p}>
+    <path d="M10 14L21 3M21 3l-6.5 18-3.5-8-8-3.5z" />
+  </Svg>
+);

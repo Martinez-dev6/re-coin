@@ -1,0 +1,226 @@
+/* Medidas de design/html (data-nav2): barra de 90 px, curva de 134 px centrada,
+   pestañas a 40 y 106 px de cada borde, "+" de 64 px que sobresale 22 px. */
+
+.barra-nav {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 90px;
+  z-index: 60;
+  isolation: isolate;
+}
+
+/* El contenido se desvanece antes de llegar a la barra. */
+.barra-nav-desvanecido {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -44px;
+  height: 100px;
+  z-index: -2;
+  pointer-events: none;
+  background: linear-gradient(to bottom, var(--page-bg0) 0%, var(--page-bg) 62%);
+}
+
+.barra-nav-fondo {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  display: flex;
+}
+
+.barra-nav-fondo svg {
+  flex-shrink: 0;
+  margin: 0 -1px; /* se monta 1 px sobre cada lado para que no quede una rendija */
+}
+
+.barra-nav-lado {
+  flex-grow: 1;
+  background: var(--nav-bg);
+  border-top: 1px solid var(--line);
+}
+
+.barra-nav-pestana {
+  position: absolute;
+  top: 16px;
+  height: 52px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--nav-inactive);
+  text-decoration: none;
+  -webkit-touch-callout: none;
+}
+
+.barra-nav-pestana.inicio {
+  left: 12px;
+  width: 56px;
+}
+
+.barra-nav-pestana.transacciones {
+  left: 68px;
+  width: 76px;
+}
+
+.barra-nav-pestana.planes {
+  right: 78px;
+  width: 56px;
+}
+
+.barra-nav-pestana.mi-espacio {
+  right: 7px;
+  width: 66px;
+}
+
+.barra-nav-pestana.active {
+  font-weight: 700;
+  color: var(--accent-text);
+}
+
+/* Punto del color del tema encima de la pestaña activa. */
+.barra-nav-punto {
+  position: absolute;
+  top: -11px;
+  left: 50%;
+  width: 6px;
+  height: 6px;
+  margin-left: -3px;
+  border-radius: 3px;
+  background: var(--accent-text);
+  opacity: 0;
+  transform: scale(0.4);
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
+}
+
+.barra-nav-pestana.active .barra-nav-punto {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Botón "+" (también se reutiliza como "X" dentro del menú). */
+.boton-mas {
+  position: absolute;
+  left: 50%;
+  top: -22px;
+  width: 64px;
+  height: 64px;
+  margin-left: -32px;
+  padding: 0;
+  border: 0;
+  border-radius: 32px;
+  background: var(--banner-bg);
+  color: var(--on-banner);
+  box-shadow:
+    0 0 0 1px var(--banner-ring),
+    0 8px 18px var(--fab-glow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.boton-mas:active {
+  transform: scale(0.96);
+}
+
+/* ---- Menú en arco (design/html/MenuMas.html) ---- */
+
+.menu-nuevo {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+}
+
+.menu-nuevo-fondo {
+  position: absolute;
+  inset: 0;
+  background: var(--scrim);
+  opacity: 0;
+  transition: opacity 0.22s ease;
+}
+
+.menu-nuevo.visible .menu-nuevo-fondo {
+  opacity: 1;
+}
+
+.menu-nuevo-titulo {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 259px;
+  text-align: center;
+  font-size: 15px;
+  font-weight: 700;
+  color: #ffffff;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.55);
+  opacity: 0;
+  transition: opacity 0.22s ease;
+}
+
+.menu-nuevo.visible .menu-nuevo-titulo {
+  opacity: 1;
+}
+
+/* Cada opción se ubica respecto al centro del "+" (80 px sobre el borde inferior)
+   y sale desde él. */
+.menu-nuevo-opcion {
+  position: absolute;
+  left: calc(50% + var(--dx) - 30px);
+  bottom: calc(80px - var(--dy) - 30px);
+  width: 60px;
+  height: 60px;
+  transform: translate(calc(-1 * var(--dx)), calc(-1 * var(--dy))) scale(0.4);
+  opacity: 0;
+  transition:
+    transform 0.26s cubic-bezier(0.2, 0.9, 0.3, 1.15) var(--retraso),
+    opacity 0.18s ease var(--retraso);
+}
+
+.menu-nuevo.visible .menu-nuevo-opcion {
+  transform: none;
+  opacity: 1;
+}
+
+.menu-nuevo-circulo {
+  width: 60px;
+  height: 60px;
+  padding: 0;
+  border-radius: 30px;
+  border: 1px solid var(--menu-borde);
+  background: var(--menu-bg);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.28);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.menu-nuevo-texto {
+  position: absolute;
+  top: 64px;
+  left: -8px;
+  width: 76px;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 14px;
+  color: #ffffff;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.55);
+}
+
+.menu-nuevo-cerrar {
+  top: auto;
+  bottom: 48px;
+}
+
+.menu-nuevo-cerrar svg {
+  transition: transform 0.22s ease;
+}
+
+.menu-nuevo.visible .menu-nuevo-cerrar svg {
+  transform: rotate(45deg);
+}
