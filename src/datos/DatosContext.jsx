@@ -1,4 +1,5 @@
-// Cuentas, categorías, etiquetas y movimientos de la base de datos, para todas las pantallas.
+// Cuentas, categorías, etiquetas, tarjetas y movimientos de la base de datos, para todas las
+// pantallas.
 // useLiveQuery vuelve a leer solo cuando cambian, así que lo que se guarda aparece en todas
 // partes al instante. Los movimientos se leen todos: para el uso de una persona son pocos
 // miles y así el saldo de cada cuenta se calcula en un solo lugar.
@@ -6,6 +7,7 @@ import { useLiveQuery } from 'dexie-react-hooks';
 import { createContext, useContext, useMemo } from 'react';
 import { db } from './db.js';
 import { ordenarMovimientos, saldosPorCuenta } from './movimientos.js';
+import { resumenTarjetas } from './tarjetas.js';
 
 const DatosContext = createContext(null);
 
@@ -14,6 +16,7 @@ export function DatosProvider({ children }) {
   const categorias = useLiveQuery(() => db.categorias.orderBy('orden').toArray());
   const etiquetas = useLiveQuery(() => db.etiquetas.orderBy('orden').toArray());
   const movimientos = useLiveQuery(() => db.movimientos.toArray());
+  const tarjetas = useLiveQuery(() => db.tarjetas.orderBy('orden').toArray());
 
   const valor = useMemo(() => {
     const categoriasPorId = new Map((categorias ?? []).map((c) => [c.id, c]));
@@ -22,20 +25,26 @@ export function DatosProvider({ children }) {
     const saldos = saldosPorCuenta(cuentas ?? [], listaMovimientos);
     const listaCuentas = (cuentas ?? []).map((c) => ({ ...c, saldo: saldos.get(c.id) }));
     const cuentasPorId = new Map(listaCuentas.map((c) => [c.id, c]));
+    const resumen = resumenTarjetas(tarjetas ?? [], listaMovimientos);
+    // Cada tarjeta con usado (lo que se debe) y facturas (ver resumenTarjetas).
+    const listaTarjetas = (tarjetas ?? []).map((t) => ({ ...t, ...resumen.get(t.id) }));
+    const tarjetasPorId = new Map(listaTarjetas.map((t) => [t.id, t]));
     return {
       // Mientras se lee la base de datos (unos milisegundos al abrir). Sirve para no mostrar
       // un momento "Crea tu primera cuenta" a quien ya tiene cuentas.
-      cargando: [cuentas, categorias, etiquetas, movimientos].includes(undefined),
+      cargando: [cuentas, categorias, etiquetas, movimientos, tarjetas].includes(undefined),
       cuentas: listaCuentas,
       categorias: categorias ?? [],
       etiquetas: etiquetas ?? [],
+      tarjetas: listaTarjetas,
       // Más recientes primero.
       movimientos: listaMovimientos,
       cuenta: (id) => cuentasPorId.get(id),
       categoria: (id) => categoriasPorId.get(id),
       etiqueta: (id) => etiquetasPorId.get(id),
+      tarjeta: (id) => tarjetasPorId.get(id),
     };
-  }, [cuentas, categorias, etiquetas, movimientos]);
+  }, [cuentas, categorias, etiquetas, movimientos, tarjetas]);
 
   return <DatosContext.Provider value={valor}>{children}</DatosContext.Provider>;
 }

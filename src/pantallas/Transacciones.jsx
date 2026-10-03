@@ -18,17 +18,35 @@ const FILTROS = [
   { valor: 'transferencia', texto: 'Transferencias' },
 ];
 
-function detalle(m, { cuenta, categoria }) {
+// Qué filtro muestra cada tipo: los gastos con tarjeta van con los gastos y los pagos de tarjeta
+// con las transferencias (solo mueven dinero entre lo propio).
+const FILTRO_DE_TIPO = {
+  gasto: 'gasto',
+  gastoTarjeta: 'gasto',
+  ingreso: 'ingreso',
+  transferencia: 'transferencia',
+  pagoTarjeta: 'transferencia',
+};
+
+function detalle(m, { cuenta, categoria, tarjeta }) {
   const nombreCuenta = (id) => cuenta(id)?.nombre ?? 'Cuenta eliminada';
+  const nombreTarjeta = tarjeta(m.tarjetaId)?.nombre ?? 'Tarjeta eliminada';
+  const nombreCategoria = categoria(m.categoriaId)?.nombre ?? 'Sin categoría';
   if (m.tipo === 'transferencia') return `${nombreCuenta(m.cuentaId)} → ${nombreCuenta(m.cuentaDestinoId)}`;
-  return `${categoria(m.categoriaId)?.nombre ?? 'Sin categoría'} · ${nombreCuenta(m.cuentaId)}`;
+  if (m.tipo === 'pagoTarjeta') return `${nombreCuenta(m.cuentaId)} → ${nombreTarjeta}`;
+  if (m.tipo === 'gastoTarjeta') return `${nombreCategoria} · ${nombreTarjeta}${m.cuotas > 1 ? ` · ${m.cuotas} cuotas` : ''}`;
+  return `${nombreCategoria} · ${nombreCuenta(m.cuentaId)}`;
 }
 
 // En "Todo" el banner muestra el neto (ingresos − gastos); en los demás, la suma del tipo.
 function total(lista, filtro) {
   if (filtro !== 'todo') return lista.reduce((t, m) => t + m.valor, 0);
-  return lista.reduce((t, m) => t + (m.tipo === 'ingreso' ? m.valor : m.tipo === 'gasto' ? -m.valor : 0), 0);
+  const signo = { ingreso: 1, gasto: -1 };
+  return lista.reduce((t, m) => t + (signo[FILTRO_DE_TIPO[m.tipo]] ?? 0) * m.valor, 0);
 }
+
+// Pendiente o Pagado: solo para gastos e ingresos (las compras con tarjeta se pagan en la factura).
+const estadoDe = (m) => (m.tipo === 'gasto' || m.tipo === 'ingreso' ? (m.pagado ? 'pagado' : 'pendiente') : undefined);
 
 export default function Transacciones() {
   const navegar = useNavigate();
@@ -37,7 +55,9 @@ export default function Transacciones() {
   const datos = useDatos();
 
   // datos.movimientos ya viene ordenado: más recientes primero.
-  const visibles = datos.movimientos.filter((m) => enMes(m.fecha, anio, mes) && (filtro === 'todo' || m.tipo === filtro));
+  const visibles = datos.movimientos.filter(
+    (m) => enMes(m.fecha, anio, mes) && (filtro === 'todo' || FILTRO_DE_TIPO[m.tipo] === filtro),
+  );
 
   const porDia = [];
   for (const m of visibles) {
@@ -98,7 +118,7 @@ export default function Transacciones() {
                   key={m.id}
                   movimiento={m}
                   detalle={detalle(m, datos)}
-                  estado={m.tipo === 'transferencia' ? undefined : m.pagado ? 'pagado' : 'pendiente'}
+                  estado={estadoDe(m)}
                   mostrarRepetir
                   alTocar={() => navegar('/movimientos/' + m.id)}
                 />

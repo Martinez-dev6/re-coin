@@ -4,10 +4,18 @@ import { useDatos } from '../datos/DatosContext.jsx';
 import { tituloMovimiento } from '../datos/movimientos.js';
 import { formatearPesos } from '../utilidades/formato.js';
 import CirculoCategoria from './CirculoCategoria.jsx';
-import { IconoCheckCirculo, IconoReloj, IconoRepetir, IconoTransferencia } from './iconos.jsx';
+import { IconoCheckCirculo, IconoReloj, IconoRepetir, IconoTarjeta, IconoTransferencia } from './iconos.jsx';
 import './FilaMovimiento.css';
 
-const SIGNO = { gasto: '- ', ingreso: '+ ', transferencia: '' };
+const SIGNO = { gasto: '- ', gastoTarjeta: '- ', ingreso: '+ ', transferencia: '', pagoTarjeta: '' };
+// Color del valor: el gasto con tarjeta como gasto y el pago de tarjeta como transferencia.
+const CLASE = {
+  gasto: 'gasto',
+  gastoTarjeta: 'gasto',
+  ingreso: 'ingreso',
+  transferencia: 'transferencia',
+  pagoTarjeta: 'transferencia',
+};
 
 // detalle: texto pequeño bajo la descripción (o un nodo, p. ej. "Cada semana" con ícono).
 // estado: 'pendiente' | 'pagado' | texto libre (p. ej. "En 13 días").
@@ -19,9 +27,9 @@ export default function FilaMovimiento({ movimiento, detalle, estado, mostrarRep
   const Fila = alTocar ? 'button' : 'div';
 
   const circulo =
-    tipo === 'transferencia' ? (
+    tipo === 'transferencia' || tipo === 'pagoTarjeta' ? (
       <span className="circulo-categoria" style={{ background: 'var(--accent-soft)', color: 'var(--accent-text)' }}>
-        <IconoTransferencia tamano={22} grosor={2} />
+        {tipo === 'pagoTarjeta' ? <IconoTarjeta tamano={22} /> : <IconoTransferencia tamano={22} grosor={2} />}
       </span>
     ) : (
       <CirculoCategoria
@@ -46,7 +54,7 @@ export default function FilaMovimiento({ movimiento, detalle, estado, mostrarRep
         <div className="fila-movimiento-detalle">{detalle}</div>
       </div>
       <div className="fila-movimiento-cifras">
-        <div className={'fila-movimiento-valor ' + tipo}>
+        <div className={'fila-movimiento-valor ' + CLASE[tipo]}>
           {SIGNO[tipo]}
           {formatearPesos(valor)}
         </div>

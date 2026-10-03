@@ -1,0 +1,156 @@
+/* Medidas de design/html/Tarjetas.html. Nombre, detalle y "Nueva tarjeta" usan Cuentas.css. */
+
+.tarjetas-grupo + .tarjetas-grupo {
+  margin-top: 18px;
+}
+
+/* La tarjeta entera es un botón (abre Editar tarjeta). */
+.tarjetas-credito {
+  display: block;
+  width: 100%;
+  padding: 14px 16px;
+  color: var(--text);
+  text-align: left;
+}
+
+.tarjetas-cabeza {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.tarjetas-cabeza .icono-circulo.grande {
+  width: 44px;
+  height: 44px;
+  border-radius: 22px;
+}
+
+.tarjetas-porcentaje {
+  flex-shrink: 0;
+  white-space: nowrap;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.tarjetas-credito .cuentas-detalle {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tarjetas-progreso {
+  display: block;
+  margin-top: 12px;
+}
+
+.tarjetas-progreso > span {
+  transition: width 0.34s var(--curva-suave);
+}
+
+.tarjetas-uso {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.tarjetas-uso strong {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.tarjetas-fechas {
+  display: flex;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--divider);
+}
+
+.tarjetas-fechas > span {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.tarjetas-fechas > span.derecha {
+  text-align: right;
+}
+
+.tarjetas-fecha-etiqueta {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.tarjetas-fechas strong {
+  margin-top: 2px;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.tarjetas-fechas strong.pendiente {
+  color: var(--pending);
+}
+
+.tarjetas-fechas strong.vencida {
+  color: var(--expense);
+}
+
+/* ---- Facturas ---- */
+
+.tarjetas-facturas {
+  padding: 0 14px;
+}
+
+.tarjetas-factura {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  height: 60px;
+  padding: 0;
+  border: 0;
+  border-bottom: 1px solid var(--divider);
+  background: transparent;
+  color: var(--text);
+  text-align: left;
+}
+
+.tarjetas-factura:last-child {
+  border-bottom: 0;
+}
+
+.tarjetas-factura-mes {
+  flex-grow: 1;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.tarjetas-factura-cifras {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.tarjetas-factura-valor {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--expense);
+}
+
+.tarjetas-factura-estado {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 2px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.tarjetas-factura-estado.pendiente {
+  color: var(--pending);
+}
+
+.tarjetas-factura-estado.pagada {
+  color: var(--income);
+}

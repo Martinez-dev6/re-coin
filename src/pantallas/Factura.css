@@ -1,0 +1,9 @@
+/* Una factura de una tarjeta (Factura.jsx). */
+
+.factura-contenido {
+  padding-top: 14px;
+}
+
+.factura-pagar {
+  margin-top: 0;
+}

@@ -32,6 +32,13 @@ export function enMes(texto, anio, mes) {
   return d.getFullYear() === anio && d.getMonth() === mes;
 }
 
+// "25 de octubre" (con el año si no es este).
+export function diaYMes(texto) {
+  const d = aFecha(texto);
+  const anio = d.getFullYear() !== new Date().getFullYear() ? ` de ${d.getFullYear()}` : '';
+  return `${d.getDate()} de ${MESES[d.getMonth()]}${anio}`;
+}
+
 // "Hoy · 2 de octubre", "Ayer · 1 de octubre", "Jueves · 15 de octubre" (este mes en curso
 // o los próximos 6 días) o "30 de septiembre".
 export function etiquetaDia(texto) {

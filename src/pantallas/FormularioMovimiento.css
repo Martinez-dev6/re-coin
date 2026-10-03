@@ -226,3 +226,44 @@
 .movimiento-nota::placeholder {
   color: var(--muted);
 }
+
+/* ---- Panel de un día del mes (cierre y pago de una tarjeta) ---- */
+
+.rejilla-dias {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  padding: 6px 0 2px;
+}
+
+.rejilla-dias > button {
+  height: 42px;
+  padding: 0;
+  border: 0;
+  border-radius: 21px;
+  background: transparent;
+  color: var(--text);
+  font-size: 15px;
+  font-weight: 600;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.rejilla-dias > button[aria-checked='true'] {
+  background: var(--banner-bg);
+  color: var(--on-banner);
+}
+
+.rejilla-dias-nota {
+  margin: 10px 2px 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+/* ---- Panel de opciones en lista simple (cuotas, factura) ---- */
+
+.panel-lista-opcion {
+  height: 54px;
+  color: var(--text);
+}

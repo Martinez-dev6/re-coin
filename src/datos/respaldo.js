@@ -20,12 +20,14 @@ const VALIDAR = {
   etiquetas: (e) => esTexto(e.id) && esTexto(e.nombre) && esNumero(e.orden),
   movimientos: (m) =>
     esTexto(m.id) &&
-    ['gasto', 'ingreso', 'transferencia'].includes(m.tipo) &&
+    ['gasto', 'ingreso', 'transferencia', 'gastoTarjeta', 'pagoTarjeta'].includes(m.tipo) &&
     esNumero(m.valor) &&
-    esTexto(m.cuentaId) &&
+    (m.tipo === 'gastoTarjeta' ? esTexto(m.tarjetaId) && /^\d{4}-\d{2}$/.test(m.factura) : esTexto(m.cuentaId)) &&
     /^\d{4}-\d{2}-\d{2}$/.test(m.fecha) &&
     typeof m.pagado === 'boolean' &&
     Array.isArray(m.etiquetaIds),
+  tarjetas: (t) =>
+    esTexto(t.id) && esTexto(t.nombre) && esNumero(t.cupo) && esNumero(t.diaCierre) && esNumero(t.diaPago) && esNumero(t.orden),
 };
 
 // Todas las tablas. La pantalla la tiene leída de antemano (useLiveQuery) para que al tocar

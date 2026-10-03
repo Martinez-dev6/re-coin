@@ -5,8 +5,6 @@ import CabeceraSubpagina from '../componentes/CabeceraSubpagina.jsx';
 const TITULOS = {
   perfil: 'Perfil',
   'pantalla-inicio': 'Pantalla de inicio',
-  tarjetas: 'Tarjetas de crédito',
-  etiquetas: 'Etiquetas',
   graficos: 'Gráficos',
   rendimiento: 'Rendimiento',
   recordatorio: 'Recordatorio diario',
@@ -18,19 +16,14 @@ const TITULOS = {
   'nueva-meta': 'Nueva meta',
   'nuevo-programado': 'Nuevo programado',
   aportar: 'Aportar a la meta',
-  // Formularios del menú "+" (ruta /nuevo/…)
-  ingreso: 'Nuevo ingreso',
-  gasto: 'Nuevo gasto',
-  'gasto-tarjeta': 'Gasto con tarjeta',
-  transferencia: 'Nueva transferencia',
 };
 
-export default function Pendiente({ formulario = false }) {
+export default function Pendiente() {
   const { pantalla } = useParams();
 
   return (
     <div>
-      <CabeceraSubpagina titulo={TITULOS[pantalla] ?? 'Pendiente'} volverA={formulario ? '/' : '/mi-espacio'} />
+      <CabeceraSubpagina titulo={TITULOS[pantalla] ?? 'Pendiente'} volverA="/mi-espacio" />
       <div className="contenido">
         <div className="tarjeta" style={{ marginTop: 16, padding: '18px 16px', color: 'var(--muted)', fontSize: 14 }}>
           Esta pantalla todavía no está construida.

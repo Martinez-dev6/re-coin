@@ -1,16 +1,24 @@
-// Movimientos: ingresos, gastos y transferencias. Modelo en db.js (versión 2).
+// Movimientos: ingresos, gastos, transferencias, gastos con tarjeta y pagos de tarjeta.
+// Modelo en db.js (versiones 2 y 3).
 // Decidido por el dueño (2026-10-03):
 // - El saldo de una cuenta es su saldo inicial más los movimientos pagados; los pendientes no
 //   cuentan hasta marcarlos como pagados.
 // - Las transferencias solo mueven saldo entre cuentas: no son ingresos ni gastos del mes.
+// - Los gastos con tarjeta no tocan las cuentas (van a las facturas; ver tarjetas.js) y cuentan
+//   como gasto en el mes de la compra. El pago de una factura resta de la cuenta y, como una
+//   transferencia, no es gasto otra vez.
 import { hoyTexto } from '../utilidades/fechas.js';
 import { db, nuevoId } from './db.js';
 
+// Las tres opciones de arriba del formulario (el gasto con tarjeta tiene su formulario).
 export const TIPOS_MOVIMIENTO = [
   { valor: 'ingreso', texto: 'Ingreso' },
   { valor: 'gasto', texto: 'Gasto' },
   { valor: 'transferencia', texto: 'Transferencia' },
 ];
+
+// Gastos del mes: también los de tarjeta (en el mes de la compra).
+export const esGasto = (m) => m.tipo === 'gasto' || m.tipo === 'gastoTarjeta';
 
 // Saldo de cada cuenta por id: saldo inicial + movimientos pagados.
 export function saldosPorCuenta(cuentas, movimientos) {
@@ -18,12 +26,13 @@ export function saldosPorCuenta(cuentas, movimientos) {
   const sumar = (id, valor) => saldos.has(id) && saldos.set(id, saldos.get(id) + valor);
   for (const m of movimientos) {
     if (!m.pagado) continue;
-    if (m.tipo === 'transferencia') {
+    if (m.tipo === 'ingreso') sumar(m.cuentaId, m.valor);
+    else if (m.tipo === 'gasto' || m.tipo === 'pagoTarjeta') sumar(m.cuentaId, -m.valor);
+    else if (m.tipo === 'transferencia') {
       sumar(m.cuentaId, -m.valor);
       sumar(m.cuentaDestinoId, m.valor);
-    } else {
-      sumar(m.cuentaId, m.tipo === 'ingreso' ? m.valor : -m.valor);
     }
+    // gastoTarjeta: no toca las cuentas.
   }
   return saldos;
 }
@@ -36,6 +45,7 @@ export const ordenarMovimientos = (lista) =>
 export function tituloMovimiento(m, categoria) {
   if (m.descripcion) return m.descripcion;
   if (m.tipo === 'transferencia') return 'Transferencia';
+  if (m.tipo === 'pagoTarjeta') return 'Pago de tarjeta';
   return categoria(m.categoriaId)?.nombre ?? (m.tipo === 'ingreso' ? 'Ingreso' : 'Gasto');
 }
 
@@ -51,24 +61,33 @@ export function faltante(datos) {
     return null;
   }
   if (!datos.categoriaId) return { campo: 'categoriaId', texto: 'Elige una categoría.' };
+  if (datos.tipo === 'gastoTarjeta') {
+    if (!datos.tarjetaId) return { campo: 'tarjetaId', texto: 'Elige una tarjeta.' };
+    return null;
+  }
   if (!datos.cuentaId) return { campo: 'cuentaId', texto: 'Elige una cuenta.' };
   return null;
 }
 
 // datos: los campos del formulario. Sin id = movimiento nuevo. Devuelve el id.
 export async function guardarMovimiento(id, datos) {
-  const transferencia = datos.tipo === 'transferencia';
+  const { tipo } = datos;
+  const transferencia = tipo === 'transferencia';
+  const conTarjeta = tipo === 'gastoTarjeta';
   const campos = {
-    tipo: datos.tipo,
+    tipo,
     valor: Math.round(datos.valor),
     descripcion: datos.descripcion.trim(),
     categoriaId: transferencia ? null : datos.categoriaId,
-    cuentaId: datos.cuentaId,
+    cuentaId: conTarjeta ? null : datos.cuentaId,
     cuentaDestinoId: transferencia ? datos.cuentaDestinoId : null,
     fecha: datos.fecha || hoyTexto(),
-    pagado: transferencia ? true : Boolean(datos.pagado),
+    pagado: transferencia || conTarjeta ? true : Boolean(datos.pagado),
     etiquetaIds: transferencia ? [] : [...new Set(datos.etiquetaIds)],
     observacion: datos.observacion.trim(),
+    tarjetaId: conTarjeta ? datos.tarjetaId : null,
+    cuotas: conTarjeta ? Math.max(1, datos.cuotas || 1) : null,
+    factura: conTarjeta ? datos.factura : null,
   };
   if (id) {
     await db.movimientos.update(id, campos);

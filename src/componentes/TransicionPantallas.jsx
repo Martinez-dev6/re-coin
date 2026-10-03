@@ -29,7 +29,14 @@ window.addEventListener('popstate', (evento) => {
 // Pestañas de la barra inferior, en orden; formularios (suben desde abajo, sin barra) y
 // subpantallas sin barra (entran desde la derecha por encima de ella). Ver App.jsx.
 const PESTANAS = ['/', '/transacciones', '/planes', '/mi-espacio'];
-const FORMULARIOS = [/^\/nuevo\//, /^\/cuentas\//, /^\/categorias\//, /^\/etiquetas\//, /^\/movimientos\/[^/]+\/editar$/];
+const FORMULARIOS = [
+  /^\/nuevo\//,
+  /^\/cuentas\//,
+  /^\/categorias\//,
+  /^\/etiquetas\//,
+  /^\/tarjetas\//,
+  /^\/movimientos\/[^/]+\/editar$/,
+];
 const SIN_BARRA = [/^\/movimientos\/[^/]+$/];
 
 // pestana: índice en PESTANAS (−1 si no es de ninguna). raiz: la pantalla principal de la

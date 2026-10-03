@@ -62,7 +62,7 @@ function Grupo({ titulo, children }) {
 export default function MiEspacio() {
   const navegar = useNavigate();
   const { acento, modo, cambiarModo } = useTema();
-  const { cuentas } = useDatos();
+  const { cuentas, tarjetas } = useDatos();
   const [panelModo, setPanelModo] = useState(false);
   const pendiente = (clave) => () => navegar('/pendiente/' + clave);
   const modoActual = OPCIONES_MODO.find((o) => o.valor === modo);
@@ -78,7 +78,10 @@ export default function MiEspacio() {
             </div>
             <div className="mi-espacio-nombre">
               <h1>{PERFIL.nombre}</h1>
-              <p>{cuentas.length === 1 ? '1 cuenta' : `${cuentas.length} cuentas`} · 0 tarjetas</p>
+              <p>
+                {cuentas.length === 1 ? '1 cuenta' : `${cuentas.length} cuentas`} ·{' '}
+                {tarjetas.length === 1 ? '1 tarjeta' : `${tarjetas.length} tarjetas`}
+              </p>
             </div>
             <button type="button" className="boton-banner" aria-label="Editar perfil" onClick={pendiente('perfil')}>
               <IconoLapiz />
@@ -100,7 +103,7 @@ export default function MiEspacio() {
 
         <Grupo titulo="Gestionar">
           <Fila Icono={IconoCuentas} texto="Cuentas" onClick={() => navegar('/mi-espacio/cuentas')} />
-          <Fila Icono={IconoTarjeta} texto="Tarjetas de crédito" onClick={pendiente('tarjetas')} />
+          <Fila Icono={IconoTarjeta} texto="Tarjetas de crédito" onClick={() => navegar('/mi-espacio/tarjetas')} />
           <Fila Icono={IconoCategorias} texto="Categorías" onClick={() => navegar('/mi-espacio/categorias')} />
           <Fila Icono={IconoEtiqueta} texto="Etiquetas" onClick={() => navegar('/mi-espacio/etiquetas')} />
         </Grupo>

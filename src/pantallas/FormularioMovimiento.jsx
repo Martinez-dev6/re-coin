@@ -1,7 +1,8 @@
-// Nuevo gasto, ingreso o transferencia (/nuevo/gasto, /nuevo/ingreso, /nuevo/transferencia;
-// ?cuenta=id elige la cuenta) y editar un movimiento (/movimientos/:id/editar).
-// design/capturas/NuevoGasto.png, NuevoIngreso.png, NuevaTransferencia.png, SelectorCategoria.png
-// y SelectorCuenta.png. "Repetir" queda para el paso 7 (Programados).
+// Nuevo gasto, ingreso, transferencia o gasto con tarjeta (/nuevo/gasto, /nuevo/ingreso,
+// /nuevo/transferencia, /nuevo/gasto-tarjeta; ?cuenta=id elige la cuenta) y editar un movimiento
+// (/movimientos/:id/editar). design/capturas/NuevoGasto.png, NuevoIngreso.png,
+// NuevaTransferencia.png, GastoTarjeta.png, SelectorCategoria.png y SelectorCuenta.png.
+// "Repetir" queda para Programados.
 import { useEffect, useRef, useState } from 'react';
 import { Navigate, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import CirculoCategoria from '../componentes/CirculoCategoria.jsx';
@@ -17,6 +18,7 @@ import {
 } from '../componentes/Formulario.jsx';
 import {
   IconoCalendario,
+  IconoCapas,
   IconoCategorias,
   IconoCheck,
   IconoCheckCirculo,
@@ -26,6 +28,8 @@ import {
   IconoIngresoDiagonal,
   IconoMas,
   IconoNota,
+  IconoRecibo,
+  IconoTarjeta,
   IconoTexto,
 } from '../componentes/iconos.jsx';
 import { IconoPorNombre } from '../componentes/iconosPorNombre.jsx';
@@ -33,6 +37,7 @@ import PanelInferior, { DURACION_PANEL_MS } from '../componentes/PanelInferior.j
 import { useDatos } from '../datos/DatosContext.jsx';
 import { guardarEtiqueta } from '../datos/etiquetas.js';
 import { faltante, guardarMovimiento, TIPOS_MOVIMIENTO } from '../datos/movimientos.js';
+import { cuotasDe, facturaDeFecha, nombreFactura, sumarMeses } from '../datos/tarjetas.js';
 import { estiloIconoCuenta } from '../tema/colores.js';
 import { hoyTexto } from '../utilidades/fechas.js';
 import { formatearPesos } from '../utilidades/formato.js';
@@ -43,7 +48,14 @@ const TITULOS = {
   gasto: ['Nuevo gasto', 'Editar gasto', 'Guardar gasto'],
   ingreso: ['Nuevo ingreso', 'Editar ingreso', 'Guardar ingreso'],
   transferencia: ['Nueva transferencia', 'Editar transferencia', 'Guardar transferencia'],
+  gastoTarjeta: ['Gasto con tarjeta', 'Editar gasto con tarjeta', 'Guardar gasto de tarjeta'],
 };
+
+// Ruta (/nuevo/…) → tipo.
+const TIPO_POR_RUTA = { gasto: 'gasto', ingreso: 'ingreso', transferencia: 'transferencia', 'gasto-tarjeta': 'gastoTarjeta' };
+
+// Hasta cuántas cuotas se puede diferir una compra.
+const CUOTAS = Array.from({ length: 36 }, (_, i) => i + 1);
 
 // Íconos de las filas con su tamaño de fila (18 px).
 const IconoFecha = (p) => <IconoCalendario tamano={18} {...p} />;
@@ -51,23 +63,46 @@ const IconoDesde = (p) => <IconoGastoDiagonal tamano={18} grosor={2} {...p} />;
 const IconoHacia = (p) => <IconoIngresoDiagonal tamano={18} grosor={2} {...p} />;
 const IconoPagado = (p) => <IconoCheckCirculo tamano={18} grosor={2} {...p} />;
 
-const EJEMPLOS = { gasto: 'Ej. Gasolina', ingreso: 'Ej. Pago de cliente', transferencia: 'Opcional' };
+const IconoCuotas = (p) => <IconoCapas tamano={18} {...p} />;
+const IconoFactura = (p) => <IconoRecibo tamano={18} {...p} />;
 
-// La última cuenta usada queda elegida en el siguiente movimiento.
+const EJEMPLOS = {
+  gasto: 'Ej. Gasolina',
+  ingreso: 'Ej. Pago de cliente',
+  transferencia: 'Opcional',
+  gastoTarjeta: 'Ej. Llantas',
+};
+
+// La última cuenta y la última tarjeta usadas quedan elegidas en el siguiente movimiento.
 const CLAVE_ULTIMA_CUENTA = 'sendo.ultimaCuenta';
-function leerUltimaCuenta() {
+const CLAVE_ULTIMA_TARJETA = 'sendo.ultimaTarjeta';
+function leer(clave) {
   try {
-    return localStorage.getItem(CLAVE_ULTIMA_CUENTA);
+    return localStorage.getItem(clave);
   } catch {
     return null;
   }
 }
-function recordarCuenta(id) {
+function recordar(clave, id) {
   try {
-    localStorage.setItem(CLAVE_ULTIMA_CUENTA, id);
+    localStorage.setItem(clave, id);
   } catch {
     // Sin almacenamiento (navegación privada): solo no se recuerda.
   }
+}
+
+// "3 de $ 100.000" (la primera cuota lleva lo que no da exacto) o "Sin cuotas".
+function textoCuotas(cuotas, valor) {
+  if (!(cuotas > 1)) return 'Sin cuotas';
+  if (!(valor > 0)) return `${cuotas} cuotas`;
+  return `${cuotas} de ${formatearPesos(cuotasDe({ valor, cuotas, factura: '2000-01' }).at(-1).valor)}`;
+}
+
+// Facturas que se pueden elegir: la anterior a la que toca por la fecha y las tres siguientes.
+function opcionesFactura(tarjeta, fecha) {
+  if (!tarjeta) return [];
+  const propia = facturaDeFecha(tarjeta, fecha);
+  return [-1, 0, 1, 2, 3].map((n) => sumarMeses(propia, n));
 }
 
 // Lo escrito en un formulario sin guardar, por entrada del historial. Si se sale a crear una
@@ -86,19 +121,35 @@ export default function FormularioMovimiento() {
     if (!movimiento) return <Navigate to="/transacciones" replace />;
     return <Campos key={clave} clave={clave} movimiento={movimiento} />;
   }
-  const tipo = TIPOS_MOVIMIENTO.some((t) => t.valor === pantalla) ? pantalla : 'gasto';
+  const tipo = TIPO_POR_RUTA[pantalla] ?? 'gasto';
   if (cargando) return <CabeceraFormulario titulo={TITULOS[tipo][0]} volverA="/" />;
   return <Campos key={clave} clave={clave} tipoInicial={tipo} cuentaPedida={parametros.get('cuenta')} />;
 }
 
-function datosIniciales({ movimiento, tipoInicial, cuentaPedida, cuentas }) {
-  if (movimiento) {
-    const { tipo, valor, descripcion, categoriaId, cuentaId, cuentaDestinoId, fecha, pagado, etiquetaIds, observacion } =
-      movimiento;
-    return { tipo, valor, descripcion, categoriaId, cuentaId, cuentaDestinoId, fecha, pagado, etiquetaIds, observacion };
-  }
-  const existe = (cuentaId) => cuentas.some((c) => c.id === cuentaId);
-  const cuentaId = [cuentaPedida, leerUltimaCuenta(), cuentas[0]?.id].find(existe) ?? null;
+// Campos que el formulario copia de un movimiento al editarlo.
+const CAMPOS = [
+  'tipo',
+  'valor',
+  'descripcion',
+  'categoriaId',
+  'cuentaId',
+  'cuentaDestinoId',
+  'fecha',
+  'pagado',
+  'etiquetaIds',
+  'observacion',
+  'tarjetaId',
+  'cuotas',
+  'factura',
+];
+
+function datosIniciales({ movimiento, tipoInicial, cuentaPedida, cuentas, tarjetas }) {
+  if (movimiento) return Object.fromEntries(CAMPOS.map((campo) => [campo, movimiento[campo] ?? null]));
+  const existe = (lista) => (id) => lista.some((x) => x.id === id);
+  const cuentaId = [cuentaPedida, leer(CLAVE_ULTIMA_CUENTA), cuentas[0]?.id].find(existe(cuentas)) ?? null;
+  const tarjetaId = [leer(CLAVE_ULTIMA_TARJETA), tarjetas[0]?.id].find(existe(tarjetas)) ?? null;
+  const tarjeta = tarjetas.find((t) => t.id === tarjetaId);
+  const fecha = hoyTexto();
   return {
     tipo: tipoInicial,
     valor: 0,
@@ -106,29 +157,45 @@ function datosIniciales({ movimiento, tipoInicial, cuentaPedida, cuentas }) {
     categoriaId: null,
     cuentaId,
     cuentaDestinoId: cuentas.find((c) => c.id !== cuentaId)?.id ?? null,
-    fecha: hoyTexto(),
+    fecha,
     pagado: true,
     etiquetaIds: [],
     observacion: '',
+    tarjetaId,
+    cuotas: 1,
+    factura: tarjeta ? facturaDeFecha(tarjeta, fecha) : null,
   };
 }
 
 function Campos({ clave, movimiento, tipoInicial, cuentaPedida }) {
   const navegar = useNavigate();
-  const { cuentas, categorias, etiquetas, cuenta: buscarCuenta, categoria: buscarCategoria, etiqueta: buscarEtiqueta } =
-    useDatos();
+  const {
+    cuentas,
+    categorias,
+    etiquetas,
+    tarjetas,
+    cuenta: buscarCuenta,
+    categoria: buscarCategoria,
+    etiqueta: buscarEtiqueta,
+    tarjeta: buscarTarjeta,
+  } = useDatos();
   const borrador = borradores.get(clave);
-  const [datos, setDatos] = useState(() => borrador?.datos ?? datosIniciales({ movimiento, tipoInicial, cuentaPedida, cuentas }));
+  const [datos, setDatos] = useState(
+    () => borrador?.datos ?? datosIniciales({ movimiento, tipoInicial, cuentaPedida, cuentas, tarjetas }),
+  );
   // Mientras no se toque "Pagado" a mano, una fecha futura lo apaga y una de hoy o antes lo prende.
   const [pagadoAMano, setPagadoAMano] = useState(borrador?.pagadoAMano ?? Boolean(movimiento));
-  const [panel, setPanel] = useState(null); // 'categoria' | 'cuentaId' | 'cuentaDestinoId' | 'etiquetas' | 'observacion'
+  // Igual con la factura de un gasto con tarjeta: sigue a la fecha y a la tarjeta (día de cierre).
+  const [facturaAMano, setFacturaAMano] = useState(borrador?.facturaAMano ?? Boolean(movimiento));
+  // 'categoria' | 'cuentaId' | 'cuentaDestinoId' | 'tarjetaId' | 'cuotas' | 'factura' | 'etiquetas' | 'observacion'
+  const [panel, setPanel] = useState(null);
   const [aviso, setAviso] = useState(null);
   const [guardando, setGuardando] = useState(false);
   const monto = useRef(null);
 
   useEffect(() => {
-    borradores.set(clave, { datos, pagadoAMano });
-  }, [clave, datos, pagadoAMano]);
+    borradores.set(clave, { datos, pagadoAMano, facturaAMano });
+  }, [clave, datos, pagadoAMano, facturaAMano]);
 
   // El aviso ("Elige una categoría.") se va solo.
   useEffect(() => {
@@ -140,6 +207,9 @@ function Campos({ clave, movimiento, tipoInicial, cuentaPedida }) {
   const cambiar = (cambios) => setDatos((d) => ({ ...d, ...cambios }));
   const { tipo } = datos;
   const transferencia = tipo === 'transferencia';
+  const conTarjeta = tipo === 'gastoTarjeta';
+  // Las categorías son de gasto o de ingreso; el gasto con tarjeta usa las de gasto.
+  const tipoCategoria = tipo === 'ingreso' ? 'ingreso' : 'gasto';
   const [tituloNuevo, tituloEditar, textoGuardar] = TITULOS[tipo];
   const volverA = movimiento ? `/movimientos/${movimiento.id}` : '/';
 
@@ -154,7 +224,22 @@ function Campos({ clave, movimiento, tipoInicial, cuentaPedida }) {
       };
     });
 
-  const cambiarFecha = (fecha) => cambiar(pagadoAMano ? { fecha } : { fecha, pagado: fecha <= hoyTexto() });
+  // La factura que corresponde a una fecha y una tarjeta, si no se eligió a mano.
+  const facturaSegun = (tarjetaId, fecha, actual) => {
+    const tarjeta = buscarTarjeta(tarjetaId);
+    return facturaAMano || !tarjeta ? actual : facturaDeFecha(tarjeta, fecha);
+  };
+
+  const cambiarFecha = (fecha) =>
+    setDatos((d) => ({
+      ...d,
+      fecha,
+      pagado: pagadoAMano ? d.pagado : fecha <= hoyTexto(),
+      factura: facturaSegun(d.tarjetaId, fecha, d.factura),
+    }));
+
+  const elegirTarjeta = (tarjetaId) =>
+    setDatos((d) => ({ ...d, tarjetaId, factura: facturaSegun(tarjetaId, d.fecha, d.factura) }));
 
   // Origen y destino nunca son la misma: si se elige como origen la de destino, se intercambian.
   const elegirCuenta = (campo, id) =>
@@ -187,7 +272,8 @@ function Campos({ clave, movimiento, tipoInicial, cuentaPedida }) {
     setGuardando(true);
     try {
       await guardarMovimiento(movimiento?.id, datos);
-      recordarCuenta(datos.cuentaId);
+      if (conTarjeta) recordar(CLAVE_ULTIMA_TARJETA, datos.tarjetaId);
+      else recordar(CLAVE_ULTIMA_CUENTA, datos.cuentaId);
       borradores.delete(clave);
       volver(navegar, volverA);
     } finally {
@@ -199,7 +285,26 @@ function Campos({ clave, movimiento, tipoInicial, cuentaPedida }) {
   const nombreCuenta = (id) => buscarCuenta(id)?.nombre;
   const nombresEtiquetas = datos.etiquetaIds.map((id) => buscarEtiqueta(id)?.nombre).filter(Boolean);
   const vacio = (texto) => <span className="campo-vacio">{texto}</span>;
+  // Sin cuentas (o sin tarjetas, en un gasto con tarjeta) no hay dónde registrar el movimiento.
+  const sinDonde = conTarjeta ? tarjetas.length === 0 : cuentas.length === 0;
 
+  const filaCategoria = (
+    <Campo Icono={IconoCategorias} etiqueta="Categoría" alTocar={() => setPanel('categoria')}>
+      {categoria ? (
+        <>
+          <CirculoCategoria icono={categoria.icono} color={categoria.color} talla="chico" />
+          <span className="campo-recortado">{categoria.nombre}</span>
+        </>
+      ) : (
+        vacio('Elegir')
+      )}
+    </Campo>
+  );
+  const filaEtiquetas = (
+    <Campo Icono={IconoEtiqueta} etiqueta="Etiquetas" alTocar={() => setPanel('etiquetas')}>
+      {nombresEtiquetas.length > 0 ? <span className="campo-recortado">{nombresEtiquetas.join(', ')}</span> : vacio('Agregar')}
+    </Campo>
+  );
   const filaDescripcion = (
     <Campo Icono={IconoTexto} etiqueta="Descripción">
       <EntradaTexto valor={datos.descripcion} alCambiar={(descripcion) => cambiar({ descripcion })} ejemplo={EJEMPLOS[tipo]} />
@@ -220,38 +325,58 @@ function Campos({ clave, movimiento, tipoInicial, cuentaPedida }) {
     <div>
       <CabeceraFormulario titulo={movimiento ? tituloEditar : tituloNuevo} volverA={volverA}>
         <MontoEditable ref={monto} etiqueta="Valor" valor={datos.valor} alCambiar={(valor) => cambiar({ valor })} />
-        {/* Al editar no se cambia el tipo: la categoría y las cuentas dependen de él. */}
-        <Segmentado
-          opciones={TIPOS_MOVIMIENTO}
-          valor={tipo}
-          etiqueta="Tipo de movimiento"
-          bloqueado={Boolean(movimiento)}
-          alCambiar={cambiarTipo}
-        />
+        {/* Al editar no se cambia el tipo: la categoría y las cuentas dependen de él. El gasto con
+            tarjeta tiene su propio formulario, sin estas opciones (design/capturas/GastoTarjeta.png). */}
+        {!conTarjeta && (
+          <Segmentado
+            opciones={TIPOS_MOVIMIENTO}
+            valor={tipo}
+            etiqueta="Tipo de movimiento"
+            bloqueado={Boolean(movimiento)}
+            alCambiar={cambiarTipo}
+          />
+        )}
       </CabeceraFormulario>
 
       <div className="formulario-contenido">
-        {cuentas.length === 0 ? (
+        {sinDonde ? (
           <div className="tarjeta movimiento-sin-cuentas">
-            <p>Para registrar movimientos primero crea una cuenta: banco, billetera o efectivo.</p>
-            <button type="button" className="boton-principal" onClick={() => navegar('/cuentas/nueva')}>
-              Crear cuenta
+            <p>
+              {conTarjeta
+                ? 'Para registrar compras con tarjeta primero crea una tarjeta.'
+                : 'Para registrar movimientos primero crea una cuenta: banco, billetera o efectivo.'}
+            </p>
+            <button
+              type="button"
+              className="boton-principal"
+              onClick={() => navegar(conTarjeta ? '/tarjetas/nueva' : '/cuentas/nueva')}
+            >
+              {conTarjeta ? 'Crear tarjeta' : 'Crear cuenta'}
             </button>
+          </div>
+        ) : conTarjeta ? (
+          <div className="tarjeta campos">
+            {filaDescripcion}
+            {filaCategoria}
+            <Campo Icono={IconoTarjeta} etiqueta="Tarjeta" alTocar={() => setPanel('tarjetaId')}>
+              {buscarTarjeta(datos.tarjetaId)?.nombre ?? vacio('Elegir')}
+            </Campo>
+            <Campo Icono={IconoCuotas} etiqueta="Cuotas" alTocar={() => setPanel('cuotas')}>
+              {textoCuotas(datos.cuotas, datos.valor)}
+            </Campo>
+            <Campo Icono={IconoFactura} etiqueta="Factura" alTocar={() => setPanel('factura')}>
+              {datos.factura ? nombreFactura(datos.factura) : vacio('Elegir')}
+            </Campo>
+            {filaFecha}
+            {filaEtiquetas}
+            {filaObservacion}
           </div>
         ) : transferencia ? (
           <div className="tarjeta campos">
-            <Campo
-              Icono={IconoDesde}
-              etiqueta="Desde"
-              alTocar={() => setPanel('cuentaId')}
-            >
+            <Campo Icono={IconoDesde} etiqueta="Desde" alTocar={() => setPanel('cuentaId')}>
               {nombreCuenta(datos.cuentaId) ?? vacio('Elegir')}
             </Campo>
-            <Campo
-              Icono={IconoHacia}
-              etiqueta="Hacia"
-              alTocar={() => setPanel('cuentaDestinoId')}
-            >
+            <Campo Icono={IconoHacia} etiqueta="Hacia" alTocar={() => setPanel('cuentaDestinoId')}>
               {nombreCuenta(datos.cuentaDestinoId) ?? vacio('Elegir')}
             </Campo>
             {filaFecha}
@@ -261,27 +386,13 @@ function Campos({ clave, movimiento, tipoInicial, cuentaPedida }) {
         ) : (
           <div className="tarjeta campos">
             {filaDescripcion}
-            <Campo Icono={IconoCategorias} etiqueta="Categoría" alTocar={() => setPanel('categoria')}>
-              {categoria ? (
-                <>
-                  <CirculoCategoria icono={categoria.icono} color={categoria.color} talla="chico" />
-                  <span className="campo-recortado">{categoria.nombre}</span>
-                </>
-              ) : (
-                vacio('Elegir')
-              )}
-            </Campo>
+            {filaCategoria}
             <Campo Icono={IconoCuentas} etiqueta="Cuenta" alTocar={() => setPanel('cuentaId')}>
               {nombreCuenta(datos.cuentaId) ?? vacio('Elegir')}
             </Campo>
             {filaFecha}
-            <Campo Icono={IconoEtiqueta} etiqueta="Etiquetas" alTocar={() => setPanel('etiquetas')}>
-              {nombresEtiquetas.length > 0 ? <span className="campo-recortado">{nombresEtiquetas.join(', ')}</span> : vacio('Agregar')}
-            </Campo>
-            <Campo
-              Icono={IconoPagado}
-              etiqueta={tipo === 'ingreso' ? 'Recibido' : 'Pagado'}
-            >
+            {filaEtiquetas}
+            <Campo Icono={IconoPagado} etiqueta={tipo === 'ingreso' ? 'Recibido' : 'Pagado'}>
               <Interruptor
                 activo={datos.pagado}
                 etiqueta={tipo === 'ingreso' ? 'Recibido' : 'Pagado'}
@@ -304,8 +415,8 @@ function Campos({ clave, movimiento, tipoInicial, cuentaPedida }) {
         )}
         <button
           type="button"
-          className={'boton-principal guardar-' + tipo}
-          disabled={guardando || cuentas.length === 0}
+          className={'boton-principal guardar-' + (conTarjeta ? 'gasto' : tipo)}
+          disabled={guardando || sinDonde}
           onClick={guardar}
         >
           {textoGuardar}
@@ -322,7 +433,7 @@ function Campos({ clave, movimiento, tipoInicial, cuentaPedida }) {
         <div className="panel-desplazable">
           <div className="rejilla-categorias" role="radiogroup" aria-label="Categoría">
             {categorias
-              .filter((c) => c.tipo === tipo)
+              .filter((c) => c.tipo === tipoCategoria)
               .map((c) => (
                 <button
                   key={c.id}
@@ -339,7 +450,7 @@ function Campos({ clave, movimiento, tipoInicial, cuentaPedida }) {
             <button
               type="button"
               className="rejilla-categorias-opcion nueva"
-              onClick={() => irACrear(`/categorias/nueva?tipo=${tipo}`)}
+              onClick={() => irACrear(`/categorias/nueva?tipo=${tipoCategoria}`)}
             >
               <span className="rejilla-categorias-nueva">
                 <IconoMas />
@@ -392,6 +503,98 @@ function Campos({ clave, movimiento, tipoInicial, cuentaPedida }) {
           </div>
         </PanelInferior>
       ))}
+
+      <PanelInferior
+        abierto={panel === 'tarjetaId'}
+        alCerrar={() => setPanel(null)}
+        titulo="Tarjeta"
+        accion={{ texto: 'Listo', alTocar: () => setPanel(null) }}
+      >
+        <div className="panel-desplazable" role="radiogroup" aria-label="Tarjeta">
+          {tarjetas.map((t) => {
+            const marcada = t.id === datos.tarjetaId;
+            return (
+              <button
+                key={t.id}
+                type="button"
+                role="radio"
+                aria-checked={marcada}
+                className="panel-opcion"
+                onClick={() => elegirTarjeta(t.id)}
+              >
+                <span className="icono-circulo grande">
+                  <IconoPorNombre nombre={t.icono} tamano={20} />
+                </span>
+                <span className="panel-opcion-textos">
+                  <span className="panel-opcion-titulo">{t.nombre}</span>
+                  <span className="panel-opcion-detalle">Disponible {formatearPesos(Math.max(0, t.cupo - t.usado))}</span>
+                </span>
+                <span className={'radio' + (marcada ? ' marcado' : '')}>{marcada && <IconoCheck tamano={14} />}</span>
+              </button>
+            );
+          })}
+          <button type="button" className="panel-opcion panel-opcion-nueva" onClick={() => irACrear('/tarjetas/nueva')}>
+            <span className="icono-circulo grande">
+              <IconoMas />
+            </span>
+            <span className="panel-opcion-titulo">Nueva tarjeta</span>
+          </button>
+        </div>
+      </PanelInferior>
+
+      <PanelInferior
+        abierto={panel === 'cuotas'}
+        alCerrar={() => setPanel(null)}
+        titulo="Cuotas"
+        accion={{ texto: 'Listo', alTocar: () => setPanel(null) }}
+      >
+        <div className="rejilla-dias" role="radiogroup" aria-label="Cuotas">
+          {CUOTAS.map((n) => (
+            <button key={n} type="button" role="radio" aria-checked={datos.cuotas === n} onClick={() => cambiar({ cuotas: n })}>
+              {n}
+            </button>
+          ))}
+        </div>
+        <p className="rejilla-dias-nota">
+          {datos.cuotas > 1
+            ? `Cada cuota va en su factura, empezando por la de ${datos.factura ? nombreFactura(datos.factura).toLowerCase() : 'la compra'}.`
+            : 'Todo va en una sola factura.'}
+        </p>
+      </PanelInferior>
+
+      <PanelInferior
+        abierto={panel === 'factura'}
+        alCerrar={() => setPanel(null)}
+        titulo={datos.cuotas > 1 ? 'Factura de la primera cuota' : 'Factura'}
+        accion={{ texto: 'Listo', alTocar: () => setPanel(null) }}
+      >
+        <div role="radiogroup" aria-label="Factura">
+          {opcionesFactura(buscarTarjeta(datos.tarjetaId), datos.fecha).map((mes) => {
+            const marcada = mes === datos.factura;
+            return (
+              <button
+                key={mes}
+                type="button"
+                role="radio"
+                aria-checked={marcada}
+                className="panel-opcion panel-lista-opcion"
+                onClick={() => {
+                  setFacturaAMano(true);
+                  cambiar({ factura: mes });
+                }}
+              >
+                <span className="icono-circulo">
+                  <IconoFactura tamano={16} />
+                </span>
+                <span className="panel-opcion-textos">
+                  <span className="panel-opcion-titulo">{nombreFactura(mes)}</span>
+                </span>
+                <span className={'radio' + (marcada ? ' marcado' : '')}>{marcada && <IconoCheck tamano={14} />}</span>
+              </button>
+            );
+          })}
+        </div>
+      </PanelInferior>
 
       <PanelInferior
         abierto={panel === 'etiquetas'}

@@ -27,6 +27,17 @@ db.version(2).stores({
   etiquetas: 'id, orden',
 });
 
+// Paso 7a: tarjetas de crédito (2026-10-03). Ver tarjetas.js.
+//   tarjetas:    id, nombre, cupo, diaCierre, diaPago, cuentaPagoId (null = sin elegir), icono, orden
+//   movimientos, dos tipos más:
+//     'gastoTarjeta': compra con tarjeta. tarjetaId, cuotas (1 o más), factura ('AAAA-MM' de la
+//                     primera cuota). cuentaId null: no toca las cuentas. pagado siempre true.
+//     'pagoTarjeta':  pago de una factura. cuentaId (de dónde sale), tarjetaId, factura.
+db.version(3).stores({
+  movimientos: 'id, fecha, cuentaId, cuentaDestinoId, categoriaId, *etiquetaIds, tarjetaId',
+  tarjetas: 'id, orden',
+});
+
 // Solo la primera vez que se crea la base de datos. Las nuevas toman orden = Date.now()
 // (ordenAlFinal), así que "Otros" lleva un orden mayor para seguir de último.
 const ORDEN_ULTIMAS = 9e15;

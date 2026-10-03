@@ -8,6 +8,7 @@ import { Campo, PieFormulario } from '../componentes/Formulario.jsx';
 import {
   IconoBasura,
   IconoCalendario,
+  IconoCapas,
   IconoCategorias,
   IconoCheckCirculo,
   IconoCuentas,
@@ -16,11 +17,14 @@ import {
   IconoIngresoDiagonal,
   IconoLapiz,
   IconoNota,
+  IconoRecibo,
   IconoReloj,
+  IconoTarjeta,
 } from '../componentes/iconos.jsx';
 import PanelInferior, { DURACION_PANEL_MS } from '../componentes/PanelInferior.jsx';
 import { useDatos } from '../datos/DatosContext.jsx';
 import { cambiarPagado, eliminarMovimiento, tituloMovimiento } from '../datos/movimientos.js';
+import { nombreFactura } from '../datos/tarjetas.js';
 import { etiquetaDia } from '../utilidades/fechas.js';
 import { formatearPesos } from '../utilidades/formato.js';
 import { volver } from '../utilidades/navegacion.js';
@@ -28,11 +32,13 @@ import './DetalleMovimiento.css';
 import './FormularioMovimiento.css';
 
 const LISTA = '/transacciones';
-const SIGNO = { gasto: '- ', ingreso: '+ ', transferencia: '' };
+const SIGNO = { gasto: '- ', gastoTarjeta: '- ', ingreso: '+ ', transferencia: '', pagoTarjeta: '' };
 
 const IconoFecha = (p) => <IconoCalendario tamano={18} {...p} />;
 const IconoDesde = (p) => <IconoGastoDiagonal tamano={18} grosor={2} {...p} />;
 const IconoHacia = (p) => <IconoIngresoDiagonal tamano={18} grosor={2} {...p} />;
+const IconoCuotas = (p) => <IconoCapas tamano={18} {...p} />;
+const IconoFactura = (p) => <IconoRecibo tamano={18} {...p} />;
 
 export default function DetalleMovimiento() {
   const { id } = useParams();
@@ -49,12 +55,38 @@ export default function DetalleMovimiento() {
 
 function Contenido({ movimiento: m }) {
   const navegar = useNavigate();
-  const { cuenta, categoria: buscarCategoria, etiqueta } = useDatos();
+  const { cuenta, categoria: buscarCategoria, etiqueta, tarjeta } = useDatos();
   const [panelEliminar, setPanelEliminar] = useState(false);
   const eliminando = useRef(false);
-  const transferencia = m.tipo === 'transferencia';
+  // Solo los gastos e ingresos tienen Pagado / Pendiente.
+  const conEstado = m.tipo === 'gasto' || m.tipo === 'ingreso';
+  // El pago de una factura se hace desde la factura; aquí solo se puede eliminar.
+  const editable = m.tipo !== 'pagoTarjeta';
   const categoria = buscarCategoria(m.categoriaId);
   const nombreCuenta = (id) => cuenta(id)?.nombre ?? 'Cuenta eliminada';
+  const nombreTarjeta = tarjeta(m.tarjetaId)?.nombre ?? 'Tarjeta eliminada';
+  const filaCategoria = (
+    <Campo Icono={IconoCategorias} etiqueta="Categoría">
+      {categoria ? (
+        <>
+          <CirculoCategoria icono={categoria.icono} color={categoria.color} talla="chico" />
+          <span className="campo-recortado">{categoria.nombre}</span>
+        </>
+      ) : (
+        <span className="campo-vacio">Sin categoría</span>
+      )}
+    </Campo>
+  );
+  const filaTarjeta = (
+    <Campo Icono={IconoTarjeta} etiqueta="Tarjeta">
+      {nombreTarjeta}
+    </Campo>
+  );
+  const filaFactura = m.factura && (
+    <Campo Icono={IconoFactura} etiqueta="Factura">
+      {nombreFactura(m.factura)}
+    </Campo>
+  );
   const anio = Number(m.fecha.slice(0, 4));
   const fecha = etiquetaDia(m.fecha) + (anio !== new Date().getFullYear() ? ` de ${anio}` : '');
   const etiquetas = m.etiquetaIds.map((e) => etiqueta(e)?.nombre).filter(Boolean);
@@ -80,7 +112,7 @@ function Contenido({ movimiento: m }) {
             {formatearPesos(m.valor)}
           </div>
           {/* Tocar el estado lo cambia: así se marca como pagado lo que estaba pendiente. */}
-          {!transferencia && (
+          {conEstado && (
             <button
               type="button"
               className="detalle-estado"
@@ -96,7 +128,7 @@ function Contenido({ movimiento: m }) {
 
       <div className="formulario-contenido">
         <div className="tarjeta campos">
-          {transferencia ? (
+          {m.tipo === 'transferencia' && (
             <>
               <Campo Icono={IconoDesde} etiqueta="Desde">
                 {nombreCuenta(m.cuentaId)}
@@ -105,18 +137,29 @@ function Contenido({ movimiento: m }) {
                 {nombreCuenta(m.cuentaDestinoId)}
               </Campo>
             </>
-          ) : (
+          )}
+          {m.tipo === 'pagoTarjeta' && (
             <>
-              <Campo Icono={IconoCategorias} etiqueta="Categoría">
-                {categoria ? (
-                  <>
-                    <CirculoCategoria icono={categoria.icono} color={categoria.color} talla="chico" />
-                    <span className="campo-recortado">{categoria.nombre}</span>
-                  </>
-                ) : (
-                  <span className="campo-vacio">Sin categoría</span>
-                )}
+              <Campo Icono={IconoDesde} etiqueta="Desde">
+                {nombreCuenta(m.cuentaId)}
               </Campo>
+              {filaTarjeta}
+              {filaFactura}
+            </>
+          )}
+          {m.tipo === 'gastoTarjeta' && (
+            <>
+              {filaCategoria}
+              {filaTarjeta}
+              <Campo Icono={IconoCuotas} etiqueta="Cuotas">
+                {m.cuotas > 1 ? `${m.cuotas} cuotas` : 'Sin cuotas'}
+              </Campo>
+              {filaFactura}
+            </>
+          )}
+          {conEstado && (
+            <>
+              {filaCategoria}
               <Campo Icono={IconoCuentas} etiqueta="Cuenta">
                 {nombreCuenta(m.cuentaId)}
               </Campo>
@@ -149,10 +192,12 @@ function Contenido({ movimiento: m }) {
             <IconoBasura />
             Eliminar
           </button>
-          <button type="button" className="boton-principal" onClick={() => navegar(`/movimientos/${m.id}/editar`)}>
-            <IconoLapiz tamano={18} />
-            Editar
-          </button>
+          {editable && (
+            <button type="button" className="boton-principal" onClick={() => navegar(`/movimientos/${m.id}/editar`)}>
+              <IconoLapiz tamano={18} />
+              Editar
+            </button>
+          )}
         </div>
       </PieFormulario>
 

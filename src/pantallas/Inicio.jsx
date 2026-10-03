@@ -15,6 +15,7 @@ import {
 import { IconoPorNombre } from '../componentes/iconosPorNombre.jsx';
 import { PanelElegirMes } from '../componentes/SelectorMes.jsx';
 import { saldoTotal } from '../datos/cuentas.js';
+import { esGasto } from '../datos/movimientos.js';
 import { useDatos } from '../datos/DatosContext.jsx';
 import { useMes } from '../estado/MesContext.jsx';
 import { useSaldosOcultos } from '../estado/useSaldosOcultos.js';
@@ -104,7 +105,7 @@ export default function Inicio() {
   // Las transferencias no son ingresos ni gastos (decisión del dueño, 2026-10-03).
   const delMes = movimientos.filter((m) => enMes(m.fecha, anio, mes));
   const ingresos = delMes.filter((m) => m.tipo === 'ingreso');
-  const gastos = delMes.filter((m) => m.tipo === 'gasto');
+  const gastos = delMes.filter(esGasto); // con los de tarjeta, en el mes de la compra
   const gastosPendientes = gastos.filter((m) => !m.pagado);
   const ingresosPendientes = ingresos.filter((m) => !m.pagado);
   const saldo = saldoTotal(cuentas);

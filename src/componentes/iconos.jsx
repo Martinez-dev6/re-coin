@@ -31,6 +31,7 @@ import {
   House,
   Info,
   Landmark,
+  Layers,
   LayoutGrid,
   List,
   NotebookText,
@@ -40,6 +41,7 @@ import {
   PanelsTopLeft,
   Pencil,
   Plus,
+  ReceiptText,
   Repeat,
   Search,
   Settings,
@@ -80,6 +82,8 @@ export const IconoBasura = crear(Trash2, 18);
 export const IconoInfo = crear(Info, 15);
 export const IconoTexto = crear(TextAlignStart, 18);
 export const IconoNota = crear(NotebookText, 18);
+export const IconoCapas = crear(Layers, 18);
+export const IconoRecibo = crear(ReceiptText, 18);
 export const IconoMasOpciones = crear(Ellipsis, 22);
 
 // Barra inferior

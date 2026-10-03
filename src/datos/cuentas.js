@@ -44,9 +44,11 @@ export async function guardarCuenta(id, datos) {
 
 // Se borran también sus movimientos (los que salen de ella o llegan a ella), en una sola
 // operación. El panel de confirmación avisa cuántos son.
+// Las tarjetas que se pagaban desde ella quedan sin "Paga desde".
 export function eliminarCuenta(id) {
-  return db.transaction('rw', db.cuentas, db.movimientos, async () => {
+  return db.transaction('rw', db.cuentas, db.movimientos, db.tarjetas, async () => {
     await db.movimientos.bulkDelete(await movimientosDeCuenta(id));
+    await db.tarjetas.filter((t) => t.cuentaPagoId === id).modify({ cuentaPagoId: null });
     await db.cuentas.delete(id);
   });
 }
