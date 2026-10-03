@@ -287,7 +287,7 @@ export default function Planes() {
   return (
     <div>
       <div className="encabezado-fijo">
-        <BarraEstado color="var(--banner-bg)" />
+        <BarraEstado />
         <header className="banner planes-banner">
           <div className="planes-fila">
             <span className="planes-hueco" />

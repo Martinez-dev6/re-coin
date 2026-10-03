@@ -68,7 +68,7 @@ export default function MiEspacio() {
   return (
     <div className="mi-espacio">
       <div className="encabezado-fijo">
-        <BarraEstado color="var(--banner-bg)" />
+        <BarraEstado />
         <header className="banner mi-espacio-cabecera">
           <div className="mi-espacio-perfil">
             <div className="mi-espacio-avatar" aria-hidden="true">

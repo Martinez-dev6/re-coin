@@ -1,11 +1,15 @@
 // Franja fija en el borde superior que le da color a la barra de estado del iPhone.
-// Desde iOS/Safari 26 el sistema ignora theme-color: toma el color de un elemento
-// position: fixed pegado arriba, de ancho completo, con fondo opaco y al menos ~6 px
-// de alto; si no lo encuentra, usa el fondo de la página. Cada pantalla pasa el color
-// de lo que tiene arriba (el banner, o el fondo en pantallas sin banner).
-// Con un panel inferior abierto se oscurece igual que la pantalla (ver BarraEstado.css).
+// Desde iOS/Safari 26 el sistema ignora theme-color: copia el color del elemento fijo
+// que encuentra en el centro del borde superior (unos 4 px hacia adentro); si no hay,
+// usa el fondo de la página. Esta franja es ese elemento.
+// tono: 'banner' (pantallas con banner de color) o 'pagina' (pantallas sin banner).
+// Con un panel o el menú del "+" abierto, la franja pasa por encima del fondo oscurecido
+// con el color ya oscurecido, para que la isla se oscurezca igual (ver BarraEstado.css).
+// Se monta directamente en <body> (portal): si quedara dentro de un encabezado fijo, su
+// z-index solo contaría dentro de ese encabezado y el oscurecido le pasaría por encima.
+import { createPortal } from 'react-dom';
 import './BarraEstado.css';
 
-export default function BarraEstado({ color }) {
-  return <div className="barra-estado" style={{ '--barra-color': color }} aria-hidden="true" />;
+export default function BarraEstado({ tono = 'banner' }) {
+  return createPortal(<div className={'barra-estado ' + tono} aria-hidden="true" />, document.body);
 }

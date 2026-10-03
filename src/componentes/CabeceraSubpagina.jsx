@@ -16,7 +16,7 @@ export default function CabeceraSubpagina({ titulo, volverA }) {
 
   return (
     <div className="encabezado-fijo">
-      <BarraEstado color="var(--banner-bg)" />
+      <BarraEstado />
       <header className="banner cabecera-subpagina">
         <div className="cabecera-subpagina-fila">
           <button type="button" className="boton-banner" aria-label="Volver" onClick={volver}>

@@ -52,7 +52,7 @@ export default function Transacciones() {
   return (
     <div>
       <div className="encabezado-fijo">
-        <BarraEstado color="var(--banner-bg)" />
+        <BarraEstado />
         <header className="banner transacciones-banner">
           <div className="transacciones-fila">
             <button type="button" className="boton-banner" aria-label="Buscar" onClick={() => navegar('/pendiente/busqueda')}>

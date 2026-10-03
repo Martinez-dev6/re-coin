@@ -69,7 +69,7 @@ export default function Inicio() {
 
   return (
     <div className="inicio">
-      <BarraEstado color="var(--banner-bg)" />
+      <BarraEstado />
 
       <div className={'inicio-compacta' + (compacta ? ' visible' : '')} aria-hidden={!compacta}>
         <div className="banner inicio-compacta-banner">

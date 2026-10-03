@@ -73,7 +73,12 @@ function MenuNuevo({ abierto, alCerrar }) {
         <div
           key={texto}
           className="menu-nuevo-opcion"
-          style={{ '--dx': `${dx}px`, '--dy': `${dy}px`, '--retraso': `${indice * 25}ms` }}
+          style={{
+            '--dx': `${dx}px`,
+            '--dy': `${dy}px`,
+            '--retraso': `${indice * 25}ms`,
+            '--retraso-cierre': `${(OPCIONES.length - 1 - indice) * 15}ms`,
+          }}
         >
           <button
             type="button"

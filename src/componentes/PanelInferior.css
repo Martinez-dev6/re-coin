@@ -4,8 +4,9 @@
   z-index: 200; /* por encima de la franja de la barra de estado */
 }
 
+/* Fijo y de pantalla completa (no absolute): iOS solo tiene en cuenta un oscurecido así. */
 .panel-fondo {
-  position: absolute;
+  position: fixed;
   inset: 0;
   background: var(--scrim);
   opacity: 0;

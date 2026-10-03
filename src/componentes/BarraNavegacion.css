@@ -136,8 +136,9 @@
   z-index: 200;
 }
 
+/* Fijo y de pantalla completa (no absolute): iOS solo tiene en cuenta un oscurecido así. */
 .menu-nuevo-fondo {
-  position: absolute;
+  position: fixed;
   inset: 0;
   background: var(--scrim);
   opacity: 0;
@@ -176,14 +177,19 @@
   height: 60px;
   transform: translate(calc(-1 * var(--dx)), calc(-1 * var(--dy))) scale(0.4);
   opacity: 0;
+  /* Cierre: más rápido, sin rebote y en orden inverso (el último en salir vuelve primero). */
   transition:
-    transform 0.26s cubic-bezier(0.2, 0.9, 0.3, 1.15) var(--retraso),
-    opacity 0.18s ease var(--retraso);
+    transform 0.16s cubic-bezier(0.4, 0, 1, 1) var(--retraso-cierre),
+    opacity 0.14s ease-in calc(var(--retraso-cierre) + 0.02s);
 }
 
+/* Apertura: salen desde el "+" con un pequeño rebote, uno tras otro. */
 .menu-nuevo.visible .menu-nuevo-opcion {
   transform: none;
   opacity: 1;
+  transition:
+    transform 0.26s cubic-bezier(0.2, 0.9, 0.3, 1.15) var(--retraso),
+    opacity 0.18s ease var(--retraso);
 }
 
 .menu-nuevo-circulo {

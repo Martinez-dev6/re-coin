@@ -3,10 +3,19 @@ import { tema } from './tema.js';
 
 const aVariable = (clave) => '--' + clave.replace(/[A-Z]/g, (letra) => '-' + letra.toLowerCase());
 
+// Mezcla un color #rrggbb con otro [r, g, b] en la proporción indicada (0–1) → #rrggbb.
+function mezclar(hex, encima, proporcion) {
+  const n = parseInt(hex.slice(1), 16);
+  const base = [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+  return '#' + base.map((v, i) => Math.round(v * (1 - proporcion) + encima[i] * proporcion).toString(16).padStart(2, '0')).join('');
+}
+
 // Tokens que no están en design/tema.js: los de Inicio vienen de su comentario inicial,
 // los demás de los HTML del diseño (paneles inferiores y menú del "+").
 function extras(oscuro, colores) {
   const esRojo = colores.expenseOnWhite === '#a3195b';
+  const scrimRgb = oscuro ? [4, 4, 8] : [16, 18, 30];
+  const scrimAlfa = oscuro ? 0.74 : 0.62;
   return {
     // Flechas blancas del banner de Inicio (mismo color en claro y oscuro).
     incomeOnWhite: '#0b7a43',
@@ -18,11 +27,12 @@ function extras(oscuro, colores) {
     // Círculos del menú del "+".
     menuBg: oscuro ? '#2b2c38' : '#ffffff',
     menuBorde: oscuro ? 'rgba(255,255,255,0.16)' : 'rgba(0,0,0,0.06)',
-    // Fondo oscurecido detrás de un panel inferior (SelectorCuenta del diseño).
-    scrim: oscuro ? 'rgba(4,4,8,0.74)' : 'rgba(16,18,30,0.62)',
-    // Lo mismo por partes, para mezclar el color de la barra de estado con color-mix().
-    scrimColor: oscuro ? 'rgb(4,4,8)' : 'rgb(16,18,30)',
-    scrimAlpha: oscuro ? '74%' : '62%',
+    // Fondo oscurecido detrás de un panel inferior o del menú del "+".
+    scrim: `rgba(${scrimRgb.join(',')},${scrimAlfa})`,
+    // El mismo oscurecido ya aplicado sobre el banner y sobre el fondo, como color opaco:
+    // lo usa la franja de la barra de estado con un panel abierto (ver BarraEstado.css).
+    bannerDim: mezclar(colores.bannerBg, scrimRgb, scrimAlfa),
+    pageDim: mezclar(colores.pageBg, scrimRgb, scrimAlfa),
   };
 }
 
@@ -41,26 +51,20 @@ function escribirVariables(acento, oscuro) {
   document.querySelector('meta[name="theme-color"]')?.setAttribute('content', colores.bannerBg);
 }
 
-// animar: fundido de toda la pantalla de una sola vez (View Transitions): el navegador
-// toma una imagen antes y otra después y las mezcla, así textos, fondos e íconos cambian
-// exactamente al mismo tiempo. La franja de la barra de estado no sale en esa imagen
-// (iOS pinta la barra copiando su color), así que hace su propia transición de la misma
-// duración (ver BarraEstado.css y base.css). Sin soporte o con "Reducir movimiento",
-// el cambio es directo.
+// Duración del fundido (debe coincidir con base.css).
+const DURACION_TRANSICION_MS = 350;
+let finTransicion;
+
+// animar: fundido de todos los colores a la vez con transiciones CSS (base.css).
+// No se usa View Transitions: pone una capa encima de la página durante el fundido y
+// iOS deja de ver la franja de la barra de estado, así que la isla cambiaba al final.
 export function aplicarTema(acento, oscuro, { animar = false } = {}) {
   const raiz = document.documentElement;
-  const sinAnimacion =
-    !animar || !document.startViewTransition || window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  if (sinAnimacion) {
-    escribirVariables(acento, oscuro);
-    return;
+  if (animar && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    // El atributo activa las transiciones en el mismo cuadro en que cambian las variables.
+    raiz.dataset.transicionTema = '';
+    clearTimeout(finTransicion);
+    finTransicion = setTimeout(() => delete raiz.dataset.transicionTema, DURACION_TRANSICION_MS + 50);
   }
-
-  raiz.dataset.transicionTema = '';
-  const transicion = document.startViewTransition(() => escribirVariables(acento, oscuro));
-  // Si el navegador omite la animación (app en segundo plano, otro cambio encima),
-  // los colores igual se aplican; solo se ignora el aviso.
-  transicion.ready.catch(() => {});
-  transicion.finished.finally(() => delete raiz.dataset.transicionTema);
+  escribirVariables(acento, oscuro);
 }

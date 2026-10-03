@@ -6,19 +6,31 @@
   /* Igual al margen superior de las pantallas: así en reposo coincide con el banner. */
   height: var(--safe-top);
   z-index: 100;
-  pointer-events: none;
-  background: var(--barra-color);
-  transition: background-color 0.2s ease;
+  /* Sin pointer-events: none a propósito: iOS busca el elemento que hay en el centro del
+     borde superior y una capa "intocable" puede hacer que no la vea. Solo ocupa el margen
+     superior del banner, donde no hay botones. */
+  transition: background-color 0.22s ease;
 }
 
-/* Cambio de color o de modo: misma duración que el fundido de la pantalla (base.css),
-   para que la barra de estado del iPhone cambie al ritmo del banner. */
-:root[data-transicion-tema] .barra-estado {
-  transition-duration: 0.35s;
+.barra-estado.banner {
+  background: var(--banner-bg);
 }
 
-/* Panel inferior abierto: mismo oscurecido que el fondo, pero opaco
-   (iOS solo toma el color de un elemento con fondo opaco). */
+.barra-estado.pagina {
+  background: var(--page-bg);
+}
+
+/* Panel inferior o menú del "+" abiertos: la franja sube por encima del fondo
+   oscurecido (z-index 200) y toma el color ya oscurecido, opaco. Así se ve igual que el
+   banner oscurecido que tiene debajo y iOS copia ese mismo color a la isla. */
 :root[data-panel-abierto] .barra-estado {
-  background: color-mix(in srgb, var(--barra-color), var(--scrim-color) var(--scrim-alpha));
+  z-index: 300;
+}
+
+:root[data-panel-abierto] .barra-estado.banner {
+  background: var(--banner-dim);
+}
+
+:root[data-panel-abierto] .barra-estado.pagina {
+  background: var(--page-dim);
 }
