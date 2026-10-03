@@ -23,7 +23,7 @@ import {
   IconoTarjeta,
 } from '../componentes/iconos.jsx';
 import { useTema } from '../tema/TemaContext.jsx';
-import { DURACIONES, RETRASOS, aplicarRitmo, leerRitmo } from '../estado/pruebaRitmo.js';
+import { CURVAS, DURACIONES, RETRASOS, aplicarRitmo, leerRitmo } from '../estado/pruebaRitmo.js';
 import './MiEspacio.css';
 
 // Mientras no exista la pantalla Perfil (y la base de datos), el encabezado es fijo.
@@ -128,7 +128,7 @@ export default function MiEspacio() {
         <Grupo titulo="Pruebas (temporal)">
           <Fila Icono={IconoAjustes} texto="Ritmo del oscurecido" onClick={() => setPanelRitmo(true)}>
             <span className="fila-menu-valor">
-              {conSigno(ritmo.retraso)} · {ritmo.duracion}
+              {conSigno(ritmo.retraso)} · {ritmo.duracion} · {CURVAS.find((c) => c.valor === ritmo.curva).texto}
             </span>
           </Fila>
         </Grupo>
@@ -213,6 +213,20 @@ export default function MiEspacio() {
               onClick={() => cambiarRitmo({ duracion: valor })}
             >
               <span>{valor}</span>
+            </button>
+          ))}
+        </div>
+        <h3 className="titulo-seccion">Curva</h3>
+        <div className="chips" style={{ flexWrap: 'wrap' }}>
+          {CURVAS.map(({ valor, texto }) => (
+            <button
+              key={valor}
+              type="button"
+              className="chip"
+              aria-pressed={ritmo.curva === valor}
+              onClick={() => cambiarRitmo({ curva: valor })}
+            >
+              <span>{texto}</span>
             </button>
           ))}
         </div>
