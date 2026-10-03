@@ -23,6 +23,7 @@ import {
   IconoTarjeta,
 } from '../componentes/iconos.jsx';
 import { useTema } from '../tema/TemaContext.jsx';
+import { DURACIONES, RETRASOS, aplicarRitmo, leerRitmo } from '../estado/pruebaRitmo.js';
 import './MiEspacio.css';
 
 // Mientras no exista la pantalla Perfil (y la base de datos), el encabezado es fijo.
@@ -62,6 +63,16 @@ export default function MiEspacio() {
   const navegar = useNavigate();
   const { acento, modo, cambiarModo } = useTema();
   const [panelModo, setPanelModo] = useState(false);
+  // PRUEBA TEMPORAL: ajuste del ritmo del oscurecido.
+  const [panelRitmo, setPanelRitmo] = useState(false);
+  const [ritmo, setRitmo] = useState(leerRitmo);
+  const cambiarRitmo = (cambio) =>
+    setRitmo((anterior) => {
+      const nuevo = { ...anterior, ...cambio };
+      aplicarRitmo(nuevo); // sin efectos aparte: aplicarlo dos veces da lo mismo
+      return nuevo;
+    });
+  const conSigno = (n) => (n > 0 ? '+' : n < 0 ? '−' : '') + Math.abs(n);
   const pendiente = (clave) => () => navegar('/pendiente/' + clave);
   const modoActual = OPCIONES_MODO.find((o) => o.valor === modo);
 
@@ -113,6 +124,15 @@ export default function MiEspacio() {
           <Fila Icono={IconoCampana} texto="Recordatorio diario" onClick={pendiente('recordatorio')} />
         </Grupo>
 
+        {/* PRUEBA TEMPORAL: quitar cuando se elija el ritmo. */}
+        <Grupo titulo="Pruebas (temporal)">
+          <Fila Icono={IconoAjustes} texto="Ritmo del oscurecido" onClick={() => setPanelRitmo(true)}>
+            <span className="fila-menu-valor">
+              {conSigno(ritmo.retraso)} · {ritmo.duracion}
+            </span>
+          </Fila>
+        </Grupo>
+
         <div className="tarjeta mi-espacio-grupo mi-espacio-grupo-suelto">
           <Fila Icono={IconoAjustes} texto="Ajustes" onClick={pendiente('ajustes')} />
           <Fila Icono={IconoAyuda} texto="Ayuda y soporte" onClick={pendiente('ayuda')} />
@@ -154,6 +174,47 @@ export default function MiEspacio() {
               </button>
             );
           })}
+        </div>
+      </PanelInferior>
+
+      {/* PRUEBA TEMPORAL. Este mismo panel oscurece: se prueba cerrándolo y abriéndolo. */}
+      <PanelInferior
+        abierto={panelRitmo}
+        alCerrar={() => setPanelRitmo(false)}
+        titulo="Ritmo del oscurecido"
+        accion={{ texto: 'Listo', alTocar: () => setPanelRitmo(false) }}
+      >
+        <p className="panel-opcion-detalle" style={{ margin: '0 0 4px' }}>
+          Elige, cierra y abre este panel o el menú del "+", sin grabar la pantalla. Más negativo: la pantalla
+          arranca antes; más positivo: arranca después.
+        </p>
+        <h3 className="titulo-seccion">Arranque de la pantalla (ms)</h3>
+        <div className="chips" style={{ flexWrap: 'wrap' }}>
+          {RETRASOS.map((valor) => (
+            <button
+              key={valor}
+              type="button"
+              className="chip"
+              aria-pressed={ritmo.retraso === valor}
+              onClick={() => cambiarRitmo({ retraso: valor })}
+            >
+              <span>{conSigno(valor)}</span>
+            </button>
+          ))}
+        </div>
+        <h3 className="titulo-seccion">Duración (ms)</h3>
+        <div className="chips" style={{ flexWrap: 'wrap' }}>
+          {DURACIONES.map((valor) => (
+            <button
+              key={valor}
+              type="button"
+              className="chip"
+              aria-pressed={ritmo.duracion === valor}
+              onClick={() => cambiarRitmo({ duracion: valor })}
+            >
+              <span>{valor}</span>
+            </button>
+          ))}
         </div>
       </PanelInferior>
     </div>

@@ -16,6 +16,7 @@ import { aplicarTema } from './tema/aplicarTema.js';
 import { esOscuro, leerPreferencias } from './tema/preferencias.js';
 import { TemaProvider } from './tema/TemaContext.jsx';
 import { MesProvider } from './estado/MesContext.jsx';
+import { aplicarRitmo, leerRitmo } from './estado/pruebaRitmo.js';
 import App from './App.jsx';
 
 // Service worker: guarda la app para usarla sin conexión. Cuando hay una versión
@@ -25,6 +26,7 @@ registerSW({ immediate: true });
 // Colores del tema guardado antes del primer pintado.
 const preferencias = leerPreferencias();
 aplicarTema(preferencias.acento, esOscuro(preferencias.modo));
+aplicarRitmo(leerRitmo()); // prueba temporal
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
