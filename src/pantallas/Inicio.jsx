@@ -224,16 +224,19 @@ export default function Inicio() {
                 </button>
               </div>
             ))}
+            {/* Última fila de la tarjeta: el total de todas las cuentas. */}
+            <div className="inicio-cuentas-total">
+              <span className="inicio-cuentas-total-textos">
+                <span className="inicio-cuentas-total-titulo">Total</span>
+                {fueraDelSaldo > 0 && (
+                  <span className="inicio-cuentas-nota">
+                    {fueraDelSaldo === 1 ? '1 cuenta no suma' : `${fueraDelSaldo} cuentas no suman`} al saldo actual
+                  </span>
+                )}
+              </span>
+              <strong className={totalCuentas < 0 ? 'negativo' : undefined}>{pesos(totalCuentas)}</strong>
+            </div>
           </div>
-          <div className="inicio-cuentas-total">
-            <span>Total en cuentas</span>
-            <strong>{pesos(totalCuentas)}</strong>
-          </div>
-          {fueraDelSaldo > 0 && (
-            <p className="inicio-cuentas-nota">
-              Incluye {fueraDelSaldo === 1 ? '1 cuenta que no suma' : `${fueraDelSaldo} cuentas que no suman`} al saldo actual.
-            </p>
-          )}
         </div>
       )}
 

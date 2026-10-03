@@ -71,7 +71,10 @@ export function useFilasAnimadas(caja) {
       copia.inert = true;
       copia.setAttribute('aria-hidden', 'true');
       copia.style.pointerEvents = 'none';
-      contenedor.insertBefore(copia, siguiente ? filas.get(siguiente).fila : null);
+      // Sin una fila siguiente, va justo después de la última (puede haber algo más al final,
+      // como el total de Inicio).
+      const antesDe = siguiente ? filas.get(siguiente).fila : [...filas.values()].at(-1).fila.nextSibling;
+      contenedor.insertBefore(copia, antesDe);
       const quitar = () => copia.remove();
       animarAlto(copia, alto, 0, quitar);
       setTimeout(quitar, DURACION_FILA_MS + 300); // por si el navegador congela la animación

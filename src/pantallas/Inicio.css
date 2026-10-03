@@ -310,25 +310,40 @@
   margin-top: 8px;
 }
 
-/* Total de todas las cuentas, bajo la lista. */
+/* Última fila de la tarjeta de cuentas: el total de todas. La línea de arriba se suma a la de
+   la última cuenta y queda más gruesa, para separar el total de las filas. */
 .inicio-cuentas-total {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-top: 10px;
-  padding: 0 18px;
-  font-size: 14px;
+  gap: 12px;
+  min-height: 64px;
+  border-top: 1px solid var(--divider);
+}
+
+.inicio-cuentas-total-textos {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.inicio-cuentas-total-titulo {
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.inicio-cuentas-nota {
+  margin-top: 1px;
+  font-size: 12px;
   color: var(--muted);
 }
 
 .inicio-cuentas-total strong {
-  font-size: 16px;
+  flex-shrink: 0;
+  font-size: 18px;
   font-weight: 700;
-  color: var(--text);
 }
 
-.inicio-cuentas-nota {
-  margin: 2px 18px 0;
-  font-size: 12px;
-  color: var(--muted);
+.inicio-cuentas-total strong.negativo {
+  color: var(--expense);
 }
