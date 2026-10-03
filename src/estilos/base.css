@@ -26,8 +26,10 @@
      página (va un 10 % adelante en todos los cuadros). El retraso negativo hace que la
      página empiece ya en ese punto.
      Grabar la pantalla cambia ese ritmo (grabando se veía parejo y sin grabar no), así que
-     el ajuste final se hizo a ojo, sin grabar: 80 ms se ve mejor que 100 ms. */
-  --oscurecido-duracion: 80ms;
+     el ajuste final se hizo a ojo en el iPhone, sin grabar, probando arranque, duración y
+     curva: lo mejor fue −10 ms, 85 ms y en línea recta. Solo está comprobado en el iPhone
+     15 Pro con iOS 27; en otros equipos el desfase puede ser un poco distinto. */
+  --oscurecido-duracion: 85ms;
   --oscurecido-curva: linear;
   --oscurecido-retraso: -10ms;
 
