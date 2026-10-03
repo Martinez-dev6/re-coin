@@ -23,7 +23,6 @@ import {
   IconoTarjeta,
 } from '../componentes/iconos.jsx';
 import { useTema } from '../tema/TemaContext.jsx';
-import { VARIANTES_FRANJA, aplicarVarianteFranja, leerVarianteFranja } from '../estado/pruebaFranja.js';
 import './MiEspacio.css';
 
 // Mientras no exista la pantalla Perfil (y la base de datos), el encabezado es fijo.
@@ -63,13 +62,6 @@ export default function MiEspacio() {
   const navegar = useNavigate();
   const { acento, modo, cambiarModo } = useTema();
   const [panelModo, setPanelModo] = useState(false);
-  // Prueba temporal de la franja de la barra de estado.
-  const [panelPruebas, setPanelPruebas] = useState(false);
-  const [varianteFranja, setVarianteFranja] = useState(leerVarianteFranja);
-  const elegirVariante = (valor) => {
-    aplicarVarianteFranja(valor);
-    setVarianteFranja(valor);
-  };
   const pendiente = (clave) => () => navegar('/pendiente/' + clave);
   const modoActual = OPCIONES_MODO.find((o) => o.valor === modo);
 
@@ -121,13 +113,6 @@ export default function MiEspacio() {
           <Fila Icono={IconoCampana} texto="Recordatorio diario" onClick={pendiente('recordatorio')} />
         </Grupo>
 
-        {/* PRUEBA TEMPORAL: quitar cuando se elija una variante de la franja. */}
-        <Grupo titulo="Pruebas (temporal)">
-          <Fila Icono={IconoAjustes} texto="Franja al oscurecer" onClick={() => setPanelPruebas(true)}>
-            <span className="fila-menu-valor">{VARIANTES_FRANJA.find((v) => v.valor === varianteFranja).titulo.slice(0, 1)}</span>
-          </Fila>
-        </Grupo>
-
         <div className="tarjeta mi-espacio-grupo mi-espacio-grupo-suelto">
           <Fila Icono={IconoAjustes} texto="Ajustes" onClick={pendiente('ajustes')} />
           <Fila Icono={IconoAyuda} texto="Ayuda y soporte" onClick={pendiente('ayuda')} />
@@ -159,38 +144,6 @@ export default function MiEspacio() {
                 <span className="icono-circulo grande">
                   <Icono />
                 </span>
-                <span className="panel-opcion-textos">
-                  <span className="panel-opcion-titulo">{titulo}</span>
-                  <span className="panel-opcion-detalle">{detalle}</span>
-                </span>
-                <span className={'radio' + (marcado ? ' marcado' : '')}>
-                  {marcado && <IconoCheck tamano={14} />}
-                </span>
-              </button>
-            );
-          })}
-        </div>
-      </PanelInferior>
-
-      {/* PRUEBA TEMPORAL. Este mismo panel oscurece: se puede probar abriéndolo y cerrándolo. */}
-      <PanelInferior
-        abierto={panelPruebas}
-        alCerrar={() => setPanelPruebas(false)}
-        titulo="Franja al oscurecer"
-        accion={{ texto: 'Listo', alTocar: () => setPanelPruebas(false) }}
-      >
-        <div role="radiogroup" aria-label="Franja al oscurecer">
-          {VARIANTES_FRANJA.map(({ valor, titulo, detalle }) => {
-            const marcado = valor === varianteFranja;
-            return (
-              <button
-                key={valor}
-                type="button"
-                role="radio"
-                aria-checked={marcado}
-                className="panel-opcion"
-                onClick={() => elegirVariante(valor)}
-              >
                 <span className="panel-opcion-textos">
                   <span className="panel-opcion-titulo">{titulo}</span>
                   <span className="panel-opcion-detalle">{detalle}</span>

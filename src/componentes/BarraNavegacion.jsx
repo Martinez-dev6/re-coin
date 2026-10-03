@@ -72,8 +72,6 @@ function MenuNuevo({ abierto, alCerrar }) {
   return createPortal(
     <div className={'menu-nuevo' + (visible ? ' visible' : '')} role="dialog" aria-modal="true" aria-label="Nuevo movimiento">
       <div className="menu-nuevo-fondo" onClick={() => alCerrarRef.current()} />
-      {/* PRUEBA TEMPORAL (variante D de pruebaFranja.js): cierra al tocar fuera sin cubrir el borde superior. */}
-      <div className="menu-nuevo-toque" onClick={() => alCerrarRef.current()} />
       <div className="menu-nuevo-titulo">Nuevo movimiento</div>
       {OPCIONES.map(({ texto, ruta, Icono, color, dx, dy }, indice) => (
         <div

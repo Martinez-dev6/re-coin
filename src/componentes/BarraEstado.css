@@ -29,158 +29,50 @@
 }
 
 /* Oscurecer y aclarar.
-   - El fondo de la franja es el color que iOS copia a la isla. Cambia de golpe al primer
-     cuadro para que iOS empiece enseguida. Nunca se ve: siempre lo tapa una de las dos capas.
-   - Lo que se ve son dos capas que existen siempre: ::before con el color normal y ::after
-     con el oscurecido. En cada cambio, la de arriba es la que ya está opaca con el color
-     anterior y se desvanece (opacidad, igual que el fondo oscurecido); la de abajo pasa de
-     golpe al color nuevo sin que se note.
-   Así, si Safari tarda un cuadro en arrancar el desvanecimiento, la capa de arriba se queda
-   opaca ese cuadro y no asoma nada. Antes la capa se creaba al empezar y en ese hueco se veía
-   un instante el color nuevo (un "corto"). */
+   - El fondo de la franja es el color que iOS copia a la zona de la hora y la isla.
+     Cambia de golpe al primer cuadro: iOS hace con él su propio fundido (en línea recta,
+     ~100 ms; ver --oscurecido-duracion en base.css). Nunca se ve: lo tapan las capas.
+   - Lo que se ve son dos capas: ::before con el color normal y ::after con el oscurecido.
+     En cada cambio, la de arriba es la que tiene el color anterior y pasa a transparente
+     con el mismo ritmo que el fondo oscurecido; la de abajo cambia de golpe sin que se note.
+   Se anima el color de fondo (no la opacidad) igual que el fondo oscurecido, para que Safari
+   calcule los dos en el mismo cuadro.
+   Probado y descartado (2026-10-03): una "muestra" invisible encima para iOS (la toma como
+   sin color y deja arriba el fondo de la página); animar opacidad (la franja y el fondo
+   arrancaban en cuadros distintos). */
 .barra-estado::before,
 .barra-estado::after {
   content: '';
   position: absolute;
   inset: 0;
-  will-change: opacity;
 }
 
 .barra-estado::before {
   background: var(--franja);
-  opacity: 1;
   z-index: 1;
 }
 
 .barra-estado::after {
-  background: var(--franja-dim);
-  opacity: 0;
+  background: transparent;
 }
 
 :root[data-oscurecido] .barra-estado {
   background: var(--franja-dim);
 }
 
-/* Al abrir: ::before (normal, arriba) se desvanece; ::after (oscuro) aparece debajo. */
+/* Al abrir: ::before (normal, arriba) se vuelve transparente; ::after (oscuro) queda debajo. */
 :root[data-oscurecido] .barra-estado::before {
-  opacity: 0;
-  transition: opacity 0.22s ease;
+  background: transparent;
+  transition: background-color var(--oscurecido-duracion) var(--oscurecido-curva);
 }
 
 :root[data-oscurecido] .barra-estado::after {
-  opacity: 1;
-}
-
-/* Al cerrar: ::after (oscuro) sube arriba y se desvanece; ::before (normal) aparece debajo. */
-:root[data-aclarando] .barra-estado::after {
-  opacity: 0;
-  z-index: 2;
-  transition: opacity 0.22s ease;
-}
-
-/* ---- PRUEBA TEMPORAL (src/estado/pruebaFranja.js) ----
-   Probado y descartado: una muestra invisible encima para iOS (iOS la toma como "sin color"
-   y deja la parte de arriba en blanco). */
-
-.panel-toque,
-.menu-nuevo-toque {
-  display: none;
-}
-
-/* D · Un solo oscurecido. La franja queda debajo del mismo fondo oscurecido que el resto
-   (z-index 150 < 200), tapada por ::before con su color normal, así que se oscurece igual
-   por construcción. Su fondo (que nunca se ve) pasa al color oscurecido para iOS. Para que
-   iOS la encuentre, nada de lo que hay encima en el borde superior acepta toques: la capa
-   y el fondo oscurecido son "intocables" y para cerrar tocando fuera hay otra zona que
-   empieza debajo de la franja. Solo sirve si iOS ignora lo intocable: es lo que se prueba. */
-:root[data-franja='unico'][data-capa-oscura] .barra-estado {
-  z-index: 150;
-}
-
-:root[data-franja='unico'] .barra-estado::before,
-:root[data-franja='unico'][data-oscurecido] .barra-estado::before {
-  opacity: 1;
-  transition: none;
-  pointer-events: none;
-}
-
-:root[data-franja='unico'] .barra-estado::after {
-  display: none;
-}
-
-:root[data-franja='unico'] .panel-capa,
-:root[data-franja='unico'] .panel-fondo,
-:root[data-franja='unico'] .menu-nuevo,
-:root[data-franja='unico'] .menu-nuevo-fondo {
-  pointer-events: none;
-}
-
-:root[data-franja='unico'] .panel-inferior,
-:root[data-franja='unico'] .menu-nuevo-opcion,
-:root[data-franja='unico'] .menu-nuevo-cerrar {
-  pointer-events: auto;
-}
-
-:root[data-franja='unico'] .panel-toque,
-:root[data-franja='unico'] .menu-nuevo-toque {
-  display: block;
-  position: fixed;
-  top: var(--safe-top);
-  left: 0;
-  right: 0;
-  bottom: 0;
-  pointer-events: auto;
-}
-
-/* E · Mismo ritmo. Como A, pero el fondo oscurecido y las capas de la franja cambian su
-   color de fondo (de transparente a su color o al revés) en vez de su opacidad. Safari
-   calcula esos cambios cuadro a cuadro junto con el resto de la página, así que fondo y
-   franja avanzan en el mismo cuadro. Con opacidad, cada capa la anima el iPhone por
-   separado y pueden arrancar en cuadros distintos. */
-:root[data-franja='ritmo'] .barra-estado::before,
-:root[data-franja='ritmo'] .barra-estado::after {
-  will-change: auto;
-}
-
-:root[data-franja='ritmo'] .barra-estado::before {
-  opacity: 1;
-  background: var(--franja);
-  transition: none;
-}
-
-:root[data-franja='ritmo'] .barra-estado::after {
-  opacity: 1;
-  background: transparent;
-}
-
-:root[data-franja='ritmo'][data-oscurecido] .barra-estado::before {
-  opacity: 1;
-  background: transparent;
-  transition: background-color 0.22s ease;
-}
-
-:root[data-franja='ritmo'][data-oscurecido] .barra-estado::after {
   background: var(--franja-dim);
 }
 
-:root[data-franja='ritmo'][data-aclarando] .barra-estado::before {
-  background: var(--franja);
-}
-
-:root[data-franja='ritmo'][data-aclarando] .barra-estado::after {
-  opacity: 1;
+/* Al cerrar: ::after (oscuro) sube arriba y se vuelve transparente; ::before (normal) queda debajo. */
+:root[data-aclarando] .barra-estado::after {
   background: transparent;
-  transition: background-color 0.22s ease;
-}
-
-:root[data-franja='ritmo'] .panel-fondo,
-:root[data-franja='ritmo'] .menu-nuevo-fondo {
-  opacity: 1;
-  background: transparent;
-  transition: background-color 0.22s ease;
-}
-
-:root[data-franja='ritmo'] .panel-capa.visible .panel-fondo,
-:root[data-franja='ritmo'] .menu-nuevo.visible .menu-nuevo-fondo {
-  background: var(--scrim);
+  z-index: 2;
+  transition: background-color var(--oscurecido-duracion) var(--oscurecido-curva);
 }

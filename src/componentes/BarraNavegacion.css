@@ -136,17 +136,19 @@
   z-index: 200;
 }
 
-/* Fijo y de pantalla completa (no absolute): iOS solo tiene en cuenta un oscurecido así. */
+/* Fijo y de pantalla completa (no absolute): iOS solo tiene en cuenta un oscurecido así.
+   Se anima su color de fondo (de transparente al oscurecido) y no su opacidad: Safari
+   calcula ese cambio cuadro a cuadro junto con la franja de la barra de estado, así que
+   los dos avanzan en el mismo cuadro. La opacidad la anima el iPhone por separado. */
 .menu-nuevo-fondo {
   position: fixed;
   inset: 0;
-  background: var(--scrim);
-  opacity: 0;
-  transition: opacity 0.22s ease;
+  background: transparent;
+  transition: background-color var(--oscurecido-duracion) var(--oscurecido-curva);
 }
 
 .menu-nuevo.visible .menu-nuevo-fondo {
-  opacity: 1;
+  background: var(--scrim);
 }
 
 .menu-nuevo-titulo {

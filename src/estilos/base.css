@@ -16,6 +16,15 @@
   --safe-top: max(12px, env(safe-area-inset-top));
   --safe-bottom: env(safe-area-inset-bottom);
 
+  /* Ritmo del fondo oscurecido (paneles y menú del "+") y de la franja de la barra de
+     estado. Copia el de iOS, medido cuadro a cuadro en un video del iPhone 15 Pro
+     (2026-10-03): cuando la franja cambia de color, iOS hace su propio fundido de la zona
+     de la hora y la isla en línea recta y en unos 100 ms, y no se puede cambiar. Con el
+     ritmo anterior (220 ms, ease) iOS terminaba cuando la página iba al 78 % y se veía
+     un corte entre las dos zonas. */
+  --oscurecido-duracion: 100ms;
+  --oscurecido-curva: linear;
+
   font-family: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
   color: var(--text);
   background: var(--page-bg);
