@@ -32,14 +32,16 @@ export default function Provisional() {
 
   return (
     <div className="provisional">
-      <BarraEstado color="var(--banner-bg)" />
-      <header className="provisional-banner">
-        <div className="provisional-fila">
-          <span className="provisional-titulo">Sendo</span>
-        </div>
-        <p className="provisional-etiqueta">Saldo actual en cuentas</p>
-        <p className="provisional-saldo">$ 0</p>
-      </header>
+      <div className="encabezado-fijo">
+        <BarraEstado color="var(--banner-bg)" />
+        <header className="provisional-banner">
+          <div className="provisional-fila">
+            <span className="provisional-titulo">Sendo</span>
+          </div>
+          <p className="provisional-etiqueta">Saldo actual en cuentas</p>
+          <p className="provisional-saldo">$ 0</p>
+        </header>
+      </div>
 
       <main className="provisional-contenido">
         <section className="provisional-tarjeta">

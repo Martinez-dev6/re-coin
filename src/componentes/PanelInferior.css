@@ -43,13 +43,23 @@
   margin: 0 auto;
 }
 
-.panel-titulo {
+.panel-cabecera {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   height: 44px;
-  margin: 12px 0 0;
+  margin-top: 12px;
+}
+
+.panel-titulo {
+  margin: 0;
   font-size: 19px;
   font-weight: 700;
+}
+
+.panel-accion {
+  height: 44px;
+  padding: 0 2px 0 12px;
 }
 
 /* Opción con radio a la derecha (como en SelectorCuenta). */

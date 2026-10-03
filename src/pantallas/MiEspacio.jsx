@@ -67,21 +67,23 @@ export default function MiEspacio() {
 
   return (
     <div className="mi-espacio">
-      <header className="banner mi-espacio-cabecera">
+      <div className="encabezado-fijo">
         <BarraEstado color="var(--banner-bg)" />
-        <div className="mi-espacio-perfil">
-          <div className="mi-espacio-avatar" aria-hidden="true">
-            {PERFIL.iniciales}
+        <header className="banner mi-espacio-cabecera">
+          <div className="mi-espacio-perfil">
+            <div className="mi-espacio-avatar" aria-hidden="true">
+              {PERFIL.iniciales}
+            </div>
+            <div className="mi-espacio-nombre">
+              <h1>{PERFIL.nombre}</h1>
+              <p>0 cuentas · 0 tarjetas</p>
+            </div>
+            <button type="button" className="boton-banner" aria-label="Editar perfil" onClick={pendiente('perfil')}>
+              <IconoLapiz />
+            </button>
           </div>
-          <div className="mi-espacio-nombre">
-            <h1>{PERFIL.nombre}</h1>
-            <p>0 cuentas · 0 tarjetas</p>
-          </div>
-          <button type="button" className="boton-banner" aria-label="Editar perfil" onClick={pendiente('perfil')}>
-            <IconoLapiz />
-          </button>
-        </div>
-      </header>
+        </header>
+      </div>
 
       <div className="mi-espacio-contenido">
         <Grupo titulo="Personalizar">
@@ -117,7 +119,13 @@ export default function MiEspacio() {
         </div>
       </div>
 
-      <PanelInferior abierto={panelModo} alCerrar={() => setPanelModo(false)} titulo="Modo oscuro">
+      {/* El panel queda abierto al elegir: así se ve el cambio en vivo. */}
+      <PanelInferior
+        abierto={panelModo}
+        alCerrar={() => setPanelModo(false)}
+        titulo="Modo oscuro"
+        accion={{ texto: 'Listo', alTocar: () => setPanelModo(false) }}
+      >
         <div role="radiogroup" aria-label="Modo oscuro">
           {OPCIONES_MODO.map(({ valor, titulo, detalle, Icono }) => {
             const marcado = valor === modo;
@@ -128,10 +136,7 @@ export default function MiEspacio() {
                 role="radio"
                 aria-checked={marcado}
                 className="panel-opcion"
-                onClick={() => {
-                  cambiarModo(valor);
-                  setPanelModo(false);
-                }}
+                onClick={() => cambiarModo(valor)}
               >
                 <span className="icono-circulo grande">
                   <Icono />

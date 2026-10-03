@@ -14,9 +14,22 @@ function extras(oscuro) {
   };
 }
 
-export function aplicarTema(acento, oscuro) {
+// Duración del fundido al cambiar de color o de modo (debe coincidir con base.css).
+const DURACION_TRANSICION_MS = 350;
+let finTransicion;
+
+// animar: fundido de todos los colores a la vez (banner, franja de la barra de estado,
+// tarjetas, textos). No se anima la primera aplicación al abrir la app.
+export function aplicarTema(acento, oscuro, { animar = false } = {}) {
   const raiz = document.documentElement;
   const colores = { ...tema(acento, oscuro ? 'dark' : 'light'), ...extras(oscuro) };
+
+  if (animar && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    // El atributo activa las transiciones en el mismo cuadro en que cambian las variables.
+    raiz.dataset.transicionTema = '';
+    clearTimeout(finTransicion);
+    finTransicion = setTimeout(() => delete raiz.dataset.transicionTema, DURACION_TRANSICION_MS + 50);
+  }
 
   for (const [clave, valor] of Object.entries(colores)) {
     raiz.style.setProperty(aVariable(clave), valor);

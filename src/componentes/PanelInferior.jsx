@@ -1,12 +1,13 @@
 // Panel que sube desde abajo sobre un fondo oscurecido (estilo de SelectorCuenta en el diseño).
-// Se cierra tocando el fondo o con Escape.
+// Se cierra tocando el fondo, con Escape o con el botón opcional de la derecha del título
+// (accion: { texto, alTocar }, en la posición del "+ Nueva" del diseño).
 import { useEffect, useId, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import './PanelInferior.css';
 
 const DURACION_MS = 220;
 
-export default function PanelInferior({ abierto, alCerrar, titulo, children }) {
+export default function PanelInferior({ abierto, alCerrar, titulo, accion, children }) {
   const [montado, setMontado] = useState(abierto);
   const [visible, setVisible] = useState(false);
   const panel = useRef(null);
@@ -55,9 +56,16 @@ export default function PanelInferior({ abierto, alCerrar, titulo, children }) {
         tabIndex={-1}
       >
         <div className="panel-asa" />
-        <h2 id={idTitulo} className="panel-titulo">
-          {titulo}
-        </h2>
+        <div className="panel-cabecera">
+          <h2 id={idTitulo} className="panel-titulo">
+            {titulo}
+          </h2>
+          {accion && (
+            <button type="button" className="boton-texto panel-accion" onClick={accion.alTocar}>
+              {accion.texto}
+            </button>
+          )}
+        </div>
         {children}
       </div>
     </div>,

@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useLayoutEffect, useMemo, useState } from 'react';
+import { createContext, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { aplicarTema } from './aplicarTema.js';
 import { ACENTO_PREDETERMINADO, ACENTOS } from './colores.js';
 import { CONSULTA_OSCURO, guardarPreferencias, leerPreferencias } from './preferencias.js';
@@ -19,8 +19,14 @@ export function TemaProvider({ children }) {
 
   const oscuro = preferencias.modo === 'oscuro' || (preferencias.modo === 'auto' && sistemaOscuro);
 
+  // main.jsx ya aplicó el tema al arrancar: aquí solo se aplican (con fundido) los cambios.
+  const primeraVez = useRef(true);
   useLayoutEffect(() => {
-    aplicarTema(preferencias.acento, oscuro);
+    if (primeraVez.current) {
+      primeraVez.current = false;
+      return;
+    }
+    aplicarTema(preferencias.acento, oscuro, { animar: true });
   }, [preferencias.acento, oscuro]);
 
   useEffect(() => {

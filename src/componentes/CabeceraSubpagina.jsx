@@ -15,14 +15,16 @@ export default function CabeceraSubpagina({ titulo, volverA }) {
   };
 
   return (
-    <header className="banner cabecera-subpagina">
+    <div className="encabezado-fijo">
       <BarraEstado color="var(--banner-bg)" />
-      <div className="cabecera-subpagina-fila">
-        <button type="button" className="boton-banner" aria-label="Volver" onClick={volver}>
-          <IconoVolver />
-        </button>
-        <h1 className="cabecera-subpagina-titulo">{titulo}</h1>
-      </div>
-    </header>
+      <header className="banner cabecera-subpagina">
+        <div className="cabecera-subpagina-fila">
+          <button type="button" className="boton-banner" aria-label="Volver" onClick={volver}>
+            <IconoVolver />
+          </button>
+          <h1 className="cabecera-subpagina-titulo">{titulo}</h1>
+        </div>
+      </header>
+    </div>
   );
 }
