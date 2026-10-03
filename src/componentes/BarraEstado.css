@@ -63,7 +63,7 @@
 /* Al abrir: ::before (normal, arriba) se vuelve transparente; ::after (oscuro) queda debajo. */
 :root[data-oscurecido] .barra-estado::before {
   background: transparent;
-  transition: background-color var(--oscurecido-duracion) var(--oscurecido-curva);
+  transition: background-color var(--oscurecido-duracion) var(--oscurecido-curva) var(--oscurecido-retraso);
 }
 
 :root[data-oscurecido] .barra-estado::after {
@@ -74,5 +74,5 @@
 :root[data-aclarando] .barra-estado::after {
   background: transparent;
   z-index: 2;
-  transition: background-color var(--oscurecido-duracion) var(--oscurecido-curva);
+  transition: background-color var(--oscurecido-duracion) var(--oscurecido-curva) var(--oscurecido-retraso);
 }

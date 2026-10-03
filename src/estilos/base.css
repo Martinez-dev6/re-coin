@@ -21,9 +21,13 @@
      (2026-10-03): cuando la franja cambia de color, iOS hace su propio fundido de la zona
      de la hora y la isla en línea recta y en unos 100 ms, y no se puede cambiar. Con el
      ritmo anterior (220 ms, ease) iOS terminaba cuando la página iba al 78 % y se veía
-     un corte entre las dos zonas. */
+     un corte entre las dos zonas.
+     Con el mismo ritmo, un segundo video mostró que iOS arranca unos 10 ms antes que la
+     página (va un 10 % adelante en todos los cuadros). El retraso negativo hace que la
+     página empiece ya en ese punto. */
   --oscurecido-duracion: 100ms;
   --oscurecido-curva: linear;
+  --oscurecido-retraso: -10ms;
 
   font-family: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
   color: var(--text);
