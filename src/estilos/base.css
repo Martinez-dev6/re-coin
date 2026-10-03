@@ -33,6 +33,10 @@
   --oscurecido-curva: linear;
   --oscurecido-retraso: -10ms;
 
+  /* Deslizamientos (pantallas, selectores, listas): arranca rápido y frena suave al final,
+     como en el iPhone. La misma curva está en src/utilidades/movimiento.js. */
+  --curva-deslizar: cubic-bezier(0.32, 0.72, 0, 1);
+
   font-family: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
   color: var(--text);
   background: var(--page-bg);

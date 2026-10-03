@@ -157,6 +157,10 @@
   font-size: 13px;
   font-weight: 600;
   white-space: nowrap;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
 }
 
 .chip[aria-pressed='true'] > span {
@@ -193,6 +197,36 @@
   color: var(--on-banner);
   font-size: 16px;
   font-weight: 700;
+}
+
+/* Píldora blanca que se desliza bajo la opción elegida de un selector dentro del banner
+   (Gasto | Ingreso, Presupuestos | Metas | Programados). El selector tiene 4 px de relleno y
+   4 px entre opciones; --n es el número de opciones y --i la elegida (desde 0). Las opciones
+   van con position: relative para quedar encima de la píldora. */
+.selector-pildora {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  left: 4px;
+  width: calc((100% - 8px - (var(--n) - 1) * 4px) / var(--n));
+  border-radius: 22px;
+  background: #ffffff;
+  transform: translateX(calc(var(--i) * (100% + 4px)));
+  transition: transform 0.32s var(--curva-deslizar);
+}
+
+/* Aviso que aparece subiendo un poco ("Copia lista", errores…). */
+@keyframes aparecer-subiendo {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .selector-pildora {
+    transition: none;
+  }
 }
 
 /* Mensaje de lista vacía. */

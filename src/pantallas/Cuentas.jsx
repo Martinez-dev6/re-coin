@@ -1,4 +1,5 @@
 // Lista de cuentas con el saldo total (design/capturas/Cuentas.png).
+import { useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CabeceraSubpagina from '../componentes/CabeceraSubpagina.jsx';
 import { IconoFlecha, IconoMas } from '../componentes/iconos.jsx';
@@ -6,12 +7,15 @@ import { IconoPorNombre } from '../componentes/iconosPorNombre.jsx';
 import { saldoTotal, tipoCuenta } from '../datos/cuentas.js';
 import { useDatos } from '../datos/DatosContext.jsx';
 import { formatearPesos } from '../utilidades/formato.js';
+import { useFilasAnimadas } from '../utilidades/movimiento.js';
 import './Cuentas.css';
 
 export default function Cuentas() {
   const navegar = useNavigate();
   const { cuentas, cargando } = useDatos();
   const nueva = () => navegar('/cuentas/nueva');
+  const lista = useRef(null);
+  useFilasAnimadas(lista);
 
   return (
     <div>
@@ -35,9 +39,15 @@ export default function Cuentas() {
 
       <div className="contenido cuentas-contenido">
         {cuentas.length > 0 && (
-          <div className="tarjeta cuentas-lista">
+          <div ref={lista} className="tarjeta cuentas-lista">
             {cuentas.map((cuenta) => (
-              <button key={cuenta.id} type="button" className="cuentas-fila" onClick={() => navegar('/cuentas/' + cuenta.id)}>
+              <button
+                key={cuenta.id}
+                data-clave={cuenta.id}
+                type="button"
+                className="cuentas-fila"
+                onClick={() => navegar('/cuentas/' + cuenta.id)}
+              >
                 <span className="icono-circulo grande">
                   <IconoPorNombre nombre={cuenta.icono} tamano={20} />
                 </span>

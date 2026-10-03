@@ -1,5 +1,5 @@
 // Nueva cuenta (/cuentas/nueva) y editar cuenta (/cuentas/:id). design/capturas/NuevaCuenta.png
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
 import {
   CabeceraFormulario,
@@ -12,7 +12,7 @@ import {
 } from '../componentes/Formulario.jsx';
 import { IconoBanco, IconoBasura, IconoCheck, IconoOjo, IconoTexto } from '../componentes/iconos.jsx';
 import { ICONOS_CUENTA, IconoPorNombre } from '../componentes/iconosPorNombre.jsx';
-import PanelInferior from '../componentes/PanelInferior.jsx';
+import PanelInferior, { DURACION_PANEL_MS } from '../componentes/PanelInferior.jsx';
 import { eliminarCuenta, guardarCuenta, TIPOS_CUENTA, tipoCuenta } from '../datos/cuentas.js';
 import { useDatos } from '../datos/DatosContext.jsx';
 import { volver } from '../utilidades/navegacion.js';
@@ -42,6 +42,7 @@ function Campos({ cuenta }) {
   const [panelTipo, setPanelTipo] = useState(false);
   const [panelEliminar, setPanelEliminar] = useState(false);
   const [guardando, setGuardando] = useState(false);
+  const eliminando = useRef(false);
   const cambiar = (cambios) => setDatos((d) => ({ ...d, ...cambios }));
 
   const elegirTipo = (tipo) => cambiar(iconoAMano ? { tipo } : { tipo, icono: tipoCuenta(tipo).icono });
@@ -56,11 +57,16 @@ function Campos({ cuenta }) {
     }
   };
 
-  // Primero se vuelve a la lista y después se borra: así el formulario no se queda mostrando
-  // una cuenta que ya no existe.
+  // Primero baja el panel; después se vuelve a la lista y se borra (en ese orden: así el
+  // formulario no se queda mostrando una cuenta que ya no existe).
   const eliminar = () => {
-    volver(navegar, LISTA);
-    eliminarCuenta(cuenta.id);
+    if (eliminando.current) return;
+    eliminando.current = true;
+    setPanelEliminar(false);
+    setTimeout(() => {
+      volver(navegar, LISTA);
+      eliminarCuenta(cuenta.id);
+    }, DURACION_PANEL_MS + 30);
   };
 
   return (

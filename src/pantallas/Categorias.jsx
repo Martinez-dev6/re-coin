@@ -1,11 +1,14 @@
 // Categorías de gastos e ingresos (design/capturas/Categorias.png y CategoriasIngresos.png).
 // La pestaña va en la dirección (?tipo=ingreso) para volver a ella al cerrar un formulario.
+import { useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import CabeceraSubpagina from '../componentes/CabeceraSubpagina.jsx';
 import CirculoCategoria from '../componentes/CirculoCategoria.jsx';
+import Deslizar from '../componentes/Deslizar.jsx';
 import { Segmentado } from '../componentes/Formulario.jsx';
 import { IconoFlecha, IconoMas } from '../componentes/iconos.jsx';
 import { useDatos } from '../datos/DatosContext.jsx';
+import { useFilasAnimadas } from '../utilidades/movimiento.js';
 import './Categorias.css';
 
 const PESTANAS = [
@@ -19,6 +22,8 @@ export default function Categorias() {
   const tipo = parametros.get('tipo') === 'ingreso' ? 'ingreso' : 'gasto';
   const { categorias, cargando } = useDatos();
   const lista = categorias.filter((c) => c.tipo === tipo);
+  const caja = useRef(null);
+  useFilasAnimadas(caja);
 
   return (
     <div>
@@ -44,15 +49,17 @@ export default function Categorias() {
         />
       </CabeceraSubpagina>
 
-      <div className="contenido categorias-contenido">
+      {/* Al cambiar de Gastos a Ingresos, la lista entra deslizándose desde ese lado. */}
+      <Deslizar posicion={tipo === 'ingreso' ? 1 : 0} className="contenido categorias-contenido">
         {!cargando && lista.length === 0 && (
           <div className="tarjeta vacio">No tienes categorías de {tipo === 'gasto' ? 'gastos' : 'ingresos'}.</div>
         )}
         {lista.length > 0 && (
-          <div className="tarjeta categorias-lista">
+          <div ref={caja} className="tarjeta categorias-lista">
             {lista.map((categoria) => (
               <button
                 key={categoria.id}
+                data-clave={categoria.id}
                 type="button"
                 className="categorias-fila"
                 onClick={() => navegar('/categorias/' + categoria.id)}
@@ -66,7 +73,7 @@ export default function Categorias() {
             ))}
           </div>
         )}
-      </div>
+      </Deslizar>
     </div>
   );
 }

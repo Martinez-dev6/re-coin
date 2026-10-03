@@ -1,0 +1,40 @@
+/* Durante una transición (TransicionPantallas.jsx), cada pantalla (la nueva y la copia de la
+   anterior) ocupa la ventana entera con fondo opaco. La caja de afuera es la que se mueve y
+   la de adentro guarda el scroll: así lo fijo de cada pantalla (botón Guardar, barra compacta
+   de Inicio) queda en su sitio y el banner pegajoso sigue arriba. */
+.pantalla[data-transicion] {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  background: var(--page-bg);
+}
+
+.pantalla[data-transicion] > .pantalla-contenido {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+/* La que se mueve va encima. Los formularios pasan también por encima de la barra inferior
+   (z-index 60); las demás pantallas, por debajo, para que la barra se quede quieta. */
+.pantalla[data-capa='arriba'] {
+  z-index: 2;
+}
+
+.pantalla[data-capa='sobre-barra'] {
+  z-index: 70;
+}
+
+/* Sombra suave en el borde que avanza. */
+.pantalla[data-sombra='lado'] {
+  box-shadow: -12px 0 32px rgba(0, 0, 0, 0.12);
+}
+
+.pantalla[data-sombra='arriba'] {
+  box-shadow: 0 -12px 32px rgba(0, 0, 0, 0.12);
+}
+
+/* La copia de la pantalla anterior es solo imagen: no recibe toques. */
+.pantalla-copia {
+  pointer-events: none;
+}

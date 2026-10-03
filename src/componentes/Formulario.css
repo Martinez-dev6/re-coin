@@ -141,6 +141,7 @@
 /* ---- Dos opciones dentro del banner (Gasto | Ingreso) ---- */
 
 .segmentado {
+  position: relative;
   display: flex;
   gap: 4px;
   margin-top: 14px;
@@ -149,7 +150,9 @@
   background: var(--chip-bg);
 }
 
+/* El fondo blanco de la elegida es la píldora que se desliza (.selector-pildora, comunes.css). */
 .segmentado > button {
+  position: relative;
   flex: 1 1 0;
   height: 44px;
   padding: 0;
@@ -159,13 +162,10 @@
   color: var(--on-banner);
   font-size: 13px;
   font-weight: 600;
-  transition:
-    background-color 0.2s ease,
-    color 0.2s ease;
+  transition: color 0.2s ease;
 }
 
 .segmentado > button[aria-checked='true'] {
-  background: #ffffff;
   color: var(--banner-bg);
   font-weight: 700;
 }
@@ -195,6 +195,10 @@
   justify-content: center;
   background: var(--page-bg);
   color: var(--muted);
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .rejilla-iconos > button[aria-checked='true'] {
@@ -219,6 +223,7 @@
   align-items: center;
   justify-content: center;
   color: #ffffff;
+  transition: box-shadow 0.2s ease;
 }
 
 .rejilla-colores > button[aria-checked='true'] {

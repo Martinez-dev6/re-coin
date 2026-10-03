@@ -108,7 +108,7 @@ export default function ImportarExportar() {
         </p>
 
         {aviso && (
-          <p className={'respaldo-aviso' + (aviso.error ? ' error' : '')} role="status">
+          <p key={aviso.texto} className={'respaldo-aviso' + (aviso.error ? ' error' : '')} role="status">
             {aviso.texto}
           </p>
         )}

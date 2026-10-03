@@ -6,7 +6,9 @@ import { createPortal } from 'react-dom';
 import { useOscurecido } from '../estado/useOscurecido.js';
 import './PanelInferior.css';
 
-const DURACION_MS = 220;
+// Lo que tarda en bajar al cerrarse. Quien navega después de cerrar un panel espera esto,
+// para que no desaparezca de golpe con la pantalla.
+export const DURACION_PANEL_MS = 220;
 
 export default function PanelInferior({ abierto, alCerrar, titulo, accion, children }) {
   const [montado, setMontado] = useState(abierto);
@@ -28,7 +30,7 @@ export default function PanelInferior({ abierto, alCerrar, titulo, accion, child
       return () => cancelAnimationFrame(cuadro);
     }
     setVisible(false);
-    const espera = setTimeout(() => setMontado(false), DURACION_MS);
+    const espera = setTimeout(() => setMontado(false), DURACION_PANEL_MS);
     return () => clearTimeout(espera);
   }, [abierto]);
 

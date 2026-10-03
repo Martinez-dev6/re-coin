@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import { useMes } from '../estado/MesContext.jsx';
 import { nombreMes } from '../utilidades/fechas.js';
+import Deslizar from './Deslizar.jsx';
 import { IconoAnterior, IconoSiguiente } from './iconos.jsx';
 import PanelInferior from './PanelInferior.jsx';
 import './SelectorMes.css';
@@ -13,9 +14,9 @@ export function MesConFlechas() {
       <button type="button" className="mes-flecha" aria-label="Mes anterior" onClick={anterior}>
         <IconoAnterior />
       </button>
-      <div className="mes-flechas-texto" aria-live="polite">
+      <Deslizar posicion={anio * 12 + mes} distancia={16} className="mes-flechas-texto" aria-live="polite">
         {nombreMes(mes)} {anio}
-      </div>
+      </Deslizar>
       <button type="button" className="mes-flecha" aria-label="Mes siguiente" onClick={siguiente}>
         <IconoSiguiente />
       </button>

@@ -1,6 +1,6 @@
 // Nueva categoría (/categorias/nueva?tipo=…) y editar categoría (/categorias/:id).
 // design/capturas/NuevaCategoria.png
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Navigate, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import {
   CabeceraFormulario,
@@ -13,7 +13,7 @@ import {
 } from '../componentes/Formulario.jsx';
 import { IconoBasura, IconoTexto } from '../componentes/iconos.jsx';
 import { ICONOS_CATEGORIA } from '../componentes/iconosPorNombre.jsx';
-import PanelInferior from '../componentes/PanelInferior.jsx';
+import PanelInferior, { DURACION_PANEL_MS } from '../componentes/PanelInferior.jsx';
 import { COLORES_CATEGORIA, eliminarCategoria, guardarCategoria } from '../datos/categorias.js';
 import { useDatos } from '../datos/DatosContext.jsx';
 import { volver } from '../utilidades/navegacion.js';
@@ -43,6 +43,7 @@ function Campos({ categoria, tipoInicial }) {
   const [datos, setDatos] = useState(() => categoria ?? { nombre: '', tipo: tipoInicial, color: 'e', icono: 'corazon' });
   const [panelEliminar, setPanelEliminar] = useState(false);
   const [guardando, setGuardando] = useState(false);
+  const eliminando = useRef(false);
   const cambiar = (cambios) => setDatos((d) => ({ ...d, ...cambios }));
   const volverA = lista(datos.tipo);
 
@@ -56,10 +57,15 @@ function Campos({ categoria, tipoInicial }) {
     }
   };
 
-  // Primero se vuelve a la lista y después se borra (ver FormularioCuenta).
+  // Primero baja el panel; después se vuelve a la lista y se borra (ver FormularioCuenta).
   const eliminar = () => {
-    volver(navegar, volverA);
-    eliminarCategoria(categoria.id);
+    if (eliminando.current) return;
+    eliminando.current = true;
+    setPanelEliminar(false);
+    setTimeout(() => {
+      volver(navegar, volverA);
+      eliminarCategoria(categoria.id);
+    }, DURACION_PANEL_MS + 30);
   };
 
   return (

@@ -106,10 +106,12 @@ export function Interruptor({ activo, alCambiar, etiqueta }) {
   );
 }
 
-// Dos opciones dentro del banner (Gasto | Ingreso).
+// Dos opciones dentro del banner (Gasto | Ingreso). La píldora blanca se desliza a la elegida.
 export function Segmentado({ opciones, valor, alCambiar, etiqueta, bloqueado = false }) {
+  const elegida = opciones.findIndex((opcion) => opcion.valor === valor);
   return (
     <div className="segmentado" role="radiogroup" aria-label={etiqueta}>
+      <span className="selector-pildora" style={{ '--n': opciones.length, '--i': elegida }} aria-hidden="true" />
       {opciones.map((opcion) => (
         <button
           key={opcion.valor}

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import BarraEstado from '../componentes/BarraEstado.jsx';
 import CirculoCategoria from '../componentes/CirculoCategoria.jsx';
+import Deslizar from '../componentes/Deslizar.jsx';
 import FilaMovimiento from '../componentes/FilaMovimiento.jsx';
 import {
   IconoAlerta,
@@ -208,31 +209,33 @@ function Programados({ lista }) {
         </button>
       </div>
 
-      {vista === 'calendario' && (
-        <div className="tarjeta vacio">La vista de calendario se construye junto con los movimientos programados (paso 7).</div>
-      )}
-      {vista === 'lista' && porDia.length === 0 && <div className="tarjeta vacio">No hay movimientos programados este mes.</div>}
-      {vista === 'lista' &&
-        porDia.map(({ fecha, items }) => (
-          <section key={fecha}>
-            <h2 className="titulo-dia">{etiquetaDia(fecha)}</h2>
-            <div className="tarjeta-lista">
-              {items.map((p) => (
-                <FilaMovimiento
-                  key={p.id}
-                  movimiento={p}
-                  detalle={
-                    <>
-                      <IconoRepetir />
-                      {FRECUENCIA[p.frecuencia]}
-                    </>
-                  }
-                  estado={estadoProgramado(p)}
-                />
-              ))}
-            </div>
-          </section>
-        ))}
+      <Deslizar posicion={vista === 'lista' ? 0 : 1}>
+        {vista === 'calendario' && (
+          <div className="tarjeta vacio">La vista de calendario se construye junto con los movimientos programados (paso 7).</div>
+        )}
+        {vista === 'lista' && porDia.length === 0 && <div className="tarjeta vacio">No hay movimientos programados este mes.</div>}
+        {vista === 'lista' &&
+          porDia.map(({ fecha, items }) => (
+            <section key={fecha}>
+              <h2 className="titulo-dia">{etiquetaDia(fecha)}</h2>
+              <div className="tarjeta-lista">
+                {items.map((p) => (
+                  <FilaMovimiento
+                    key={p.id}
+                    movimiento={p}
+                    detalle={
+                      <>
+                        <IconoRepetir />
+                        {FRECUENCIA[p.frecuencia]}
+                      </>
+                    }
+                    estado={estadoProgramado(p)}
+                  />
+                ))}
+              </div>
+            </section>
+          ))}
+      </Deslizar>
     </>
   );
 }
@@ -244,6 +247,10 @@ export default function Planes() {
   const { seccion = 'presupuestos' } = useParams();
   const { anio, mes } = useMes();
   const actual = SECCIONES.find((s) => s.valor === seccion) ?? SECCIONES[0];
+  const indice = SECCIONES.indexOf(actual);
+  // Al cambiar de sección o de mes, el resumen y la lista entran deslizándose desde ese lado.
+  // Las metas no son de un mes: al cambiar el mes no se mueven.
+  const posicion = actual.valor === 'metas' ? [indice] : [indice, anio * 12 + mes];
 
   const presupuestos = PRESUPUESTOS;
   const programados = PROGRAMADOS.filter((p) => enMes(p.proxima, anio, mes));
@@ -302,8 +309,11 @@ export default function Planes() {
               <IconoMas />
             </button>
           </div>
-          {resumen}
+          <Deslizar posicion={posicion} distancia={16}>
+            {resumen}
+          </Deslizar>
           <div className="planes-secciones" role="tablist" aria-label="Planes">
+            <span className="selector-pildora" style={{ '--n': SECCIONES.length, '--i': indice }} aria-hidden="true" />
             {SECCIONES.map(({ valor, texto }) => (
               <button
                 key={valor}
@@ -320,11 +330,11 @@ export default function Planes() {
         </header>
       </div>
 
-      <div className="planes-contenido">
+      <Deslizar posicion={posicion} className="planes-contenido">
         {actual.valor === 'presupuestos' && <Presupuestos lista={presupuestos} />}
         {actual.valor === 'metas' && <Metas navegar={navegar} />}
         {actual.valor === 'programados' && <Programados lista={programados} />}
-      </div>
+      </Deslizar>
     </div>
   );
 }

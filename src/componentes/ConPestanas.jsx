@@ -1,24 +1,14 @@
-// Pantallas con barra inferior (las cuatro pestañas y sus subpantallas).
+// Pantallas con barra inferior (las cuatro pestañas y sus subpantallas). La barra la pone
+// TransicionPantallas, fuera de la pantalla, para que no se mueva al cambiar de pantalla;
+// también es quien lleva cada pantalla al principio (o a donde se dejó, al volver).
 // Los formularios (con botón Guardar) van fuera de este contenedor y no muestran la barra.
-import { useEffect } from 'react';
-import { Outlet, useLocation } from 'react-router-dom';
-import BarraNavegacion from './BarraNavegacion.jsx';
+import { Outlet } from 'react-router-dom';
 
 export default function ConPestanas() {
-  const { pathname } = useLocation();
-
-  // Cada pantalla empieza arriba (si no, heredaría el scroll de la anterior).
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [pathname]);
-
   return (
-    <>
-      {/* Espacio para que lo último de la lista no quede bajo la barra de 90 px. */}
-      <div style={{ paddingBottom: 96 }}>
-        <Outlet />
-      </div>
-      <BarraNavegacion />
-    </>
+    // Espacio para que lo último de la lista no quede bajo la barra de 90 px.
+    <div style={{ paddingBottom: 96 }}>
+      <Outlet />
+    </div>
   );
 }

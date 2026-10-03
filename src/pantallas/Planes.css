@@ -34,8 +34,10 @@
   letter-spacing: -0.01em;
 }
 
-/* Selector de tres secciones dentro del banner. */
+/* Selector de tres secciones dentro del banner. El fondo blanco de la elegida es la píldora
+   que se desliza (.selector-pildora, comunes.css). */
 .planes-secciones {
+  position: relative;
   display: flex;
   gap: 4px;
   margin-top: 14px;
@@ -45,6 +47,7 @@
 }
 
 .planes-seccion {
+  position: relative;
   flex: 1 1 0;
   height: 44px;
   padding: 0;
@@ -54,13 +57,10 @@
   color: var(--on-banner);
   font-size: 13px;
   font-weight: 600;
-  transition:
-    background-color 0.2s ease,
-    color 0.2s ease;
+  transition: color 0.2s ease;
 }
 
 .planes-seccion[aria-selected='true'] {
-  background: #ffffff;
   color: var(--banner-bg);
   font-weight: 700;
 }

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import BarraEstado from '../componentes/BarraEstado.jsx';
+import Deslizar from '../componentes/Deslizar.jsx';
 import {
   IconoAbajo,
   IconoBilletera,
@@ -19,6 +20,7 @@ import { useMes } from '../estado/MesContext.jsx';
 import { useSaldosOcultos } from '../estado/useSaldosOcultos.js';
 import { enMes, nombreMes } from '../utilidades/fechas.js';
 import { formatearPesos } from '../utilidades/formato.js';
+import { useFilasAnimadas } from '../utilidades/movimiento.js';
 import './Inicio.css';
 
 const OCULTO = '$ •••••';
@@ -36,6 +38,8 @@ export default function Inicio() {
   const [ocultos, alternarOcultos] = useSaldosOcultos();
   const [panelMes, setPanelMes] = useState(false);
   const pesos = (valor) => (ocultos ? OCULTO : formatearPesos(valor));
+  const listaCuentas = useRef(null);
+  useFilasAnimadas(listaCuentas);
 
   // Barra compacta: aparece cuando el banner grande sale de la pantalla al hacer scroll.
   const banner = useRef(null);
@@ -54,6 +58,8 @@ export default function Inicio() {
   const ingresosPendientes = ingresos.filter((m) => !m.pagado);
   const saldo = saldoTotal(cuentas);
   const tituloMes = nombreMes(mes) + (anio !== new Date().getFullYear() ? ` ${anio}` : '');
+  // Al elegir otro mes, lo que depende del mes entra deslizándose desde ese lado.
+  const posicionMes = anio * 12 + mes;
 
   const botonPerfil = (
     <button type="button" className="boton-banner" aria-label="Perfil" onClick={() => navegar('/pendiente/perfil')}>
@@ -93,7 +99,9 @@ export default function Inicio() {
         <div className="inicio-fila">
           {botonPerfil}
           <button type="button" className="inicio-mes" aria-label="Cambiar mes" onClick={() => setPanelMes(true)}>
-            {tituloMes}
+            <Deslizar as="span" posicion={posicionMes} distancia={16}>
+              {tituloMes}
+            </Deslizar>
             <IconoAbajo />
           </button>
           {botonOjo}
@@ -101,7 +109,7 @@ export default function Inicio() {
         <div className="inicio-saldo-etiqueta">Saldo actual en cuentas</div>
         <div className="inicio-saldo">{cargando ? '\u00a0' : pesos(saldo)}</div>
         {!sinCuentas && (
-          <div className="inicio-resumen">
+          <Deslizar posicion={posicionMes} distancia={16} className="inicio-resumen">
             <div className="inicio-resumen-dato">
               <span className="inicio-resumen-icono" style={{ color: 'var(--income-on-white)' }}>
                 <IconoFlechaArriba />
@@ -120,7 +128,7 @@ export default function Inicio() {
                 <div className="inicio-resumen-valor">{pesos(sumar(gastos))}</div>
               </div>
             </div>
-          </div>
+          </Deslizar>
         )}
       </header>
 
@@ -152,7 +160,7 @@ export default function Inicio() {
       {!cargando && !sinCuentas && (
         <div className="inicio-contenido">
           <h2 className="inicio-titulo">Pendientes y alertas</h2>
-          <div className="inicio-pendientes">
+          <Deslizar posicion={posicionMes} className="inicio-pendientes">
             <button type="button" className="tarjeta inicio-pendiente" onClick={() => navegar('/transacciones')}>
               <div className="inicio-pendiente-cabeza">
                 <span className="inicio-pendiente-icono">
@@ -181,7 +189,7 @@ export default function Inicio() {
                 {pesos(sumar(ingresosPendientes))}
               </div>
             </button>
-          </div>
+          </Deslizar>
 
           <div className="inicio-cuentas-cabeza">
             <h2 className="inicio-titulo">Cuentas</h2>
@@ -189,9 +197,9 @@ export default function Inicio() {
               + Nueva cuenta
             </button>
           </div>
-          <div className="inicio-cuentas">
+          <div ref={listaCuentas} className="inicio-cuentas">
             {cuentas.map(({ id, nombre, icono, saldo: saldoCuenta }) => (
-              <div key={id} className="inicio-cuenta">
+              <div key={id} data-clave={id} className="inicio-cuenta">
                 <span className="icono-circulo grande">
                   <IconoPorNombre nombre={icono} tamano={20} />
                 </span>

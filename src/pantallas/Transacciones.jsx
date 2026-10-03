@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import BarraEstado from '../componentes/BarraEstado.jsx';
+import Deslizar from '../componentes/Deslizar.jsx';
 import FilaMovimiento from '../componentes/FilaMovimiento.jsx';
 import { IconoBuscar, IconoFiltros } from '../componentes/iconos.jsx';
 import { MesConFlechas } from '../componentes/SelectorMes.jsx';
@@ -51,6 +52,8 @@ export default function Transacciones() {
 
   const pendiente = total(visibles.filter((m) => !m.pagado), filtro);
   const pagado = total(visibles.filter((m) => m.pagado), filtro);
+  // Al cambiar de mes o de filtro, los totales y la lista entran deslizándose desde ese lado.
+  const posicion = [anio * 12 + mes, FILTROS.findIndex((f) => f.valor === filtro)];
 
   return (
     <div>
@@ -66,7 +69,7 @@ export default function Transacciones() {
               <IconoFiltros />
             </button>
           </div>
-          <div className="totales-banner">
+          <Deslizar posicion={posicion} distancia={16} className="totales-banner">
             <div>
               <div className="totales-banner-etiqueta">Pendiente</div>
               <div className="totales-banner-valor">{formatearPesos(pendiente)}</div>
@@ -76,7 +79,7 @@ export default function Transacciones() {
               <div className="totales-banner-etiqueta">Pagado</div>
               <div className="totales-banner-valor">{formatearPesos(pagado)}</div>
             </div>
-          </div>
+          </Deslizar>
         </header>
       </div>
 
@@ -88,7 +91,7 @@ export default function Transacciones() {
         ))}
       </div>
 
-      <div className="transacciones-lista">
+      <Deslizar posicion={posicion} className="transacciones-lista">
         {porDia.length === 0 && <div className="tarjeta vacio">No hay movimientos en este mes.</div>}
         {porDia.map(({ fecha, movimientos }) => (
           <section key={fecha}>
@@ -106,7 +109,7 @@ export default function Transacciones() {
             </div>
           </section>
         ))}
-      </div>
+      </Deslizar>
     </div>
   );
 }
