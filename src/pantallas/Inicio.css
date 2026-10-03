@@ -309,3 +309,26 @@
   height: 44px;
   margin-top: 8px;
 }
+
+/* Total de todas las cuentas, bajo la lista. */
+.inicio-cuentas-total {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 10px;
+  padding: 0 18px;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.inicio-cuentas-total strong {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.inicio-cuentas-nota {
+  margin: 2px 18px 0;
+  font-size: 12px;
+  color: var(--muted);
+}

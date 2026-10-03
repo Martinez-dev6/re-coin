@@ -27,7 +27,7 @@ export default function Deslizar({ posicion, distancia = 24, as: Etiqueta = 'div
         { transform: `translateX(${lado * distancia}px)`, opacity: 0 },
         { transform: 'none', opacity: 1 },
       ],
-      { duration: 340, easing: CURVA_ENTRAR },
+      { duration: 320, easing: CURVA_ENTRAR },
     );
   });
 

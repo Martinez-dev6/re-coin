@@ -43,28 +43,28 @@ function describir(ruta) {
 // barra de estado como una franja más oscura (video del iPhone, 2026-10-03).
 const RECETAS = {
   entrar: {
-    duracion: 460,
+    duracion: 430,
     curva: CURVA_ENTRAR,
     arriba: 'nueva',
     nueva: [{ transform: 'translateX(100%)' }, { transform: 'none' }],
     anterior: [{ transform: 'none' }, { transform: 'translateX(-30%)' }],
   },
   volver: {
-    duracion: 420,
+    duracion: 410,
     curva: CURVA_SUAVE,
     arriba: 'anterior',
     nueva: [{ transform: 'translateX(-30%)' }, { transform: 'none' }],
     anterior: [{ transform: 'none' }, { transform: 'translateX(100%)' }],
   },
   presentar: {
-    duracion: 480,
+    duracion: 450,
     curva: CURVA_ENTRAR,
     arriba: 'nueva',
     sobreBarra: true,
     nueva: [{ transform: 'translateY(100%)' }, { transform: 'none' }],
   },
   cerrar: {
-    duracion: 420,
+    duracion: 390,
     curva: CURVA_SUAVE,
     arriba: 'anterior',
     sobreBarra: true,
@@ -74,7 +74,7 @@ const RECETAS = {
 
 // lado: 1 si la pestaña nueva está a la derecha de la anterior, −1 a la izquierda, 0 sin saberlo.
 const cambioDePestana = (lado) => ({
-  duracion: 300,
+  duracion: 280,
   curva: CURVA_ENTRAR,
   arriba: 'nueva',
   nueva: [{ transform: `translateX(${lado * 24}px)`, opacity: 0 }, { transform: 'none', opacity: 1 }],
@@ -193,6 +193,7 @@ class Pila extends Component {
     transicion.animaciones.forEach((animacion) => animacion.cancel());
     transicion.copia.remove();
     const pantalla = this.pantalla.current;
+    if (!pantalla) return; // la app se estaba cerrando o recargando
     delete pantalla.dataset.transicion;
     delete pantalla.dataset.capa;
     window.scrollTo(0, transicion.scroll);

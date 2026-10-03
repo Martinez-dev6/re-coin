@@ -30,7 +30,19 @@ export function CabeceraFormulario({ titulo, volverA, children }) {
   );
 }
 
+// El cursor siempre al final de la cifra: el monto se escribe de izquierda a derecha.
+// Se hace un cuadro después porque el iPhone pone el cursor donde cayó el dedo.
+const cursorAlFinal = (evento) => {
+  const campo = evento.currentTarget;
+  requestAnimationFrame(() => {
+    if (document.activeElement === campo) campo.setSelectionRange(campo.value.length, campo.value.length);
+  });
+};
+
 // Monto grande del banner. Usa el teclado numérico del iPhone (solo cifras, sin decimales).
+// En cero el campo queda vacío y "$ 0" es solo el texto de ejemplo: antes, al tocar justo
+// sobre el 0 el cursor quedaba antes de él, lo escrito quedaba delante ("50" en vez de "5")
+// y había que borrar el cero.
 export function MontoEditable({ etiqueta, valor, alCambiar }) {
   return (
     <label className="cabecera-cifra">
@@ -42,7 +54,10 @@ export function MontoEditable({ etiqueta, valor, alCambiar }) {
         pattern="[0-9]*"
         enterKeyHint="done"
         autoComplete="off"
-        value={formatearPesos(valor)}
+        placeholder={formatearPesos(0)}
+        value={valor ? formatearPesos(valor) : ''}
+        onFocus={cursorAlFinal}
+        onClick={cursorAlFinal}
         onChange={(evento) => alCambiar(Number(evento.target.value.replace(/\D/g, '').slice(0, 12)) || 0)}
         onKeyDown={(evento) => evento.key === 'Enter' && evento.currentTarget.blur()}
       />

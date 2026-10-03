@@ -2,18 +2,19 @@
 import { useLayoutEffect, useRef } from 'react';
 
 // Curvas de los deslizamientos (las mismas están en base.css para las transiciones de CSS).
-// Las dos arrancan con velocidad cero: la anterior (0.32, 0.72, 0, 1) salía de golpe y en
-// el video del iPhone la pantalla ya había recorrido un 20 % en el primer cuadro; al cerrar,
-// bajaba casi entera en uno o dos cuadros y quedaba una franja arrastrándose al final.
-// - ENTRAR: acelera y frena largo, como un resorte sin rebote (lo que llega).
+// Historia: la primera, (0.32, 0.72, 0, 1), salía de golpe: en el video del iPhone la pantalla
+// ya había recorrido un 20 % en el primer cuadro. La segunda arrancaba en cero y el dueño la
+// sintió lenta. Estas quedan a medio camino (pedido del dueño, 2026-10-03): un arranque suave
+// pero no en cero y duraciones intermedias.
+// - ENTRAR: arranca suave, acelera y frena largo (lo que llega).
 // - SUAVE: arranca y termina suave, sin cola larga (lo que sale, vuelve o se mueve de sitio).
-export const CURVA_ENTRAR = 'cubic-bezier(0.2, 0, 0, 1)';
-export const CURVA_SUAVE = 'cubic-bezier(0.4, 0, 0.2, 1)';
+export const CURVA_ENTRAR = 'cubic-bezier(0.2, 0.2, 0, 1)';
+export const CURVA_SUAVE = 'cubic-bezier(0.35, 0.1, 0.15, 1)';
 
 // Quien activó "Reducir movimiento" en el teléfono no ve deslizamientos.
 export const sinMovimiento = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-const DURACION_FILA_MS = 300;
+const DURACION_FILA_MS = 290;
 
 function leerFilas(caja) {
   const filas = new Map();

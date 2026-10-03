@@ -33,12 +33,12 @@
   --oscurecido-curva: linear;
   --oscurecido-retraso: -10ms;
 
-  /* Deslizamientos (pantallas, selectores, listas, paneles). Las dos arrancan con velocidad
-     cero; ver src/utilidades/movimiento.js, que tiene las mismas.
-     - entrar: acelera y frena largo, como un resorte sin rebote (lo que llega).
+  /* Deslizamientos (pantallas, selectores, listas, paneles). Las mismas curvas e historia
+     en src/utilidades/movimiento.js.
+     - entrar: arranca suave, acelera y frena largo (lo que llega).
      - suave: arranca y termina suave, sin cola larga (lo que sale o cambia de sitio). */
-  --curva-entrar: cubic-bezier(0.2, 0, 0, 1);
-  --curva-suave: cubic-bezier(0.4, 0, 0.2, 1);
+  --curva-entrar: cubic-bezier(0.2, 0.2, 0, 1);
+  --curva-suave: cubic-bezier(0.35, 0.1, 0.15, 1);
 
   font-family: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
   color: var(--text);

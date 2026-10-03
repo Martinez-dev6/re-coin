@@ -17,6 +17,12 @@
   outline: none;
 }
 
+/* "$ 0" de ejemplo cuando el monto está en cero: igual que la cifra escrita. */
+.formulario-monto::placeholder {
+  color: inherit;
+  opacity: 1;
+}
+
 .formulario-contenido {
   /* Espacio para que lo último no quede bajo el botón Guardar fijo. */
   padding: 14px 16px calc(110px + var(--safe-bottom));

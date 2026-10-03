@@ -27,7 +27,7 @@
   box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.25);
   transform: translateY(100%);
   /* Al bajar (cerrar): arranca y termina suave. Debe durar lo mismo que DURACION_PANEL_MS. */
-  transition: transform 0.26s var(--curva-suave);
+  transition: transform 0.24s var(--curva-suave);
   outline: none;
 }
 
@@ -38,7 +38,7 @@
 /* Al subir (abrir): acelera y frena largo. */
 .panel-capa.visible .panel-inferior {
   transform: translateY(0);
-  transition: transform 0.34s var(--curva-entrar);
+  transition: transform 0.3s var(--curva-entrar);
 }
 
 .panel-asa {

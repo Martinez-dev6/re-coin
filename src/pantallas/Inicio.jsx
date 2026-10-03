@@ -58,6 +58,9 @@ export default function Inicio() {
   const gastosPendientes = gastos.filter((m) => !m.pagado);
   const ingresosPendientes = ingresos.filter((m) => !m.pagado);
   const saldo = saldoTotal(cuentas);
+  // Total de todas las cuentas, también las que no suman al saldo actual ("En el saldo" apagado).
+  const totalCuentas = cuentas.reduce((total, c) => total + c.saldo, 0);
+  const fueraDelSaldo = cuentas.filter((c) => !c.incluirEnSaldo).length;
   const tituloMes = nombreMes(mes) + (anio !== new Date().getFullYear() ? ` ${anio}` : '');
   // Al elegir otro mes, lo que depende del mes entra deslizándose desde ese lado.
   const posicionMes = anio * 12 + mes;
@@ -222,6 +225,15 @@ export default function Inicio() {
               </div>
             ))}
           </div>
+          <div className="inicio-cuentas-total">
+            <span>Total en cuentas</span>
+            <strong>{pesos(totalCuentas)}</strong>
+          </div>
+          {fueraDelSaldo > 0 && (
+            <p className="inicio-cuentas-nota">
+              Incluye {fueraDelSaldo === 1 ? '1 cuenta que no suma' : `${fueraDelSaldo} cuentas que no suman`} al saldo actual.
+            </p>
+          )}
         </div>
       )}
 
