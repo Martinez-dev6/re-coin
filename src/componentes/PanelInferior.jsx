@@ -20,7 +20,11 @@ export default function PanelInferior({ abierto, alCerrar, titulo, accion, child
   useEffect(() => {
     if (abierto) {
       setMontado(true);
-      const cuadro = requestAnimationFrame(() => requestAnimationFrame(() => setVisible(true)));
+      // Dos cuadros, para que el navegador pinte el estado inicial antes de animar. Se
+      // cancela el que esté pendiente: si se cerrara entre los dos, "visible" quedaría encendido.
+      let cuadro = requestAnimationFrame(() => {
+        cuadro = requestAnimationFrame(() => setVisible(true));
+      });
       return () => cancelAnimationFrame(cuadro);
     }
     setVisible(false);

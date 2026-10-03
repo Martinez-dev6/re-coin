@@ -9,15 +9,17 @@
   /* Sin pointer-events: none a propósito: iOS busca el elemento que hay en el centro del
      borde superior y una capa "intocable" puede hacer que no la vea. Solo ocupa el margen
      superior del banner, donde no hay botones. */
-  transition: background-color 0.22s ease;
+  background: var(--franja);
 }
 
 .barra-estado[data-tono='banner'] {
-  background: var(--banner-bg);
+  --franja: var(--banner-bg);
+  --franja-dim: var(--banner-dim);
 }
 
 .barra-estado[data-tono='pagina'] {
-  background: var(--page-bg);
+  --franja: var(--page-bg);
+  --franja-dim: var(--page-dim);
 }
 
 /* Panel inferior o menú del "+" (src/estado/useOscurecido.js): mientras la capa existe,
@@ -26,13 +28,51 @@
   z-index: 300;
 }
 
-/* Mientras el oscurecido está visible, la franja toma ese mismo color ya mezclado y opaco,
-   con la misma duración y curva que el fondo (opacity 0.22s ease). Así se ve igual que el
-   banner oscurecido que tiene debajo y iOS copia ese mismo color a la isla. */
-:root[data-oscurecido] .barra-estado[data-tono='banner'] {
-  background: var(--banner-dim);
+/* Oscurecer y aclarar: el color de la franja (el que copia iOS a la isla) cambia de golpe
+   al primer cuadro, para que iOS empiece a cambiar la isla enseguida. Lo que se ve se
+   suaviza con ::before, que lleva el color anterior y se desvanece con la misma duración y
+   curva que el fondo oscurecido. Las dos son animaciones de opacidad, que el iPhone hace
+   aparte y en el mismo cuadro.
+   Antes la franja animaba su color (background-color): eso se calcula cuadro a cuadro en
+   el hilo principal, que en ese momento está ocupado montando el panel, y la franja
+   arrancaba después del fondo; iOS, que copia el color de la franja, iba todavía después. */
+:root[data-oscurecido] .barra-estado {
+  background: var(--franja-dim);
 }
 
-:root[data-oscurecido] .barra-estado[data-tono='pagina'] {
-  background: var(--page-dim);
+.barra-estado::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+}
+
+:root[data-oscurecido] .barra-estado::before {
+  background: var(--franja);
+  animation: franja-oscurece 0.22s ease both;
+}
+
+:root[data-aclarando] .barra-estado::before {
+  background: var(--franja-dim);
+  animation: franja-aclara 0.22s ease both;
+}
+
+/* Iguales, pero con nombres distintos para que la animación vuelva a empezar al pasar de
+   oscurecer a aclarar. */
+@keyframes franja-oscurece {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes franja-aclara {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
 }

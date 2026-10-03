@@ -2,13 +2,14 @@
 // de la barra de estado la acompañe (ver BarraEstado.css):
 // - data-capa-oscura: mientras la capa está montada, también durante la animación de cierre.
 //   La franja sube por encima del oscurecido.
-// - data-oscurecido: mientras el oscurecido está visible. La franja pasa al color oscurecido
-//   con la misma duración y curva que el fondo, y al cerrar se aclara a la vez que él.
-// Antes las dos cosas eran un solo atributo que se quitaba al empezar el cierre: la franja
-// bajaba de golpe por debajo del oscurecido, todavía opaco, y se oscurecía dos veces.
+// - data-oscurecido: mientras el oscurecido está visible. La franja pasa al color oscurecido.
+// - data-aclarando: desde que el oscurecido empieza a irse hasta que la capa se desmonta.
+//   La franja vuelve a su color.
+// Antes las dos primeras eran un solo atributo que se quitaba al empezar el cierre: la
+// franja bajaba de golpe por debajo del oscurecido, todavía opaco, y se oscurecía dos veces.
 // Se ponen con useLayoutEffect para que cambien en el mismo cuadro que la clase "visible"
 // del fondo; con useEffect la franja podía empezar un cuadro tarde.
-import { useLayoutEffect } from 'react';
+import { useLayoutEffect, useRef } from 'react';
 
 const capas = {};
 
@@ -23,6 +24,32 @@ function marcar(atributo) {
 }
 
 export function useOscurecido(montado, visible) {
-  useLayoutEffect(() => (montado ? marcar('capaOscura') : undefined), [montado]);
-  useLayoutEffect(() => (visible ? marcar('oscurecido') : undefined), [visible]);
+  const oscuro = montado && visible;
+  const quitarAclarando = useRef(null);
+  const dejarDeAclarar = () => {
+    quitarAclarando.current?.();
+    quitarAclarando.current = null;
+  };
+
+  // Va antes que el efecto de "montado": si la capa desaparece de golpe estando visible,
+  // React limpia en este orden y el de abajo quita el "aclarando" que pone este.
+  useLayoutEffect(() => {
+    if (!oscuro) return undefined;
+    dejarDeAclarar();
+    const quitar = marcar('oscurecido');
+    return () => {
+      quitar();
+      dejarDeAclarar();
+      quitarAclarando.current = marcar('aclarando');
+    };
+  }, [oscuro]);
+
+  useLayoutEffect(() => {
+    if (!montado) return undefined;
+    const quitar = marcar('capaOscura');
+    return () => {
+      dejarDeAclarar();
+      quitar();
+    };
+  }, [montado]);
 }
