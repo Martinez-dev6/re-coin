@@ -1,0 +1,47 @@
+/* Panel para confirmar un pago (PanelConfirmarPago.jsx): sencillo, sin colores fuertes. */
+
+.confirmar-pago-resumen {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 2px 0 12px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: var(--page-bg);
+  font-size: 15px;
+}
+
+.confirmar-pago-titulo {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 600;
+}
+
+.confirmar-pago-resumen strong {
+  flex-shrink: 0;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.confirmar-pago-pregunta {
+  margin: 4px 0 2px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.confirmar-pago-cuentas {
+  max-height: 34vh;
+}
+
+.confirmar-pago-cuenta {
+  height: 52px;
+  color: var(--text);
+}
+
+.confirmar-pago-boton {
+  margin-top: 14px;
+}

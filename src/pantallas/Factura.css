@@ -58,7 +58,8 @@
   color: var(--income-on-white);
 }
 
-/* ---- Resumen: cuánto se ha pagado y las fechas ---- */
+/* ---- Resumen: cuánto se ha pagado y las fechas (sin barra: una cuota no se paga por partes,
+   pedido del dueño) ---- */
 
 .factura-resumen {
   padding: 14px 16px;
@@ -74,17 +75,6 @@
 .factura-resumen-uso strong {
   font-weight: 600;
   color: var(--text);
-}
-
-.factura-progreso {
-  display: block;
-  margin-top: 8px;
-}
-
-/* Lo pagado en verde. */
-.factura-progreso > span {
-  background: var(--income);
-  transition: width 0.34s var(--curva-suave);
 }
 
 .factura-fechas {

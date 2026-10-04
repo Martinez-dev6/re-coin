@@ -132,6 +132,10 @@ export async function guardarMovimiento(id, datos) {
 
 export const cambiarPagado = (id, pagado) => db.movimientos.update(id, { pagado });
 
+// Marca como pagado (o recibido) un pendiente, desde la cuenta de la que de verdad salió (o a la
+// que entró), que puede no ser la que se había puesto.
+export const marcarPagado = (id, cuentaId) => db.movimientos.update(id, { pagado: true, cuentaId });
+
 export const eliminarMovimiento = (id) => db.movimientos.delete(id);
 
 // Movimientos que tocan una cuenta (como origen o como destino).

@@ -3,3 +3,40 @@
 .pendientes-lista {
   padding: 10px 16px calc(32px + var(--safe-bottom));
 }
+
+/* Fila con el chulito a la derecha. La línea de abajo va en la fila completa. */
+.pendientes-fila {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px solid var(--divider);
+}
+
+.pendientes-fila:last-child {
+  border-bottom: 0;
+}
+
+.pendientes-fila > .fila-movimiento {
+  flex-grow: 1;
+  min-width: 0;
+  border-bottom: 0;
+}
+
+/* Círculo con un chulito, sin relleno: discreto, pero se ve que se puede tocar. */
+.pendientes-marcar {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  padding: 0;
+  border: 1.5px solid var(--line);
+  border-radius: 18px;
+  background: var(--surface);
+  color: var(--income);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pendientes-marcar:active {
+  background: var(--page-bg);
+}

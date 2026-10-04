@@ -59,7 +59,6 @@ function Contenido({ tarjeta, mesInicial }) {
   const pagada = facturaPagada(factura);
   const vence = textoVence(tarjeta, mes);
   const fechaPago = diaYMes(fechaPagoFactura(tarjeta, mes));
-  const porcentaje = factura.total > 0 ? Math.min(100, Math.round((factura.pagado / factura.total) * 100)) : 0;
   const posicion = Number(mes.slice(0, 4)) * 12 + Number(mes.slice(5));
 
   const pagar = async () => {
@@ -121,9 +120,6 @@ function Contenido({ tarjeta, mesInicial }) {
             </span>
             <span>de {formatearPesos(factura.total)}</span>
           </div>
-          <span className="barra-progreso factura-progreso">
-            <span style={{ width: `${porcentaje}%` }} />
-          </span>
           <div className="factura-fechas">
             <span>
               <span className="factura-fecha-etiqueta">Cierre</span>

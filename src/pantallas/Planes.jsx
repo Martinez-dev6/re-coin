@@ -275,7 +275,7 @@ function FilasProgramadas({ items, navegar, frecuenciaDe }) {
 }
 
 function Programados({ items, programados, anio, mes, navegar }) {
-  const [vista, setVista] = useState('lista');
+  const [vista, setVista] = useState('calendario'); // Calendario de entrada (pedido del dueño: la lista se ve saturada).
   const [diaElegido, setDiaElegido] = useState(null);
   const frecuenciaDe = (id) => programados.find((p) => p.id === id)?.frecuencia;
 

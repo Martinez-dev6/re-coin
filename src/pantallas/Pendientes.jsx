@@ -1,12 +1,15 @@
 // Gastos o ingresos pendientes de un mes (/pendientes?tipo=gasto|ingreso): el mes elegido en
 // Inicio, que se cambia con las flechas de arriba. Se abre desde las tarjetas "Pendientes y
 // alertas" de Inicio (pedido del dueño, 2026-10-03: antes llevaban a Transacciones). Sube como un
-// formulario y se cierra con la X. No está en los diseños.
+// formulario y se cierra con la X. No está en los diseños. El chulito de cada fila lo marca como
+// pagado (PanelConfirmarPago).
 import { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import Deslizar from '../componentes/Deslizar.jsx';
 import FilaMovimiento from '../componentes/FilaMovimiento.jsx';
 import { CabeceraFormulario, Segmentado } from '../componentes/Formulario.jsx';
+import { IconoCheck } from '../componentes/iconos.jsx';
+import PanelConfirmarPago from '../componentes/PanelConfirmarPago.jsx';
 import { MesConFlechas } from '../componentes/SelectorMes.jsx';
 import { useDatos } from '../datos/DatosContext.jsx';
 import { detalleMovimiento, esGasto, rutaMovimiento } from '../datos/movimientos.js';
@@ -26,6 +29,9 @@ export default function Pendientes() {
   const [tipo, setTipo] = useState(parametros.get('tipo') === 'ingreso' ? 'ingreso' : 'gasto');
   const { anio, mes } = useMes();
   const datos = useDatos();
+  // El pendiente que se va a confirmar; se queda mientras el panel baja.
+  const [porConfirmar, setPorConfirmar] = useState(null);
+  const [panel, setPanel] = useState(false);
 
   // Del mes, sin pagar; los gastos incluyen las cuotas de tarjeta que vencen en él.
   const pendientes = datos.movimientosPorMes
@@ -65,18 +71,33 @@ export default function Pendientes() {
             <h2 className="titulo-dia">{etiquetaDia(fecha)}</h2>
             <div className="tarjeta-lista">
               {movimientos.map((m) => (
-                <FilaMovimiento
-                  key={m.id}
-                  movimiento={m}
-                  detalle={detalleMovimiento(m, datos)}
-                  estado="pendiente"
-                  alTocar={() => navegar(rutaMovimiento(m))}
-                />
+                <div key={m.id} className="pendientes-fila">
+                  <FilaMovimiento
+                    movimiento={m}
+                    detalle={detalleMovimiento(m, datos)}
+                    estado="pendiente"
+                    alTocar={() => navegar(rutaMovimiento(m))}
+                  />
+                  {/* El chulito: marcar como pagado (o recibido), con confirmación. */}
+                  <button
+                    type="button"
+                    className="pendientes-marcar"
+                    aria-label={tipo === 'ingreso' ? 'Marcar como recibido' : 'Marcar como pagado'}
+                    onClick={() => {
+                      setPorConfirmar(m);
+                      setPanel(true);
+                    }}
+                  >
+                    <IconoCheck tamano={18} grosor={2.6} />
+                  </button>
+                </div>
               ))}
             </div>
           </section>
         ))}
       </Deslizar>
+
+      <PanelConfirmarPago movimiento={porConfirmar} abierto={panel} alCerrar={() => setPanel(false)} />
     </div>
   );
 }
