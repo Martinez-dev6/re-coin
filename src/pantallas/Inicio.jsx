@@ -2,6 +2,7 @@ import { useLayoutEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Avatar from '../componentes/Avatar.jsx';
 import AvisoCopia from '../componentes/AvisoCopia.jsx';
+import ConteoSaldo from '../componentes/ConteoSaldo.jsx';
 import BarraEstado from '../componentes/BarraEstado.jsx';
 import Deslizar from '../componentes/Deslizar.jsx';
 import PanelCuenta from '../componentes/PanelCuenta.jsx';
@@ -151,7 +152,7 @@ export default function Inicio() {
             Saldo actual en cuentas
           </div>
           <div ref={montoSaldo} className="inicio-saldo">
-            {cargando ? '\u00a0' : pesos(saldo)}
+            {cargando ? '\u00a0' : ocultos ? OCULTO : <ConteoSaldo valor={saldo} />}
           </div>
           {!sinCuentas && (
             <div ref={resumen}>

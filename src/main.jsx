@@ -18,6 +18,7 @@ import { TemaProvider } from './tema/TemaContext.jsx';
 import { MesProvider } from './estado/MesContext.jsx';
 import { DatosProvider } from './datos/DatosContext.jsx';
 import { pedirAlmacenamientoPersistente } from './datos/db.js';
+import { terminarBienvenida } from './estado/bienvenida.js';
 import App from './App.jsx';
 
 // Service worker: guarda la app para usarla sin conexión. Cuando hay una versión
@@ -52,6 +53,7 @@ if (bienvenida) {
   const salir = () => {
     if (salio) return;
     salio = true;
+    terminarBienvenida();
     bienvenida.classList.add('bienvenida-saliendo');
     // Respaldo por si no llega transitionend (navegador en segundo plano, Reducir movimiento).
     const quitar = () => bienvenida.remove();
