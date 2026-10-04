@@ -12,6 +12,7 @@ import FormularioCategoria from './pantallas/FormularioCategoria.jsx';
 import FormularioCuenta from './pantallas/FormularioCuenta.jsx';
 import FormularioEtiqueta from './pantallas/FormularioEtiqueta.jsx';
 import FormularioMovimiento from './pantallas/FormularioMovimiento.jsx';
+import FormularioPresupuesto from './pantallas/FormularioPresupuesto.jsx';
 import FormularioTarjeta from './pantallas/FormularioTarjeta.jsx';
 import ImportarExportar from './pantallas/ImportarExportar.jsx';
 import Inicio from './pantallas/Inicio.jsx';
@@ -55,6 +56,7 @@ export default function App() {
         <Route path="/etiquetas/:id" element={<FormularioEtiqueta />} />
         <Route path="/tarjetas/:id" element={<FormularioTarjeta />} />
         <Route path="/facturas/:tarjetaId/:mes" element={<Factura />} />
+        <Route path="/presupuestos/:id" element={<FormularioPresupuesto />} />
 
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

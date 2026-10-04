@@ -38,6 +38,7 @@ const FORMULARIOS = [
   /^\/movimientos\/[^/]+\/editar$/,
   /^\/pendientes$/,
   /^\/facturas\//,
+  /^\/presupuestos\//,
 ];
 const SIN_BARRA = [/^\/movimientos\/[^/]+$/];
 

@@ -27,4 +27,10 @@ export async function guardarCategoria(id, datos) {
   return nueva.id;
 }
 
-export const eliminarCategoria = (id) => db.categorias.delete(id);
+// Sus presupuestos se borran con ella; sus movimientos quedan "Sin categoría".
+export function eliminarCategoria(id) {
+  return db.transaction('rw', db.categorias, db.presupuestos, async () => {
+    await db.presupuestos.where('categoriaId').equals(id).delete();
+    await db.categorias.delete(id);
+  });
+}

@@ -363,3 +363,53 @@
 .inicio-cuenta-saldo.negativo {
   color: var(--expense);
 }
+
+/* Avisos de presupuesto bajo "Pendientes y alertas". */
+.inicio-alertas {
+  margin-top: 12px;
+  padding: 2px 14px;
+}
+
+.inicio-alerta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 52px;
+  padding: 8px 0;
+  border: 0;
+  border-bottom: 1px solid var(--divider);
+  background: transparent;
+  color: var(--text);
+  text-align: left;
+  font-size: 14px;
+  line-height: 19px;
+}
+
+.inicio-alerta:last-child {
+  border-bottom: 0;
+}
+
+.inicio-alerta-icono {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.inicio-alerta.limite .inicio-alerta-icono {
+  background: color-mix(in srgb, var(--pending) 14%, transparent);
+  color: var(--pending);
+}
+
+.inicio-alerta.excedido .inicio-alerta-icono {
+  background: var(--expense-soft);
+  color: var(--expense);
+}
+
+.inicio-alerta-texto strong {
+  font-weight: 600;
+}

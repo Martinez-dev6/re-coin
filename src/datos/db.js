@@ -56,6 +56,25 @@ db.version(4)
       });
   });
 
+// Paso 7b: Planes (2026-10-03). Ver presupuestos.js, metas.js y programados.js.
+//   presupuestos: id, categoriaId, limite, desde ('AAAA-MM'), repetir (true = todos los meses
+//                 desde 'desde'; false = solo ese mes), avisarAl (porcentaje: 50–100), orden
+//   metas:        id, nombre, objetivo, fechaLimite ('AAAA-MM-DD'), ahorradoInicial ("Ya tengo"),
+//                 cuentaId (dónde se guarda; solo informativo), icono, orden
+//   aportes:      id, metaId, valor, fecha. Solo suman a la meta: no mueven dinero.
+//   programados:  id, plantilla del movimiento (tipo, valor, descripcion, categoriaId, cuentaId,
+//                 cuentaDestinoId, etiquetaIds, observacion), frecuencia ('dia' | 'semana' |
+//                 'quincena' | 'mes' | 'anio'), empieza y termina ('AAAA-MM-DD'; termina null =
+//                 nunca), hasta (última fecha ya registrada como movimiento, o null), orden
+//   movimientos:  programadoId (el programado que lo creó, o null).
+db.version(5).stores({
+  presupuestos: 'id, categoriaId, orden',
+  metas: 'id, orden',
+  aportes: 'id, metaId, fecha',
+  programados: 'id, orden',
+  movimientos: 'id, fecha, cuentaId, cuentaDestinoId, categoriaId, *etiquetaIds, tarjetaId, programadoId',
+});
+
 // Solo la primera vez que se crea la base de datos. Las nuevas toman orden = Date.now()
 // (ordenAlFinal), así que "Otros" lleva un orden mayor para seguir de último.
 const ORDEN_ULTIMAS = 9e15;

@@ -4,6 +4,8 @@ import BarraEstado from '../componentes/BarraEstado.jsx';
 import Deslizar from '../componentes/Deslizar.jsx';
 import {
   IconoAbajo,
+  IconoAlerta,
+  IconoAviso,
   IconoBilletera,
   IconoFlechaAbajo,
   IconoFlechaArriba,
@@ -16,6 +18,7 @@ import { IconoPorNombre } from '../componentes/iconosPorNombre.jsx';
 import { PanelElegirMes } from '../componentes/SelectorMes.jsx';
 import { saldoTotal } from '../datos/cuentas.js';
 import { esGasto } from '../datos/movimientos.js';
+import { presupuestosDelMes } from '../datos/presupuestos.js';
 import { useDatos } from '../datos/DatosContext.jsx';
 import { useMes } from '../estado/MesContext.jsx';
 import { useSaldosOcultos } from '../estado/useSaldosOcultos.js';
@@ -32,7 +35,7 @@ const sumar = (lista) => lista.reduce((total, m) => total + m.valor, 0);
 export default function Inicio() {
   const navegar = useNavigate();
   const { anio, mes } = useMes();
-  const { cuentas, movimientosPorMes, cargando } = useDatos();
+  const { cuentas, movimientosPorMes, presupuestos, categoria, cargando } = useDatos();
   const sinCuentas = !cargando && cuentas.length === 0;
   const [ocultos, alternarOcultos] = useSaldosOcultos();
   const [panelMes, setPanelMes] = useState(false);
@@ -109,6 +112,7 @@ export default function Inicio() {
   const gastos = delMes.filter(esGasto);
   const gastosPendientes = gastos.filter((m) => !m.pagado);
   const ingresosPendientes = ingresos.filter((m) => !m.pagado);
+  const alertas = presupuestosDelMes(presupuestos, movimientosPorMes, anio, mes).filter((p) => p.alerta);
   const saldo = saldoTotal(cuentas);
   // Total de todas las cuentas, también las que no suman al saldo actual ("En el saldo" apagado).
   const totalCuentas = cuentas.reduce((total, c) => total + c.saldo, 0);
@@ -249,6 +253,30 @@ export default function Inicio() {
               </div>
             </button>
           </Deslizar>
+
+          {/* Presupuestos que llegaron a su "Avisarme al" o se pasaron (aviso dentro de la app). */}
+          {alertas.length > 0 && (
+            <Deslizar posicion={posicionMes} className="tarjeta inicio-alertas">
+              {alertas.map((p) => (
+                <button
+                  key={p.id}
+                  type="button"
+                  className={'inicio-alerta ' + p.alerta}
+                  onClick={() => navegar('/presupuestos/' + p.id)}
+                >
+                  <span className="inicio-alerta-icono">
+                    {p.alerta === 'excedido' ? <IconoAlerta tamano={16} /> : <IconoAviso tamano={16} />}
+                  </span>
+                  <span className="inicio-alerta-texto">
+                    <strong>{categoria(p.categoriaId)?.nombre ?? 'Presupuesto'}</strong>
+                    {p.alerta === 'excedido'
+                      ? ` se pasó por ${pesos(p.gastado - p.limite)}`
+                      : ` va en el ${p.usado} % del presupuesto`}
+                  </span>
+                </button>
+              ))}
+            </Deslizar>
+          )}
 
           <div className="inicio-cuentas-cabeza">
             <h2 className="inicio-titulo">Cuentas</h2>

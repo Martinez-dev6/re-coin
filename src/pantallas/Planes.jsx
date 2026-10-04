@@ -15,6 +15,7 @@ import {
 } from '../componentes/iconos.jsx';
 import { MesConFlechas } from '../componentes/SelectorMes.jsx';
 import { useDatos } from '../datos/DatosContext.jsx';
+import { presupuestosDelMes } from '../datos/presupuestos.js';
 import { useMes } from '../estado/MesContext.jsx';
 import { aFecha, diasHasta, enMes, etiquetaDia, fechaCorta, hoyTexto } from '../utilidades/fechas.js';
 import { formatearPesos } from '../utilidades/formato.js';
@@ -22,13 +23,12 @@ import './Planes.css';
 import './Transacciones.css';
 
 const SECCIONES = [
-  { valor: 'presupuestos', texto: 'Presupuestos', nuevo: 'nuevo-presupuesto' },
-  { valor: 'metas', texto: 'Metas', nuevo: 'nueva-meta' },
-  { valor: 'programados', texto: 'Programados', nuevo: 'nuevo-programado' },
+  { valor: 'presupuestos', texto: 'Presupuestos', nuevo: '/presupuestos/nuevo' },
+  { valor: 'metas', texto: 'Metas', nuevo: '/pendiente/nueva-meta' },
+  { valor: 'programados', texto: 'Programados', nuevo: '/pendiente/nuevo-programado' },
 ];
 
-// Presupuestos, metas y programados llegan con la base de datos en el paso 7.
-const PRESUPUESTOS = [];
+// Metas y programados llegan después (paso 7b).
 const METAS = [];
 const PROGRAMADOS = [];
 
@@ -36,23 +36,25 @@ const porcentaje = (parte, todo) => (todo > 0 ? Math.round((parte / todo) * 100)
 
 // ---------- Presupuestos ----------
 
-// Estado de un presupuesto: al día (< 90 %), casi al límite (90–100 %) o excedido.
-function estadoPresupuesto(gastado, limite) {
+// Estado de un presupuesto: al día, casi al límite (desde su "Avisarme al") o excedido.
+function estadoPresupuesto(gastado, limite, avisarAl = 90) {
   const usado = porcentaje(gastado, limite);
   if (gastado > limite) {
     return { clase: 'excedido', color: 'var(--expense)', Icono: IconoAlerta, texto: `Excedido ${formatearPesos(gastado - limite)}`, usado };
   }
-  if (usado >= 90) {
+  if (usado >= avisarAl) {
     return { clase: 'limite', color: 'var(--pending)', Icono: IconoAviso, texto: 'Casi al límite', usado };
   }
   return { clase: 'ok', color: 'var(--muted)', Icono: IconoCheckCirculo, texto: `Quedan ${formatearPesos(limite - gastado)}`, usado };
 }
 
-function FilaPresupuesto({ nombre, icono, color, gastado, limite }) {
-  const estado = estadoPresupuesto(gastado, limite);
+// alTocar: la fila es un botón (abre Editar presupuesto); la de "General" no.
+function FilaPresupuesto({ nombre, icono, color, gastado, limite, avisarAl, alTocar }) {
+  const estado = estadoPresupuesto(gastado, limite, avisarAl);
   const barra = estado.clase === 'ok' ? 'var(--accent-text)' : estado.color;
+  const Fila = alTocar ? 'button' : 'div';
   return (
-    <div className="presupuesto">
+    <Fila {...(alTocar && { type: 'button', onClick: alTocar })} className="presupuesto">
       <CirculoCategoria icono={icono} color={color} />
       <div className="presupuesto-cuerpo">
         <div className="presupuesto-linea">
@@ -74,13 +76,22 @@ function FilaPresupuesto({ nombre, icono, color, gastado, limite }) {
           </span>
         </div>
       </div>
-    </div>
+    </Fila>
   );
 }
 
-function Presupuestos({ lista }) {
+function Presupuestos({ lista, navegar }) {
   const { categoria: buscarCategoria } = useDatos();
-  if (lista.length === 0) return <div className="tarjeta vacio">No hay presupuestos para este mes.</div>;
+  if (lista.length === 0) {
+    return (
+      <div className="tarjeta vacio planes-vacio">
+        <p>No hay presupuestos para este mes.</p>
+        <button type="button" className="boton-principal" onClick={() => navegar('/presupuestos/nuevo')}>
+          Crear presupuesto
+        </button>
+      </div>
+    );
+  }
   const gastado = lista.reduce((t, p) => t + p.gastado, 0);
   const limite = lista.reduce((t, p) => t + p.limite, 0);
   return (
@@ -96,6 +107,8 @@ function Presupuestos({ lista }) {
             color={categoria?.color}
             gastado={p.gastado}
             limite={p.limite}
+            avisarAl={p.avisarAl}
+            alTocar={() => navegar('/presupuestos/' + p.id)}
           />
         );
       })}
@@ -246,13 +259,14 @@ export default function Planes() {
   const navegar = useNavigate();
   const { seccion = 'presupuestos' } = useParams();
   const { anio, mes } = useMes();
+  const datos = useDatos();
   const actual = SECCIONES.find((s) => s.valor === seccion) ?? SECCIONES[0];
   const indice = SECCIONES.indexOf(actual);
   // Al cambiar de sección o de mes, el resumen y la lista entran deslizándose desde ese lado.
   // Las metas no son de un mes: al cambiar el mes no se mueven.
   const posicion = actual.valor === 'metas' ? [indice] : [indice, anio * 12 + mes];
 
-  const presupuestos = PRESUPUESTOS;
+  const presupuestos = presupuestosDelMes(datos.presupuestos, datos.movimientosPorMes, anio, mes);
   const programados = PROGRAMADOS.filter((p) => enMes(p.proxima, anio, mes));
 
   let resumen;
@@ -305,7 +319,7 @@ export default function Planes() {
           <div className="planes-fila">
             <span className="planes-hueco" />
             <MesConFlechas />
-            <button type="button" className="boton-banner" aria-label="Nuevo" onClick={() => navegar('/pendiente/' + actual.nuevo)}>
+            <button type="button" className="boton-banner" aria-label="Nuevo" onClick={() => navegar(actual.nuevo)}>
               <IconoMas />
             </button>
           </div>
@@ -331,7 +345,7 @@ export default function Planes() {
       </div>
 
       <Deslizar posicion={posicion} className="planes-contenido">
-        {actual.valor === 'presupuestos' && <Presupuestos lista={presupuestos} />}
+        {actual.valor === 'presupuestos' && <Presupuestos lista={presupuestos} navegar={navegar} />}
         {actual.valor === 'metas' && <Metas navegar={navegar} />}
         {actual.valor === 'programados' && <Programados lista={programados} />}
       </Deslizar>

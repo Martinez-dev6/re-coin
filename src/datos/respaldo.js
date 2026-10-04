@@ -26,6 +26,11 @@ const VALIDAR = {
     /^\d{4}-\d{2}-\d{2}$/.test(m.fecha) &&
     typeof m.pagado === 'boolean' &&
     Array.isArray(m.etiquetaIds),
+  presupuestos: (p) =>
+    esTexto(p.id) && esTexto(p.categoriaId) && esNumero(p.limite) && /^\d{4}-\d{2}$/.test(p.desde) && esNumero(p.orden),
+  metas: (m) => esTexto(m.id) && esTexto(m.nombre) && esNumero(m.objetivo) && esNumero(m.orden),
+  aportes: (a) => esTexto(a.id) && esTexto(a.metaId) && esNumero(a.valor) && /^\d{4}-\d{2}-\d{2}$/.test(a.fecha),
+  programados: (p) => esTexto(p.id) && esTexto(p.tipo) && esNumero(p.valor) && esTexto(p.frecuencia) && esNumero(p.orden),
   tarjetas: (t) =>
     esTexto(t.id) && esTexto(t.nombre) && esNumero(t.cupo) && esNumero(t.diaCierre) && esNumero(t.diaPago) && esNumero(t.orden),
 };

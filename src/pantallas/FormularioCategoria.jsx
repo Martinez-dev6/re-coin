@@ -40,8 +40,9 @@ export default function FormularioCategoria() {
 
 function Campos({ categoria, tipoInicial }) {
   const navegar = useNavigate();
-  const { movimientos } = useDatos();
+  const { movimientos, presupuestos } = useDatos();
   const usos = categoria ? movimientos.filter((m) => m.categoriaId === categoria.id).length : 0;
+  const conPresupuesto = Boolean(categoria) && presupuestos.some((p) => p.categoriaId === categoria.id);
   const [datos, setDatos] = useState(() => categoria ?? { nombre: '', tipo: tipoInicial, color: 'e', icono: 'corazon' });
   const [panelEliminar, setPanelEliminar] = useState(false);
   const [guardando, setGuardando] = useState(false);
@@ -119,6 +120,7 @@ function Campos({ categoria, tipoInicial }) {
         <p className="panel-texto">
           Se borra «{categoria?.nombre}» de este teléfono.{' '}
           {usos > 0 && `${usos === 1 ? 'Su movimiento queda' : `Sus ${usos} movimientos quedan`} sin categoría. `}
+          {conPresupuesto && 'También se borra su presupuesto. '}
           No se puede deshacer.
         </p>
         <button type="button" className="boton-peligro" onClick={eliminar}>

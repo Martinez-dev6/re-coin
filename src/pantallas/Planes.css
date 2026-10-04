@@ -78,6 +78,15 @@
   border-bottom: 1px solid var(--divider);
 }
 
+/* Como botón (abre Editar presupuesto). */
+button.presupuesto {
+  width: 100%;
+  border-width: 0 0 1px;
+  background: transparent;
+  color: var(--text);
+  text-align: left;
+}
+
 .presupuesto:last-child {
   border-bottom: 0;
 }
@@ -222,4 +231,9 @@
 /* Programados */
 .planes-vistas {
   margin-top: -2px;
+}
+
+/* Sin presupuestos (o metas, o programados): texto y botón para crear. */
+.planes-vacio p {
+  margin: 0 0 4px;
 }

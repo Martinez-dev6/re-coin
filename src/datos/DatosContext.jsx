@@ -17,6 +17,7 @@ export function DatosProvider({ children }) {
   const etiquetas = useLiveQuery(() => db.etiquetas.orderBy('orden').toArray());
   const movimientos = useLiveQuery(() => db.movimientos.toArray());
   const tarjetas = useLiveQuery(() => db.tarjetas.orderBy('orden').toArray());
+  const presupuestos = useLiveQuery(() => db.presupuestos.orderBy('orden').toArray());
 
   const valor = useMemo(() => {
     const categoriasPorId = new Map((categorias ?? []).map((c) => [c.id, c]));
@@ -39,11 +40,12 @@ export function DatosProvider({ children }) {
     return {
       // Mientras se lee la base de datos (unos milisegundos al abrir). Sirve para no mostrar
       // un momento "Crea tu primera cuenta" a quien ya tiene cuentas.
-      cargando: [cuentas, categorias, etiquetas, movimientos, tarjetas].includes(undefined),
+      cargando: [cuentas, categorias, etiquetas, movimientos, tarjetas, presupuestos].includes(undefined),
       cuentas: listaCuentas,
       categorias: categorias ?? [],
       etiquetas: etiquetas ?? [],
       tarjetas: listaTarjetas,
+      presupuestos: presupuestos ?? [],
       // Más recientes primero.
       movimientos: listaMovimientos,
       movimientosPorMes: porMes,
@@ -52,7 +54,7 @@ export function DatosProvider({ children }) {
       etiqueta: (id) => etiquetasPorId.get(id),
       tarjeta,
     };
-  }, [cuentas, categorias, etiquetas, movimientos, tarjetas]);
+  }, [cuentas, categorias, etiquetas, movimientos, tarjetas, presupuestos]);
 
   return <DatosContext.Provider value={valor}>{children}</DatosContext.Provider>;
 }
