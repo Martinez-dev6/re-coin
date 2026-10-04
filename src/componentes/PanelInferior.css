@@ -130,12 +130,13 @@
   color: var(--muted);
 }
 
+/* Rojo normal también en oscuro, como Guardar gasto (FormularioMovimiento.css). */
 .boton-peligro {
   width: 100%;
   height: 54px;
   border: 0;
   border-radius: 27px;
-  background: var(--expense);
+  background: var(--expense-on-white);
   color: #ffffff;
   font-size: 16px;
   font-weight: 700;

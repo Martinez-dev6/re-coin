@@ -15,11 +15,14 @@
   white-space: nowrap;
 }
 
-/* Botón Guardar: gasto en rojo, ingreso en verde, transferencia en un tono vecino del acento. */
+/* Botón Guardar: gasto en rojo, ingreso en verde, transferencia en un tono vecino del acento.
+   El rojo es el mismo en claro y en oscuro (--expense-on-white: #c62828, o granate con el tema
+   rojo), con texto blanco: en oscuro --expense es un rojo claro y el dueño quiere el rojo normal
+   (2026-10-04). */
 .boton-principal.guardar-gasto {
-  background: var(--expense);
+  background: var(--expense-on-white);
   box-shadow: none;
-  color: var(--on-expense);
+  color: #ffffff;
 }
 
 .boton-principal.guardar-ingreso {
