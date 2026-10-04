@@ -1,0 +1,47 @@
+/* Medidas de design/html/Filtros.html */
+
+.filtros-desplazable {
+  max-height: min(62vh, 560px);
+  margin: 0 -16px;
+  padding: 0 16px 4px;
+}
+
+.filtros-titulo {
+  margin: 12px 0 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.filtros-grupo:first-child .filtros-titulo {
+  margin-top: 4px;
+}
+
+/* El botón mide 44 de alto (para el dedo) y el chip visible 34: entre filas quedan 10 px. */
+.filtros-chips {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 8px;
+}
+
+.filtros-chips .chip > span {
+  padding: 0 13px;
+  background: var(--page-bg);
+}
+
+.filtros-chips .chip[aria-pressed='true'] > span {
+  background: var(--banner-bg);
+}
+
+.filtros-ver {
+  margin-top: 18px;
+}
+
+/* Ocupa toda la fila: lo que sigue va debajo. */
+.filtros-subtitulo {
+  flex-basis: 100%;
+  margin-top: 2px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+}

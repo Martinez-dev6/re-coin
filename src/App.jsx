@@ -3,6 +3,7 @@ import BarraNavegacion from './componentes/BarraNavegacion.jsx';
 import ConPestanas from './componentes/ConPestanas.jsx';
 import TransicionPantallas from './componentes/TransicionPantallas.jsx';
 import Apariencia from './pantallas/Apariencia.jsx';
+import Busqueda from './pantallas/Busqueda.jsx';
 import Categorias from './pantallas/Categorias.jsx';
 import Cuentas from './pantallas/Cuentas.jsx';
 import DetalleMovimiento from './pantallas/DetalleMovimiento.jsx';
@@ -37,6 +38,7 @@ export default function App() {
         <Route element={<ConPestanas />}>
           <Route path="/" element={<Inicio />} />
           <Route path="/transacciones" element={<Transacciones />} />
+          <Route path="/transacciones/buscar" element={<Busqueda />} />
           <Route path="/planes" element={<Planes />} />
           <Route path="/planes/:seccion" element={<Planes />} />
           <Route path="/mi-espacio" element={<MiEspacio />} />

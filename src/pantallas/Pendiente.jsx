@@ -8,8 +8,6 @@ const TITULOS = {
   recordatorio: 'Recordatorio diario',
   ajustes: 'Ajustes',
   ayuda: 'Ayuda y soporte',
-  busqueda: 'Buscar',
-  filtros: 'Filtros',
   'nuevo-presupuesto': 'Nuevo presupuesto',
   'nueva-meta': 'Nueva meta',
   'nuevo-programado': 'Nuevo programado',

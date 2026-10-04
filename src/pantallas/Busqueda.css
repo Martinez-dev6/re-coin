@@ -1,0 +1,108 @@
+/* Medidas de design/html/Busqueda.html */
+
+.busqueda-banner {
+  padding-bottom: 18px;
+}
+
+.busqueda-fila {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 48px;
+}
+
+.busqueda-campo {
+  flex-grow: 1;
+  min-width: 0;
+  height: 44px;
+  margin: 0;
+  border-radius: 22px;
+  background: var(--chip-bg);
+  color: var(--on-banner);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 4px 0 14px;
+}
+
+.busqueda-campo svg {
+  flex-shrink: 0;
+}
+
+/* 16 px: con menos, Safari agranda la página al tocar el campo. */
+.busqueda-campo input {
+  flex-grow: 1;
+  min-width: 0;
+  height: 100%;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: inherit;
+  caret-color: currentColor;
+  font: inherit;
+  font-size: 16px;
+  font-weight: 600;
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.busqueda-campo input::placeholder {
+  color: var(--on-banner-muted);
+  font-weight: 500;
+  opacity: 0.8;
+}
+
+/* Sin la X propia del navegador: ya hay un botón para borrar. */
+.busqueda-campo input::-webkit-search-cancel-button,
+.busqueda-campo input::-webkit-search-decoration {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.busqueda-borrar {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  border: 0;
+  border-radius: 18px;
+  padding: 0;
+  background: transparent;
+  color: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.busqueda-contenido {
+  padding: 14px 16px 0;
+}
+
+.busqueda-resumen {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0 4px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.busqueda-total {
+  font-weight: 700;
+  color: var(--text);
+}
+
+.busqueda-total.gasto {
+  color: var(--expense);
+}
+
+.busqueda-total.ingreso {
+  color: var(--income);
+}
+
+.busqueda-ayuda {
+  margin: 8px 4px;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--muted);
+}

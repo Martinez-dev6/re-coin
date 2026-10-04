@@ -56,3 +56,33 @@
 .transacciones-lista {
   padding: 4px 16px 0;
 }
+
+/* Punto sobre el botón de filtros cuando hay alguno activo aparte del tipo. */
+.transacciones-boton-filtros {
+  position: relative;
+}
+
+.transacciones-filtros-punto {
+  position: absolute;
+  top: 9px;
+  right: 9px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--on-banner);
+  box-shadow: 0 0 0 2px var(--banner-bg);
+}
+
+.transacciones-aviso-filtros {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 2px 20px -6px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.transacciones-aviso-filtros .boton-texto {
+  height: 36px;
+  padding: 0 0 0 12px;
+}

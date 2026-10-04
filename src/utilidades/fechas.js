@@ -47,10 +47,11 @@ export function diaYMes(texto) {
 }
 
 // "Hoy · 2 de octubre", "Ayer · 1 de octubre", "Jueves · 15 de octubre" (este mes en curso
-// o los próximos 6 días) o "30 de septiembre".
+// o los próximos 6 días) o "30 de septiembre" ("30 de septiembre de 2025" si no es de este año).
 export function etiquetaDia(texto) {
   const d = aFecha(texto);
-  const base = `${d.getDate()} de ${MESES[d.getMonth()]}`;
+  const anio = d.getFullYear() !== new Date().getFullYear() ? ` de ${d.getFullYear()}` : '';
+  const base = `${d.getDate()} de ${MESES[d.getMonth()]}${anio}`;
   const dias = diasHasta(texto);
   if (dias === 0) return `Hoy · ${base}`;
   if (dias === -1) return `Ayer · ${base}`;

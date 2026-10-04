@@ -4,61 +4,45 @@ import BarraEstado from '../componentes/BarraEstado.jsx';
 import Deslizar from '../componentes/Deslizar.jsx';
 import FilaMovimiento from '../componentes/FilaMovimiento.jsx';
 import { IconoBuscar, IconoFiltros } from '../componentes/iconos.jsx';
+import PanelFiltros, { TIPOS_FILTRO } from '../componentes/PanelFiltros.jsx';
 import { MesConFlechas } from '../componentes/SelectorMes.jsx';
+import {
+  agruparPorDia,
+  cumpleFiltros,
+  FILTROS_VACIOS,
+  filtrosExtra,
+  totalMovimientos,
+  useFiltrosTransacciones,
+} from '../datos/buscar.js';
 import { useDatos } from '../datos/DatosContext.jsx';
 import { detalleMovimiento, estadoMovimiento, rutaMovimiento } from '../datos/movimientos.js';
 import { useMes } from '../estado/MesContext.jsx';
 import { enMes, etiquetaDia } from '../utilidades/fechas.js';
 import { formatearPesos } from '../utilidades/formato.js';
+import { prepararTeclado } from './Busqueda.jsx';
 import './Transacciones.css';
-
-const FILTROS = [
-  { valor: 'todo', texto: 'Todo' },
-  { valor: 'gasto', texto: 'Gastos' },
-  { valor: 'ingreso', texto: 'Ingresos' },
-  { valor: 'transferencia', texto: 'Transferencias' },
-];
-
-// Qué filtro muestra cada tipo: los gastos con tarjeta van con los gastos y los pagos de tarjeta
-// con las transferencias (solo mueven dinero entre lo propio).
-const FILTRO_DE_TIPO = {
-  gasto: 'gasto',
-  gastoTarjeta: 'gasto',
-  ingreso: 'ingreso',
-  transferencia: 'transferencia',
-  pagoTarjeta: 'transferencia',
-};
-
-// En "Todo" el banner muestra el neto (ingresos − gastos); en los demás, la suma del tipo.
-function total(lista, filtro) {
-  if (filtro !== 'todo') return lista.reduce((t, m) => t + m.valor, 0);
-  const signo = { ingreso: 1, gasto: -1 };
-  return lista.reduce((t, m) => t + (signo[FILTRO_DE_TIPO[m.tipo]] ?? 0) * m.valor, 0);
-}
 
 export default function Transacciones() {
   const navegar = useNavigate();
   const { anio, mes } = useMes();
-  const [filtro, setFiltro] = useState('todo');
+  // Se conservan al abrir un movimiento y volver (buscar.js).
+  const [filtros, setFiltros] = useFiltrosTransacciones();
+  const [panelAbierto, setPanelAbierto] = useState(false);
   const datos = useDatos();
+  const extra = filtrosExtra(filtros);
 
   // Ya viene ordenado (más recientes primero) y con cada compra con tarjeta en sus cuotas, cada
   // una en el mes en que se paga.
-  const visibles = datos.movimientosPorMes.filter(
-    (m) => enMes(m.fecha, anio, mes) && (filtro === 'todo' || FILTRO_DE_TIPO[m.tipo] === filtro),
-  );
+  const visibles = datos.movimientosPorMes.filter((m) => enMes(m.fecha, anio, mes) && cumpleFiltros(m, filtros));
+  const porDia = agruparPorDia(visibles);
 
-  const porDia = [];
-  for (const m of visibles) {
-    const grupo = porDia.at(-1);
-    if (grupo?.fecha === m.fecha) grupo.movimientos.push(m);
-    else porDia.push({ fecha: m.fecha, movimientos: [m] });
-  }
+  // En "Todo" el banner muestra el neto (ingresos − gastos); en los demás, la suma del tipo.
+  const pendiente = totalMovimientos(visibles.filter((m) => !m.pagado), filtros.tipo);
+  const pagado = totalMovimientos(visibles.filter((m) => m.pagado), filtros.tipo);
+  // Al cambiar de mes o de tipo, los totales y la lista entran deslizándose desde ese lado.
+  const posicion = [anio * 12 + mes, TIPOS_FILTRO.findIndex((f) => f.valor === filtros.tipo)];
 
-  const pendiente = total(visibles.filter((m) => !m.pagado), filtro);
-  const pagado = total(visibles.filter((m) => m.pagado), filtro);
-  // Al cambiar de mes o de filtro, los totales y la lista entran deslizándose desde ese lado.
-  const posicion = [anio * 12 + mes, FILTROS.findIndex((f) => f.valor === filtro)];
+  const elegirTipo = (tipo) => setFiltros((f) => ({ ...f, tipo }));
 
   return (
     <div>
@@ -66,12 +50,26 @@ export default function Transacciones() {
         <BarraEstado />
         <header className="banner transacciones-banner">
           <div className="transacciones-fila">
-            <button type="button" className="boton-banner" aria-label="Buscar" onClick={() => navegar('/pendiente/busqueda')}>
+            <button
+              type="button"
+              className="boton-banner"
+              aria-label="Buscar"
+              onClick={() => {
+                prepararTeclado();
+                navegar('/transacciones/buscar');
+              }}
+            >
               <IconoBuscar />
             </button>
             <MesConFlechas />
-            <button type="button" className="boton-banner" aria-label="Filtros" onClick={() => navegar('/pendiente/filtros')}>
+            <button
+              type="button"
+              className="boton-banner transacciones-boton-filtros"
+              aria-label={extra ? `Filtros (${extra} activos)` : 'Filtros'}
+              onClick={() => setPanelAbierto(true)}
+            >
               <IconoFiltros />
+              {extra > 0 && <span className="transacciones-filtros-punto" aria-hidden="true" />}
             </button>
           </div>
           <Deslizar posicion={posicion} distancia={16} className="totales-banner">
@@ -89,15 +87,28 @@ export default function Transacciones() {
       </div>
 
       <div className="chips transacciones-chips" role="group" aria-label="Tipo de movimiento">
-        {FILTROS.map(({ valor, texto }) => (
-          <button key={valor} type="button" className="chip" aria-pressed={filtro === valor} onClick={() => setFiltro(valor)}>
+        {TIPOS_FILTRO.map(({ valor, texto }) => (
+          <button key={valor} type="button" className="chip" aria-pressed={filtros.tipo === valor} onClick={() => elegirTipo(valor)}>
             <span>{texto}</span>
           </button>
         ))}
       </div>
 
+      {extra > 0 && (
+        <div className="transacciones-aviso-filtros">
+          <span>{extra === 1 ? '1 filtro más activo' : `${extra} filtros más activos`}</span>
+          <button type="button" className="boton-texto" onClick={() => setFiltros((f) => ({ ...FILTROS_VACIOS, tipo: f.tipo }))}>
+            Quitar
+          </button>
+        </div>
+      )}
+
       <Deslizar posicion={posicion} className="transacciones-lista">
-        {!datos.cargando && porDia.length === 0 && <div className="tarjeta vacio">No hay movimientos en este mes.</div>}
+        {!datos.cargando && porDia.length === 0 && (
+          <div className="tarjeta vacio">
+            {extra > 0 ? 'Ningún movimiento de este mes coincide con los filtros.' : 'No hay movimientos en este mes.'}
+          </div>
+        )}
         {porDia.map(({ fecha, movimientos }) => (
           <section key={fecha}>
             <h2 className="titulo-dia">{etiquetaDia(fecha)}</h2>
@@ -116,6 +127,14 @@ export default function Transacciones() {
           </section>
         ))}
       </Deslizar>
+
+      <PanelFiltros
+        abierto={panelAbierto}
+        alCerrar={() => setPanelAbierto(false)}
+        filtros={filtros}
+        alCambiar={setFiltros}
+        cantidad={visibles.length}
+      />
     </div>
   );
 }
