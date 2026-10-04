@@ -37,6 +37,7 @@ const FORMULARIOS = [
   /^\/tarjetas\//,
   /^\/movimientos\/[^/]+\/editar$/,
   /^\/pendientes$/,
+  /^\/facturas\//,
 ];
 const SIN_BARRA = [/^\/movimientos\/[^/]+$/];
 

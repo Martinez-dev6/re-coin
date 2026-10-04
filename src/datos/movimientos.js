@@ -75,7 +75,7 @@ export function estadoMovimiento(m) {
 // Adónde lleva tocar una fila: una cuota de tarjeta abre su factura (donde se paga); lo demás,
 // el detalle del movimiento.
 export function rutaMovimiento(m) {
-  if (m.movimientoId) return `/mi-espacio/tarjetas/${m.tarjetaId}/${m.factura}`;
+  if (m.movimientoId) return `/facturas/${m.tarjetaId}/${m.factura}`;
   return `/movimientos/${m.id}`;
 }
 

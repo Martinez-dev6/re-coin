@@ -40,6 +40,14 @@ export function fechaPagoFactura(tarjeta, mes) {
   return `${mes}-${dos(Math.min(tarjeta.diaPago, diasDelMes(anio, m)))}`;
 }
 
+// Día en que cerró (o cierra) el corte de la factura de 'mes': ese mes si el pago va después del
+// cierre, si no el mes anterior.
+export function fechaCierreFactura(tarjeta, mes) {
+  const mesCierre = tarjeta.diaPago > tarjeta.diaCierre ? mes : sumarMeses(mes, -1);
+  const [anio, m] = mesCierre.split('-').map(Number);
+  return `${mesCierre}-${dos(Math.min(tarjeta.diaCierre, diasDelMes(anio, m)))}`;
+}
+
 // Cuándo vence una factura: "23 días", "Mañana", "Hoy" o "Vencida".
 export function textoVence(tarjeta, mes) {
   const dias = diasHasta(fechaPagoFactura(tarjeta, mes));

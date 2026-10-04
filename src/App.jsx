@@ -39,7 +39,6 @@ export default function App() {
           <Route path="/mi-espacio/apariencia" element={<Apariencia />} />
           <Route path="/mi-espacio/cuentas" element={<Cuentas />} />
           <Route path="/mi-espacio/tarjetas" element={<Tarjetas />} />
-          <Route path="/mi-espacio/tarjetas/:id/:mes" element={<Factura />} />
           <Route path="/mi-espacio/categorias" element={<Categorias />} />
           <Route path="/mi-espacio/etiquetas" element={<Etiquetas />} />
           <Route path="/mi-espacio/importar-exportar" element={<ImportarExportar />} />
@@ -55,6 +54,7 @@ export default function App() {
         <Route path="/categorias/:id" element={<FormularioCategoria />} />
         <Route path="/etiquetas/:id" element={<FormularioEtiqueta />} />
         <Route path="/tarjetas/:id" element={<FormularioTarjeta />} />
+        <Route path="/facturas/:tarjetaId/:mes" element={<Factura />} />
 
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

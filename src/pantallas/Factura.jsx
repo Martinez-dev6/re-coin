@@ -1,14 +1,33 @@
-// Una factura de una tarjeta (/mi-espacio/tarjetas/:id/:mes): sus cuotas, sus pagos y el botón
-// para pagarla. No está en los diseños: sigue el estilo de Tarjetas y Transacciones.
+// Una factura de una tarjeta (/facturas/:tarjetaId/:mes): lo que falta por pagar, sus compras, sus
+// pagos y el botón Pagar. No está en los diseños. Rehecha a pedido del dueño (2026-10-03): la
+// primera versión se parecía tanto a Tarjetas que al entrar parecía la misma pantalla. Ahora sube
+// como una hoja (con la X), se pasa de una factura a otra con las flechas del mes y Pagar va en
+// rojo abajo, como los botones de guardar un gasto (sale dinero).
 import { useState } from 'react';
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
-import CabeceraSubpagina from '../componentes/CabeceraSubpagina.jsx';
+import Deslizar from '../componentes/Deslizar.jsx';
 import FilaMovimiento from '../componentes/FilaMovimiento.jsx';
-import { IconoCheck } from '../componentes/iconos.jsx';
+import { CabeceraFormulario, PieFormulario } from '../componentes/Formulario.jsx';
+import {
+  IconoAlerta,
+  IconoAnterior,
+  IconoCheck,
+  IconoCheckCirculo,
+  IconoReloj,
+  IconoSiguiente,
+} from '../componentes/iconos.jsx';
 import { IconoPorNombre } from '../componentes/iconosPorNombre.jsx';
 import PanelInferior from '../componentes/PanelInferior.jsx';
 import { useDatos } from '../datos/DatosContext.jsx';
-import { facturaPagada, fechaPagoFactura, nombreFactura, pagarFactura, textoVence } from '../datos/tarjetas.js';
+import {
+  facturaPagada,
+  fechaCierreFactura,
+  fechaPagoFactura,
+  nombreFactura,
+  pagarFactura,
+  sumarMeses,
+  textoVence,
+} from '../datos/tarjetas.js';
 import { estiloIconoCuenta } from '../tema/colores.js';
 import { diaYMes, hoyTexto } from '../utilidades/fechas.js';
 import { formatearPesos } from '../utilidades/formato.js';
@@ -16,27 +35,32 @@ import './Factura.css';
 import './FormularioMovimiento.css';
 
 const LISTA = '/mi-espacio/tarjetas';
+const VACIA = { total: 0, pagado: 0, cuotas: [], pagos: [] };
 
 export default function Factura() {
-  const { id, mes } = useParams();
+  const { tarjetaId, mes } = useParams();
   const { tarjeta, cargando } = useDatos();
-  const t = tarjeta(id);
-  if (cargando) return <CabeceraSubpagina titulo="Factura" volverA={LISTA} />;
+  const t = tarjeta(tarjetaId);
+  if (cargando) return <CabeceraFormulario titulo="Factura" volverA={LISTA} />;
   if (!t || !/^\d{4}-\d{2}$/.test(mes)) return <Navigate to={LISTA} replace />;
-  const factura = t.facturas.get(mes) ?? { mes, total: 0, pagado: 0, cuotas: [], pagos: [] };
-  return <Contenido tarjeta={t} factura={factura} />;
+  return <Contenido tarjeta={t} mesInicial={mes} />;
 }
 
-function Contenido({ tarjeta, factura }) {
+function Contenido({ tarjeta, mesInicial }) {
   const navegar = useNavigate();
   const { cuentas, cuenta, categoria } = useDatos();
+  const [mes, setMes] = useState(mesInicial);
   const [panel, setPanel] = useState(false);
   const [cuentaId, setCuentaId] = useState(tarjeta.cuentaPagoId ?? cuentas[0]?.id ?? null);
   const [pagando, setPagando] = useState(false);
+
+  const factura = { mes, ...VACIA, ...tarjeta.facturas.get(mes) };
   const falta = Math.max(0, factura.total - factura.pagado);
   const pagada = facturaPagada(factura);
-  const vence = textoVence(tarjeta, factura.mes);
-  const fechaPago = diaYMes(fechaPagoFactura(tarjeta, factura.mes));
+  const vence = textoVence(tarjeta, mes);
+  const fechaPago = diaYMes(fechaPagoFactura(tarjeta, mes));
+  const porcentaje = factura.total > 0 ? Math.min(100, Math.round((factura.pagado / factura.total) * 100)) : 0;
+  const posicion = Number(mes.slice(0, 4)) * 12 + Number(mes.slice(5));
 
   const pagar = async () => {
     if (!cuentaId || pagando) return;
@@ -50,27 +74,67 @@ function Contenido({ tarjeta, factura }) {
   };
 
   let estado;
-  if (pagada) estado = 'Pagada';
-  else if (factura.total === 0) estado = 'Sin compras';
-  else if (vence === 'Vencida') estado = `Venció el ${fechaPago}`;
-  else estado = `Vence ${{ Hoy: 'hoy', Mañana: 'mañana' }[vence] ?? 'en ' + vence} · ${fechaPago}`;
+  if (pagada) estado = { clase: 'pagada', Icono: IconoCheckCirculo, texto: 'Pagada' };
+  else if (factura.total === 0) estado = { clase: '', Icono: IconoReloj, texto: 'Sin compras' };
+  else if (vence === 'Vencida') estado = { clase: 'vencida', Icono: IconoAlerta, texto: `Venció el ${fechaPago}` };
+  else {
+    const cuando = { Hoy: 'hoy', Mañana: 'mañana' }[vence] ?? `en ${vence}`;
+    estado = { clase: '', Icono: IconoReloj, texto: `Vence ${cuando} · ${fechaPago}` };
+  }
+
+  const flechas = (
+    <div className="mes-flechas">
+      <button type="button" className="mes-flecha" aria-label="Factura anterior" onClick={() => setMes(sumarMeses(mes, -1))}>
+        <IconoAnterior />
+      </button>
+      <Deslizar posicion={posicion} distancia={16} className="mes-flechas-texto" aria-live="polite">
+        {nombreFactura(mes)}
+      </Deslizar>
+      <button type="button" className="mes-flecha" aria-label="Factura siguiente" onClick={() => setMes(sumarMeses(mes, 1))}>
+        <IconoSiguiente />
+      </button>
+    </div>
+  );
 
   return (
     <div>
-      <CabeceraSubpagina titulo={tarjeta.nombre} volverA={LISTA}>
-        <div className="cabecera-cifra">
-          <div className="cabecera-cifra-etiqueta">Factura de {nombreFactura(factura.mes).toLowerCase()}</div>
-          <div className="cabecera-cifra-valor">{formatearPesos(factura.total)}</div>
-          <div className="cabecera-cifra-nota">{estado}</div>
-        </div>
-      </CabeceraSubpagina>
+      <CabeceraFormulario titulo={`Factura de ${nombreFactura(mes).toLowerCase()}`} volverA={LISTA} centro={flechas}>
+        <Deslizar posicion={posicion} distancia={16} className="factura-cabecera">
+          <span className="factura-tarjeta">
+            <IconoPorNombre nombre={tarjeta.icono} tamano={14} />
+            {tarjeta.nombre}
+          </span>
+          <span className="cabecera-cifra-etiqueta">{pagada ? 'Total pagado' : 'Por pagar'}</span>
+          <span className="cabecera-cifra-valor">{formatearPesos(pagada ? factura.total : falta)}</span>
+          <span className={'factura-estado ' + estado.clase}>
+            <estado.Icono tamano={14} grosor={2.2} />
+            {estado.texto}
+          </span>
+        </Deslizar>
+      </CabeceraFormulario>
 
-      <div className="contenido factura-contenido">
-        {falta > 0 && (
-          <button type="button" className="boton-principal factura-pagar" onClick={() => setPanel(true)}>
-            Pagar {formatearPesos(falta)}
-          </button>
-        )}
+      <Deslizar posicion={posicion} className="formulario-contenido factura-contenido">
+        <div className="tarjeta factura-resumen">
+          <div className="factura-resumen-uso">
+            <span>
+              <strong>{formatearPesos(factura.pagado)}</strong> pagado
+            </span>
+            <span>de {formatearPesos(factura.total)}</span>
+          </div>
+          <span className="barra-progreso factura-progreso">
+            <span style={{ width: `${porcentaje}%` }} />
+          </span>
+          <div className="factura-fechas">
+            <span>
+              <span className="factura-fecha-etiqueta">Cierre</span>
+              <strong>{diaYMes(fechaCierreFactura(tarjeta, mes))}</strong>
+            </span>
+            <span className="derecha">
+              <span className="factura-fecha-etiqueta">Pago</span>
+              <strong>{fechaPago}</strong>
+            </span>
+          </div>
+        </div>
 
         {factura.cuotas.length > 0 && (
           <>
@@ -110,11 +174,20 @@ function Contenido({ tarjeta, factura }) {
         {factura.cuotas.length === 0 && factura.pagos.length === 0 && (
           <div className="tarjeta vacio">Esta factura no tiene compras.</div>
         )}
-      </div>
+      </Deslizar>
 
-      <PanelInferior abierto={panel} alCerrar={() => setPanel(false)} titulo="Pagar factura">
+      {falta > 0 && (
+        <PieFormulario>
+          <button type="button" className="boton-principal guardar-gasto" onClick={() => setPanel(true)}>
+            Pagar {formatearPesos(falta)}
+          </button>
+        </PieFormulario>
+      )}
+
+      <PanelInferior abierto={panel} alCerrar={() => setPanel(false)} titulo="¿Desde qué cuenta pagas?">
         <p className="panel-texto">
-          Se pagan {formatearPesos(falta)} de la factura de {nombreFactura(factura.mes).toLowerCase()} con fecha de hoy. Sale de:
+          Se pagan {formatearPesos(falta)} de la factura de {nombreFactura(mes).toLowerCase()} con fecha de hoy, y salen
+          de la cuenta que elijas.
         </p>
         <div className="panel-desplazable" role="radiogroup" aria-label="Cuenta desde la que se paga">
           {cuentas.map((c) => {
@@ -142,7 +215,12 @@ function Contenido({ tarjeta, factura }) {
             );
           })}
         </div>
-        <button type="button" className="boton-principal" disabled={!cuentaId || pagando} onClick={pagar}>
+        <button
+          type="button"
+          className="boton-principal guardar-gasto factura-confirmar"
+          disabled={!cuentaId || pagando}
+          onClick={pagar}
+        >
           Pagar {formatearPesos(falta)}
         </button>
       </PanelInferior>

@@ -93,7 +93,7 @@ export default function Tarjetas() {
                           key={f.mes}
                           type="button"
                           className="tarjetas-factura"
-                          onClick={() => navegar(`/mi-espacio/tarjetas/${t.id}/${f.mes}`)}
+                          onClick={() => navegar(`/facturas/${t.id}/${f.mes}`)}
                         >
                           <span className="icono-circulo grande">
                             <IconoCalendario tamano={18} />

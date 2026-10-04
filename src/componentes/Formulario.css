@@ -317,3 +317,12 @@
   -webkit-appearance: none;
   appearance: none;
 }
+
+/* ---- En lugar del título: el mes con flechas (Pendientes, factura) ---- */
+
+.cabecera-formulario-centro {
+  flex-grow: 1;
+  min-width: 0;
+  display: flex;
+  justify-content: center;
+}

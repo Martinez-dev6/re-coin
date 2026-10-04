@@ -12,7 +12,8 @@ import './CabeceraSubpagina.css';
 import './Formulario.css';
 
 // Banner con la X para cerrar sin guardar, el título y contenido opcional debajo.
-export function CabeceraFormulario({ titulo, volverA, children }) {
+// centro: en lugar del título (p. ej. el mes con flechas en Pendientes y en una factura).
+export function CabeceraFormulario({ titulo, volverA, centro, children }) {
   const navegar = useNavigate();
   return (
     <div className="encabezado-fijo">
@@ -22,7 +23,14 @@ export function CabeceraFormulario({ titulo, volverA, children }) {
           <button type="button" className="boton-banner" aria-label="Cerrar" onClick={() => volver(navegar, volverA)}>
             <IconoCerrar tamano={20} grosor={2.2} />
           </button>
-          <h1 className="cabecera-subpagina-titulo">{titulo}</h1>
+          {centro ? (
+            <div className="cabecera-formulario-centro">
+              <h1 className="solo-lectores">{titulo}</h1>
+              {centro}
+            </div>
+          ) : (
+            <h1 className="cabecera-subpagina-titulo">{titulo}</h1>
+          )}
           <span className="cabecera-subpagina-hueco" />
         </div>
         {children}
