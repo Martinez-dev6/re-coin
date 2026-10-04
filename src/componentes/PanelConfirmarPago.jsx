@@ -9,6 +9,7 @@ import { nombreFactura, pagarFactura } from '../datos/tarjetas.js';
 import { estiloIconoCuenta } from '../tema/colores.js';
 import { hoyTexto } from '../utilidades/fechas.js';
 import { formatearPesos } from '../utilidades/formato.js';
+import BotonExito from './BotonExito.jsx';
 import { IconoCheck } from './iconos.jsx';
 import { IconoPorNombre } from './iconosPorNombre.jsx';
 import PanelInferior from './PanelInferior.jsx';
@@ -17,7 +18,6 @@ import './PanelConfirmarPago.css';
 export default function PanelConfirmarPago({ movimiento: m, abierto, alCerrar }) {
   const { cuentas, categoria, tarjeta: buscarTarjeta } = useDatos();
   const [cuentaId, setCuentaId] = useState(null);
-  const [guardando, setGuardando] = useState(false);
   const esCuota = Boolean(m?.movimientoId);
   const tarjeta = esCuota ? buscarTarjeta(m.tarjetaId) : null;
   const factura = tarjeta?.facturas.get(m.factura);
@@ -34,16 +34,10 @@ export default function PanelConfirmarPago({ movimiento: m, abierto, alCerrar })
   if (!m) return null;
   const valor = esCuota && factura ? factura.total - factura.pagado : m.valor;
 
-  const confirmar = async () => {
-    if (!cuentaId || guardando) return;
-    setGuardando(true);
-    try {
-      if (esCuota) await pagarFactura(tarjeta, factura, cuentaId, hoyTexto());
-      else await marcarPagado(m.id, cuentaId);
-      alCerrar();
-    } finally {
-      setGuardando(false);
-    }
+  // El panel se cierra cuando el botón termina su animación de "listo" (BotonExito).
+  const confirmar = () => {
+    if (!cuentaId) return false;
+    return esCuota ? pagarFactura(tarjeta, factura, cuentaId, hoyTexto()) : marcarPagado(m.id, cuentaId);
   };
 
   return (
@@ -82,14 +76,14 @@ export default function PanelConfirmarPago({ movimiento: m, abierto, alCerrar })
           );
         })}
       </div>
-      <button
-        type="button"
+      <BotonExito
         className="boton-principal confirmar-pago-boton"
-        disabled={!cuentaId || guardando}
-        onClick={confirmar}
+        disabled={!cuentaId}
+        alTocar={confirmar}
+        alTerminar={alCerrar}
       >
         {ingreso ? 'Marcar como recibido' : 'Marcar como pagado'}
-      </button>
+      </BotonExito>
     </PanelInferior>
   );
 }

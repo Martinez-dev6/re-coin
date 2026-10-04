@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import BarraEstado from '../componentes/BarraEstado.jsx';
+import BotonExito from '../componentes/BotonExito.jsx';
 import CirculoCategoria from '../componentes/CirculoCategoria.jsx';
 import Deslizar from '../componentes/Deslizar.jsx';
 import FilaMovimiento from '../componentes/FilaMovimiento.jsx';
@@ -161,11 +162,8 @@ function Metas({ metas, navegar, alAportar }) {
 // Panel para aportar a una meta: el valor y el botón. Solo suma a la meta (no mueve dinero).
 function PanelAportar({ meta, abierto, alCerrar }) {
   const [valor, setValor] = useState(0);
-  const listo = async () => {
-    await aportar(meta.id, valor);
-    setValor(0);
-    alCerrar();
-  };
+  // El panel se cierra cuando el botón termina su animación de "listo" (BotonExito).
+  const listo = () => (valor > 0 ? aportar(meta.id, valor) : false);
   return (
     <PanelInferior abierto={abierto} alCerrar={alCerrar} titulo={meta ? `Aportar a ${meta.nombre}` : 'Aportar'}>
       <p className="panel-texto">
@@ -176,9 +174,17 @@ function PanelAportar({ meta, abierto, alCerrar }) {
           <EntradaPesos valor={valor} etiqueta="Valor del aporte" alCambiar={setValor} />
         </Campo>
       </div>
-      <button type="button" className="boton-principal" disabled={!(valor > 0)} onClick={listo}>
+      <BotonExito
+        className="boton-principal"
+        disabled={!(valor > 0)}
+        alTocar={listo}
+        alTerminar={() => {
+          setValor(0);
+          alCerrar();
+        }}
+      >
         Aportar {valor > 0 ? formatearPesos(valor) : ''}
-      </button>
+      </BotonExito>
     </PanelInferior>
   );
 }

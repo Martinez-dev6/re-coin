@@ -5,6 +5,7 @@
 // "Repetir" queda para Programados.
 import { useEffect, useRef, useState } from 'react';
 import { Navigate, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import BotonExito from '../componentes/BotonExito.jsx';
 import CirculoCategoria from '../componentes/CirculoCategoria.jsx';
 import {
   CabeceraFormulario,
@@ -214,7 +215,6 @@ function Campos({ clave, movimiento, programado, esProgramado = false, tipoInici
   // 'categoria' | 'cuentaId' | 'cuentaDestinoId' | 'tarjetaId' | 'cuotas' | 'factura' | 'etiquetas' | 'observacion'
   const [panel, setPanel] = useState(null);
   const [aviso, setAviso] = useState(null);
-  const [guardando, setGuardando] = useState(false);
   const monto = useRef(null);
 
   useEffect(() => {
@@ -288,25 +288,23 @@ function Campos({ clave, movimiento, programado, esProgramado = false, tipoInici
     setTimeout(() => navegar(ruta), DURACION_PANEL_MS + 30);
   };
 
-  const guardar = async () => {
+  // Si falta algo, avisa y devuelve false (el botón no anima). Si no, guarda; al terminar la
+  // animación del botón (BotonExito) se vuelve.
+  const guardar = () => {
     const falta = faltante(datos);
     if (falta) {
       setAviso(falta.texto);
       if (falta.campo === 'valor') monto.current?.focus();
       else setPanel(falta.campo === 'categoriaId' ? 'categoria' : falta.campo);
-      return;
+      return false;
     }
-    setGuardando(true);
-    try {
+    return (async () => {
       if (esProgramado) await guardarProgramado(programado?.id, datos);
       else await guardarMovimiento(movimiento?.id, datos);
       if (conTarjeta) recordar(CLAVE_ULTIMA_TARJETA, datos.tarjetaId);
       else recordar(CLAVE_ULTIMA_CUENTA, datos.cuentaId);
       borradores.delete(clave);
-      volver(navegar, volverA);
-    } finally {
-      setGuardando(false);
-    }
+    })();
   };
 
   const categoria = buscarCategoria(datos.categoriaId);
@@ -464,14 +462,14 @@ function Campos({ clave, movimiento, programado, esProgramado = false, tipoInici
             {aviso}
           </p>
         )}
-        <button
-          type="button"
+        <BotonExito
           className={'boton-principal guardar-' + (conTarjeta ? 'gasto' : tipo)}
-          disabled={guardando || sinDonde}
-          onClick={guardar}
+          disabled={sinDonde}
+          alTocar={guardar}
+          alTerminar={() => volver(navegar, volverA)}
         >
           {textoGuardar}
-        </button>
+        </BotonExito>
       </PieFormulario>
 
       {/* Paneles de elección: no se cierran al elegir (Listo o tocar fuera). */}

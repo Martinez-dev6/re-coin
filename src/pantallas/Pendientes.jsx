@@ -1,14 +1,15 @@
 // Gastos o ingresos pendientes de un mes (/pendientes?tipo=gasto|ingreso): el mes elegido en
 // Inicio, que se cambia con las flechas de arriba. Se abre desde las tarjetas "Pendientes y
 // alertas" de Inicio (pedido del dueño, 2026-10-03: antes llevaban a Transacciones). Sube como un
-// formulario y se cierra con la X. No está en los diseños. El chulito de cada fila lo marca como
-// pagado (PanelConfirmarPago).
+// formulario y se cierra con la X. No está en los diseños. La flecha de cada fila abre el panel para
+// marcarlo como pagado (PanelConfirmarPago); antes era un chulito, y el dueño pidió una flecha simple
+// (2026-10-04): el chulo queda para la animación de "listo" al confirmar.
 import { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import Deslizar from '../componentes/Deslizar.jsx';
 import FilaMovimiento from '../componentes/FilaMovimiento.jsx';
 import { CabeceraFormulario, Segmentado } from '../componentes/Formulario.jsx';
-import { IconoCheck } from '../componentes/iconos.jsx';
+import { IconoFlecha } from '../componentes/iconos.jsx';
 import PanelConfirmarPago from '../componentes/PanelConfirmarPago.jsx';
 import { MesConFlechas } from '../componentes/SelectorMes.jsx';
 import { useDatos } from '../datos/DatosContext.jsx';
@@ -78,7 +79,7 @@ export default function Pendientes() {
                     estado="pendiente"
                     alTocar={() => navegar(rutaMovimiento(m))}
                   />
-                  {/* El chulito: marcar como pagado (o recibido), con confirmación. */}
+                  {/* La flecha: marcar como pagado (o recibido), con confirmación. */}
                   <button
                     type="button"
                     className="pendientes-marcar"
@@ -88,7 +89,7 @@ export default function Pendientes() {
                       setPanel(true);
                     }}
                   >
-                    <IconoCheck tamano={18} grosor={2.6} />
+                    <IconoFlecha tamano={18} grosor={2.4} />
                   </button>
                 </div>
               ))}

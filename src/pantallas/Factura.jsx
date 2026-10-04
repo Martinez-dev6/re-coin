@@ -5,6 +5,7 @@
 // rojo abajo, como los botones de guardar un gasto (sale dinero).
 import { useState } from 'react';
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
+import BotonExito from '../componentes/BotonExito.jsx';
 import Deslizar from '../componentes/Deslizar.jsx';
 import FilaMovimiento from '../componentes/FilaMovimiento.jsx';
 import { CabeceraFormulario, PieFormulario } from '../componentes/Formulario.jsx';
@@ -52,7 +53,6 @@ function Contenido({ tarjeta, mesInicial }) {
   const [mes, setMes] = useState(mesInicial);
   const [panel, setPanel] = useState(false);
   const [cuentaId, setCuentaId] = useState(tarjeta.cuentaPagoId ?? cuentas[0]?.id ?? null);
-  const [pagando, setPagando] = useState(false);
 
   const factura = { mes, ...VACIA, ...tarjeta.facturas.get(mes) };
   const falta = Math.max(0, factura.total - factura.pagado);
@@ -61,16 +61,8 @@ function Contenido({ tarjeta, mesInicial }) {
   const fechaPago = diaYMes(fechaPagoFactura(tarjeta, mes));
   const posicion = Number(mes.slice(0, 4)) * 12 + Number(mes.slice(5));
 
-  const pagar = async () => {
-    if (!cuentaId || pagando) return;
-    setPagando(true);
-    try {
-      await pagarFactura(tarjeta, factura, cuentaId, hoyTexto());
-      setPanel(false);
-    } finally {
-      setPagando(false);
-    }
-  };
+  // El panel se cierra cuando el botón termina su animación de "listo" (BotonExito).
+  const pagar = () => (cuentaId ? pagarFactura(tarjeta, factura, cuentaId, hoyTexto()) : false);
 
   // Cada estado con su color (estado-banner en comunes.css).
   let estado;
@@ -207,14 +199,14 @@ function Contenido({ tarjeta, mesInicial }) {
             );
           })}
         </div>
-        <button
-          type="button"
+        <BotonExito
           className="boton-principal guardar-gasto factura-confirmar"
-          disabled={!cuentaId || pagando}
-          onClick={pagar}
+          disabled={!cuentaId}
+          alTocar={pagar}
+          alTerminar={() => setPanel(false)}
         >
           Pagar {formatearPesos(falta)}
-        </button>
+        </BotonExito>
       </PanelInferior>
     </div>
   );

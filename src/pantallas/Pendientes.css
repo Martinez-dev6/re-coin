@@ -31,7 +31,7 @@
   border: 1.5px solid var(--line);
   border-radius: 18px;
   background: var(--surface);
-  color: var(--income);
+  color: var(--accent-text);
   display: flex;
   align-items: center;
   justify-content: center;

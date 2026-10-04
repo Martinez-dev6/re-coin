@@ -232,6 +232,56 @@
   font-weight: 700;
 }
 
+/* Botón con animación de "listo" (BotonExito.jsx): se encoge hasta un círculo de su color y se
+   dibuja un chulo. El recorte va de -1 px (deja ver el aro de 1 px de algunos botones) a lo que
+   sobra a cada lado del círculo. Encoger: 280 ms, arranca y termina suave, sin rebote. El texto se
+   va en 120 ms; el chulo se dibuja desde los 200 ms en 220 ms. DURACION_MS en BotonExito.jsx es la
+   suma con un instante para verlo. */
+.boton-exito {
+  position: relative;
+  clip-path: inset(-1px round 999px);
+  transition: clip-path 0.28s cubic-bezier(0.3, 0, 0.15, 1);
+}
+
+.boton-exito.exito {
+  clip-path: inset(-1px var(--recorte) round 999px);
+  pointer-events: none;
+}
+
+.boton-exito-texto {
+  transition: opacity 0.12s ease;
+}
+
+.boton-exito.exito .boton-exito-texto {
+  opacity: 0;
+}
+
+.boton-exito-chulo {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  margin: -13px 0 0 -13px;
+  pointer-events: none;
+}
+
+.boton-exito-chulo path {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+}
+
+.boton-exito.exito .boton-exito-chulo path {
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 0.22s cubic-bezier(0.2, 0, 0, 1) 0.2s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .boton-exito,
+  .boton-exito-texto,
+  .boton-exito.exito .boton-exito-chulo path {
+    transition: none;
+  }
+}
+
 /* Estado bajo la cifra de un banner (Pagado, Pendiente, Vence…, Vencida): pastilla clara con su
    propio color, legible sobre el banner de cualquier color del tema y en claro y oscuro (pedido
    del dueño, 2026-10-04). Los colores son fijos a propósito: no dependen del tema y así no se

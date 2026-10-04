@@ -4,6 +4,7 @@
 // cuentas.js): solo corregir el saldo, o dejarla como un gasto "Faltante" o un ingreso "Sobrante".
 import { useState } from 'react';
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
+import BotonExito from '../componentes/BotonExito.jsx';
 import { CabeceraFormulario, Campo, MontoEditable, PieFormulario } from '../componentes/Formulario.jsx';
 import { IconoBalanza, IconoCheck, IconoMoneda } from '../componentes/iconos.jsx';
 import { reajustarSaldo } from '../datos/cuentas.js';
@@ -31,21 +32,12 @@ function Campos({ cuenta: c }) {
   // null hasta que se escribe algo (el saldo real también puede ser $ 0).
   const [real, setReal] = useState(null);
   const [modo, setModo] = useState(null); // 'corregir' | 'registrar'
-  const [guardando, setGuardando] = useState(false);
   const diferencia = real === null ? 0 : real - c.saldo;
   const falta = diferencia < 0;
-  const listo = real !== null && diferencia !== 0 && modo && !guardando;
+  const listo = real !== null && diferencia !== 0 && modo;
 
-  const guardar = async () => {
-    if (!listo) return;
-    setGuardando(true);
-    try {
-      await reajustarSaldo(c, real, modo);
-      volver(navegar, `/cuentas/${c.id}`);
-    } finally {
-      setGuardando(false);
-    }
-  };
+  // Al terminar la animación del botón (BotonExito) se vuelve a la cuenta.
+  const guardar = () => (listo ? reajustarSaldo(c, real, modo) : false);
 
   let textoDiferencia = <span className="campo-vacio">Escribe el saldo real</span>;
   if (real !== null && diferencia === 0) textoDiferencia = 'Coincide';
@@ -114,9 +106,14 @@ function Campos({ cuenta: c }) {
       </div>
 
       <PieFormulario>
-        <button type="button" className="boton-principal" disabled={!listo} onClick={guardar}>
+        <BotonExito
+          className="boton-principal"
+          disabled={!listo}
+          alTocar={guardar}
+          alTerminar={() => volver(navegar, `/cuentas/${c.id}`)}
+        >
           Reajustar saldo
-        </button>
+        </BotonExito>
       </PieFormulario>
     </div>
   );
