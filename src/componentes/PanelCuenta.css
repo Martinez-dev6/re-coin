@@ -1,0 +1,73 @@
+/* Ventana de una cuenta (PanelCuenta.jsx): mismo estilo que la de "¿Ya lo pagaste?"
+   (PanelConfirmarPago.css), del que toma el resumen gris y el título de sección. */
+
+.panel-cuenta-resumen {
+  align-items: center;
+}
+
+.panel-cuenta-resumen-textos {
+  flex-grow: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  font-weight: 600;
+}
+
+.panel-cuenta-resumen-textos small {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.panel-cuenta-resumen strong.negativo {
+  color: var(--expense);
+}
+
+/* Filas de datos: etiqueta a la izquierda y valor a la derecha, separadas por líneas, como la
+   lista de cuentas de la captura del dueño. */
+.panel-cuenta-filas {
+  margin-bottom: 4px;
+}
+
+.panel-cuenta-fila {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  min-height: 48px;
+  padding: 0;
+  border: 0;
+  border-bottom: 1px solid var(--divider);
+  background: transparent;
+  color: var(--text);
+  font-size: 15px;
+  text-align: left;
+}
+
+.panel-cuenta-fila:last-child {
+  border-bottom: 0;
+}
+
+.panel-cuenta-fila > span {
+  color: var(--muted);
+}
+
+.panel-cuenta-fila > strong {
+  font-weight: 600;
+  text-align: right;
+}
+
+/* "Ver movimientos": la fila es un botón, con el texto en el color del tema y la flecha. */
+.panel-cuenta-ver > span {
+  color: var(--accent-text);
+  font-weight: 600;
+}
+
+.panel-cuenta-ver > svg {
+  color: var(--accent-text);
+}
+
+.panel-cuenta-reajustar {
+  margin-top: 14px;
+}

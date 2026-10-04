@@ -2,6 +2,7 @@
 // design/capturas/NuevaCategoria.png
 import { useRef, useState } from 'react';
 import { Navigate, useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import BotonExito from '../componentes/BotonExito.jsx';
 import {
   CabeceraFormulario,
   Campo,
@@ -45,20 +46,12 @@ function Campos({ categoria, tipoInicial }) {
   const conPresupuesto = Boolean(categoria) && presupuestos.some((p) => p.categoriaId === categoria.id);
   const [datos, setDatos] = useState(() => categoria ?? { nombre: '', tipo: tipoInicial, color: 'e', icono: 'corazon' });
   const [panelEliminar, setPanelEliminar] = useState(false);
-  const [guardando, setGuardando] = useState(false);
   const eliminando = useRef(false);
   const cambiar = (cambios) => setDatos((d) => ({ ...d, ...cambios }));
   const volverA = lista(datos.tipo);
 
-  const guardar = async () => {
-    setGuardando(true);
-    try {
-      await guardarCategoria(categoria?.id, datos);
-      volver(navegar, volverA);
-    } finally {
-      setGuardando(false);
-    }
-  };
+  // Al terminar la animación del botón (BotonExito) se vuelve.
+  const guardar = () => guardarCategoria(categoria?.id, datos);
 
   // Primero baja el panel; después se vuelve a la lista y se borra (ver FormularioCuenta).
   const eliminar = () => {
@@ -106,14 +99,14 @@ function Campos({ categoria, tipoInicial }) {
       </div>
 
       <PieFormulario>
-        <button
-          type="button"
+        <BotonExito
           className="boton-principal"
-          disabled={guardando || !datos.nombre.trim()}
-          onClick={guardar}
+          disabled={!datos.nombre.trim()}
+          alTocar={guardar}
+          alTerminar={() => volver(navegar, volverA)}
         >
           Guardar categoría
-        </button>
+        </BotonExito>
       </PieFormulario>
 
       <PanelInferior abierto={panelEliminar} alCerrar={() => setPanelEliminar(false)} titulo="¿Eliminar la categoría?">
@@ -123,9 +116,9 @@ function Campos({ categoria, tipoInicial }) {
           {conPresupuesto && 'También se borra su presupuesto. '}
           No se puede deshacer.
         </p>
-        <button type="button" className="boton-peligro" onClick={eliminar}>
+        <BotonExito className="boton-peligro" alTerminar={eliminar}>
           Eliminar
-        </button>
+        </BotonExito>
         <button type="button" className="boton-secundario" onClick={() => setPanelEliminar(false)}>
           Cancelar
         </button>

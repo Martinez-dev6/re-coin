@@ -760,10 +760,9 @@ function Campos({ clave, movimiento, programado, esProgramado = false, tipoInici
             <p className="panel-texto">
               Deja de registrarse desde hoy. Los movimientos que ya se registraron se quedan en Transacciones.
             </p>
-            <button
-              type="button"
+            <BotonExito
               className="boton-peligro"
-              onClick={() => {
+              alTerminar={() => {
                 setPanel(null);
                 setTimeout(() => {
                   borradores.delete(clave);
@@ -773,7 +772,7 @@ function Campos({ clave, movimiento, programado, esProgramado = false, tipoInici
               }}
             >
               Eliminar
-            </button>
+            </BotonExito>
             <button type="button" className="boton-secundario" onClick={() => setPanel(null)}>
               Cancelar
             </button>

@@ -3,6 +3,7 @@
 // (decisión del dueño, 2026-10-03).
 import { useLiveQuery } from 'dexie-react-hooks';
 import { useRef, useState } from 'react';
+import BotonExito from '../componentes/BotonExito.jsx';
 import CabeceraSubpagina from '../componentes/CabeceraSubpagina.jsx';
 import { IconoBajar, IconoCsv, IconoEscudoCheck, IconoExcel, IconoFlecha, IconoInfo } from '../componentes/iconos.jsx';
 import PanelInferior from '../componentes/PanelInferior.jsx';
@@ -79,18 +80,15 @@ export default function ImportarExportar() {
     }
   };
 
-  const restaurar = async () => {
-    const { copia } = porRestaurar;
+  // Restaura mientras el botón anima (BotonExito); al terminar baja el panel y avisa.
+  const restaurar = () => restaurarCopia(porRestaurar.copia);
+  const alRestaurar = () => {
     setPorRestaurar(null);
-    setOcupado(true);
-    try {
-      await restaurarCopia(copia);
-      setAviso({ texto: 'Copia restaurada.' });
-    } catch {
-      setAviso({ texto: 'No se pudo restaurar. Tus datos no cambiaron.', error: true });
-    } finally {
-      setOcupado(false);
-    }
+    setAviso({ texto: 'Copia restaurada.' });
+  };
+  const alFallarRestaurar = () => {
+    setPorRestaurar(null);
+    setAviso({ texto: 'No se pudo restaurar. Tus datos no cambiaron.', error: true });
   };
 
   const resumen = porRestaurar?.resumen;
@@ -162,9 +160,9 @@ export default function ImportarExportar() {
             tienes ahora en el teléfono se reemplaza.
           </p>
         )}
-        <button type="button" className="boton-peligro" onClick={restaurar}>
+        <BotonExito className="boton-peligro" alTocar={restaurar} alTerminar={alRestaurar} alFallar={alFallarRestaurar}>
           Restaurar
-        </button>
+        </BotonExito>
         <button type="button" className="boton-secundario" onClick={() => setPorRestaurar(null)}>
           Cancelar
         </button>

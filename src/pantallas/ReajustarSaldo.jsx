@@ -21,7 +21,7 @@ export default function ReajustarSaldo() {
   const { id } = useParams();
   const { cuenta, cargando } = useDatos();
   const c = cuenta(id);
-  if (cargando) return <CabeceraFormulario titulo="Reajustar saldo" volverA={`/cuentas/${id}`} />;
+  if (cargando) return <CabeceraFormulario titulo="Reajustar saldo" volverA={'/mi-espacio/cuentas'} />;
   if (!c) return <Navigate to="/mi-espacio/cuentas" replace />;
   return <Campos cuenta={c} />;
 }
@@ -67,7 +67,7 @@ function Campos({ cuenta: c }) {
 
   return (
     <div>
-      <CabeceraFormulario titulo="Reajustar saldo" volverA={`/cuentas/${c.id}`}>
+      <CabeceraFormulario titulo="Reajustar saldo" volverA={'/mi-espacio/cuentas'}>
         <MontoEditable etiqueta={`Saldo real de ${c.nombre}`} valor={real ?? 0} alCambiar={setReal} />
       </CabeceraFormulario>
 
@@ -110,7 +110,7 @@ function Campos({ cuenta: c }) {
           className="boton-principal"
           disabled={!listo}
           alTocar={guardar}
-          alTerminar={() => volver(navegar, `/cuentas/${c.id}`)}
+          alTerminar={() => volver(navegar, '/mi-espacio/cuentas')}
         >
           Reajustar saldo
         </BotonExito>

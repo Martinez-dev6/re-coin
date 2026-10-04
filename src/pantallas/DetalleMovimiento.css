@@ -20,14 +20,6 @@
   font-weight: 700;
 }
 
-/* Nota pequeña bajo una lista (DetalleCuenta). */
-.detalle-cuenta-nota {
-  margin: 10px 4px 0;
-  font-size: 12px;
-  line-height: 16px;
-  color: var(--muted);
-}
-
 .detalle-titulo-nota {
   display: flex;
   align-items: center;

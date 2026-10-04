@@ -14,10 +14,15 @@ export function aFecha(texto) {
   return new Date(anio, mes - 1, dia);
 }
 
-export function hoyTexto() {
-  const d = new Date();
+// 'AAAA-MM-DD' de un día (hora local).
+export function textoDeFecha(d) {
   return [d.getFullYear(), String(d.getMonth() + 1).padStart(2, '0'), String(d.getDate()).padStart(2, '0')].join('-');
 }
+
+export const hoyTexto = () => textoDeFecha(new Date());
+
+// "3:45 p. m." (hora local, en el formato de Colombia).
+export const horaCorta = (d) => d.toLocaleTimeString('es-CO', { hour: 'numeric', minute: '2-digit' });
 
 export function diasHasta(texto) {
   return Math.round((aFecha(texto) - aFecha(hoyTexto())) / 86400000);

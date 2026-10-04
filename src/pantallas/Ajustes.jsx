@@ -2,6 +2,7 @@
 // colombiano y español): se muestran sin flecha porque no hay nada que elegir.
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import BotonExito from '../componentes/BotonExito.jsx';
 import CabeceraSubpagina from '../componentes/CabeceraSubpagina.jsx';
 import {
   IconoBasura,
@@ -52,17 +53,16 @@ export default function Ajustes() {
   const [borrando, setBorrando] = useState(false);
   const [error, setError] = useState('');
 
-  const borrar = async () => {
+  // Borra mientras el botón anima (BotonExito); al terminar baja el panel y se va a Inicio.
+  const borrar = () => {
+    setError(null);
     setBorrando(true);
-    try {
-      await borrarTodo();
-      setPanelBorrar(false);
-      // Que el panel baje antes de cambiar de pantalla.
-      setTimeout(() => navegar('/', { replace: true }), DURACION_PANEL_MS);
-    } catch {
-      setError('No se pudo borrar. No se cambió nada.');
-      setBorrando(false);
-    }
+    return borrarTodo();
+  };
+  const alBorrar = () => {
+    setPanelBorrar(false);
+    // Que el panel baje antes de cambiar de pantalla.
+    setTimeout(() => navegar('/', { replace: true }), DURACION_PANEL_MS);
   };
 
   return (
@@ -155,9 +155,17 @@ export default function Ajustes() {
           copia de seguridad.
         </p>
         {error && <p className="panel-texto ajustes-error">{error}</p>}
-        <button type="button" className="boton-peligro" disabled={borrando} onClick={borrar}>
-          {borrando ? 'Borrando…' : 'Borrar todo'}
-        </button>
+        <BotonExito
+          className="boton-peligro"
+          alTocar={borrar}
+          alTerminar={alBorrar}
+          alFallar={() => {
+            setError('No se pudo borrar. No se cambió nada.');
+            setBorrando(false);
+          }}
+        >
+          Borrar todo
+        </BotonExito>
         <button
           type="button"
           className="boton-secundario"

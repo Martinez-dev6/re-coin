@@ -67,6 +67,35 @@ function MenuNuevo({ abierto, alCerrar }) {
 
   useOscurecido(montado, visible); // la franja de la barra de estado acompaña al oscurecido
 
+  // Con el menú abierto la página no se desplaza, y si se intenta (arrastrar el dedo o la rueda del
+  // ratón), el menú se cierra (pedido del dueño, 2026-10-04: antes se podía hacer scroll detrás).
+  // Se cierra pasados 10 px de recorrido: un toque con un leve temblor sigue eligiendo la opción.
+  useEffect(() => {
+    if (!abierto) return;
+    let inicio = null;
+    const alTocar = (evento) => {
+      const toque = evento.touches[0];
+      inicio = { x: toque.clientX, y: toque.clientY };
+    };
+    const alArrastrar = (evento) => {
+      evento.preventDefault(); // lo de abajo no se mueve
+      const toque = evento.touches[0];
+      if (inicio && Math.hypot(toque.clientX - inicio.x, toque.clientY - inicio.y) > 10) alCerrarRef.current();
+    };
+    const alRodar = (evento) => {
+      evento.preventDefault();
+      alCerrarRef.current();
+    };
+    document.addEventListener('touchstart', alTocar, { passive: true });
+    document.addEventListener('touchmove', alArrastrar, { passive: false });
+    document.addEventListener('wheel', alRodar, { passive: false });
+    return () => {
+      document.removeEventListener('touchstart', alTocar);
+      document.removeEventListener('touchmove', alArrastrar);
+      document.removeEventListener('wheel', alRodar);
+    };
+  }, [abierto]);
+
   useEffect(() => {
     if (!abierto) return;
     const alPulsar = (evento) => evento.key === 'Escape' && alCerrarRef.current();

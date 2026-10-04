@@ -1,9 +1,10 @@
 // Lista de cuentas con el saldo total (design/capturas/Cuentas.png).
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CabeceraSubpagina from '../componentes/CabeceraSubpagina.jsx';
 import { IconoFlecha, IconoMas } from '../componentes/iconos.jsx';
 import { IconoPorNombre } from '../componentes/iconosPorNombre.jsx';
+import PanelCuenta from '../componentes/PanelCuenta.jsx';
 import { saldoTotal, tipoCuenta } from '../datos/cuentas.js';
 import { useDatos } from '../datos/DatosContext.jsx';
 import { estiloIconoCuenta } from '../tema/colores.js';
@@ -17,6 +18,9 @@ export default function Cuentas() {
   const nueva = () => navegar('/cuentas/nueva');
   const lista = useRef(null);
   useFilasAnimadas(lista);
+  // La cuenta tocada: su ventana (PanelCuenta).
+  const [cuentaAbierta, setCuentaAbierta] = useState(null);
+  const [panelCuenta, setPanelCuenta] = useState(false);
 
   return (
     <div>
@@ -47,7 +51,10 @@ export default function Cuentas() {
                 data-clave={cuenta.id}
                 type="button"
                 className="cuentas-fila"
-                onClick={() => navegar('/cuentas/' + cuenta.id)}
+                onClick={() => {
+                  setCuentaAbierta(cuenta.id);
+                  setPanelCuenta(true);
+                }}
               >
                 <span className="icono-circulo grande" style={estiloIconoCuenta(cuenta.color)}>
                   <IconoPorNombre nombre={cuenta.icono} tamano={20} />
@@ -77,6 +84,12 @@ export default function Cuentas() {
           </button>
         )}
       </div>
+
+      <PanelCuenta
+        cuenta={cuentas.find((c) => c.id === cuentaAbierta)}
+        abierto={panelCuenta}
+        alCerrar={() => setPanelCuenta(false)}
+      />
     </div>
   );
 }

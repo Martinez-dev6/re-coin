@@ -1,7 +1,8 @@
 // Nueva cuenta (/cuentas/nueva) y editar cuenta (/cuentas/:id/editar, desde la pantalla de la
 // cuenta). design/capturas/NuevaCuenta.png
 import { useRef, useState } from 'react';
-import { Navigate, useLocation, useNavigate, useParams } from 'react-router-dom';
+import { Navigate, useNavigate, useParams } from 'react-router-dom';
+import BotonExito from '../componentes/BotonExito.jsx';
 import {
   CabeceraFormulario,
   Campo,
@@ -36,10 +37,9 @@ export default function FormularioCuenta() {
 
 function Campos({ cuenta }) {
   const navegar = useNavigate();
-  const { state } = useLocation();
   const { movimientos, programados } = useDatos();
-  // Al editar, Cerrar y Guardar vuelven a la pantalla de la cuenta.
-  const volverA = cuenta ? `/cuentas/${cuenta.id}` : LISTA;
+  // Volver lleva a donde se abrió (Inicio o Cuentas, con la ventana de la cuenta); sin historial, a Cuentas.
+  const volverA = LISTA;
   const usos = cuenta
     ? movimientos.filter((m) => m.cuentaId === cuenta.id || m.cuentaDestinoId === cuenta.id).length
     : 0;
@@ -56,32 +56,22 @@ function Campos({ cuenta }) {
   const [iconoAMano, setIconoAMano] = useState(Boolean(cuenta));
   const [panelTipo, setPanelTipo] = useState(false);
   const [panelEliminar, setPanelEliminar] = useState(false);
-  const [guardando, setGuardando] = useState(false);
   const eliminando = useRef(false);
   const cambiar = (cambios) => setDatos((d) => ({ ...d, ...cambios }));
 
   const elegirTipo = (tipo) => cambiar(iconoAMano ? { tipo } : { tipo, icono: tipoCuenta(tipo).icono });
 
-  const guardar = async () => {
-    setGuardando(true);
-    try {
-      await guardarCuenta(cuenta?.id, datos);
-      volver(navegar, volverA);
-    } finally {
-      setGuardando(false);
-    }
-  };
+  // Al terminar la animación del botón (BotonExito) se vuelve.
+  const guardar = () => guardarCuenta(cuenta?.id, datos);
 
   // Primero baja el panel; después se vuelve y se borra (en ese orden: así el formulario no se
-  // queda mostrando una cuenta que ya no existe). Si se entró desde la pantalla de la cuenta, se
-  // salta también esa pantalla (la cuenta ya no existe): se vuelve a Inicio o a Cuentas.
+  // queda mostrando una cuenta que ya no existe).
   const eliminar = () => {
     if (eliminando.current) return;
     eliminando.current = true;
     setPanelEliminar(false);
     setTimeout(() => {
-      if (state?.desdeDetalle && window.history.state?.idx > 1) navegar(-2);
-      else navegar(LISTA, { replace: true });
+      volver(navegar, LISTA);
       eliminarCuenta(cuenta.id);
     }, DURACION_PANEL_MS + 30);
   };
@@ -131,9 +121,9 @@ function Campos({ cuenta }) {
       </div>
 
       <PieFormulario>
-        <button type="button" className="boton-principal" disabled={guardando} onClick={guardar}>
+        <BotonExito className="boton-principal" alTocar={guardar} alTerminar={() => volver(navegar, volverA)}>
           Guardar cuenta
-        </button>
+        </BotonExito>
       </PieFormulario>
 
       {/* Como los demás paneles de elección: no se cierra al elegir (Listo o tocar fuera). */}
@@ -174,9 +164,9 @@ function Campos({ cuenta }) {
           {usos > 0 && ` con ${usos === 1 ? 'su movimiento' : `sus ${usos} movimientos`}`}.
           {programadosDeLaCuenta > 0 && ' También se borran sus programados.'} No se puede deshacer.
         </p>
-        <button type="button" className="boton-peligro" onClick={eliminar}>
+        <BotonExito className="boton-peligro" alTerminar={eliminar}>
           Eliminar
-        </button>
+        </BotonExito>
         <button type="button" className="boton-secundario" onClick={() => setPanelEliminar(false)}>
           Cancelar
         </button>

@@ -3,6 +3,7 @@
 import { useRef, useState } from 'react';
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
 import CirculoCategoria from '../componentes/CirculoCategoria.jsx';
+import BotonExito from '../componentes/BotonExito.jsx';
 import { CabeceraFormulario, Campo, Interruptor, MontoEditable, PieFormulario } from '../componentes/Formulario.jsx';
 import {
   IconoAnterior,
@@ -58,32 +59,26 @@ function Campos({ presupuesto }) {
   const [panel, setPanel] = useState(null); // 'categoria' | 'desde' | 'aviso' | 'eliminar'
   const [anioVista, setAnioVista] = useState(Number(datos.desde.slice(0, 4)));
   const [aviso, setAviso] = useState(null);
-  const [guardando, setGuardando] = useState(false);
   const eliminando = useRef(false);
   const monto = useRef(null);
   const cambiar = (cambios) => setDatos((d) => ({ ...d, ...cambios }));
   const categoria = buscarCategoria(datos.categoriaId);
 
-  const guardar = async () => {
+  // Si falta algo, avisa y devuelve false (el botón no anima). Al terminar la animación del botón
+  // (BotonExito) se vuelve; si falla (otro presupuesto de la misma categoría), avisa.
+  const guardar = () => {
     if (!(datos.limite > 0)) {
       setAviso('Escribe el límite.');
       monto.current?.focus();
-      return;
+      return false;
     }
     if (!datos.categoriaId) {
       setAviso('Elige una categoría.');
       setPanel('categoria');
-      return;
+      return false;
     }
-    setGuardando(true);
-    try {
-      await guardarPresupuesto(presupuesto?.id, datos, categoria?.nombre);
-      volver(navegar, LISTA);
-    } catch (e) {
-      setAviso(e.message);
-    } finally {
-      setGuardando(false);
-    }
+    setAviso(null);
+    return guardarPresupuesto(presupuesto?.id, datos, categoria?.nombre);
   };
 
   // Primero baja el panel; después se vuelve y se borra (ver FormularioCuenta).
@@ -155,9 +150,14 @@ function Campos({ presupuesto }) {
             {aviso}
           </p>
         )}
-        <button type="button" className="boton-principal" disabled={guardando} onClick={guardar}>
+        <BotonExito
+          className="boton-principal"
+          alTocar={guardar}
+          alTerminar={() => volver(navegar, LISTA)}
+          alFallar={(e) => setAviso(e.message)}
+        >
           Guardar presupuesto
-        </button>
+        </BotonExito>
       </PieFormulario>
 
       <PanelInferior
@@ -263,9 +263,9 @@ function Campos({ presupuesto }) {
         <p className="panel-texto">
           Se borra el presupuesto de {categoria?.nombre ?? 'esta categoría'}. Tus gastos no cambian.
         </p>
-        <button type="button" className="boton-peligro" onClick={eliminar}>
+        <BotonExito className="boton-peligro" alTerminar={eliminar}>
           Eliminar
-        </button>
+        </BotonExito>
         <button type="button" className="boton-secundario" onClick={() => setPanel(null)}>
           Cancelar
         </button>

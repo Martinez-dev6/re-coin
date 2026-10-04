@@ -2,6 +2,7 @@
 // sigue el estilo de Nueva categoría, solo con el nombre.
 import { useRef, useState } from 'react';
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
+import BotonExito from '../componentes/BotonExito.jsx';
 import { CabeceraFormulario, Campo, EntradaTexto, PieFormulario } from '../componentes/Formulario.jsx';
 import { IconoBasura, IconoTexto } from '../componentes/iconos.jsx';
 import PanelInferior, { DURACION_PANEL_MS } from '../componentes/PanelInferior.jsx';
@@ -29,20 +30,13 @@ function Campos({ etiqueta }) {
   const [nombre, setNombre] = useState(etiqueta?.nombre ?? '');
   const [error, setError] = useState(null);
   const [panelEliminar, setPanelEliminar] = useState(false);
-  const [guardando, setGuardando] = useState(false);
   const eliminando = useRef(false);
   const usos = etiqueta ? movimientos.filter((m) => m.etiquetaIds.includes(etiqueta.id)).length : 0;
 
-  const guardar = async () => {
-    setGuardando(true);
-    try {
-      await guardarEtiqueta(etiqueta?.id, nombre);
-      volver(navegar, LISTA);
-    } catch (e) {
-      setError(e.message);
-    } finally {
-      setGuardando(false);
-    }
+  // Al terminar la animación del botón (BotonExito) se vuelve; si falla (nombre repetido), avisa.
+  const guardar = () => {
+    setError(null);
+    return guardarEtiqueta(etiqueta?.id, nombre);
   };
 
   // Primero baja el panel; después se vuelve a la lista y se borra (ver FormularioCuenta).
@@ -89,9 +83,15 @@ function Campos({ etiqueta }) {
             {error}
           </p>
         )}
-        <button type="button" className="boton-principal" disabled={guardando || !nombre.trim()} onClick={guardar}>
+        <BotonExito
+          className="boton-principal"
+          disabled={!nombre.trim()}
+          alTocar={guardar}
+          alTerminar={() => volver(navegar, LISTA)}
+          alFallar={(e) => setError(e.message)}
+        >
           Guardar etiqueta
-        </button>
+        </BotonExito>
       </PieFormulario>
 
       <PanelInferior abierto={panelEliminar} alCerrar={() => setPanelEliminar(false)} titulo="¿Eliminar la etiqueta?">
@@ -100,9 +100,9 @@ function Campos({ etiqueta }) {
           {usos > 0 && `Se quita de ${usos === 1 ? '1 movimiento' : `${usos} movimientos`}, que no se borran. `}
           No se puede deshacer.
         </p>
-        <button type="button" className="boton-peligro" onClick={eliminar}>
+        <BotonExito className="boton-peligro" alTerminar={eliminar}>
           Eliminar
-        </button>
+        </BotonExito>
         <button type="button" className="boton-secundario" onClick={() => setPanelEliminar(false)}>
           Cancelar
         </button>

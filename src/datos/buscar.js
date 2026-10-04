@@ -40,6 +40,10 @@ export const useFiltrosTransacciones = () => usarGuardado('filtros');
 export function fijarTipoTransacciones(tipo) {
   guardado.filtros = { ...FILTROS_VACIOS, tipo };
 }
+// "Ver movimientos" de la ventana de una cuenta: Transacciones solo con esa cuenta.
+export function fijarCuentaTransacciones(cuentaId) {
+  guardado.filtros = { ...FILTROS_VACIOS, cuentas: [cuentaId] };
+}
 export const useBusqueda = () => usarGuardado('busqueda');
 
 // Cuántos filtros hay aparte del tipo (el tipo ya se ve en los chips de la pantalla).

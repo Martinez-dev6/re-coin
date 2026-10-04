@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Avatar from '../componentes/Avatar.jsx';
 import BarraEstado from '../componentes/BarraEstado.jsx';
 import Deslizar from '../componentes/Deslizar.jsx';
+import PanelCuenta from '../componentes/PanelCuenta.jsx';
 import {
   IconoAbajo,
   IconoAlerta,
@@ -42,6 +43,9 @@ export default function Inicio() {
   const sinCuentas = !cargando && cuentas.length === 0;
   const [ocultos, alternarOcultos] = useSaldosOcultos();
   const [panelMes, setPanelMes] = useState(false);
+  // La cuenta tocada: su ventana (PanelCuenta) sube encima de Inicio.
+  const [cuentaAbierta, setCuentaAbierta] = useState(null);
+  const [panelCuenta, setPanelCuenta] = useState(false);
   const pesos = (valor) => (ocultos ? OCULTO : formatearPesos(valor));
   const elegidos = bloquesDeInicio(useAjustes()).filter((b) => b.visible);
   const listaCuentas = useRef(null);
@@ -310,8 +314,15 @@ export default function Inicio() {
                   <div ref={listaCuentas} className="inicio-cuentas">
                     {cuentas.map(({ id, nombre, icono, color, saldo: saldoCuenta }) => (
                       <div key={id} data-clave={id} className="inicio-cuenta">
-                        {/* Toda la fila (menos el "+") abre la cuenta, como en Mi espacio → Cuentas. */}
-                        <button type="button" className="inicio-cuenta-abrir" onClick={() => navegar('/cuentas/' + id)}>
+                        {/* Toda la fila (menos el "+") abre la ventana de la cuenta, como en Mi espacio → Cuentas. */}
+                        <button
+                          type="button"
+                          className="inicio-cuenta-abrir"
+                          onClick={() => {
+                            setCuentaAbierta(id);
+                            setPanelCuenta(true);
+                          }}
+                        >
                           <span className="icono-circulo grande" style={estiloIconoCuenta(color)}>
                             <IconoPorNombre nombre={icono} tamano={20} />
                           </span>
@@ -349,6 +360,12 @@ export default function Inicio() {
       )}
 
       <PanelElegirMes abierto={panelMes} alCerrar={() => setPanelMes(false)} />
+      <PanelCuenta
+        cuenta={cuentas.find((c) => c.id === cuentaAbierta)}
+        abierto={panelCuenta}
+        alCerrar={() => setPanelCuenta(false)}
+        ocultos={ocultos}
+      />
     </div>
   );
 }

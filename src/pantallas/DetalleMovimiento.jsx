@@ -1,7 +1,11 @@
 // Detalle de un movimiento (/movimientos/:id). design/capturas/DetalleMovimiento.png
 // Sin barra inferior: entra desde la derecha por encima de ella (TransicionPantallas.jsx).
+// Tocar el estado (Pendiente / Pagado) abre una ventana para confirmarlo, con la animación de
+// "listo" (pedido del dueño, 2026-10-04: antes cambiaba al instante y se prestaba a confusión).
+// La hora es la de cuando se registró (campo creado).
 import { useRef, useState } from 'react';
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
+import BotonExito from '../componentes/BotonExito.jsx';
 import CabeceraSubpagina from '../componentes/CabeceraSubpagina.jsx';
 import CirculoCategoria from '../componentes/CirculoCategoria.jsx';
 import { Campo, PieFormulario } from '../componentes/Formulario.jsx';
@@ -21,11 +25,12 @@ import {
   IconoReloj,
   IconoTarjeta,
 } from '../componentes/iconos.jsx';
+import PanelConfirmarPago from '../componentes/PanelConfirmarPago.jsx';
 import PanelInferior, { DURACION_PANEL_MS } from '../componentes/PanelInferior.jsx';
 import { useDatos } from '../datos/DatosContext.jsx';
 import { cambiarPagado, eliminarMovimiento, tituloMovimiento } from '../datos/movimientos.js';
 import { nombreFactura } from '../datos/tarjetas.js';
-import { etiquetaDia } from '../utilidades/fechas.js';
+import { diaYMes, etiquetaDia, horaCorta, textoDeFecha } from '../utilidades/fechas.js';
 import { formatearPesos } from '../utilidades/formato.js';
 import { volver } from '../utilidades/navegacion.js';
 import './DetalleMovimiento.css';
@@ -39,6 +44,7 @@ const IconoDesde = (p) => <IconoGastoDiagonal tamano={18} grosor={2} {...p} />;
 const IconoHacia = (p) => <IconoIngresoDiagonal tamano={18} grosor={2} {...p} />;
 const IconoCuotas = (p) => <IconoCapas tamano={18} {...p} />;
 const IconoFactura = (p) => <IconoRecibo tamano={18} {...p} />;
+const IconoHora = (p) => <IconoReloj tamano={18} grosor={2} {...p} />;
 
 export default function DetalleMovimiento() {
   const { id } = useParams();
@@ -57,6 +63,10 @@ function Contenido({ movimiento: m }) {
   const navegar = useNavigate();
   const { cuenta, categoria: buscarCategoria, etiqueta, tarjeta } = useDatos();
   const [panelEliminar, setPanelEliminar] = useState(false);
+  // Ventana del estado: 'pagar' (elegir la cuenta, como en Pendientes), 'hecha' (transferencia
+  // programada) o 'pendiente' (volver a dejarlo pendiente).
+  const [panelEstado, setPanelEstado] = useState(null);
+  const cerrarEstado = () => setPanelEstado(null);
   const eliminando = useRef(false);
   // Los gastos e ingresos tienen Pagado / Pendiente; una transferencia, solo si es programada
   // (se registra pendiente).
@@ -92,6 +102,13 @@ function Contenido({ movimiento: m }) {
   const anio = Number(m.fecha.slice(0, 4));
   const fecha = etiquetaDia(m.fecha) + (anio !== new Date().getFullYear() ? ` de ${anio}` : '');
   const etiquetas = m.etiquetaIds.map((e) => etiqueta(e)?.nombre).filter(Boolean);
+  // Cuándo se registró: solo la hora si fue el mismo día del movimiento; si no, también el día.
+  const creado = m.creado ? new Date(m.creado) : null;
+  const mismoDia = creado && textoDeFecha(creado) === m.fecha;
+
+  let textoPendiente = `El dinero vuelve a ${nombreCuenta(m.cuentaId)} hasta que la marques como hecha.`;
+  if (m.tipo === 'gasto') textoPendiente = `Deja de restarse del saldo de ${nombreCuenta(m.cuentaId)} hasta que lo marques como pagado.`;
+  if (m.tipo === 'ingreso') textoPendiente = `Deja de sumarse al saldo de ${nombreCuenta(m.cuentaId)} hasta que lo marques como recibido.`;
 
   // Primero baja el panel; después se vuelve y se borra (como al eliminar una cuenta).
   const eliminar = () => {
@@ -113,13 +130,13 @@ function Contenido({ movimiento: m }) {
             {SIGNO[m.tipo]}
             {formatearPesos(m.valor)}
           </div>
-          {/* Tocar el estado lo cambia: así se marca como pagado lo que estaba pendiente. */}
+          {/* Tocar el estado abre la ventana para cambiarlo. */}
           {conChip && (
             <button
               type="button"
               className={'detalle-estado estado-banner ' + (m.pagado ? 'pagado' : 'pendiente')}
               aria-label={(m.pagado ? 'Pagado' : 'Pendiente') + '. Tocar para cambiar'}
-              onClick={() => cambiarPagado(m.id, !m.pagado)}
+              onClick={() => setPanelEstado(m.pagado ? 'pendiente' : m.tipo === 'transferencia' ? 'hecha' : 'pagar')}
             >
               {m.pagado ? <IconoCheckCirculo tamano={14} grosor={2.2} /> : <IconoReloj tamano={14} grosor={2.2} />}
               {m.pagado ? (m.tipo === 'ingreso' ? 'Recibido' : 'Pagado') : 'Pendiente'}
@@ -170,6 +187,11 @@ function Contenido({ movimiento: m }) {
           <Campo Icono={IconoFecha} etiqueta="Fecha">
             {fecha}
           </Campo>
+          {creado && (
+            <Campo Icono={IconoHora} etiqueta={mismoDia ? 'Hora' : 'Registrado'}>
+              {mismoDia ? horaCorta(creado) : `${diaYMes(textoDeFecha(creado))} · ${horaCorta(creado)}`}
+            </Campo>
+          )}
           {etiquetas.length > 0 && (
             <Campo Icono={IconoEtiqueta} etiqueta="Etiquetas">
               <span className="campo-recortado">{etiquetas.join(', ')}</span>
@@ -203,13 +225,37 @@ function Contenido({ movimiento: m }) {
         </div>
       </PieFormulario>
 
+      <PanelConfirmarPago movimiento={m} abierto={panelEstado === 'pagar'} alCerrar={cerrarEstado} />
+
+      <PanelInferior abierto={panelEstado === 'hecha'} alCerrar={cerrarEstado} titulo="¿Ya hiciste la transferencia?">
+        <p className="panel-texto">
+          Pasan {formatearPesos(m.valor)} de {nombreCuenta(m.cuentaId)} a {nombreCuenta(m.cuentaDestinoId)}.
+        </p>
+        <BotonExito className="boton-principal" alTocar={() => cambiarPagado(m.id, true)} alTerminar={cerrarEstado}>
+          Marcar como hecha
+        </BotonExito>
+        <button type="button" className="boton-secundario" onClick={cerrarEstado}>
+          Cancelar
+        </button>
+      </PanelInferior>
+
+      <PanelInferior abierto={panelEstado === 'pendiente'} alCerrar={cerrarEstado} titulo="¿Marcar como pendiente?">
+        <p className="panel-texto">{textoPendiente}</p>
+        <BotonExito className="boton-principal" alTocar={() => cambiarPagado(m.id, false)} alTerminar={cerrarEstado}>
+          Marcar como pendiente
+        </BotonExito>
+        <button type="button" className="boton-secundario" onClick={cerrarEstado}>
+          Cancelar
+        </button>
+      </PanelInferior>
+
       <PanelInferior abierto={panelEliminar} alCerrar={() => setPanelEliminar(false)} titulo="¿Eliminar el movimiento?">
         <p className="panel-texto">
           Se borra «{tituloMovimiento(m, buscarCategoria)}» de {formatearPesos(m.valor)}. No se puede deshacer.
         </p>
-        <button type="button" className="boton-peligro" onClick={eliminar}>
+        <BotonExito className="boton-peligro" alTerminar={eliminar}>
           Eliminar
-        </button>
+        </BotonExito>
         <button type="button" className="boton-secundario" onClick={() => setPanelEliminar(false)}>
           Cancelar
         </button>

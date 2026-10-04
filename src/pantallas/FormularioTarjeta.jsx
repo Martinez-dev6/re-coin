@@ -2,6 +2,7 @@
 // tarjeta). design/capturas/NuevaTarjeta.png
 import { useRef, useState } from 'react';
 import { Navigate, useLocation, useNavigate, useParams } from 'react-router-dom';
+import BotonExito from '../componentes/BotonExito.jsx';
 import { CabeceraFormulario, Campo, EntradaTexto, MontoEditable, PieFormulario } from '../componentes/Formulario.jsx';
 import { IconoBanco, IconoBasura, IconoCalendario, IconoCheck, IconoMas, IconoReloj, IconoTexto } from '../componentes/iconos.jsx';
 import { ICONOS_TARJETA, IconoPorNombre } from '../componentes/iconosPorNombre.jsx';
@@ -50,20 +51,12 @@ function Campos({ tarjeta }) {
       : { nombre: '', cupo: 0, diaCierre: 15, diaPago: 25, cuentaPagoId: cuentas[0]?.id ?? null, icono: 'tarjeta' },
   );
   const [panel, setPanel] = useState(null); // 'diaCierre' | 'diaPago' | 'cuenta' | 'eliminar'
-  const [guardando, setGuardando] = useState(false);
   const eliminando = useRef(false);
   const cambiar = (cambios) => setDatos((d) => ({ ...d, ...cambios }));
   const usos = tarjeta ? movimientos.filter((m) => m.tarjetaId === tarjeta.id).length : 0;
 
-  const guardar = async () => {
-    setGuardando(true);
-    try {
-      await guardarTarjeta(tarjeta?.id, datos);
-      volver(navegar, volverA);
-    } finally {
-      setGuardando(false);
-    }
-  };
+  // Al terminar la animación del botón (BotonExito) se vuelve.
+  const guardar = () => guardarTarjeta(tarjeta?.id, datos);
 
   // Primero baja el panel; después se vuelve (saltando la pantalla de la tarjeta, que ya no
   // existirá) y se borra (ver FormularioCuenta).
@@ -130,9 +123,9 @@ function Campos({ tarjeta }) {
       </div>
 
       <PieFormulario>
-        <button type="button" className="boton-principal" disabled={guardando} onClick={guardar}>
+        <BotonExito className="boton-principal" alTocar={guardar} alTerminar={() => volver(navegar, volverA)}>
           Guardar tarjeta
-        </button>
+        </BotonExito>
       </PieFormulario>
 
       {panelDia('diaCierre', 'Día de cierre')}
@@ -185,9 +178,9 @@ function Campos({ tarjeta }) {
           Se borra «{tarjeta?.nombre}» de este teléfono
           {usos > 0 && ` con ${usos === 1 ? 'su compra o pago' : `sus ${usos} compras y pagos`}`}. No se puede deshacer.
         </p>
-        <button type="button" className="boton-peligro" onClick={eliminar}>
+        <BotonExito className="boton-peligro" alTerminar={eliminar}>
           Eliminar
-        </button>
+        </BotonExito>
         <button type="button" className="boton-secundario" onClick={() => setPanel(null)}>
           Cancelar
         </button>

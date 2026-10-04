@@ -3,6 +3,7 @@
 // sugerida es al día, a la semana, a la quincena o al mes; el panel muestra las cuatro.
 import { useRef, useState } from 'react';
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
+import BotonExito from '../componentes/BotonExito.jsx';
 import {
   CabeceraFormulario,
   Campo,
@@ -92,7 +93,6 @@ function Campos({ meta }) {
   // El aporte que se va a borrar; se queda mientras el panel baja.
   const [aporte, setAporte] = useState(null);
   const [aviso, setAviso] = useState(null);
-  const [guardando, setGuardando] = useState(false);
   const eliminando = useRef(false);
   const monto = useRef(null);
   const cambiar = (cambios) => setDatos((d) => ({ ...d, ...cambios }));
@@ -103,17 +103,20 @@ function Campos({ meta }) {
   const frecuencia = frecuenciaMeta(datos.frecuencia);
   const sugerido = ahorroCada(frecuencia.valor);
 
-  const guardar = async () => {
-    setGuardando(true);
-    try {
-      await guardarMeta(meta?.id, datos);
-      volver(navegar, LISTA);
-    } catch (e) {
-      setAviso(e.message);
-      if (!(datos.objetivo > 0)) monto.current?.focus();
-    } finally {
-      setGuardando(false);
+  // Si falta algo, avisa y devuelve false (el botón no anima). Al terminar la animación del botón
+  // (BotonExito) se vuelve.
+  const guardar = () => {
+    if (!(datos.objetivo > 0)) {
+      setAviso('Escribe el monto objetivo.');
+      monto.current?.focus();
+      return false;
     }
+    if (!datos.nombre.trim()) {
+      setAviso('Escribe el nombre de la meta.');
+      return false;
+    }
+    setAviso(null);
+    return guardarMeta(meta?.id, datos);
   };
 
   // Primero baja el panel; después se vuelve y se borra (ver FormularioCuenta).
@@ -210,9 +213,14 @@ function Campos({ meta }) {
             {aviso}
           </p>
         )}
-        <button type="button" className="boton-principal" disabled={guardando} onClick={guardar}>
+        <BotonExito
+          className="boton-principal"
+          alTocar={guardar}
+          alTerminar={() => volver(navegar, LISTA)}
+          alFallar={(e) => setAviso(e.message)}
+        >
           Guardar meta
-        </button>
+        </BotonExito>
       </PieFormulario>
 
       <PanelInferior
@@ -284,9 +292,9 @@ function Campos({ meta }) {
         <p className="panel-texto">
           Se borra «{meta?.nombre}» con sus aportes. Tus cuentas no cambian. No se puede deshacer.
         </p>
-        <button type="button" className="boton-peligro" onClick={eliminar}>
+        <BotonExito className="boton-peligro" alTerminar={eliminar}>
           Eliminar
-        </button>
+        </BotonExito>
         <button type="button" className="boton-secundario" onClick={() => setPanel(null)}>
           Cancelar
         </button>
@@ -297,16 +305,9 @@ function Campos({ meta }) {
           Se quita el aporte de {aporte && formatearPesos(aporte.valor)} del {aporte && diaYMes(aporte.fecha)}. Tus
           cuentas no cambian.
         </p>
-        <button
-          type="button"
-          className="boton-peligro"
-          onClick={() => {
-            eliminarAporte(aporte.id);
-            setPanel(null);
-          }}
-        >
+        <BotonExito className="boton-peligro" alTocar={() => eliminarAporte(aporte.id)} alTerminar={() => setPanel(null)}>
           Borrar aporte
-        </button>
+        </BotonExito>
         <button type="button" className="boton-secundario" onClick={() => setPanel(null)}>
           Cancelar
         </button>

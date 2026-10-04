@@ -1,9 +1,12 @@
 // Botón de guardar o confirmar con animación de "listo" (pedido del dueño, 2026-10-04): al tocarlo,
 // el botón se encoge hasta un círculo de su mismo color, se dibuja un chulo y el teléfono vibra
 // suave (ToqueHaptico). Rápido y sin rebotes; los tiempos están en comunes.css (.boton-exito).
-// - alTocar: hace las comprobaciones. Devuelve false si falta algo (no hay animación ni vibración;
-//   el formulario avisa); si no, devuelve la promesa de lo que guarda (o nada).
+// - alTocar: hace las comprobaciones. Devuelve false si falta algo (no hay animación; el formulario
+//   avisa); si no, devuelve la promesa de lo que guarda (o nada). Opcional: en una confirmación de
+//   eliminar no hay nada que comprobar y lo que borra va en alTerminar (después de la animación,
+//   para que la pantalla no se quede sin lo que muestra).
 // - alTerminar: cuando terminan la animación y el guardado (volver, cerrar el panel…).
+// - alFallar: si lo que guarda falla (p. ej. un presupuesto repetido); el botón vuelve a como estaba.
 // El estado final queda en clases y estilos del botón, no en una animación de JavaScript: así la
 // copia de la pantalla que se usa al volver (TransicionPantallas) lo muestra ya con el chulo.
 import { useEffect, useRef, useState } from 'react';
@@ -15,7 +18,7 @@ const DURACION_MS = 540;
 
 const esperar = (ms) => new Promise((resolver) => setTimeout(resolver, ms));
 
-export default function BotonExito({ alTocar, alTerminar, className = '', disabled, children, ...resto }) {
+export default function BotonExito({ alTocar, alTerminar, alFallar, className = '', disabled, children, ...resto }) {
   const boton = useRef(null);
   const [recorte, setRecorte] = useState(null); // px que se recortan de cada lado; null = en reposo
   const montado = useRef(true);
@@ -28,7 +31,7 @@ export default function BotonExito({ alTocar, alTerminar, className = '', disabl
 
   const tocar = async (evento) => {
     if (recorte !== null) return;
-    const resultado = alTocar();
+    const resultado = alTocar ? alTocar() : undefined;
     // Si falta algo, el interruptor de ToqueHaptico vuelve a como estaba (por si así iOS no vibra).
     if (resultado === false) {
       evento.preventDefault();
@@ -43,8 +46,11 @@ export default function BotonExito({ alTocar, alTerminar, className = '', disabl
     try {
       await Promise.all([resultado, animar && esperar(DURACION_MS)]);
     } catch (error) {
-      if (montado.current) setRecorte(null);
-      throw error;
+      if (!montado.current) return;
+      setRecorte(null);
+      if (alFallar) alFallar(error);
+      else throw error;
+      return;
     }
     // Si ya se salió (atrás, tocar fuera del panel), no se vuelve a navegar ni a cerrar nada.
     if (montado.current) alTerminar?.();
