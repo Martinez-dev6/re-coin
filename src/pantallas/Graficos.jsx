@@ -71,13 +71,15 @@ export default function Graficos() {
               )
             }
           />
-          {partes.length === 0 ? (
-            <p className="graficos-vacio">
-              Sin {tipo === 'ingreso' ? 'ingresos' : 'gastos'} en {nombreMes(mes, false)}.
-            </p>
-          ) : (
-            <div className="graficos-leyenda">
-              {partes.map((p) => (
+          {/* La leyenda guarda siempre el alto de 5 filas (lo más que puede tener): así, al cambiar
+              de mes o de tipo, lo de abajo no sube ni baja (pedido del dueño, 2026-10-04). */}
+          <div className="graficos-leyenda">
+            {partes.length === 0 ? (
+              <p className="graficos-vacio">
+                Sin {tipo === 'ingreso' ? 'ingresos' : 'gastos'} en {nombreMes(mes, false)}.
+              </p>
+            ) : (
+              partes.map((p) => (
                 <button
                   key={p.clave}
                   type="button"
@@ -90,9 +92,9 @@ export default function Graficos() {
                   <span className="graficos-leyenda-valor">{formatearPesos(p.valor)}</span>
                   <strong>{porcentaje(p.valor)} %</strong>
                 </button>
-              ))}
-            </div>
-          )}
+              ))
+            )}
+          </div>
         </div>
 
         <div className="tarjeta graficos-tarjeta">

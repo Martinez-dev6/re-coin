@@ -1,12 +1,12 @@
 // Barra inferior fija de 90 px con la curva alrededor del "+" (design/html, data-nav2)
-// y el menú en arco que abre el "+": Ingreso, Gasto, Gasto con tarjeta, Transferencia.
+// y el menú en arco que abre el "+": Gasto con tarjeta, Ingreso, Transferencia, Gasto.
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import {
   IconoCategorias,
-  IconoGastoDiagonal,
-  IconoIngresoDiagonal,
+  IconoGasto,
+  IconoIngreso,
   IconoInicio,
   IconoLista,
   IconoMas,
@@ -25,11 +25,13 @@ const PESTANAS = [
 ];
 
 // Posición de cada círculo respecto al centro del "+" (medidas de design/html/MenuMas.html).
+// De izquierda a derecha. El gasto, el que más se usa, va último: abajo a la derecha, donde
+// llega el pulgar (pedido del dueño, 2026-10-04).
 const OPCIONES = [
-  { texto: 'Ingreso', ruta: '/nuevo/ingreso', Icono: IconoIngresoDiagonal, color: 'var(--income)', dx: -127, dy: -46 },
-  { texto: 'Gasto', ruta: '/nuevo/gasto', Icono: IconoGastoDiagonal, color: 'var(--expense)', dx: -57, dy: -122 },
-  { texto: 'Gasto con tarjeta', ruta: '/nuevo/gasto-tarjeta', Icono: (p) => <IconoTarjeta tamano={26} grosor={2.2} {...p} />, color: 'var(--accent-text)', dx: 57, dy: -122 },
-  { texto: 'Transferencia', ruta: '/nuevo/transferencia', Icono: IconoTransferencia, color: 'var(--accent-text)', dx: 127, dy: -46 },
+  { texto: 'Gasto con tarjeta', ruta: '/nuevo/gasto-tarjeta', Icono: (p) => <IconoTarjeta tamano={26} grosor={2.2} {...p} />, color: 'var(--accent-text)', dx: -127, dy: -46 },
+  { texto: 'Ingreso', ruta: '/nuevo/ingreso', Icono: IconoIngreso, color: 'var(--income)', dx: -57, dy: -122 },
+  { texto: 'Transferencia', ruta: '/nuevo/transferencia', Icono: IconoTransferencia, color: 'var(--accent-text)', dx: 57, dy: -122 },
+  { texto: 'Gasto', ruta: '/nuevo/gasto', Icono: IconoGasto, color: 'var(--expense)', dx: 127, dy: -46 },
 ];
 
 const DURACION_MS = 220;
@@ -38,7 +40,7 @@ function MenuNuevo({ abierto, alCerrar }) {
   const navegar = useNavigate();
   const [montado, setMontado] = useState(abierto);
   const [visible, setVisible] = useState(false);
-  // Al elegir una opción, el formulario sube por encima del menú mientras este se cierra. Si
+  // Al elegir una opción, el formulario entra por encima del menú mientras este se cierra. Si
   // el menú quedara encima, su botón "+" se veía flotando sobre el formulario y desaparecía
   // de golpe (video del iPhone, 2026-10-03).
   const [bajoFormulario, setBajoFormulario] = useState(false);

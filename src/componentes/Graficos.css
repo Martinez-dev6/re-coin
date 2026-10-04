@@ -21,10 +21,13 @@
 
 .dona-parte {
   fill: none;
-  cursor: pointer;
   transition:
     stroke-width 0.2s ease,
     opacity 0.2s ease;
+}
+
+.dona-parte.tocable {
+  cursor: pointer;
 }
 
 .dona-parte.apagada {

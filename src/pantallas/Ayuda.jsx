@@ -82,7 +82,7 @@ export default function Ayuda() {
 
         <h2 className="titulo-seccion">Acerca de</h2>
         <div className="tarjeta ayuda-tarjeta ayuda-acerca">
-          <span className="icono-circulo ayuda-icono">
+          <span className="icono-circulo ayuda-icono" data-tono="g">
             <IconoInfo tamano={18} />
           </span>
           <div className="ayuda-acerca-textos">

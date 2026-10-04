@@ -45,11 +45,27 @@
   margin-top: 20px;
 }
 
+/* Cada uno es un botón: abre Transacciones con ese tipo elegido. */
 .inicio-resumen-dato {
   flex: 1 1 0;
   display: flex;
   align-items: center;
   gap: 10px;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+}
+
+.inicio-resumen-dato:active {
+  opacity: 0.7;
+}
+
+.inicio-resumen-textos {
+  display: flex;
+  flex-direction: column;
   min-width: 0;
 }
 
@@ -332,21 +348,9 @@
   border-top: 1px solid var(--divider);
 }
 
-.inicio-cuentas-total-textos {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-}
-
 .inicio-cuentas-total-titulo {
   font-size: 17px;
   font-weight: 600;
-}
-
-.inicio-cuentas-nota {
-  margin-top: 1px;
-  font-size: 12px;
-  color: var(--muted);
 }
 
 .inicio-cuentas-total strong {
@@ -516,12 +520,16 @@
   color: var(--muted);
 }
 
-/* Gráfico del mes: dona pequeña a la izquierda y leyenda a la derecha. */
+/* Gráfico del mes: dona pequeña a la izquierda y leyenda a la derecha. Es un botón (lleva a
+   Gráficos). */
 .inicio-grafico {
   display: flex;
   align-items: center;
   gap: 16px;
+  width: 100%;
   padding: 16px;
+  color: var(--text);
+  text-align: left;
 }
 
 .inicio-grafico .dona {
@@ -541,6 +549,7 @@
 }
 
 .inicio-grafico-leyenda {
+  display: block;
   flex-grow: 1;
   min-width: 0;
 }
@@ -551,17 +560,7 @@
   gap: 8px;
   width: 100%;
   height: 30px;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  color: var(--text);
-  text-align: left;
   font-size: 13px;
-  transition: opacity 0.2s ease;
-}
-
-.inicio-grafico-fila.apagada {
-  opacity: 0.45;
 }
 
 .inicio-grafico-fila > i {
@@ -582,7 +581,73 @@
 
 .inicio-grafico-vacio {
   flex-grow: 1;
-  margin: 0;
   font-size: 14px;
+  color: var(--muted);
+}
+
+/* Tarjetas de crédito: una fila por tarjeta. Todo el bloque es un botón (lleva a Tarjetas). */
+.inicio-tarjetas {
+  display: block;
+  width: 100%;
+  color: var(--text);
+  text-align: left;
+}
+
+.inicio-tarjeta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 64px;
+  border-bottom: 1px solid var(--divider);
+}
+
+.inicio-tarjeta:last-child {
+  border-bottom: 0;
+}
+
+.inicio-tarjeta-textos {
+  flex-grow: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.inicio-tarjeta-nombre {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.inicio-tarjeta-vence {
+  margin-top: 1px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.inicio-tarjeta-vence.pendiente {
+  color: var(--pending);
+}
+
+.inicio-tarjeta-vence.vencida {
+  color: var(--expense);
+}
+
+.inicio-tarjeta-cifras {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.inicio-tarjeta-cifras strong {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.inicio-tarjeta-cifras span {
+  font-size: 11px;
   color: var(--muted);
 }

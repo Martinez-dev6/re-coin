@@ -32,12 +32,14 @@
   padding: 4px 16px calc(32px + var(--safe-bottom));
 }
 
+/* Letras de los grupos y las filas un poco más grandes que en el diseño (pedido del dueño,
+   2026-10-04): títulos 14 en vez de 13, filas 16 en vez de 15 y de 50 px de alto en vez de 44. */
 .mi-espacio-grupo-titulo {
-  height: 16px;
-  margin: 6px 0 3px 4px;
-  font-size: 13px;
+  height: 18px;
+  margin: 8px 0 4px 4px;
+  font-size: 14px;
   font-weight: 600;
-  line-height: 16px;
+  line-height: 18px;
   color: var(--muted);
 }
 
@@ -50,16 +52,22 @@ section:first-child .mi-espacio-grupo-titulo {
 }
 
 .mi-espacio-grupo-suelto {
-  margin-top: 8px;
+  margin-top: 10px;
 }
 
-/* Fila de menú: 44 px, ícono, texto, valor opcional y flecha. */
+.fila-menu .icono-circulo {
+  width: 34px;
+  height: 34px;
+  border-radius: 17px;
+}
+
+/* Fila de menú: 50 px, ícono, texto, valor opcional y flecha. */
 .fila-menu {
   display: flex;
   align-items: center;
   gap: 12px;
   width: 100%;
-  height: 44px;
+  height: 50px;
   padding: 0;
   border: 0;
   border-bottom: 1px solid var(--divider);
@@ -74,12 +82,12 @@ section:first-child .mi-espacio-grupo-titulo {
 .fila-menu-texto {
   flex-grow: 1;
   min-width: 0;
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 600;
 }
 
 .fila-menu-valor {
-  font-size: 13px;
+  font-size: 14px;
   color: var(--muted);
 }
 
@@ -99,6 +107,6 @@ section:first-child .mi-espacio-grupo-titulo {
 .mi-espacio-version {
   margin: 16px 0 0;
   text-align: center;
-  font-size: 12px;
+  font-size: 13px;
   color: var(--muted);
 }

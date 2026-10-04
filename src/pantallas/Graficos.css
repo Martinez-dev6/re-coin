@@ -31,14 +31,17 @@
 }
 
 .graficos-vacio {
-  margin: 14px 0 4px;
+  margin: 0;
+  padding-top: 8px;
   text-align: center;
   font-size: 14px;
   color: var(--muted);
 }
 
-/* Leyenda: color, nombre, valor y porcentaje. Se toca como el segmento. */
+/* Leyenda: color, nombre, valor y porcentaje. Se toca como el segmento. Siempre del alto de 5
+   filas (4 categorías y "Otros"), para que la tarjeta no cambie de tamaño entre meses. */
 .graficos-leyenda {
+  min-height: calc(5 * 34px);
   margin-top: 14px;
 }
 

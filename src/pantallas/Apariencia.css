@@ -147,3 +147,28 @@
   height: 48px;
   margin-top: 8px;
 }
+
+/* ---- Color de los íconos: dos opciones, cada una con una muestra de tres íconos ---- */
+
+.apariencia-iconos {
+  padding: 0 14px;
+}
+
+.apariencia-iconos-opcion {
+  color: var(--text);
+}
+
+.apariencia-iconos-muestra {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.apariencia-iconos-circulo {
+  width: 28px;
+  height: 28px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

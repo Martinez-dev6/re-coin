@@ -44,6 +44,7 @@ import {
   Lock,
   NotebookText,
   ListFilter,
+  Minus,
   Moon,
   Palette,
   PanelsTopLeft,
@@ -52,6 +53,7 @@ import {
   ReceiptText,
   RefreshCw,
   Repeat,
+  Scale,
   Search,
   Settings,
   ShieldCheck,
@@ -104,6 +106,10 @@ export const IconoCategorias = crear(LayoutGrid, 18);
 // Menú del "+" y movimientos
 export const IconoIngresoDiagonal = crear(ArrowDownLeft, 26, 2.2);
 export const IconoGastoDiagonal = crear(ArrowUpRight, 26, 2.2);
+// En el menú del "+": más y menos, rectos y del mismo tamaño (pedido del dueño, 2026-10-04: las
+// flechas en diagonal, una hacia arriba y otra hacia abajo, se veían dispares).
+export const IconoIngreso = crear(Plus, 26, 2.4);
+export const IconoGasto = crear(Minus, 26, 2.4);
 export const IconoTransferencia = crear(ArrowLeftRight, 26, 2.2);
 export const IconoFlechaArriba = crear(ArrowUp, 20, 2.2);
 export const IconoFlechaAbajo = crear(ArrowDown, 20, 2.2);
@@ -141,6 +147,7 @@ export const IconoCandado = crear(Lock, 18);
 
 // Cuentas, respaldo y vista previa de Apariencia
 export const IconoBanco = crear(Landmark, 20);
+export const IconoBalanza = crear(Scale, 18);
 export const IconoBilletera = crear(Wallet, 20);
 export const IconoBajar = crear(Download, 20);
 export const IconoEscudoCheck = crear(ShieldCheck, 20);

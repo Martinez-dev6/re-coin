@@ -1,6 +1,7 @@
-// Nueva cuenta (/cuentas/nueva) y editar cuenta (/cuentas/:id). design/capturas/NuevaCuenta.png
+// Nueva cuenta (/cuentas/nueva) y editar cuenta (/cuentas/:id/editar, desde la pantalla de la
+// cuenta). design/capturas/NuevaCuenta.png
 import { useRef, useState } from 'react';
-import { Navigate, useNavigate, useParams } from 'react-router-dom';
+import { Navigate, useLocation, useNavigate, useParams } from 'react-router-dom';
 import {
   CabeceraFormulario,
   Campo,
@@ -24,7 +25,7 @@ const LISTA = '/mi-espacio/cuentas';
 export default function FormularioCuenta() {
   const { id } = useParams();
   const { cuentas, cargando } = useDatos();
-  const editando = id !== 'nueva';
+  const editando = Boolean(id);
   const cuenta = editando ? cuentas.find((c) => c.id === id) : undefined;
 
   if (editando && cargando) return <CabeceraFormulario titulo="Editar cuenta" volverA={LISTA} />;
@@ -35,7 +36,10 @@ export default function FormularioCuenta() {
 
 function Campos({ cuenta }) {
   const navegar = useNavigate();
+  const { state } = useLocation();
   const { movimientos, programados } = useDatos();
+  // Al editar, Cerrar y Guardar vuelven a la pantalla de la cuenta.
+  const volverA = cuenta ? `/cuentas/${cuenta.id}` : LISTA;
   const usos = cuenta
     ? movimientos.filter((m) => m.cuentaId === cuenta.id || m.cuentaDestinoId === cuenta.id).length
     : 0;
@@ -62,27 +66,29 @@ function Campos({ cuenta }) {
     setGuardando(true);
     try {
       await guardarCuenta(cuenta?.id, datos);
-      volver(navegar, LISTA);
+      volver(navegar, volverA);
     } finally {
       setGuardando(false);
     }
   };
 
-  // Primero baja el panel; después se vuelve a la lista y se borra (en ese orden: así el
-  // formulario no se queda mostrando una cuenta que ya no existe).
+  // Primero baja el panel; después se vuelve y se borra (en ese orden: así el formulario no se
+  // queda mostrando una cuenta que ya no existe). Si se entró desde la pantalla de la cuenta, se
+  // salta también esa pantalla (la cuenta ya no existe): se vuelve a Inicio o a Cuentas.
   const eliminar = () => {
     if (eliminando.current) return;
     eliminando.current = true;
     setPanelEliminar(false);
     setTimeout(() => {
-      volver(navegar, LISTA);
+      if (state?.desdeDetalle && window.history.state?.idx > 1) navegar(-2);
+      else navegar(LISTA, { replace: true });
       eliminarCuenta(cuenta.id);
     }, DURACION_PANEL_MS + 30);
   };
 
   return (
     <div>
-      <CabeceraFormulario titulo={cuenta ? 'Editar cuenta' : 'Nueva cuenta'} volverA={LISTA}>
+      <CabeceraFormulario titulo={cuenta ? 'Editar cuenta' : 'Nueva cuenta'} volverA={volverA}>
         <MontoEditable etiqueta="Saldo inicial" valor={datos.saldoInicial} alCambiar={(saldoInicial) => cambiar({ saldoInicial })} />
       </CabeceraFormulario>
 

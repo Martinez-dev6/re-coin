@@ -1,3 +1,12 @@
+/* Lo que entra deslizándose de lado (Deslizar.jsx) no debe ensanchar la página: en Gráficos,
+   al cambiar de mes o de Gastos a Ingresos, la página quedaba 24 px más ancha durante el
+   deslizamiento y en el iPhone se veía desajustarse y volver (pedido del dueño, 2026-10-04).
+   clip y no hidden: hidden la volvería una caja con scroll propio y el banner pegajoso
+   (.encabezado-fijo) dejaría de quedarse arriba. */
+.pantalla-contenido {
+  overflow-x: clip;
+}
+
 /* Durante una transición (TransicionPantallas.jsx), cada pantalla (la nueva y la copia de la
    anterior) ocupa la ventana entera con fondo opaco. La caja de afuera es la que se mueve y
    la de adentro guarda el scroll: así lo fijo de cada pantalla (botón Guardar, barra compacta
@@ -15,8 +24,9 @@
   overflow: hidden;
 }
 
-/* La que se mueve va encima. Los formularios pasan también por encima de la barra inferior
-   (z-index 60); las demás pantallas, por debajo, para que la barra se quede quieta. */
+/* La que se mueve va encima. Entre una pantalla con barra inferior (z-index 60) y una sin ella,
+   la que se mueve pasa también por encima de la barra; entre dos con barra, por debajo, para
+   que la barra se quede quieta. */
 .pantalla[data-capa='arriba'] {
   z-index: 2;
 }

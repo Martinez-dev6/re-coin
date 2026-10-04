@@ -1,10 +1,10 @@
 // Anima el paso de una pantalla a otra, al estilo de las apps del iPhone:
-// - Subpantalla (Mi espacio → Cuentas): la nueva llega desde la derecha y la anterior se corre
-//   un poco a la izquierda. Al volver, al revés.
-// - Formulario (pantallas con Guardar): sube desde abajo y pasa por encima de la barra
-//   inferior. Al cerrarlo, baja.
+// - Cualquier pantalla que no es una pestaña (subpantallas, formularios, detalles): la nueva
+//   llega desde la derecha y la anterior se corre un poco a la izquierda. Al volver, al revés.
+//   Las que no tienen barra inferior pasan por encima de ella. Antes los formularios subían
+//   desde abajo; el dueño pidió todas de lado (2026-10-04).
 // - Cambio de pestaña: la nueva aparece con un fundido corto y un leve deslizamiento desde el
-//   lado de la pestaña tocada.
+//   lado de la pestaña tocada (sin cambios: así lo quiere el dueño).
 // La pantalla que se va ya no existe en React: justo antes del cambio se copia su HTML (sin
 // eventos) y lo que se anima es esa copia, así no vuelve a dibujarse ni ejecuta nada al salir.
 // Durante la animación las dos pantallas quedan fijas y cada una guarda su scroll; al terminar,
@@ -26,37 +26,35 @@ window.addEventListener('popstate', (evento) => {
   navegadorYaAnimo = Boolean(evento.hasUAVisualTransition);
 });
 
-// Pestañas de la barra inferior, en orden; formularios (suben desde abajo, sin barra) y
-// subpantallas sin barra (entran desde la derecha por encima de ella). Ver App.jsx.
+// Pestañas de la barra inferior, en orden, y pantallas sin barra (formularios, detalles y la de
+// Pendientes; entran desde la derecha por encima de ella). Ver App.jsx.
 const PESTANAS = ['/', '/transacciones', '/planes', '/mi-espacio'];
-const FORMULARIOS = [
+const SIN_BARRA = [
   /^\/nuevo\//,
   /^\/cuentas\//,
   /^\/categorias\//,
   /^\/etiquetas\//,
   /^\/tarjetas\//,
-  /^\/movimientos\/[^/]+\/editar$/,
+  /^\/movimientos\//,
   /^\/pendientes$/,
   /^\/facturas\//,
   /^\/presupuestos\//,
   /^\/metas\//,
   /^\/programados\//,
 ];
-const SIN_BARRA = [/^\/movimientos\/[^/]+$/];
 
 // pestana: índice en PESTANAS (−1 si no es de ninguna). raiz: la pantalla principal de la
 // pestaña (las secciones de Planes también lo son). sinBarra: no muestra la barra inferior.
 function describir(ruta) {
-  if (FORMULARIOS.some((patron) => patron.test(ruta))) return { formulario: true, sinBarra: true, pestana: -1, raiz: false };
-  if (SIN_BARRA.some((patron) => patron.test(ruta))) return { formulario: false, sinBarra: true, pestana: -1, raiz: false };
+  if (SIN_BARRA.some((patron) => patron.test(ruta))) return { sinBarra: true, pestana: -1, raiz: false };
   const pestana = PESTANAS.findIndex((p) => ruta === p || (p !== '/' && ruta.startsWith(p + '/')));
-  return { formulario: false, sinBarra: false, pestana, raiz: ruta === PESTANAS[pestana] || ruta.startsWith('/planes/') };
+  return { sinBarra: false, pestana, raiz: ruta === PESTANAS[pestana] || ruta.startsWith('/planes/') };
 }
 
 // arriba: cuál va encima (la que se mueve). sobreBarra: también por encima de la barra inferior.
 // Lo que llega usa CURVA_ENTRAR y lo que sale o vuelve, CURVA_SUAVE (ver movimiento.js).
-// Sin sombra en el borde: al subir un formulario, la sombra quedaba al final justo bajo la
-// barra de estado como una franja más oscura (video del iPhone, 2026-10-03).
+// Sin sombra en el borde: cuando los formularios subían, la sombra quedaba al final justo bajo
+// la barra de estado como una franja más oscura (video del iPhone, 2026-10-03).
 const RECETAS = {
   entrar: {
     duracion: 430,
@@ -71,20 +69,6 @@ const RECETAS = {
     arriba: 'anterior',
     nueva: [{ transform: 'translateX(-30%)' }, { transform: 'none' }],
     anterior: [{ transform: 'none' }, { transform: 'translateX(100%)' }],
-  },
-  presentar: {
-    duracion: 450,
-    curva: CURVA_ENTRAR,
-    arriba: 'nueva',
-    sobreBarra: true,
-    nueva: [{ transform: 'translateY(100%)' }, { transform: 'none' }],
-  },
-  cerrar: {
-    duracion: 390,
-    curva: CURVA_SUAVE,
-    arriba: 'anterior',
-    sobreBarra: true,
-    anterior: [{ transform: 'none' }, { transform: 'translateY(100%)' }],
   },
 };
 
@@ -106,7 +90,6 @@ function elegirTransicion(desde, hacia, accion) {
 }
 
 function elegirReceta(a, b, accion) {
-  if (a.formulario !== b.formulario) return b.formulario ? RECETAS.presentar : RECETAS.cerrar;
   if (a.raiz && b.raiz) return a.pestana === b.pestana ? null : cambioDePestana(Math.sign(b.pestana - a.pestana));
   // POP: atrás en el historial. REPLACE: volver() cuando no hay historial propio.
   if (accion !== 'PUSH') return RECETAS.volver;
@@ -146,8 +129,8 @@ class Pila extends Component {
     retenerBarra: false,
   };
 
-  // Al abrir un formulario, la barra inferior se queda hasta que el formulario termina de subir
-  // por encima de ella. Si se quitara antes, desaparecería de golpe.
+  // Al abrir una pantalla sin barra, la barra inferior se queda hasta que esa pantalla termina de
+  // entrar por encima de ella. Si se quitara antes, desaparecería de golpe.
   static getDerivedStateFromProps({ ubicacion }, estado) {
     if (ubicacion.key === estado.clave) return null;
     const retenerBarra = !describir(estado.ruta).sinBarra && describir(ubicacion.pathname).sinBarra;
@@ -232,9 +215,9 @@ class Pila extends Component {
     transicion.copia.remove();
     const pantalla = this.pantalla.current;
     if (!pantalla) return; // la app se estaba cerrando o recargando
-    // La barra retenida se quita antes de que el formulario deje su capa (por encima de ella),
-    // en el mismo cuadro. Con setState normal se quitaba en el cuadro siguiente y durante ese
-    // cuadro la barra se veía encima del formulario (video del iPhone, 2026-10-03).
+    // La barra retenida se quita antes de que la pantalla sin barra deje su capa (por encima de
+    // ella), en el mismo cuadro. Con setState normal se quitaba en el cuadro siguiente y durante
+    // ese cuadro la barra se veía encima del formulario (video del iPhone, 2026-10-03).
     if (soltarBarra && this.state.retenerBarra) flushSync(() => this.setState({ retenerBarra: false }));
     delete pantalla.dataset.transicion;
     delete pantalla.dataset.capa;

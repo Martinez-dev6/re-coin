@@ -1,6 +1,7 @@
-// Nueva tarjeta (/tarjetas/nueva) y editar tarjeta (/tarjetas/:id). design/capturas/NuevaTarjeta.png
+// Nueva tarjeta (/tarjetas/nueva) y editar tarjeta (/tarjetas/:id/editar, desde la pantalla de la
+// tarjeta). design/capturas/NuevaTarjeta.png
 import { useRef, useState } from 'react';
-import { Navigate, useNavigate, useParams } from 'react-router-dom';
+import { Navigate, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { CabeceraFormulario, Campo, EntradaTexto, MontoEditable, PieFormulario } from '../componentes/Formulario.jsx';
 import { IconoBanco, IconoBasura, IconoCalendario, IconoCheck, IconoMas, IconoReloj, IconoTexto } from '../componentes/iconos.jsx';
 import { ICONOS_TARJETA, IconoPorNombre } from '../componentes/iconosPorNombre.jsx';
@@ -22,7 +23,7 @@ const IconoPago = (p) => <IconoReloj tamano={18} grosor={2} {...p} />;
 export default function FormularioTarjeta() {
   const { id } = useParams();
   const { tarjeta, cargando } = useDatos();
-  const editando = id !== 'nueva';
+  const editando = Boolean(id);
   const existente = editando ? tarjeta(id) : undefined;
 
   if (editando && cargando) return <CabeceraFormulario titulo="Editar tarjeta" volverA={LISTA} />;
@@ -32,7 +33,10 @@ export default function FormularioTarjeta() {
 
 function Campos({ tarjeta }) {
   const navegar = useNavigate();
+  const { state } = useLocation();
   const { cuentas, cuenta, movimientos } = useDatos();
+  // Al editar, Cerrar y Guardar vuelven a la pantalla de la tarjeta.
+  const volverA = tarjeta ? `/tarjetas/${tarjeta.id}` : LISTA;
   const [datos, setDatos] = useState(() =>
     tarjeta
       ? {
@@ -55,19 +59,21 @@ function Campos({ tarjeta }) {
     setGuardando(true);
     try {
       await guardarTarjeta(tarjeta?.id, datos);
-      volver(navegar, LISTA);
+      volver(navegar, volverA);
     } finally {
       setGuardando(false);
     }
   };
 
-  // Primero baja el panel; después se vuelve a la lista y se borra (ver FormularioCuenta).
+  // Primero baja el panel; después se vuelve (saltando la pantalla de la tarjeta, que ya no
+  // existirá) y se borra (ver FormularioCuenta).
   const eliminar = () => {
     if (eliminando.current) return;
     eliminando.current = true;
     setPanel(null);
     setTimeout(() => {
-      volver(navegar, LISTA);
+      if (state?.desdeDetalle && window.history.state?.idx > 1) navegar(-2);
+      else navegar(LISTA, { replace: true });
       eliminarTarjeta(tarjeta.id);
     }, DURACION_PANEL_MS + 30);
   };
@@ -92,7 +98,7 @@ function Campos({ tarjeta }) {
 
   return (
     <div>
-      <CabeceraFormulario titulo={tarjeta ? 'Editar tarjeta' : 'Nueva tarjeta'} volverA={LISTA}>
+      <CabeceraFormulario titulo={tarjeta ? 'Editar tarjeta' : 'Nueva tarjeta'} volverA={volverA}>
         <MontoEditable etiqueta="Cupo total" valor={datos.cupo} alCambiar={(cupo) => cambiar({ cupo })} />
       </CabeceraFormulario>
 

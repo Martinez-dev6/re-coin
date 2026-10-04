@@ -31,7 +31,8 @@
   margin-top: 2px;
 }
 
-/* Vence en… / Vencida / Pagada, bajo la cifra. */
+/* Vence en… / Vencida / Pagada, bajo la cifra. Los colores de cada estado, en .estado-banner
+   (comunes.css). */
 .factura-estado {
   display: inline-flex;
   align-items: center;
@@ -45,43 +46,14 @@
   font-weight: 700;
 }
 
-.factura-estado.vencida,
-.factura-estado.pagada {
-  background: #ffffff;
-}
-
-.factura-estado.vencida {
-  color: var(--expense-on-white);
-}
-
-.factura-estado.pagada {
-  color: var(--income-on-white);
-}
-
-/* ---- Resumen: cuánto se ha pagado y las fechas (sin barra: una cuota no se paga por partes,
-   pedido del dueño) ---- */
+/* ---- Resumen: las fechas de cierre y de pago ---- */
 
 .factura-resumen {
   padding: 14px 16px;
 }
 
-.factura-resumen-uso {
-  display: flex;
-  justify-content: space-between;
-  font-size: 13px;
-  color: var(--muted);
-}
-
-.factura-resumen-uso strong {
-  font-weight: 600;
-  color: var(--text);
-}
-
 .factura-fechas {
   display: flex;
-  margin-top: 12px;
-  padding-top: 12px;
-  border-top: 1px solid var(--divider);
 }
 
 .factura-fechas > span {

@@ -28,18 +28,20 @@ import { useAjustes } from '../estado/ajustes.js';
 import { useTema } from '../tema/TemaContext.jsx';
 import './MiEspacio.css';
 
+// tono: color del ícono con "Color de los íconos" en Predeterminado (letra de la paleta de las
+// categorías o n, gris; ver comunes.css). Con "Color del tema" todos van con el del tema.
 const OPCIONES_MODO = [
-  { valor: 'claro', titulo: 'Claro', detalle: 'Siempre claro', Icono: IconoSol },
-  { valor: 'oscuro', titulo: 'Oscuro', detalle: 'Siempre oscuro', Icono: IconoLuna },
-  { valor: 'auto', titulo: 'Automático', detalle: 'Igual que el iPhone', Icono: IconoAutomatico },
+  { valor: 'claro', titulo: 'Claro', detalle: 'Siempre claro', Icono: IconoSol, tono: 'd' },
+  { valor: 'oscuro', titulo: 'Oscuro', detalle: 'Siempre oscuro', Icono: IconoLuna, tono: 'c' },
+  { valor: 'auto', titulo: 'Automático', detalle: 'Igual que el iPhone', Icono: IconoAutomatico, tono: 'n' },
 ];
 
 // Sin onClick, la fila solo informa (p. ej. "Próximamente"): no es botón ni lleva flecha.
-function Fila({ Icono, texto, onClick, children }) {
+function Fila({ Icono, tono, texto, onClick, children }) {
   const Elemento = onClick ? 'button' : 'div';
   return (
     <Elemento {...(onClick && { type: 'button', onClick })} className="fila-menu">
-      <span className="icono-circulo">
+      <span className="icono-circulo" data-tono={tono}>
         <Icono />
       </span>
       <span className="fila-menu-texto">{texto}</span>
@@ -93,39 +95,39 @@ export default function MiEspacio() {
 
       <div className="mi-espacio-contenido">
         <Grupo titulo="Personalizar">
-          <Fila Icono={IconoPaleta} texto="Apariencia" onClick={() => navegar('/mi-espacio/apariencia')}>
+          <Fila Icono={IconoPaleta} tono="c" texto="Apariencia" onClick={() => navegar('/mi-espacio/apariencia')}>
             <span className="fila-menu-color" style={{ background: acento }} aria-hidden="true" />
           </Fila>
-          <Fila Icono={IconoLuna} texto="Modo oscuro" onClick={() => setPanelModo(true)}>
+          <Fila Icono={IconoLuna} tono="g" texto="Modo oscuro" onClick={() => setPanelModo(true)}>
             <span className="fila-menu-valor">{modoActual.titulo}</span>
           </Fila>
-          <Fila Icono={IconoPantallaInicio} texto="Pantalla de inicio" onClick={() => navegar('/mi-espacio/pantalla-inicio')} />
+          <Fila Icono={IconoPantallaInicio} tono="b" texto="Pantalla de inicio" onClick={() => navegar('/mi-espacio/pantalla-inicio')} />
         </Grupo>
 
         <Grupo titulo="Gestionar">
-          <Fila Icono={IconoCuentas} texto="Cuentas" onClick={() => navegar('/mi-espacio/cuentas')} />
-          <Fila Icono={IconoTarjeta} texto="Tarjetas de crédito" onClick={() => navegar('/mi-espacio/tarjetas')} />
-          <Fila Icono={IconoCategorias} texto="Categorías" onClick={() => navegar('/mi-espacio/categorias')} />
-          <Fila Icono={IconoEtiqueta} texto="Etiquetas" onClick={() => navegar('/mi-espacio/etiquetas')} />
+          <Fila Icono={IconoCuentas} tono="f" texto="Cuentas" onClick={() => navegar('/mi-espacio/cuentas')} />
+          <Fila Icono={IconoTarjeta} tono="a" texto="Tarjetas de crédito" onClick={() => navegar('/mi-espacio/tarjetas')} />
+          <Fila Icono={IconoCategorias} tono="e" texto="Categorías" onClick={() => navegar('/mi-espacio/categorias')} />
+          <Fila Icono={IconoEtiqueta} tono="g" texto="Etiquetas" onClick={() => navegar('/mi-espacio/etiquetas')} />
         </Grupo>
 
         <Grupo titulo="Analizar">
-          <Fila Icono={IconoGraficos} texto="Gráficos" onClick={() => navegar('/mi-espacio/graficos')} />
-          <Fila Icono={IconoRendimiento} texto="Rendimiento" onClick={() => navegar('/mi-espacio/rendimiento')} />
+          <Fila Icono={IconoGraficos} tono="c" texto="Gráficos" onClick={() => navegar('/mi-espacio/graficos')} />
+          <Fila Icono={IconoRendimiento} tono="f" texto="Rendimiento" onClick={() => navegar('/mi-espacio/rendimiento')} />
         </Grupo>
 
         <Grupo titulo="Herramientas">
-          <Fila Icono={IconoImportar} texto="Importar y exportar" onClick={() => navegar('/mi-espacio/importar-exportar')} />
+          <Fila Icono={IconoImportar} tono="b" texto="Importar y exportar" onClick={() => navegar('/mi-espacio/importar-exportar')} />
           {/* Necesita avisos push con un servidor (una PWA en el iPhone no programa avisos sola).
               Decidido por el dueño (2026-10-04): queda como "Próximamente". */}
-          <Fila Icono={IconoCampana} texto="Recordatorio diario">
+          <Fila Icono={IconoCampana} tono="d" texto="Recordatorio diario">
             <span className="fila-menu-valor">Próximamente</span>
           </Fila>
         </Grupo>
 
         <div className="tarjeta mi-espacio-grupo mi-espacio-grupo-suelto">
-          <Fila Icono={IconoAjustes} texto="Ajustes" onClick={() => navegar('/mi-espacio/ajustes')} />
-          <Fila Icono={IconoAyuda} texto="Ayuda y soporte" onClick={() => navegar('/mi-espacio/ayuda')} />
+          <Fila Icono={IconoAjustes} tono="n" texto="Ajustes" onClick={() => navegar('/mi-espacio/ajustes')} />
+          <Fila Icono={IconoAyuda} tono="g" texto="Ayuda y soporte" onClick={() => navegar('/mi-espacio/ayuda')} />
         </div>
 
         {/* Para comprobar qué versión tiene abierta el teléfono. */}
@@ -140,7 +142,7 @@ export default function MiEspacio() {
         accion={{ texto: 'Listo', alTocar: () => setPanelModo(false) }}
       >
         <div role="radiogroup" aria-label="Modo oscuro">
-          {OPCIONES_MODO.map(({ valor, titulo, detalle, Icono }) => {
+          {OPCIONES_MODO.map(({ valor, titulo, detalle, Icono, tono }) => {
             const marcado = valor === modo;
             return (
               <button
@@ -151,7 +153,7 @@ export default function MiEspacio() {
                 className="panel-opcion"
                 onClick={() => cambiarModo(valor)}
               >
-                <span className="icono-circulo grande">
+                <span className="icono-circulo grande" data-tono={tono}>
                   <Icono />
                 </span>
                 <span className="panel-opcion-textos">

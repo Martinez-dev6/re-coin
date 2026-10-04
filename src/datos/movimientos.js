@@ -20,9 +20,10 @@ export const TIPOS_MOVIMIENTO = [
 // Gastos del mes: también los de tarjeta (en el mes de la compra).
 export const esGasto = (m) => m.tipo === 'gasto' || m.tipo === 'gastoTarjeta';
 
-// Saldo de cada cuenta por id: saldo inicial + movimientos pagados.
+// Saldo de cada cuenta por id: saldo inicial + ajustes de saldo (Reajustar saldo, "Solo corregir")
+// + movimientos pagados.
 export function saldosPorCuenta(cuentas, movimientos) {
-  const saldos = new Map(cuentas.map((c) => [c.id, c.saldoInicial]));
+  const saldos = new Map(cuentas.map((c) => [c.id, c.saldoInicial + (c.ajuste ?? 0)]));
   const sumar = (id, valor) => saldos.has(id) && saldos.set(id, saldos.get(id) + valor);
   for (const m of movimientos) {
     if (!m.pagado) continue;
@@ -92,7 +93,8 @@ export function faltante(datos) {
     }
     return null;
   }
-  if (!datos.categoriaId) return { campo: 'categoriaId', texto: 'Elige una categoría.' };
+  // Un faltante o sobrante de Reajustar saldo puede quedar sin categoría.
+  if (!datos.categoriaId && !datos.ajuste) return { campo: 'categoriaId', texto: 'Elige una categoría.' };
   if (datos.tipo === 'gastoTarjeta') {
     if (!datos.tarjetaId) return { campo: 'tarjetaId', texto: 'Elige una tarjeta.' };
     return null;

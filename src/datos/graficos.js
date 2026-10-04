@@ -4,9 +4,10 @@
 import { hoyTexto, MESES, sumarMeses } from '../utilidades/fechas.js';
 import { esGasto } from './movimientos.js';
 
-// Colores de los gráficos (tema: --ch1…--ch4 y --ch-other), en este orden fijo. Validados para
-// daltonismo con la guía de visualización (2026-10-03).
-export const COLORES_GRAFICO = ['var(--ch1)', 'var(--ch2)', 'var(--ch3)', 'var(--ch4)'];
+// Cada categoría va con su propio color (el de sus íconos, --cat-X del tema), decidido por el
+// dueño (2026-10-04); antes los gráficos usaban una paleta aparte por orden de tamaño. Una
+// categoría sin color va en el gris de sus íconos y el grupo del resto en otro gris.
+const colorDeCategoria = (categoria) => (categoria?.color ? `var(--cat-${categoria.color})` : 'var(--muted)');
 export const COLOR_OTROS = 'var(--ch-other)';
 
 const dos = (n) => String(n).padStart(2, '0');
@@ -19,7 +20,7 @@ export function totalDelMes(movimientosPorMes, tipo, mes) {
   return movimientosPorMes.filter((m) => es(m) && m.fecha.startsWith(mes)).reduce((t, m) => t + m.valor, 0);
 }
 
-// Por categoría en un mes: las 4 más grandes con su color y el resto junto en "Otros".
+// Por categoría en un mes: las 4 más grandes con el color de cada una y el resto junto en "Otros".
 // Devuelve { total, cantidad (categorías con algo), partes: [{ clave, nombre, valor, color }] }.
 export function porCategoria(movimientosPorMes, buscarCategoria, tipo, mes) {
   const es = delTipo(tipo);
@@ -31,21 +32,19 @@ export function porCategoria(movimientosPorMes, buscarCategoria, tipo, mes) {
   }
   const ordenadas = [...sumas.entries()].sort((a, b) => b[1] - a[1]);
   const total = ordenadas.reduce((t, [, valor]) => t + valor, 0);
-  // Las 4 primeras con color; el resto en gris: si es una sola, con su nombre, y si son más,
-  // juntas en "Otros" (nunca un color generado).
-  const visibles = ordenadas.slice(0, 4);
-  const resto = ordenadas.slice(4);
-  const partes = visibles.map(([clave, valor], i) => ({
-    clave,
-    nombre: buscarCategoria(clave)?.nombre ?? 'Sin categoría',
-    valor,
-    color: COLORES_GRAFICO[i],
-  }));
+  // Las 4 primeras con su color; el resto: si es una sola, con su nombre y su color, y si son
+  // más, juntas en "Otros" en gris (nunca un color generado).
+  const parte = ([clave, valor]) => {
+    const categoria = buscarCategoria(clave);
+    return { clave, nombre: categoria?.nombre ?? 'Sin categoría', valor, color: colorDeCategoria(categoria) };
+  };
+  const visibles = ordenadas.length === 5 ? ordenadas : ordenadas.slice(0, 4);
+  const resto = ordenadas.slice(visibles.length);
+  const partes = visibles.map(parte);
   if (resto.length > 0) {
     // Si ya se ve una categoría llamada "Otros", el grupo se llama "Resto" para no repetir el nombre.
     const grupo = partes.some((p) => p.nombre.trim().toLowerCase() === 'otros') ? 'Resto' : 'Otros';
-    const nombre = resto.length === 1 ? (buscarCategoria(resto[0][0])?.nombre ?? 'Sin categoría') : grupo;
-    partes.push({ clave: 'otros', nombre, valor: resto.reduce((t, [, v]) => t + v, 0), color: COLOR_OTROS });
+    partes.push({ clave: 'otros', nombre: grupo, valor: resto.reduce((t, [, v]) => t + v, 0), color: COLOR_OTROS });
   }
   return { total, cantidad: ordenadas.length, partes };
 }

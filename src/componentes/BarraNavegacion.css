@@ -136,7 +136,7 @@
   z-index: 200;
 }
 
-/* Al elegir una opción: por encima de la barra (60) y por debajo del formulario que sube (70,
+/* Al elegir una opción: por encima de la barra (60) y por debajo del formulario que entra (70,
    TransicionPantallas.css), que lo va tapando mientras el menú se cierra. */
 .menu-nuevo.bajo-formulario {
   z-index: 65;

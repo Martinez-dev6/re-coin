@@ -117,7 +117,7 @@ function Contenido({ movimiento: m }) {
           {conChip && (
             <button
               type="button"
-              className="detalle-estado"
+              className={'detalle-estado estado-banner ' + (m.pagado ? 'pagado' : 'pendiente')}
               aria-label={(m.pagado ? 'Pagado' : 'Pendiente') + '. Tocar para cambiar'}
               onClick={() => cambiarPagado(m.id, !m.pagado)}
             >

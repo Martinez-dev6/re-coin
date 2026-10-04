@@ -289,3 +289,28 @@
   position: relative;
   color: var(--text);
 }
+
+/* ---- Reajustar saldo (ReajustarSaldo.jsx) ---- */
+
+.reajuste-falta {
+  color: var(--expense);
+}
+
+.reajuste-sobra {
+  color: var(--income);
+}
+
+.reajuste-opciones {
+  padding: 0 14px;
+}
+
+/* Como las opciones de un panel, pero el detalle puede ocupar dos líneas. */
+.reajuste-opcion {
+  height: auto;
+  min-height: 64px;
+  padding: 12px 0;
+}
+
+.reajuste-opcion .panel-opcion-detalle {
+  line-height: 17px;
+}

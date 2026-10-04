@@ -149,6 +149,7 @@ const CAMPOS = [
   'tarjetaId',
   'cuotas',
   'factura',
+  'ajuste', // faltante o sobrante de Reajustar saldo: se puede guardar sin categoría
 ];
 
 function datosIniciales({ movimiento, programado, tipoInicial, cuentaPedida, cuentas, tarjetas }) {

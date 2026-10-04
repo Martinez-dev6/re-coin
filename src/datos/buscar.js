@@ -34,6 +34,12 @@ function usarGuardado(clave) {
 }
 
 export const useFiltrosTransacciones = () => usarGuardado('filtros');
+
+// Deja elegido un tipo en Transacciones antes de ir allá (Ingresos y Gastos del banner de Inicio).
+// Quita los demás filtros, para que la lista sume lo mismo que se tocó en Inicio.
+export function fijarTipoTransacciones(tipo) {
+  guardado.filtros = { ...FILTROS_VACIOS, tipo };
+}
 export const useBusqueda = () => usarGuardado('busqueda');
 
 // Cuántos filtros hay aparte del tipo (el tipo ya se ve en los chips de la pantalla).

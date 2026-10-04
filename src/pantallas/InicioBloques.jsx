@@ -1,15 +1,17 @@
-// Bloques de Inicio que se activan en Mi espacio → Pantalla de inicio: Presupuestos, Metas y
-// Gráfico del mes. No están en los diseños: son versiones cortas de lo que hay en Planes y en
-// Gráficos, con "Ver todo" para ir allá. pesos: formato de las cifras (respeta el ojo de Inicio).
-import { useState } from 'react';
+// Bloques de Inicio que se activan en Mi espacio → Pantalla de inicio: Presupuestos, Metas,
+// Gráfico del mes y Tarjetas de crédito. No están en los diseños: son versiones cortas de lo que
+// hay en Planes, en Gráficos y en Tarjetas, con "Ver todo" para ir allá. pesos: formato de las
+// cifras (respeta el ojo de Inicio).
 import { useNavigate } from 'react-router-dom';
 import CirculoCategoria from '../componentes/CirculoCategoria.jsx';
 import Deslizar from '../componentes/Deslizar.jsx';
 import FilaPresupuesto from '../componentes/FilaPresupuesto.jsx';
 import { Dona } from '../componentes/Graficos.jsx';
+import { IconoPorNombre } from '../componentes/iconosPorNombre.jsx';
 import { useDatos } from '../datos/DatosContext.jsx';
 import { porCategoria, textoMes } from '../datos/graficos.js';
 import { presupuestosDelMes } from '../datos/presupuestos.js';
+import { proximaFactura, textoVence } from '../datos/tarjetas.js';
 import { useMes } from '../estado/MesContext.jsx';
 import { nombreMes } from '../utilidades/fechas.js';
 
@@ -130,45 +132,94 @@ export function BloqueMetas({ pesos }) {
   );
 }
 
-// Gastos del mes por categoría: la dona pequeña y la leyenda; tocar una parte la resalta.
+// Gastos del mes por categoría: la dona pequeña y la leyenda. Toda la tarjeta lleva a Gráficos
+// (pedido del dueño, 2026-10-04: cada cosa de Inicio debe llevar a su sección); allá se toca cada
+// parte para ver su valor.
 export function BloqueGrafico({ pesos, posicion }) {
   const navegar = useNavigate();
   const { anio, mes } = useMes();
   const { movimientosPorMes, categoria } = useDatos();
   const { total, partes } = porCategoria(movimientosPorMes, categoria, 'gasto', textoMes(anio, mes));
-  const [parte, setParte] = useState(null);
+  const verGraficos = () => navegar('/mi-espacio/graficos');
 
   return (
     <>
-      <Cabeza titulo="Gastos del mes" enlace="Ver gráficos" alTocar={() => navegar('/mi-espacio/graficos')} />
-      <Deslizar posicion={posicion} className="tarjeta inicio-grafico inicio-bloque-cuerpo">
+      <Cabeza titulo="Gastos del mes" enlace="Ver gráficos" alTocar={verGraficos} />
+      <Deslizar
+        as="button"
+        type="button"
+        posicion={posicion}
+        className="tarjeta inicio-grafico inicio-bloque-cuerpo"
+        aria-label={`Gastos de ${nombreMes(mes, false)}: ver gráficos`}
+        onClick={verGraficos}
+      >
         <Dona
           partes={partes}
-          elegida={parte}
-          alElegir={setParte}
+          elegida={null}
           etiqueta={`Gastos de ${nombreMes(mes, false)} por categoría`}
           centro={<strong className="inicio-grafico-total">{pesos(total)}</strong>}
         />
         {partes.length === 0 ? (
-          <p className="inicio-grafico-vacio">Sin gastos en {nombreMes(mes, false)}.</p>
+          <span className="inicio-grafico-vacio">Sin gastos en {nombreMes(mes, false)}.</span>
         ) : (
-          <div className="inicio-grafico-leyenda">
+          <span className="inicio-grafico-leyenda">
             {partes.map((p) => (
-              <button
-                key={p.clave}
-                type="button"
-                className={'inicio-grafico-fila' + (parte && parte !== p.clave ? ' apagada' : '')}
-                aria-pressed={parte === p.clave}
-                onClick={() => setParte(parte === p.clave ? null : p.clave)}
-              >
+              <span key={p.clave} className="inicio-grafico-fila">
                 <i style={{ background: p.color }} />
                 <span>{p.nombre}</span>
                 <strong>{porcentaje(p.valor, total)} %</strong>
-              </button>
+              </span>
             ))}
-          </div>
+          </span>
         )}
       </Deslizar>
+    </>
+  );
+}
+
+// Tarjetas de crédito: lo justo de cada una (lo que hay que pagar y cuándo). Toda la tarjeta del
+// bloque lleva a Mi espacio → Tarjetas de crédito, como entrar desde el menú.
+export function BloqueTarjetas({ pesos }) {
+  const navegar = useNavigate();
+  const { tarjetas } = useDatos();
+  const verTarjetas = () => navegar('/mi-espacio/tarjetas');
+
+  return (
+    <>
+      <Cabeza titulo="Tarjetas de crédito" enlace={tarjetas.length > 0 && 'Ver tarjetas'} alTocar={verTarjetas} />
+      {tarjetas.length === 0 ? (
+        <Vacio texto="Aún no tienes tarjetas." boton="Crear" alTocar={() => navegar('/tarjetas/nueva')} />
+      ) : (
+        <button type="button" className="tarjeta-lista inicio-bloque-cuerpo inicio-tarjetas" onClick={verTarjetas}>
+          {tarjetas.map((t) => {
+            const proxima = proximaFactura(t);
+            const falta = proxima ? proxima.total - proxima.pagado : 0;
+            const vence = proxima ? textoVence(t, proxima.mes) : null;
+            const cuando = !vence
+              ? 'Al día'
+              : vence === 'Vencida'
+                ? 'Vencida'
+                : `Vence ${{ Hoy: 'hoy', Mañana: 'mañana' }[vence] ?? `en ${vence}`}`;
+            return (
+              <span key={t.id} className="inicio-tarjeta">
+                <span className="icono-circulo grande">
+                  <IconoPorNombre nombre={t.icono} tamano={20} />
+                </span>
+                <span className="inicio-tarjeta-textos">
+                  <span className="inicio-tarjeta-nombre">{t.nombre}</span>
+                  <span className={'inicio-tarjeta-vence' + (vence === 'Vencida' ? ' vencida' : vence ? ' pendiente' : '')}>
+                    {cuando}
+                  </span>
+                </span>
+                <span className="inicio-tarjeta-cifras">
+                  <strong>{pesos(proxima ? falta : Math.max(0, t.cupo - t.usado))}</strong>
+                  <span>{proxima ? 'por pagar' : 'disponible'}</span>
+                </span>
+              </span>
+            );
+          })}
+        </button>
+      )}
     </>
   );
 }

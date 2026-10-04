@@ -21,6 +21,29 @@ button.fila-movimiento {
   border-bottom: 0;
 }
 
+/* Con observación: la fila crece y la nota va debajo, alineada con la descripción. Arriba queda
+   igual que una fila de 64 px (el círculo a 10 px del borde). */
+.fila-movimiento.con-observacion {
+  flex-wrap: wrap;
+  row-gap: 3px;
+  height: auto;
+  padding: 10px 0 11px;
+}
+
+.fila-movimiento-observacion {
+  flex-basis: calc(100% - 56px);
+  margin-left: 56px;
+  min-width: 0;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+
 .fila-movimiento-textos {
   flex-grow: 1;
   min-width: 0;

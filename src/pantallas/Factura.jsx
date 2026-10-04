@@ -72,13 +72,14 @@ function Contenido({ tarjeta, mesInicial }) {
     }
   };
 
+  // Cada estado con su color (estado-banner en comunes.css).
   let estado;
-  if (pagada) estado = { clase: 'pagada', Icono: IconoCheckCirculo, texto: 'Pagada' };
+  if (pagada) estado = { clase: 'pagado', Icono: IconoCheckCirculo, texto: 'Pagada' };
   else if (factura.total === 0) estado = { clase: '', Icono: IconoReloj, texto: 'Sin compras' };
   else if (vence === 'Vencida') estado = { clase: 'vencida', Icono: IconoAlerta, texto: `Venció el ${fechaPago}` };
   else {
     const cuando = { Hoy: 'hoy', Mañana: 'mañana' }[vence] ?? `en ${vence}`;
-    estado = { clase: '', Icono: IconoReloj, texto: `Vence ${cuando} · ${fechaPago}` };
+    estado = { clase: 'vence', Icono: IconoReloj, texto: `Vence ${cuando} · ${fechaPago}` };
   }
 
   const flechas = (
@@ -105,7 +106,7 @@ function Contenido({ tarjeta, mesInicial }) {
           </span>
           <span className="cabecera-cifra-etiqueta">{pagada ? 'Total pagado' : 'Por pagar'}</span>
           <span className="cabecera-cifra-valor">{formatearPesos(pagada ? factura.total : falta)}</span>
-          <span className={'factura-estado ' + estado.clase}>
+          <span className={'factura-estado estado-banner ' + estado.clase}>
             <estado.Icono tamano={14} grosor={2.2} />
             {estado.texto}
           </span>
@@ -113,13 +114,8 @@ function Contenido({ tarjeta, mesInicial }) {
       </CabeceraFormulario>
 
       <Deslizar posicion={posicion} className="formulario-contenido factura-contenido">
+        {/* Sin "$ X pagado de $ Y": el dueño no lo quiere aquí (2026-10-04). */}
         <div className="tarjeta factura-resumen">
-          <div className="factura-resumen-uso">
-            <span>
-              <strong>{formatearPesos(factura.pagado)}</strong> pagado
-            </span>
-            <span>de {formatearPesos(factura.total)}</span>
-          </div>
           <div className="factura-fechas">
             <span>
               <span className="factura-fecha-etiqueta">Cierre</span>

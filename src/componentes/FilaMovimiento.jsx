@@ -20,11 +20,14 @@ const CLASE = {
 // detalle: texto pequeño bajo la descripción (o un nodo, p. ej. "Cada semana" con ícono).
 // estado: 'pendiente' | 'pagado' | texto libre (p. ej. "En 13 días").
 // alTocar: la fila es un botón (abre el detalle).
-export default function FilaMovimiento({ movimiento, detalle, estado, mostrarRepetir = false, alTocar }) {
+// conObservacion: si el movimiento tiene observación, va pequeña debajo de la fila (pedido del
+// dueño, 2026-10-04); sin observación, la fila queda igual.
+export default function FilaMovimiento({ movimiento, detalle, estado, mostrarRepetir = false, conObservacion = false, alTocar }) {
   const { tipo, valor, categoriaId, programadoId } = movimiento;
   const buscarCategoria = useDatos().categoria;
   const categoria = buscarCategoria(categoriaId);
   const Fila = alTocar ? 'button' : 'div';
+  const observacion = conObservacion && movimiento.observacion?.trim();
 
   const circulo =
     tipo === 'transferencia' || tipo === 'pagoTarjeta' ? (
@@ -40,7 +43,10 @@ export default function FilaMovimiento({ movimiento, detalle, estado, mostrarRep
     );
 
   return (
-    <Fila {...(alTocar && { type: 'button', onClick: alTocar })} className="fila-movimiento">
+    <Fila
+      {...(alTocar && { type: 'button', onClick: alTocar })}
+      className={'fila-movimiento' + (observacion ? ' con-observacion' : '')}
+    >
       {circulo}
       <div className="fila-movimiento-textos">
         <div className="fila-movimiento-titulo">
@@ -74,6 +80,7 @@ export default function FilaMovimiento({ movimiento, detalle, estado, mostrarRep
           <div className="fila-movimiento-estado">{estado}</div>
         )}
       </div>
+      {observacion && <div className="fila-movimiento-observacion">{observacion}</div>}
     </Fila>
   );
 }

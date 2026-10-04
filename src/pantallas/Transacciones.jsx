@@ -120,6 +120,7 @@ export default function Transacciones() {
                   detalle={detalleMovimiento(m, datos)}
                   estado={estadoMovimiento(m)}
                   mostrarRepetir
+                  conObservacion
                   alTocar={() => navegar(rutaMovimiento(m))}
                 />
               ))}

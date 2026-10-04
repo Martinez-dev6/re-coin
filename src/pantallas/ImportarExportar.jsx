@@ -12,10 +12,11 @@ import './ImportarExportar.css';
 
 const plural = (n, una, varias) => `${n} ${n === 1 ? una : varias}`;
 
-function Fila({ Icono, titulo, detalle, alTocar, ocupado }) {
+// tono: color del ícono en "Predeterminado" (ver comunes.css).
+function Fila({ Icono, tono, titulo, detalle, alTocar, ocupado }) {
   return (
     <button type="button" className="respaldo-fila" onClick={alTocar} disabled={ocupado}>
-      <span className="icono-circulo grande">
+      <span className="icono-circulo grande" data-tono={tono}>
         <Icono />
       </span>
       <span className="respaldo-textos">
@@ -103,6 +104,7 @@ export default function ImportarExportar() {
         <div className="tarjeta respaldo-grupo">
           <Fila
             Icono={IconoExcel}
+            tono="f"
             titulo="Exportar a Excel"
             detalle="Archivo .xlsx con todos tus movimientos"
             alTocar={() => exportarMovimientos(exportarExcel)}
@@ -110,6 +112,7 @@ export default function ImportarExportar() {
           />
           <Fila
             Icono={IconoCsv}
+            tono="b"
             titulo="Exportar a CSV"
             detalle="Para abrir en cualquier hoja de cálculo"
             alTocar={() => exportarMovimientos(exportarCsv)}
@@ -117,6 +120,7 @@ export default function ImportarExportar() {
           />
           <Fila
             Icono={IconoEscudoCheck}
+            tono="g"
             titulo="Copia de seguridad"
             detalle="Guarda tus cuentas, categorías y movimientos"
             alTocar={exportar}
@@ -128,6 +132,7 @@ export default function ImportarExportar() {
         <div className="tarjeta respaldo-grupo">
           <Fila
             Icono={IconoBajar}
+            tono="d"
             titulo="Restaurar copia"
             detalle="Reemplaza los datos actuales"
             alTocar={() => archivo.current?.click()}

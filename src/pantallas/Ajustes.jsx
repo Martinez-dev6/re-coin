@@ -24,11 +24,12 @@ const DIAS = [
   { valor: 'domingo', texto: 'Domingo' },
 ];
 
-function Fila({ Icono, etiqueta, children, onClick }) {
+// tono: color del ícono en "Predeterminado" (ver comunes.css).
+function Fila({ Icono, tono, etiqueta, children, onClick }) {
   const Elemento = onClick ? 'button' : 'div';
   return (
     <Elemento {...(onClick && { type: 'button', onClick })} className="ajustes-fila">
-      <span className="icono-circulo ajustes-icono">
+      <span className="icono-circulo ajustes-icono" data-tono={tono}>
         <Icono />
       </span>
       <span className="ajustes-etiqueta">{etiqueta}</span>
@@ -70,17 +71,17 @@ export default function Ajustes() {
 
       <div className="contenido ajustes-contenido">
         <div className="tarjeta ajustes-tarjeta">
-          <Fila Icono={IconoMoneda} etiqueta="Moneda">
+          <Fila Icono={IconoMoneda} tono="f" etiqueta="Moneda">
             Peso colombiano ($)
           </Fila>
-          <Fila Icono={IconoIdioma} etiqueta="Idioma">
+          <Fila Icono={IconoIdioma} tono="g" etiqueta="Idioma">
             Español
           </Fila>
-          <Fila Icono={IconoSemana} etiqueta="Semana empieza" onClick={() => setPanelSemana(true)}>
+          <Fila Icono={IconoSemana} tono="b" etiqueta="Semana empieza" onClick={() => setPanelSemana(true)}>
             {DIAS.find((d) => d.valor === semanaEmpieza)?.texto}
           </Fila>
           <div className="ajustes-fila">
-            <span className="icono-circulo ajustes-icono">
+            <span className="icono-circulo ajustes-icono" data-tono="c">
               <IconoOjo tamano={18} />
             </span>
             <span className="ajustes-etiqueta" id="ajustes-ocultar">

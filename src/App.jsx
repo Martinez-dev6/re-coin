@@ -8,7 +8,9 @@ import Ayuda from './pantallas/Ayuda.jsx';
 import Busqueda from './pantallas/Busqueda.jsx';
 import Categorias from './pantallas/Categorias.jsx';
 import Cuentas from './pantallas/Cuentas.jsx';
+import DetalleCuenta from './pantallas/DetalleCuenta.jsx';
 import DetalleMovimiento from './pantallas/DetalleMovimiento.jsx';
+import DetalleTarjeta from './pantallas/DetalleTarjeta.jsx';
 import Etiquetas from './pantallas/Etiquetas.jsx';
 import Factura from './pantallas/Factura.jsx';
 import FormularioCategoria from './pantallas/FormularioCategoria.jsx';
@@ -26,13 +28,13 @@ import PantallaInicio from './pantallas/PantallaInicio.jsx';
 import Pendientes from './pantallas/Pendientes.jsx';
 import Perfil from './pantallas/Perfil.jsx';
 import Planes from './pantallas/Planes.jsx';
+import ReajustarSaldo from './pantallas/ReajustarSaldo.jsx';
 import Rendimiento from './pantallas/Rendimiento.jsx';
 import Tarjetas from './pantallas/Tarjetas.jsx';
 import Transacciones from './pantallas/Transacciones.jsx';
 
-// Si se agrega un formulario, una pantalla sin barra o una pestaña, actualizar también
-// FORMULARIOS, SIN_BARRA y PESTANAS en TransicionPantallas.jsx (deciden la animación y si se
-// muestra la barra inferior).
+// Si se agrega una pantalla sin barra o una pestaña, actualizar también SIN_BARRA y PESTANAS en
+// TransicionPantallas.jsx (deciden la animación y si se muestra la barra inferior).
 export default function App() {
   return (
     <TransicionPantallas barra={<BarraNavegacion />}>
@@ -59,15 +61,20 @@ export default function App() {
           <Route path="/mi-espacio/pantalla-inicio" element={<PantallaInicio />} />
         </Route>
 
-        {/* Sin barra inferior: el detalle de un movimiento y los formularios */}
+        {/* Sin barra inferior: detalles (movimiento, cuenta, tarjeta) y formularios */}
         <Route path="/movimientos/:id" element={<DetalleMovimiento />} />
         <Route path="/pendientes" element={<Pendientes />} />
         <Route path="/nuevo/:pantalla" element={<FormularioMovimiento />} />
         <Route path="/movimientos/:id/editar" element={<FormularioMovimiento />} />
-        <Route path="/cuentas/:id" element={<FormularioCuenta />} />
+        <Route path="/cuentas/nueva" element={<FormularioCuenta />} />
+        <Route path="/cuentas/:id" element={<DetalleCuenta />} />
+        <Route path="/cuentas/:id/editar" element={<FormularioCuenta />} />
+        <Route path="/cuentas/:id/reajustar" element={<ReajustarSaldo />} />
         <Route path="/categorias/:id" element={<FormularioCategoria />} />
         <Route path="/etiquetas/:id" element={<FormularioEtiqueta />} />
-        <Route path="/tarjetas/:id" element={<FormularioTarjeta />} />
+        <Route path="/tarjetas/nueva" element={<FormularioTarjeta />} />
+        <Route path="/tarjetas/:id" element={<DetalleTarjeta />} />
+        <Route path="/tarjetas/:id/editar" element={<FormularioTarjeta />} />
         <Route path="/facturas/:tarjetaId/:mes" element={<Factura />} />
         <Route path="/presupuestos/:id" element={<FormularioPresupuesto />} />
         <Route path="/metas/:id" element={<FormularioMeta />} />

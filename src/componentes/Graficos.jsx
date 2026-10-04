@@ -11,6 +11,7 @@ const CIRCUNFERENCIA = 2 * Math.PI * RADIO;
 const SEPARACION = 2; // px de fondo entre segmentos
 
 // partes: [{ clave, valor, color, nombre }]. elegida: clave tocada (o null). centro: lo de adentro.
+// Sin alElegir, los segmentos no se tocan (en Inicio toda la tarjeta lleva a Gráficos).
 export function Dona({ partes, elegida, alElegir, centro, etiqueta }) {
   const total = partes.reduce((t, p) => t + p.valor, 0);
   let recorrido = 0;
@@ -31,13 +32,13 @@ export function Dona({ partes, elegida, alElegir, centro, etiqueta }) {
                 cx="100"
                 cy="100"
                 r={RADIO}
-                className={'dona-parte' + (apagada ? ' apagada' : '')}
+                className={'dona-parte' + (apagada ? ' apagada' : '') + (alElegir ? ' tocable' : '')}
                 stroke={p.color}
                 strokeWidth={elegida === p.clave ? GROSOR + 4 : GROSOR}
                 strokeDasharray={`${visible} ${CIRCUNFERENCIA - visible}`}
                 strokeDashoffset={desfase}
                 transform="rotate(-90 100 100)"
-                onClick={() => alElegir(elegida === p.clave ? null : p.clave)}
+                onClick={alElegir && (() => alElegir(elegida === p.clave ? null : p.clave))}
               >
                 <title>{p.nombre}</title>
               </circle>

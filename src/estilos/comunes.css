@@ -74,6 +74,56 @@
   border-radius: 20px;
 }
 
+/* Color de los íconos de las opciones (Mi espacio → Apariencia; ajustes.js pone data-iconos en
+   <html>). En "Predeterminado" cada opción con data-tono lleva su propio color suave: una letra
+   de la paleta de las categorías (--cat-a…--cat-g, validada en claro y oscuro) o n, gris. En
+   "Color del tema" se quedan con el del tema (lo de arriba). */
+:root[data-iconos='predeterminado'] .icono-circulo[data-tono] {
+  transition:
+    background-color 0.25s ease,
+    color 0.25s ease;
+}
+
+:root[data-iconos='predeterminado'] .icono-circulo[data-tono='a'] {
+  background: var(--cat-a-soft);
+  color: var(--cat-a);
+}
+
+:root[data-iconos='predeterminado'] .icono-circulo[data-tono='b'] {
+  background: var(--cat-b-soft);
+  color: var(--cat-b);
+}
+
+:root[data-iconos='predeterminado'] .icono-circulo[data-tono='c'] {
+  background: var(--cat-c-soft);
+  color: var(--cat-c);
+}
+
+:root[data-iconos='predeterminado'] .icono-circulo[data-tono='d'] {
+  background: var(--cat-d-soft);
+  color: var(--cat-d);
+}
+
+:root[data-iconos='predeterminado'] .icono-circulo[data-tono='e'] {
+  background: var(--cat-e-soft);
+  color: var(--cat-e);
+}
+
+:root[data-iconos='predeterminado'] .icono-circulo[data-tono='f'] {
+  background: var(--cat-f-soft);
+  color: var(--cat-f);
+}
+
+:root[data-iconos='predeterminado'] .icono-circulo[data-tono='g'] {
+  background: var(--cat-g-soft);
+  color: var(--cat-g);
+}
+
+:root[data-iconos='predeterminado'] .icono-circulo[data-tono='n'] {
+  background: var(--track);
+  color: var(--muted);
+}
+
 /* Botón de texto con el color del tema ("Restablecer", "+ Nueva"…). */
 .boton-texto {
   border: 0;
@@ -180,6 +230,30 @@
   border-color: var(--banner-bg);
   color: var(--on-banner);
   font-weight: 700;
+}
+
+/* Estado bajo la cifra de un banner (Pagado, Pendiente, Vence…, Vencida): pastilla clara con su
+   propio color, legible sobre el banner de cualquier color del tema y en claro y oscuro (pedido
+   del dueño, 2026-10-04). Los colores son fijos a propósito: no dependen del tema y así no se
+   confunden con él. Contraste del texto sobre su fondo: más de 6:1. */
+.estado-banner.pagado {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.estado-banner.pendiente {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.estado-banner.vence {
+  background: #e0f2fe;
+  color: #075985;
+}
+
+.estado-banner.vencida {
+  background: #fee2e2;
+  color: #991b1b;
 }
 
 /* Barra de progreso de 8 px. */

@@ -9,7 +9,8 @@ export const db = new Dexie('sendo');
 
 // Solo se indexan los campos por los que se busca u ordena. Para añadir tablas o índices
 // se declara una versión nueva (db.version(2)…) y no se toca esta.
-//   cuentas:    id, nombre, tipo, saldoInicial, icono, color (null = el del tema), incluirEnSaldo, orden
+//   cuentas:    id, nombre, tipo, saldoInicial, icono, color (null = el del tema), incluirEnSaldo, orden,
+//               ajuste (2026-10-04, opcional: lo que se corrigió con Reajustar saldo; ver cuentas.js)
 //   categorias: id, nombre, tipo ('gasto' | 'ingreso'), color, icono, orden
 db.version(1).stores({
   cuentas: 'id, orden',
@@ -67,6 +68,8 @@ db.version(4)
 //                 'quincena' | 'mes' | 'anio'), empieza y termina ('AAAA-MM-DD'; termina null =
 //                 nunca), hasta (última fecha ya registrada como movimiento, o null), orden
 //   movimientos:  programadoId (el programado que lo creó, o null).
+// Sin índices nuevos (2026-10-04): movimientos.ajuste (true en un faltante o sobrante de
+// Reajustar saldo) y cuentas.ajuste (ver cuentas.js).
 db.version(5).stores({
   presupuestos: 'id, categoriaId, orden',
   metas: 'id, orden',

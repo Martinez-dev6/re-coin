@@ -51,7 +51,7 @@ export default function Perfil() {
 
         <div className="tarjeta perfil-tarjeta">
           <label className="perfil-fila">
-            <span className="icono-circulo perfil-icono">
+            <span className="icono-circulo perfil-icono" data-tono="g">
               <IconoPerfil tamano={18} />
             </span>
             <span className="perfil-fila-etiqueta">Nombre</span>
@@ -72,7 +72,7 @@ export default function Perfil() {
         <h2 className="titulo-seccion">Tus datos</h2>
         <div className="tarjeta perfil-tarjeta">
           <div className="perfil-fila perfil-fila-alta">
-            <span className="icono-circulo grande">
+            <span className="icono-circulo grande" data-tono="b">
               <IconoSincronizar />
             </span>
             <span className="perfil-fila-textos">
@@ -97,7 +97,7 @@ export default function Perfil() {
             selector.current?.click();
           }}
         >
-          <span className="icono-circulo grande">
+          <span className="icono-circulo grande" data-tono="c">
             <IconoCamara tamano={20} />
           </span>
           <span className="panel-opcion-textos">

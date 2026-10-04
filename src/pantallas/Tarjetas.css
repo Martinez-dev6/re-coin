@@ -1,10 +1,10 @@
 /* Medidas de design/html/Tarjetas.html. Nombre, detalle y "Nueva tarjeta" usan Cuentas.css. */
 
 .tarjetas-grupo + .tarjetas-grupo {
-  margin-top: 18px;
+  margin-top: 12px;
 }
 
-/* La tarjeta entera es un botón (abre Editar tarjeta). */
+/* En la lista, la tarjeta entera es un botón (abre la pantalla de la tarjeta). */
 .tarjetas-credito {
   display: block;
   width: 100%;
@@ -96,7 +96,7 @@
   color: var(--expense);
 }
 
-/* ---- Facturas ---- */
+/* ---- Facturas (en DetalleTarjeta) ---- */
 
 .tarjetas-facturas {
   padding: 0 14px;

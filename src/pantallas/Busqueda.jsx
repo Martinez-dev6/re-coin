@@ -130,6 +130,7 @@ export default function Busqueda() {
                   detalle={detalleMovimiento(m, datos)}
                   estado={estadoMovimiento(m)}
                   mostrarRepetir
+                  conObservacion
                   alTocar={() => navegar(rutaMovimiento(m))}
                 />
               ))}
