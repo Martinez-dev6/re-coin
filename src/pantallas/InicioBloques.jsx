@@ -364,12 +364,11 @@ export function BloqueTarjetas({ pesos }) {
               </span>
             );
           })}
-          {/* Última fila, como el Total de Cuentas (pedido del dueño): cupo disponible de todas. */}
+          {/* Última fila, como el Total de Cuentas (pedido del dueño): cupo disponible de todas, sin el cupo total. */}
           <span className="inicio-cuentas-total inicio-tarjetas-total">
             <span className="inicio-cuentas-total-titulo">Cupo disponible</span>
             <span className="inicio-tarjeta-cifras">
               <strong>{pesos(tarjetas.reduce((t, x) => t + Math.max(0, x.cupo - x.usado), 0))}</strong>
-              <span>de {pesos(tarjetas.reduce((t, x) => t + x.cupo, 0))}</span>
             </span>
           </span>
         </button>

@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
 
 // Nombre de la app: si cambia, cambiarlo aquí y en index.html (apple-mobile-web-app-title y <title>).
-const NOMBRE = 'Sendo';
+const NOMBRE = 'Re-Coin';
 
 // Fecha y hora de compilación (hora de Colombia). Sirve para saber qué versión tiene abierta el teléfono.
 const COMPILACION = new Intl.DateTimeFormat('es-CO', {

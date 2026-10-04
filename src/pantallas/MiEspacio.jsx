@@ -131,7 +131,7 @@ export default function MiEspacio() {
         </div>
 
         {/* Para comprobar qué versión tiene abierta el teléfono. */}
-        <p className="mi-espacio-version">Sendo · versión {__COMPILACION__}</p>
+        <p className="mi-espacio-version">Re-Coin · versión {__COMPILACION__}</p>
       </div>
 
       {/* El panel queda abierto al elegir: así se ve el cambio en vivo. */}

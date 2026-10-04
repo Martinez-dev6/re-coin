@@ -86,7 +86,7 @@ export default function Ayuda() {
             <IconoInfo tamano={18} />
           </span>
           <div className="ayuda-acerca-textos">
-            <div className="ayuda-acerca-titulo">Sendo</div>
+            <div className="ayuda-acerca-titulo">Re-Coin</div>
             <div className="ayuda-acerca-detalle">Versión {__COMPILACION__} · tus datos solo en este teléfono</div>
           </div>
         </div>

@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <title>Sendo</title>
+    <title>Re-Coin</title>
     <meta name="description" content="Finanzas personales: cuentas, movimientos, presupuestos y metas." />
     <meta name="theme-color" content="#203fe3" />
     <meta name="format-detection" content="telephone=no" />
@@ -21,7 +21,7 @@
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-    <meta name="apple-mobile-web-app-title" content="Sendo" />
+    <meta name="apple-mobile-web-app-title" content="Re-Coin" />
 
     <!-- Fondo oscuro desde el primer instante si corresponde (evita un destello claro al abrir).
          Lee la misma clave que src/tema/preferencias.js; el resto del tema lo aplica la app. -->
@@ -32,10 +32,50 @@
           document.documentElement.style.setProperty('--page-bg', '#0e0e13');
           document.documentElement.style.colorScheme = 'dark';
         }
+        // Color de la pantalla de bienvenida mientras carga la app (después usa --banner-bg).
+        if (/^#[0-9a-f]{6}$/i.test(p.acento || '')) document.documentElement.style.setProperty('--bienvenida', p.acento);
       } catch (e) {}
     </script>
+
+    <!-- Pantalla de bienvenida: todo del color del tema con el mapache en el medio. La quita
+         src/main.jsx con un fundido cuando la app ya está dibujada debajo. Va por encima de todo,
+         también de la franja de la barra de estado (BarraEstado, z-index hasta 300): así la isla
+         toma su color. -->
+    <style>
+      #bienvenida {
+        position: fixed;
+        inset: 0;
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--banner-bg, var(--bienvenida, #203fe3));
+        transition: opacity 420ms cubic-bezier(0.35, 0.1, 0.15, 1);
+      }
+      #bienvenida img {
+        width: 132px;
+        height: auto;
+        animation: bienvenida-entra 520ms cubic-bezier(0.27, 0.34, 0.08, 1) both;
+        transition: transform 420ms cubic-bezier(0.35, 0.1, 0.15, 1);
+      }
+      #bienvenida.bienvenida-saliendo {
+        opacity: 0;
+        pointer-events: none;
+      }
+      #bienvenida.bienvenida-saliendo img {
+        transform: scale(1.12);
+      }
+      @keyframes bienvenida-entra {
+        from { opacity: 0; transform: scale(0.88); }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        #bienvenida img { animation: none; transition: none; }
+        #bienvenida.bienvenida-saliendo img { transform: none; }
+      }
+    </style>
   </head>
   <body>
+    <div id="bienvenida" aria-hidden="true"><img src="/mapache.png" alt="" /></div>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

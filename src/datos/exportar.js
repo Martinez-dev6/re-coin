@@ -70,7 +70,7 @@ export function textoCsv(datos) {
 
 export function exportarCsv(datos) {
   const archivo = new File([textoCsv(datos)], nombreArchivo('movimientos', 'csv'), { type: 'text/csv' });
-  return compartirArchivo(archivo, 'Movimientos de Sendo');
+  return compartirArchivo(archivo, 'Movimientos de Re-Coin');
 }
 
 // ---------- Excel (.xlsx) ----------
@@ -213,5 +213,5 @@ export function exportarExcel(datos) {
   const archivo = new File([libroExcel(datos)], nombreArchivo('movimientos', 'xlsx'), {
     type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
   });
-  return compartirArchivo(archivo, 'Movimientos de Sendo');
+  return compartirArchivo(archivo, 'Movimientos de Re-Coin');
 }

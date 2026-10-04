@@ -43,3 +43,24 @@ createRoot(document.getElementById('root')).render(
     </TemaProvider>
   </StrictMode>,
 );
+
+// Pantalla de bienvenida (index.html): se ve al menos 900 ms desde que se abrió la app y se
+// desvanece cuando la app ya está dibujada debajo (dos cuadros después de montarla).
+const bienvenida = document.getElementById('bienvenida');
+if (bienvenida) {
+  let salio = false;
+  const salir = () => {
+    if (salio) return;
+    salio = true;
+    bienvenida.classList.add('bienvenida-saliendo');
+    // Respaldo por si no llega transitionend (navegador en segundo plano, Reducir movimiento).
+    const quitar = () => bienvenida.remove();
+    bienvenida.addEventListener('transitionend', quitar, { once: true });
+    setTimeout(quitar, 700);
+  };
+  setTimeout(() => {
+    requestAnimationFrame(() => requestAnimationFrame(salir));
+    // Si no llegan cuadros (pestaña oculta), sale igual: nunca se queda pegada.
+    setTimeout(salir, 150);
+  }, Math.max(0, 900 - performance.now()));
+}

@@ -3,7 +3,10 @@
 import { acentoActual } from '../tema/colores.js';
 import { db } from './db.js';
 
+// Marca interna de las copias: se queda 'sendo' (nombre anterior de la app) para que las
+// copias de antes y las nuevas se puedan restaurar.
 const APP = 'sendo';
+const PREFIJO_ARCHIVO = 're-coin';
 
 // Comprobaciones mínimas por tabla al restaurar: un archivo dañado o de otra app no debe
 // entrar a medias. Al añadir una tabla a db.js hay que añadir aquí su comprobación.
@@ -45,10 +48,10 @@ export async function leerDatos() {
   return datos;
 }
 
-// Nombre del archivo: sendo-copia-2026-10-03.json (o sendo-movimientos-2026-10-03.csv…).
+// Nombre del archivo: re-coin-copia-2026-10-03.json (o re-coin-movimientos-2026-10-03.csv…).
 export function nombreArchivo(que = 'copia', extension = 'json', fecha = new Date()) {
   const dos = (n) => String(n).padStart(2, '0');
-  return `${APP}-${que}-${fecha.getFullYear()}-${dos(fecha.getMonth() + 1)}-${dos(fecha.getDate())}.${extension}`;
+  return `${PREFIJO_ARCHIVO}-${que}-${fecha.getFullYear()}-${dos(fecha.getMonth() + 1)}-${dos(fecha.getDate())}.${extension}`;
 }
 
 // En el iPhone abre el menú de compartir ("Guardar en Archivos", AirDrop, WhatsApp…); donde no
@@ -80,7 +83,7 @@ export async function compartirArchivo(archivo, titulo) {
 export async function exportarCopia(datos) {
   const copia = { app: APP, version: db.verno, creada: new Date().toISOString(), datos };
   const archivo = new File([JSON.stringify(copia, null, 2)], nombreArchivo(), { type: 'application/json' });
-  return compartirArchivo(archivo, 'Copia de Sendo');
+  return compartirArchivo(archivo, 'Copia de Re-Coin');
 }
 
 // Lee y comprueba un archivo de copia. Devuelve { copia, resumen } o lanza un Error con un
@@ -90,13 +93,13 @@ export async function leerCopia(archivo) {
   try {
     copia = JSON.parse(await archivo.text());
   } catch {
-    throw new Error('El archivo no es una copia de Sendo.');
+    throw new Error('El archivo no es una copia de Re-Coin.');
   }
   if (copia?.app !== APP || typeof copia.datos !== 'object' || copia.datos === null) {
-    throw new Error('El archivo no es una copia de Sendo.');
+    throw new Error('El archivo no es una copia de Re-Coin.');
   }
   if (!esNumero(copia.version) || copia.version > db.verno) {
-    throw new Error('La copia es de una versión más nueva de Sendo. Actualiza la app y vuelve a intentarlo.');
+    throw new Error('La copia es de una versión más nueva de Re-Coin. Actualiza la app y vuelve a intentarlo.');
   }
   for (const tabla of db.tables) {
     const filas = copia.datos[tabla.name] ?? [];
