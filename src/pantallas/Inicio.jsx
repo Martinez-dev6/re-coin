@@ -20,12 +20,14 @@ import { saldoTotal } from '../datos/cuentas.js';
 import { esGasto } from '../datos/movimientos.js';
 import { presupuestosDelMes } from '../datos/presupuestos.js';
 import { useDatos } from '../datos/DatosContext.jsx';
+import { bloquesDeInicio, useAjustes } from '../estado/ajustes.js';
 import { useMes } from '../estado/MesContext.jsx';
 import { useSaldosOcultos } from '../estado/useSaldosOcultos.js';
 import { estiloIconoCuenta } from '../tema/colores.js';
 import { enMes, nombreMes } from '../utilidades/fechas.js';
 import { formatearPesos } from '../utilidades/formato.js';
 import { useFilasAnimadas } from '../utilidades/movimiento.js';
+import { BloqueGrafico, BloqueMetas, BloquePresupuestos } from './InicioBloques.jsx';
 import './Inicio.css';
 
 const OCULTO = '$ •••••';
@@ -40,6 +42,7 @@ export default function Inicio() {
   const [ocultos, alternarOcultos] = useSaldosOcultos();
   const [panelMes, setPanelMes] = useState(false);
   const pesos = (valor) => (ocultos ? OCULTO : formatearPesos(valor));
+  const bloques = bloquesDeInicio(useAjustes()).filter((b) => b.visible);
   const listaCuentas = useRef(null);
   useFilasAnimadas(listaCuentas);
 
@@ -222,104 +225,118 @@ export default function Inicio() {
 
       {!cargando && !sinCuentas && (
         <div className="inicio-contenido">
-          <h2 className="inicio-titulo">Pendientes y alertas</h2>
-          <Deslizar posicion={posicionMes} className="inicio-pendientes">
-            <button type="button" className="tarjeta inicio-pendiente" onClick={() => navegar('/pendientes?tipo=gasto')}>
-              <div className="inicio-pendiente-cabeza">
-                <span className="inicio-pendiente-icono">
-                  <IconoFlechaAbajo tamano={18} grosor={2} />
-                </span>
-                {gastosPendientes.length > 0 && (
-                  <span className="inicio-insignia rojo">{gastosPendientes.length}</span>
-                )}
-              </div>
-              <div className="inicio-pendiente-etiqueta">Gastos pendientes</div>
-              <div className="inicio-pendiente-valor" style={{ color: 'var(--expense)' }}>
-                {pesos(sumar(gastosPendientes))}
-              </div>
-            </button>
-            <button type="button" className="tarjeta inicio-pendiente" onClick={() => navegar('/pendientes?tipo=ingreso')}>
-              <div className="inicio-pendiente-cabeza">
-                <span className="inicio-pendiente-icono">
-                  <IconoFlechaArriba tamano={18} grosor={2} />
-                </span>
-                {ingresosPendientes.length > 0 && (
-                  <span className="inicio-insignia verde">{ingresosPendientes.length}</span>
-                )}
-              </div>
-              <div className="inicio-pendiente-etiqueta">Ingresos pendientes</div>
-              <div className="inicio-pendiente-valor" style={{ color: 'var(--income)' }}>
-                {pesos(sumar(ingresosPendientes))}
-              </div>
-            </button>
-          </Deslizar>
+          {bloques.map(({ id }) => (
+            <section key={id} className="inicio-bloque">
+              {id === 'pendientes' && (
+                <>
+                  <h2 className="inicio-titulo">Pendientes y alertas</h2>
+                  <Deslizar posicion={posicionMes} className="inicio-pendientes">
+                    <button type="button" className="tarjeta inicio-pendiente" onClick={() => navegar('/pendientes?tipo=gasto')}>
+                      <div className="inicio-pendiente-cabeza">
+                        <span className="inicio-pendiente-icono">
+                          <IconoFlechaAbajo tamano={18} grosor={2} />
+                        </span>
+                        {gastosPendientes.length > 0 && (
+                          <span className="inicio-insignia rojo">{gastosPendientes.length}</span>
+                        )}
+                      </div>
+                      <div className="inicio-pendiente-etiqueta">Gastos pendientes</div>
+                      <div className="inicio-pendiente-valor" style={{ color: 'var(--expense)' }}>
+                        {pesos(sumar(gastosPendientes))}
+                      </div>
+                    </button>
+                    <button type="button" className="tarjeta inicio-pendiente" onClick={() => navegar('/pendientes?tipo=ingreso')}>
+                      <div className="inicio-pendiente-cabeza">
+                        <span className="inicio-pendiente-icono">
+                          <IconoFlechaArriba tamano={18} grosor={2} />
+                        </span>
+                        {ingresosPendientes.length > 0 && (
+                          <span className="inicio-insignia verde">{ingresosPendientes.length}</span>
+                        )}
+                      </div>
+                      <div className="inicio-pendiente-etiqueta">Ingresos pendientes</div>
+                      <div className="inicio-pendiente-valor" style={{ color: 'var(--income)' }}>
+                        {pesos(sumar(ingresosPendientes))}
+                      </div>
+                    </button>
+                  </Deslizar>
 
-          {/* Presupuestos que llegaron a su "Avisarme al" o se pasaron (aviso dentro de la app). */}
-          {alertas.length > 0 && (
-            <Deslizar posicion={posicionMes} className="tarjeta inicio-alertas">
-              {alertas.map((p) => (
-                <button
-                  key={p.id}
-                  type="button"
-                  className={'inicio-alerta ' + p.alerta}
-                  onClick={() => navegar('/presupuestos/' + p.id)}
-                >
-                  <span className="inicio-alerta-icono">
-                    {p.alerta === 'excedido' ? <IconoAlerta tamano={16} /> : <IconoAviso tamano={16} />}
-                  </span>
-                  <span className="inicio-alerta-texto">
-                    <strong>{categoria(p.categoriaId)?.nombre ?? 'Presupuesto'}</strong>
-                    {p.alerta === 'excedido'
-                      ? ` se pasó por ${pesos(p.gastado - p.limite)}`
-                      : ` va en el ${p.usado} % del presupuesto`}
-                  </span>
-                </button>
-              ))}
-            </Deslizar>
-          )}
-
-          <div className="inicio-cuentas-cabeza">
-            <h2 className="inicio-titulo">Cuentas</h2>
-            <button type="button" className="boton-texto inicio-nueva-cuenta" onClick={() => navegar('/cuentas/nueva')}>
-              + Nueva cuenta
-            </button>
-          </div>
-          <div ref={listaCuentas} className="inicio-cuentas">
-            {cuentas.map(({ id, nombre, icono, color, saldo: saldoCuenta }) => (
-              <div key={id} data-clave={id} className="inicio-cuenta">
-                {/* Toda la fila (menos el "+") abre la cuenta, como en Mi espacio → Cuentas. */}
-                <button type="button" className="inicio-cuenta-abrir" onClick={() => navegar('/cuentas/' + id)}>
-                  <span className="icono-circulo grande" style={estiloIconoCuenta(color)}>
-                    <IconoPorNombre nombre={icono} tamano={20} />
-                  </span>
-                  <span className="inicio-cuenta-textos">
-                    <span className="inicio-cuenta-nombre">{nombre}</span>
-                    <span className={'inicio-cuenta-saldo' + (saldoCuenta < 0 ? ' negativo' : '')}>{pesos(saldoCuenta)}</span>
-                  </span>
-                </button>
-                <button
-                  type="button"
-                  className="inicio-cuenta-mas"
-                  aria-label={`Agregar movimiento a ${nombre}`}
-                  onClick={() => navegar('/nuevo/gasto?cuenta=' + id)}
-                >
-                  <IconoMas />
-                </button>
-              </div>
-            ))}
-            {/* Última fila de la tarjeta: el total de todas las cuentas. */}
-            <div className="inicio-cuentas-total">
-              <span className="inicio-cuentas-total-textos">
-                <span className="inicio-cuentas-total-titulo">Total</span>
-                {fueraDelSaldo > 0 && (
-                  <span className="inicio-cuentas-nota">
-                    {fueraDelSaldo === 1 ? '1 cuenta no suma' : `${fueraDelSaldo} cuentas no suman`} al saldo actual
-                  </span>
-                )}
-              </span>
-              <strong className={totalCuentas < 0 ? 'negativo' : undefined}>{pesos(totalCuentas)}</strong>
-            </div>
-          </div>
+                  {/* Presupuestos que llegaron a su "Avisarme al" o se pasaron (aviso dentro de la app). */}
+                  {alertas.length > 0 && (
+                    <Deslizar posicion={posicionMes} className="tarjeta inicio-alertas">
+                      {alertas.map((p) => (
+                        <button
+                          key={p.id}
+                          type="button"
+                          className={'inicio-alerta ' + p.alerta}
+                          onClick={() => navegar('/presupuestos/' + p.id)}
+                        >
+                          <span className="inicio-alerta-icono">
+                            {p.alerta === 'excedido' ? <IconoAlerta tamano={16} /> : <IconoAviso tamano={16} />}
+                          </span>
+                          <span className="inicio-alerta-texto">
+                            <strong>{categoria(p.categoriaId)?.nombre ?? 'Presupuesto'}</strong>
+                            {p.alerta === 'excedido'
+                              ? ` se pasó por ${pesos(p.gastado - p.limite)}`
+                              : ` va en el ${p.usado} % del presupuesto`}
+                          </span>
+                        </button>
+                      ))}
+                    </Deslizar>
+                  )}
+                </>
+              )}
+              {id === 'cuentas' && (
+                <>
+                  <div className="inicio-cuentas-cabeza">
+                    <h2 className="inicio-titulo">Cuentas</h2>
+                    <button type="button" className="boton-texto inicio-nueva-cuenta" onClick={() => navegar('/cuentas/nueva')}>
+                      + Nueva cuenta
+                    </button>
+                  </div>
+                  <div ref={listaCuentas} className="inicio-cuentas">
+                    {cuentas.map(({ id, nombre, icono, color, saldo: saldoCuenta }) => (
+                      <div key={id} data-clave={id} className="inicio-cuenta">
+                        {/* Toda la fila (menos el "+") abre la cuenta, como en Mi espacio → Cuentas. */}
+                        <button type="button" className="inicio-cuenta-abrir" onClick={() => navegar('/cuentas/' + id)}>
+                          <span className="icono-circulo grande" style={estiloIconoCuenta(color)}>
+                            <IconoPorNombre nombre={icono} tamano={20} />
+                          </span>
+                          <span className="inicio-cuenta-textos">
+                            <span className="inicio-cuenta-nombre">{nombre}</span>
+                            <span className={'inicio-cuenta-saldo' + (saldoCuenta < 0 ? ' negativo' : '')}>{pesos(saldoCuenta)}</span>
+                          </span>
+                        </button>
+                        <button
+                          type="button"
+                          className="inicio-cuenta-mas"
+                          aria-label={`Agregar movimiento a ${nombre}`}
+                          onClick={() => navegar('/nuevo/gasto?cuenta=' + id)}
+                        >
+                          <IconoMas />
+                        </button>
+                      </div>
+                    ))}
+                    {/* Última fila de la tarjeta: el total de todas las cuentas. */}
+                    <div className="inicio-cuentas-total">
+                      <span className="inicio-cuentas-total-textos">
+                        <span className="inicio-cuentas-total-titulo">Total</span>
+                        {fueraDelSaldo > 0 && (
+                          <span className="inicio-cuentas-nota">
+                            {fueraDelSaldo === 1 ? '1 cuenta no suma' : `${fueraDelSaldo} cuentas no suman`} al saldo actual
+                          </span>
+                        )}
+                      </span>
+                      <strong className={totalCuentas < 0 ? 'negativo' : undefined}>{pesos(totalCuentas)}</strong>
+                    </div>
+                  </div>
+                </>
+              )}
+              {id === 'presupuestos' && <BloquePresupuestos pesos={pesos} posicion={posicionMes} />}
+              {id === 'metas' && <BloqueMetas pesos={pesos} />}
+              {id === 'grafico' && <BloqueGrafico pesos={pesos} posicion={posicionMes} />}
+            </section>
+          ))}
         </div>
       )}
 

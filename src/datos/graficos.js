@@ -42,7 +42,9 @@ export function porCategoria(movimientosPorMes, buscarCategoria, tipo, mes) {
     color: COLORES_GRAFICO[i],
   }));
   if (resto.length > 0) {
-    const nombre = resto.length === 1 ? (buscarCategoria(resto[0][0])?.nombre ?? 'Sin categoría') : 'Otros';
+    // Si ya se ve una categoría llamada "Otros", el grupo se llama "Resto" para no repetir el nombre.
+    const grupo = partes.some((p) => p.nombre.trim().toLowerCase() === 'otros') ? 'Resto' : 'Otros';
+    const nombre = resto.length === 1 ? (buscarCategoria(resto[0][0])?.nombre ?? 'Sin categoría') : grupo;
     partes.push({ clave: 'otros', nombre, valor: resto.reduce((t, [, v]) => t + v, 0), color: COLOR_OTROS });
   }
   return { total, cantidad: ordenadas.length, partes };

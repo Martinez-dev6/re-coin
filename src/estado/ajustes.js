@@ -7,7 +7,38 @@ const CLAVE = 'sendo.ajustes';
 
 // nombre: '' = sin nombre. foto: imagen pequeña como data URL, o null.
 // semanaEmpieza: 'lunes' | 'domingo' (calendario de Programados).
-const PREDETERMINADOS = { nombre: '', foto: null, semanaEmpieza: 'lunes' };
+// bloquesInicio: [{ id, visible }] en el orden en que se ven en Inicio (ver bloquesDeInicio).
+const PREDETERMINADOS = { nombre: '', foto: null, semanaEmpieza: 'lunes', bloquesInicio: [] };
+
+// Bloques de Inicio que se pueden mostrar, ocultar y ordenar (Mi espacio → Pantalla de inicio).
+// El saldo con ingresos y gastos (el banner) va siempre arriba. visible: cómo vienen de entrada.
+// Para agregar uno: añadirlo aquí y pintarlo en Inicio.jsx; a quien ya ordenó los suyos le
+// aparece al final.
+export const BLOQUES_INICIO = [
+  { id: 'pendientes', titulo: 'Pendientes y alertas', detalle: 'Lo que falta por pagar o recibir', visible: true },
+  { id: 'cuentas', titulo: 'Cuentas', detalle: 'Saldo de cada cuenta', visible: true },
+  { id: 'presupuestos', titulo: 'Presupuestos', detalle: 'Cuánto llevas gastado', visible: false },
+  { id: 'metas', titulo: 'Metas', detalle: 'Avance de tus ahorros', visible: false },
+  { id: 'grafico', titulo: 'Gráfico del mes', detalle: 'Gastos por categoría', visible: false },
+];
+
+// Los bloques en el orden elegido, cada uno con titulo, detalle y visible.
+export function bloquesDeInicio({ bloquesInicio }) {
+  const guardados = Array.isArray(bloquesInicio) ? bloquesInicio : [];
+  const conocidos = guardados.filter((g) => BLOQUES_INICIO.some((b) => b.id === g.id));
+  const nuevos = BLOQUES_INICIO.filter((b) => !conocidos.some((g) => g.id === b.id));
+  return [
+    ...conocidos.map((g) => ({ ...BLOQUES_INICIO.find((b) => b.id === g.id), visible: Boolean(g.visible) })),
+    ...nuevos,
+  ];
+}
+
+// Muestra u oculta un bloque. Lee lo guardado en ese momento (no lo de la última pintura), así
+// dos toques seguidos no se pisan.
+export const alternarBloque = (id) =>
+  guardarBloques(bloquesDeInicio(actual).map((b) => (b.id === id ? { ...b, visible: !b.visible } : b)));
+
+export const guardarBloques = (bloques) => cambiarAjustes({ bloquesInicio: bloques.map(({ id, visible }) => ({ id, visible })) });
 
 function leer() {
   try {

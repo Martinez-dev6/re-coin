@@ -1,0 +1,101 @@
+/* Medidas de design/html/PantallaInicio.html */
+
+.pantalla-inicio-contenido {
+  padding-top: 14px;
+}
+
+.pantalla-inicio-tarjeta {
+  padding: 0 14px;
+}
+
+.pantalla-inicio-fila {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 59px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--divider);
+  /* Mantener presionado no debe seleccionar texto ni abrir el menú del iPhone. */
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.pantalla-inicio-lista .pantalla-inicio-fila:last-child {
+  border-bottom: 0;
+}
+
+/* Las demás filas se corren para hacerle espacio a la que se arrastra. */
+.pantalla-inicio-lista.arrastrando .pantalla-inicio-fila {
+  transition: transform 0.2s var(--curva-suave);
+}
+
+.pantalla-inicio-lista.soltando .pantalla-inicio-fila {
+  transition: none;
+}
+
+/* La que se arrastra va encima, sigue al dedo sin retraso y se levanta un poco. */
+.pantalla-inicio-lista .pantalla-inicio-fila.elegida {
+  z-index: 1;
+  transition: none;
+  margin: 0 -14px;
+  padding: 0 14px;
+  border-radius: 16px;
+  border-bottom-color: transparent;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+}
+
+.pantalla-inicio-manija {
+  width: 24px;
+  height: 44px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  touch-action: none; /* desde la manija el arrastre empieza al instante, sin desplazar la página */
+  cursor: grab;
+}
+
+.pantalla-inicio-manija.sin-arrastre {
+  touch-action: auto;
+  cursor: default;
+}
+
+.pantalla-inicio-textos {
+  flex-grow: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.pantalla-inicio-titulo {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.pantalla-inicio-detalle {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.pantalla-inicio-nota {
+  display: flex;
+  gap: 8px;
+  margin: 12px 4px 0;
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--muted);
+}
+
+.pantalla-inicio-nota svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pantalla-inicio-lista.arrastrando .pantalla-inicio-fila {
+    transition: none;
+  }
+}

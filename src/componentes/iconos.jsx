@@ -34,12 +34,14 @@ import {
   FileSpreadsheet,
   FileText,
   Globe,
+  GripVertical,
   House,
   Info,
   Landmark,
   Layers,
   LayoutGrid,
   List,
+  Lock,
   NotebookText,
   ListFilter,
   Moon,
@@ -134,6 +136,8 @@ export const IconoSincronizar = crear(RefreshCw, 20);
 export const IconoMoneda = crear(CircleDollarSign);
 export const IconoIdioma = crear(Globe);
 export const IconoSemana = crear(CalendarDays);
+export const IconoArrastrar = crear(GripVertical, 18);
+export const IconoCandado = crear(Lock, 18);
 
 // Cuentas, respaldo y vista previa de Apariencia
 export const IconoBanco = crear(Landmark, 20);

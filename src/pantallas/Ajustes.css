@@ -83,40 +83,6 @@
   color: var(--expense);
 }
 
-/* Interruptor de 46 × 28 (el mismo de los formularios). */
-.ajustes-interruptor {
-  position: relative;
-  width: 46px;
-  height: 28px;
-  flex-shrink: 0;
-  padding: 0;
-  border: 0;
-  border-radius: 14px;
-  background: var(--sw-off);
-  transition: background-color 0.2s ease;
-}
-
-.ajustes-interruptor.activo {
-  background: var(--banner-bg);
-  box-shadow: 0 0 0 1px var(--banner-ring);
-}
-
-.ajustes-interruptor > span {
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  width: 24px;
-  height: 24px;
-  border-radius: 12px;
-  background: #ffffff;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-  transition: transform 0.2s var(--curva-suave);
-}
-
-.ajustes-interruptor.activo > span {
-  transform: translateX(18px);
-}
-
 .ajustes-panel-nota {
   margin: 12px 0 0;
 }

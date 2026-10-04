@@ -16,6 +16,7 @@ import PanelInferior, { DURACION_PANEL_MS } from '../componentes/PanelInferior.j
 import { borrarTodo } from '../datos/db.js';
 import { cambiarAjustes, useAjustes } from '../estado/ajustes.js';
 import { useSaldosOcultos } from '../estado/useSaldosOcultos.js';
+import '../componentes/Formulario.css';
 import './Ajustes.css';
 
 const DIAS = [
@@ -91,7 +92,7 @@ export default function Ajustes() {
               role="switch"
               aria-checked={ocultos}
               aria-labelledby="ajustes-ocultar"
-              className={'ajustes-interruptor' + (ocultos ? ' activo' : '')}
+              className={'interruptor' + (ocultos ? ' activo' : '')}
               onClick={alternarOcultos}
             >
               <span />

@@ -96,7 +96,7 @@ export default function MiEspacio() {
           <Fila Icono={IconoLuna} texto="Modo oscuro" onClick={() => setPanelModo(true)}>
             <span className="fila-menu-valor">{modoActual.titulo}</span>
           </Fila>
-          <Fila Icono={IconoPantallaInicio} texto="Pantalla de inicio" onClick={pendiente('pantalla-inicio')} />
+          <Fila Icono={IconoPantallaInicio} texto="Pantalla de inicio" onClick={() => navegar('/mi-espacio/pantalla-inicio')} />
         </Grupo>
 
         <Grupo titulo="Gestionar">

@@ -4,12 +4,10 @@ import BarraEstado from '../componentes/BarraEstado.jsx';
 import CirculoCategoria from '../componentes/CirculoCategoria.jsx';
 import Deslizar from '../componentes/Deslizar.jsx';
 import FilaMovimiento from '../componentes/FilaMovimiento.jsx';
+import FilaPresupuesto from '../componentes/FilaPresupuesto.jsx';
 import { Campo, EntradaPesos } from '../componentes/Formulario.jsx';
 import {
-  IconoAlerta,
-  IconoAviso,
   IconoCalendario,
-  IconoCheckCirculo,
   IconoLista,
   IconoMas,
   IconoRepetir,
@@ -38,50 +36,6 @@ const SECCIONES = [
 const porcentaje = (parte, todo) => (todo > 0 ? Math.round((parte / todo) * 100) : 0);
 
 // ---------- Presupuestos ----------
-
-// Estado de un presupuesto: al día, casi al límite (desde su "Avisarme al") o excedido.
-function estadoPresupuesto(gastado, limite, avisarAl = 90) {
-  const usado = porcentaje(gastado, limite);
-  if (gastado > limite) {
-    return { clase: 'excedido', color: 'var(--expense)', Icono: IconoAlerta, texto: `Excedido ${formatearPesos(gastado - limite)}`, usado };
-  }
-  if (usado >= avisarAl) {
-    return { clase: 'limite', color: 'var(--pending)', Icono: IconoAviso, texto: 'Casi al límite', usado };
-  }
-  return { clase: 'ok', color: 'var(--muted)', Icono: IconoCheckCirculo, texto: `Quedan ${formatearPesos(limite - gastado)}`, usado };
-}
-
-// alTocar: la fila es un botón (abre Editar presupuesto); la de "General" no.
-function FilaPresupuesto({ nombre, icono, color, gastado, limite, avisarAl, alTocar }) {
-  const estado = estadoPresupuesto(gastado, limite, avisarAl);
-  const barra = estado.clase === 'ok' ? 'var(--accent-text)' : estado.color;
-  const Fila = alTocar ? 'button' : 'div';
-  return (
-    <Fila {...(alTocar && { type: 'button', onClick: alTocar })} className="presupuesto">
-      <CirculoCategoria icono={icono} color={color} />
-      <div className="presupuesto-cuerpo">
-        <div className="presupuesto-linea">
-          <span className="presupuesto-nombre">{nombre}</span>
-          <span className="presupuesto-estado" style={{ color: estado.color }}>
-            <estado.Icono />
-            {estado.texto}
-          </span>
-        </div>
-        <div className="barra-progreso presupuesto-barra">
-          <span style={{ width: `${Math.min(estado.usado, 100)}%`, background: barra }} />
-        </div>
-        <div className="presupuesto-linea">
-          <span className="presupuesto-cifras">
-            {formatearPesos(gastado)} de {formatearPesos(limite)}
-          </span>
-          <span className="presupuesto-porcentaje" style={{ color: estado.clase === 'ok' ? 'var(--muted)' : estado.color }}>
-            {estado.usado} %
-          </span>
-        </div>
-      </div>
-    </Fila>
-  );
-}
 
 function Presupuestos({ lista, navegar }) {
   const { categoria: buscarCategoria } = useDatos();
