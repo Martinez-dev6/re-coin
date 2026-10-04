@@ -28,6 +28,8 @@ import {
   Ellipsis,
   Eye,
   EyeOff,
+  FileSpreadsheet,
+  FileText,
   House,
   Info,
   Landmark,
@@ -128,3 +130,5 @@ export const IconoBanco = crear(Landmark, 20);
 export const IconoBilletera = crear(Wallet, 20);
 export const IconoBajar = crear(Download, 20);
 export const IconoEscudoCheck = crear(ShieldCheck, 20);
+export const IconoExcel = crear(FileSpreadsheet, 20);
+export const IconoCsv = crear(FileText, 20);

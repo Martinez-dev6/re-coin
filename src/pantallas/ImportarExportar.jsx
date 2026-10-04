@@ -1,10 +1,12 @@
-// Importar y exportar (design/capturas/ImportarExportar.png). Por ahora solo la copia de
-// seguridad y restaurarla; Excel y CSV llegan en el paso 8.
+// Importar y exportar (design/capturas/ImportarExportar.png): exportar los movimientos a Excel y
+// a CSV, la copia de seguridad y restaurarla. "Importar desde Excel o CSV" queda para después
+// (decisión del dueño, 2026-10-03).
 import { useLiveQuery } from 'dexie-react-hooks';
 import { useRef, useState } from 'react';
 import CabeceraSubpagina from '../componentes/CabeceraSubpagina.jsx';
-import { IconoBajar, IconoEscudoCheck, IconoFlecha, IconoInfo } from '../componentes/iconos.jsx';
+import { IconoBajar, IconoCsv, IconoEscudoCheck, IconoExcel, IconoFlecha, IconoInfo } from '../componentes/iconos.jsx';
 import PanelInferior from '../componentes/PanelInferior.jsx';
+import { exportarCsv, exportarExcel } from '../datos/exportar.js';
 import { exportarCopia, leerCopia, leerDatos, restaurarCopia } from '../datos/respaldo.js';
 import './ImportarExportar.css';
 
@@ -46,6 +48,24 @@ export default function ImportarExportar() {
     }
   };
 
+  // Excel o CSV de todos los movimientos. Sin esperas antes de compartir (Safari solo deja justo
+  // después del toque): los datos ya están leídos.
+  const exportarMovimientos = async (exportarComo) => {
+    if (!datos?.movimientos?.length) {
+      setAviso({ texto: 'Aún no tienes movimientos para exportar.', error: true });
+      return;
+    }
+    setOcupado(true);
+    setAviso(null);
+    try {
+      if (await exportarComo(datos)) setAviso({ texto: 'Archivo listo.' });
+    } catch {
+      setAviso({ texto: 'No se pudo crear el archivo. Inténtalo de nuevo.', error: true });
+    } finally {
+      setOcupado(false);
+    }
+  };
+
   const elegirArchivo = async (evento) => {
     const elegido = evento.target.files?.[0];
     evento.target.value = ''; // para poder elegir el mismo archivo otra vez
@@ -81,6 +101,20 @@ export default function ImportarExportar() {
       <div className="contenido">
         <h2 className="titulo-seccion">Exportar</h2>
         <div className="tarjeta respaldo-grupo">
+          <Fila
+            Icono={IconoExcel}
+            titulo="Exportar a Excel"
+            detalle="Archivo .xlsx con todos tus movimientos"
+            alTocar={() => exportarMovimientos(exportarExcel)}
+            ocupado={ocupado || !datos}
+          />
+          <Fila
+            Icono={IconoCsv}
+            titulo="Exportar a CSV"
+            detalle="Para abrir en cualquier hoja de cálculo"
+            alTocar={() => exportarMovimientos(exportarCsv)}
+            ocupado={ocupado || !datos}
+          />
           <Fila
             Icono={IconoEscudoCheck}
             titulo="Copia de seguridad"

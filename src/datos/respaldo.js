@@ -44,22 +44,19 @@ export async function leerDatos() {
   return datos;
 }
 
-// Nombre del archivo: sendo-copia-2026-10-03.json
-export function nombreArchivo(fecha = new Date()) {
+// Nombre del archivo: sendo-copia-2026-10-03.json (o sendo-movimientos-2026-10-03.csv…).
+export function nombreArchivo(que = 'copia', extension = 'json', fecha = new Date()) {
   const dos = (n) => String(n).padStart(2, '0');
-  return `${APP}-copia-${fecha.getFullYear()}-${dos(fecha.getMonth() + 1)}-${dos(fecha.getDate())}.json`;
+  return `${APP}-${que}-${fecha.getFullYear()}-${dos(fecha.getMonth() + 1)}-${dos(fecha.getDate())}.${extension}`;
 }
 
-// En el iPhone se abre el menú de compartir ("Guardar en Archivos", AirDrop, WhatsApp…);
-// donde no se puede compartir un archivo, se descarga. Devuelve false si se canceló.
-// datos: lo que devuelve leerDatos(). Sin await antes de navigator.share (ver leerDatos).
-export async function exportarCopia(datos) {
-  const copia = { app: APP, version: db.verno, creada: new Date().toISOString(), datos };
-  const archivo = new File([JSON.stringify(copia, null, 2)], nombreArchivo(), { type: 'application/json' });
-
+// En el iPhone abre el menú de compartir ("Guardar en Archivos", AirDrop, WhatsApp…); donde no
+// se puede compartir un archivo, lo descarga. Devuelve false si se canceló. Sin await antes de
+// llamarla: Safari solo deja compartir justo después del toque.
+export async function compartirArchivo(archivo, titulo) {
   if (navigator.canShare?.({ files: [archivo] })) {
     try {
-      await navigator.share({ files: [archivo], title: 'Copia de Sendo' });
+      await navigator.share({ files: [archivo], title: titulo });
       return true;
     } catch (error) {
       if (error.name === 'AbortError') return false;
@@ -74,6 +71,15 @@ export async function exportarCopia(datos) {
   enlace.click();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
   return true;
+}
+
+// En el iPhone se abre el menú de compartir ("Guardar en Archivos", AirDrop, WhatsApp…);
+// donde no se puede compartir un archivo, se descarga. Devuelve false si se canceló.
+// datos: lo que devuelve leerDatos(). Sin await antes de navigator.share (ver leerDatos).
+export async function exportarCopia(datos) {
+  const copia = { app: APP, version: db.verno, creada: new Date().toISOString(), datos };
+  const archivo = new File([JSON.stringify(copia, null, 2)], nombreArchivo(), { type: 'application/json' });
+  return compartirArchivo(archivo, 'Copia de Sendo');
 }
 
 // Lee y comprueba un archivo de copia. Devuelve { copia, resumen } o lanza un Error con un
