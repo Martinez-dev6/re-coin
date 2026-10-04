@@ -23,7 +23,6 @@ import ImportarExportar from './pantallas/ImportarExportar.jsx';
 import Inicio from './pantallas/Inicio.jsx';
 import MiEspacio from './pantallas/MiEspacio.jsx';
 import PantallaInicio from './pantallas/PantallaInicio.jsx';
-import Pendiente from './pantallas/Pendiente.jsx';
 import Pendientes from './pantallas/Pendientes.jsx';
 import Perfil from './pantallas/Perfil.jsx';
 import Planes from './pantallas/Planes.jsx';
@@ -58,7 +57,6 @@ export default function App() {
           <Route path="/mi-espacio/ajustes" element={<Ajustes />} />
           <Route path="/mi-espacio/ayuda" element={<Ayuda />} />
           <Route path="/mi-espacio/pantalla-inicio" element={<PantallaInicio />} />
-          <Route path="/pendiente/:pantalla" element={<Pendiente />} />
         </Route>
 
         {/* Sin barra inferior: el detalle de un movimiento y los formularios */}

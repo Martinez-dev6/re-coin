@@ -34,18 +34,22 @@ const OPCIONES_MODO = [
   { valor: 'auto', titulo: 'Automático', detalle: 'Igual que el iPhone', Icono: IconoAutomatico },
 ];
 
+// Sin onClick, la fila solo informa (p. ej. "Próximamente"): no es botón ni lleva flecha.
 function Fila({ Icono, texto, onClick, children }) {
+  const Elemento = onClick ? 'button' : 'div';
   return (
-    <button type="button" className="fila-menu" onClick={onClick}>
+    <Elemento {...(onClick && { type: 'button', onClick })} className="fila-menu">
       <span className="icono-circulo">
         <Icono />
       </span>
       <span className="fila-menu-texto">{texto}</span>
       {children}
-      <span className="fila-menu-flecha">
-        <IconoFlecha />
-      </span>
-    </button>
+      {onClick && (
+        <span className="fila-menu-flecha">
+          <IconoFlecha />
+        </span>
+      )}
+    </Elemento>
   );
 }
 
@@ -64,7 +68,6 @@ export default function MiEspacio() {
   const { cuentas, tarjetas } = useDatos();
   const { nombre } = useAjustes();
   const [panelModo, setPanelModo] = useState(false);
-  const pendiente = (clave) => () => navegar('/pendiente/' + clave);
   const modoActual = OPCIONES_MODO.find((o) => o.valor === modo);
 
   return (
@@ -113,7 +116,11 @@ export default function MiEspacio() {
 
         <Grupo titulo="Herramientas">
           <Fila Icono={IconoImportar} texto="Importar y exportar" onClick={() => navegar('/mi-espacio/importar-exportar')} />
-          <Fila Icono={IconoCampana} texto="Recordatorio diario" onClick={pendiente('recordatorio')} />
+          {/* Necesita avisos push con un servidor (una PWA en el iPhone no programa avisos sola).
+              Decidido por el dueño (2026-10-04): queda como "Próximamente". */}
+          <Fila Icono={IconoCampana} texto="Recordatorio diario">
+            <span className="fila-menu-valor">Próximamente</span>
+          </Fila>
         </Grupo>
 
         <div className="tarjeta mi-espacio-grupo mi-espacio-grupo-suelto">
