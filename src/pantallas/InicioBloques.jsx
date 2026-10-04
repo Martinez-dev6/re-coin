@@ -3,17 +3,16 @@
 // versiones cortas de lo que hay en Rendimiento, Planes, Gráficos y Tarjetas, con "Ver todo" para
 // ir allá. pesos: formato de las
 // cifras (respeta el ojo de Inicio).
-import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CirculoCategoria from '../componentes/CirculoCategoria.jsx';
 import Deslizar from '../componentes/Deslizar.jsx';
 import FilaPresupuesto from '../componentes/FilaPresupuesto.jsx';
-import { Dona } from '../componentes/Graficos.jsx';
 import {
   IconoBajada,
   IconoBalanza,
   IconoBilletera,
   IconoCalendarioMes,
+  IconoFlecha,
   IconoFlechaAbajo,
   IconoFlechaArriba,
   IconoHoja,
@@ -237,120 +236,105 @@ export function BloqueMetas({ pesos }) {
   );
 }
 
-// Gastos del mes (rediseño pedido por el dueño, 2026-10-04): la dona con el total en el centro y,
-// debajo, un carrusel con una categoría por tarjeta (las mismas partes de la dona: 4 y "Otros").
-// La que queda al centro del carrusel se resalta en la dona; tocar un trozo de la dona o un punto
-// lleva el carrusel a esa categoría. El carrusel es un scroll horizontal con scroll-snap: así el
-// deslizamiento es el del sistema (inercia y freno de iOS), sin animaciones hechas a mano.
+// Gastos del mes (rediseño pedido por el dueño, 2026-10-04, "diseño editorial asimétrico"): a la
+// izquierda un panel del color de la categoría donde más se gastó (ícono, %, nombre y valor); a la
+// derecha el total y, debajo, las que siguen en un carrusel que se desliza (hasta 5; si hay más,
+// una última tarjeta "+N más" que, como todo el bloque, lleva a Gráficos). El carrusel es un scroll
+// horizontal con scroll-snap: deslizar no cuenta como toque, así que no abre Gráficos.
+const MAXIMO_CARRUSEL = 5;
+
+function Ondas() {
+  return (
+    <svg className="inicio-grafico-ondas" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M0,62 C30,48 55,78 100,52 L100,100 L0,100 Z" />
+      <path d="M0,80 C35,66 60,94 100,74 L100,100 L0,100 Z" />
+    </svg>
+  );
+}
+
 export function BloqueGrafico({ pesos, posicion }) {
   const navegar = useNavigate();
   const { anio, mes } = useMes();
   const { movimientosPorMes, categoria } = useDatos();
-  const { total, partes } = porCategoria(movimientosPorMes, categoria, 'gasto', textoMes(anio, mes));
+  const { total, todas } = porCategoria(movimientosPorMes, categoria, 'gasto', textoMes(anio, mes));
+  const [mayor, ...resto] = todas;
+  const siguientes = resto.slice(0, MAXIMO_CARRUSEL);
+  const faltan = resto.length - siguientes.length;
   const verGraficos = () => navegar('/mi-espacio/graficos');
+  const icono = (clave) => categoria(clave)?.icono ?? 'cuadricula';
+
+  let nota = '';
+  if (mayor) {
+    nota =
+      todas.length === 1
+        ? `Todos tus gastos fueron en ${mayor.nombre.toLowerCase()}.`
+        : `La mayor parte de tus gastos fue en ${mayor.nombre.toLowerCase()}.`;
+  }
 
   return (
     <>
       <Cabeza titulo="Gastos del mes" enlace="Ver gráficos" alTocar={verGraficos} />
-      <Deslizar posicion={posicion} className="tarjeta inicio-grafico inicio-bloque-cuerpo">
-        {partes.length === 0 ? (
+      <Deslizar
+        posicion={posicion}
+        className={'tarjeta inicio-grafico inicio-bloque-cuerpo' + (mayor ? '' : ' vacio')}
+        role="button"
+        tabIndex={0}
+        aria-label={`Gastos de ${nombreMes(mes, false)}: ver gráficos`}
+        onClick={verGraficos}
+        onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && verGraficos()}
+      >
+        {!mayor ? (
           <span className="inicio-grafico-vacio">Sin gastos en {nombreMes(mes, false)}.</span>
         ) : (
-          // key: al cambiar de mes el carrusel vuelve a la primera categoría.
-          <CarruselGastos key={textoMes(anio, mes)} partes={partes} total={total} pesos={pesos} mes={mes} />
+          <>
+            <span className="inicio-grafico-mayor" style={{ '--color-parte': mayor.color }}>
+              <Ondas />
+              <span className="inicio-grafico-mayor-icono">
+                <IconoPorNombre nombre={icono(mayor.clave)} tamano={22} />
+              </span>
+              <strong className="inicio-grafico-mayor-porcentaje">{porcentaje(mayor.valor, total)} %</strong>
+              <span className="inicio-grafico-mayor-nombre">{mayor.nombre}</span>
+              <span className="inicio-grafico-mayor-valor">{pesos(mayor.valor)}</span>
+            </span>
+
+            <span className="inicio-grafico-cuerpo">
+              <span className="inicio-grafico-etiqueta">Total de {nombreMes(mes, false)}</span>
+              <strong className={'inicio-grafico-total' + (pesos(total).length > 10 ? ' largo' : '')}>
+                {pesos(total)}
+              </strong>
+              <span className="inicio-grafico-nota">{nota}</span>
+              {siguientes.length > 0 && (
+                <>
+                  <span className="inicio-grafico-linea" />
+                  <span className="inicio-carrusel">
+                    {siguientes.map((p) => (
+                      <span key={p.clave} className="inicio-carrusel-item">
+                        <CirculoCategoria icono={icono(p.clave)} color={categoria(p.clave)?.color ?? null} talla="mediano" />
+                        <span className="inicio-carrusel-texto">
+                          <span className="inicio-carrusel-nombre">{p.nombre}</span>
+                          <strong className="inicio-carrusel-porcentaje">{porcentaje(p.valor, total)} %</strong>
+                          <span className="inicio-carrusel-valor">{pesos(p.valor)}</span>
+                        </span>
+                        <IconoFlecha className="inicio-carrusel-ir" />
+                      </span>
+                    ))}
+                    {faltan > 0 && (
+                      <span className="inicio-carrusel-item mas">
+                        <CirculoCategoria icono="cuadricula" color="acento" talla="mediano" />
+                        <span className="inicio-carrusel-texto">
+                          <strong className="inicio-carrusel-porcentaje">+{faltan} más</strong>
+                          <span className="inicio-carrusel-ver">Ver en gráficos</span>
+                        </span>
+                        <IconoFlecha className="inicio-carrusel-ir" />
+                      </span>
+                    )}
+                  </span>
+                </>
+              )}
+            </span>
+          </>
         )}
       </Deslizar>
-    </>
-  );
-}
-
-function CarruselGastos({ partes, total, pesos, mes }) {
-  const { categoria } = useDatos();
-  const [indice, setIndice] = useState(0);
-  const pista = useRef(null);
-  const cuadro = useRef(0);
-  const elegida = partes[Math.min(indice, partes.length - 1)];
-
-  // El índice sale de la tarjeta más cercana al centro de la pista (una vez por cuadro).
-  const alDesplazar = () => {
-    cancelAnimationFrame(cuadro.current);
-    cuadro.current = requestAnimationFrame(() => {
-      const el = pista.current;
-      if (!el) return;
-      const centro = el.scrollLeft + el.clientWidth / 2;
-      let cercana = 0;
-      let distancia = Infinity;
-      [...el.children].forEach((hijo, i) => {
-        const d = Math.abs(hijo.offsetLeft + hijo.offsetWidth / 2 - centro);
-        if (d < distancia) [cercana, distancia] = [i, d];
-      });
-      setIndice(cercana);
-    });
-  };
-  useEffect(() => () => cancelAnimationFrame(cuadro.current), []);
-
-  const ir = (i) => {
-    const el = pista.current;
-    const hijo = el?.children[i];
-    if (!hijo) return;
-    el.scrollTo({ left: hijo.offsetLeft - (el.clientWidth - hijo.offsetWidth) / 2, behavior: 'smooth' });
-  };
-
-  return (
-    <>
-      <Dona
-        partes={partes}
-        elegida={partes.length > 1 ? elegida.clave : null}
-        alElegir={(clave) => clave && ir(partes.findIndex((p) => p.clave === clave))}
-        etiqueta={`Gastos de ${nombreMes(mes, false)} por categoría`}
-        centro={
-          <>
-            <strong className="inicio-grafico-total">{pesos(total)}</strong>
-            <span className="inicio-grafico-centro-nota">Total de gastos</span>
-          </>
-        }
-      />
-      <span className="inicio-grafico-linea" />
-      <div
-        ref={pista}
-        className={'inicio-carrusel' + (partes.length === 1 ? ' unica' : '')}
-        onScroll={alDesplazar}
-        aria-label="Categorías"
-      >
-        {partes.map((p, i) => {
-          const c = categoria(p.clave);
-          return (
-            <button
-              key={p.clave}
-              type="button"
-              className={'inicio-carrusel-item' + (i === indice ? ' activa' : '')}
-              style={{ '--color-parte': p.color }}
-              aria-current={i === indice || undefined}
-              onClick={() => (i === indice ? null : ir(i))}
-            >
-              <CirculoCategoria icono={c?.icono ?? 'cuadricula'} color={c?.color ?? null} talla="mediano" />
-              <span className="inicio-carrusel-texto">
-                <span className="inicio-carrusel-nombre">{p.nombre}</span>
-                <strong className="inicio-carrusel-porcentaje">{porcentaje(p.valor, total)} %</strong>
-                <span className="inicio-carrusel-valor">{pesos(p.valor)}</span>
-              </span>
-            </button>
-          );
-        })}
-      </div>
-      {partes.length > 1 && (
-        <span className="inicio-carrusel-puntos">
-          {partes.map((p, i) => (
-            <button
-              key={p.clave}
-              type="button"
-              className={i === indice ? 'activo' : undefined}
-              aria-label={p.nombre}
-              onClick={() => ir(i)}
-            />
-          ))}
-        </span>
-      )}
     </>
   );
 }

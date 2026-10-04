@@ -46,7 +46,8 @@ export function porCategoria(movimientosPorMes, buscarCategoria, tipo, mes) {
     const grupo = partes.some((p) => p.nombre.trim().toLowerCase() === 'otros') ? 'Resto' : 'Otros';
     partes.push({ clave: 'otros', nombre: grupo, valor: resto.reduce((t, [, v]) => t + v, 0), color: COLOR_OTROS });
   }
-  return { total, cantidad: ordenadas.length, partes };
+  // todas: cada categoría con su nombre y su color, sin agrupar (el bloque de Inicio).
+  return { total, cantidad: ordenadas.length, partes, todas: ordenadas.map(parte) };
 }
 
 // Los 'n' meses que terminan en 'hasta' ('AAAA-MM'), del más viejo al más nuevo.

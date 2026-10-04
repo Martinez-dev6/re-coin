@@ -700,53 +700,133 @@
   color: var(--muted);
 }
 
-/* Gastos del mes: dona centrada con el total, una línea y el carrusel de categorías con sus
-   puntos. Cada tarjeta del carrusel mide el 66 % de la pista: así asoman las de los lados y se
-   entiende que se desliza. */
+/* Gastos del mes: panel de la categoría mayor a la izquierda (su color, oscurecido para que el
+   blanco se lea; en modo oscuro más, porque allá los colores de categoría son claros) y, a la
+   derecha, el total, la nota y el carrusel de las que siguen. Toda la tarjeta lleva a Gráficos. */
 .inicio-grafico {
+  display: grid;
+  grid-template-columns: 40% minmax(0, 1fr);
+  overflow: hidden;
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+}
+
+.inicio-grafico.vacio {
+  display: block;
+  padding: 16px;
+}
+
+.inicio-grafico-mayor {
+  --panel: color-mix(in srgb, var(--color-parte) 88%, #000);
+  position: relative;
   display: flex;
   flex-direction: column;
-  align-items: stretch;
-  padding: 18px 0 14px;
-  color: var(--text);
-}
-
-.inicio-grafico .dona {
-  width: 168px;
-  height: 168px;
-}
-
-.inicio-grafico .dona-parte {
-  transition:
-    stroke-width 0.26s var(--curva-entrar),
-    opacity 0.26s var(--curva-suave);
-}
-
-.inicio-grafico-total {
-  max-width: 112px;
-  font-size: 20px;
-  font-weight: 800;
-  letter-spacing: -0.01em;
+  align-items: flex-start;
+  padding: 16px 14px;
   overflow: hidden;
+  background: var(--panel);
+  color: #fff;
+}
+
+:root[data-modo='oscuro'] .inicio-grafico-mayor {
+  --panel: color-mix(in srgb, var(--color-parte) 58%, #000);
+}
+
+.inicio-grafico-ondas {
+  position: absolute;
+  inset: auto 0 0;
+  width: 100%;
+  height: 70%;
+}
+
+.inicio-grafico-ondas path {
+  fill: #fff;
+  opacity: 0.08;
+}
+
+.inicio-grafico-mayor > :not(svg) {
+  position: relative;
+}
+
+.inicio-grafico-mayor-icono {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin-bottom: 14px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--panel);
+}
+
+.inicio-grafico-mayor-porcentaje {
+  font-size: 30px;
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.inicio-grafico-mayor-nombre {
+  max-width: 100%;
+  margin-top: 6px;
+  overflow: hidden;
+  font-size: 14px;
+  font-weight: 600;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.inicio-grafico-centro-nota {
+.inicio-grafico-mayor-valor {
+  margin-top: 4px;
+  font-size: 13px;
+  white-space: nowrap;
+  opacity: 0.9;
+}
+
+.inicio-grafico-cuerpo {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 16px 0 14px 14px;
+}
+
+.inicio-grafico-etiqueta {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.inicio-grafico-total {
   margin-top: 2px;
-  font-size: 12px;
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+}
+
+.inicio-grafico-total.largo {
+  font-size: 20px;
+}
+
+.inicio-grafico-nota {
+  margin-top: 4px;
+  padding-right: 14px;
+  font-size: 13px;
+  line-height: 1.35;
   color: var(--muted);
 }
 
 .inicio-grafico-linea {
   height: 1px;
-  margin: 18px 16px 14px;
+  margin: 12px 14px 10px 0;
   background: var(--divider);
 }
 
+/* Las que siguen: cada una ocupa casi todo el ancho y asoma la siguiente. */
 .inicio-carrusel {
   display: flex;
-  gap: 10px;
+  gap: 8px;
+  padding-right: 14px;
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   overscroll-behavior-x: contain;
@@ -758,46 +838,22 @@
   display: none;
 }
 
-/* Espacio a cada lado para que la primera y la última también queden al centro (con padding
-   el porcentaje de las tarjetas se calcula sobre otro ancho y la última no se centraba). */
-.inicio-carrusel::before,
-.inicio-carrusel::after {
-  content: '';
-  flex: 0 0 calc(17% - 10px);
-}
-
-/* Con una sola categoría no hay nada que deslizar: va centrada. */
-.inicio-carrusel.unica {
-  justify-content: center;
-}
-
 .inicio-carrusel-item {
   display: flex;
-  flex: 0 0 66%;
+  flex: 0 0 88%;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   min-width: 0;
-  padding: 12px 14px;
-  border: 0;
-  border-radius: 16px;
-  background: color-mix(in srgb, var(--color-parte) 10%, transparent);
-  color: var(--text);
-  text-align: left;
-  scroll-snap-align: center;
-  opacity: 0.45;
-  transform: scale(0.94);
-  transition:
-    opacity 0.26s var(--curva-suave),
-    transform 0.26s var(--curva-entrar);
+  scroll-snap-align: start;
 }
 
-.inicio-carrusel-item.activa {
-  opacity: 1;
-  transform: none;
+.inicio-carrusel-item:only-child {
+  flex-basis: 100%;
 }
 
 .inicio-carrusel-texto {
   display: flex;
+  flex: 1;
   flex-direction: column;
   min-width: 0;
 }
@@ -805,15 +861,14 @@
 .inicio-carrusel-nombre {
   overflow: hidden;
   font-size: 13px;
-  font-weight: 600;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .inicio-carrusel-porcentaje {
-  font-size: 22px;
+  font-size: 18px;
   font-weight: 800;
-  line-height: 1.2;
+  line-height: 1.25;
 }
 
 .inicio-carrusel-valor {
@@ -822,42 +877,19 @@
   white-space: nowrap;
 }
 
-.inicio-carrusel-puntos {
-  display: flex;
-  justify-content: center;
-  gap: 2px;
-  margin-top: 8px;
+.inicio-carrusel-ver {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--accent-text);
+  white-space: nowrap;
 }
 
-/* El punto se ve de 6 px pero el toque es de 20 px. */
-.inicio-carrusel-puntos button {
-  display: grid;
-  place-items: center;
-  width: 20px;
-  height: 20px;
-  padding: 0;
-  border: 0;
-  background: transparent;
-}
-
-.inicio-carrusel-puntos button::after {
-  content: '';
-  width: 6px;
-  height: 6px;
-  border-radius: 3px;
-  background: var(--track);
-  transition:
-    width 0.26s var(--curva-entrar),
-    background-color 0.26s var(--curva-suave);
-}
-
-.inicio-carrusel-puntos button.activo::after {
-  width: 16px;
-  background: var(--accent-text);
+.inicio-carrusel-ir {
+  flex: none;
+  color: var(--muted);
 }
 
 .inicio-grafico-vacio {
-  padding: 0 16px;
   font-size: 14px;
   color: var(--muted);
 }
