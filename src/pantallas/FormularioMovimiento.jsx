@@ -298,6 +298,7 @@ function Campos({ clave, movimiento, programado, esProgramado = false, tipoInici
       else setPanel(falta.campo === 'categoriaId' ? 'categoria' : falta.campo);
       return false;
     }
+    setAviso(null); // el aviso de antes ("Elige una categoría.") no se queda encima del chulo
     return (async () => {
       if (esProgramado) await guardarProgramado(programado?.id, datos);
       else await guardarMovimiento(movimiento?.id, datos);

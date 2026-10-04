@@ -15,7 +15,7 @@ import {
   IconoTransferencia,
 } from './iconos.jsx';
 import { useOscurecido } from '../estado/useOscurecido.js';
-import { vibrar } from '../utilidades/vibrar.js';
+import ToqueHaptico from './ToqueHaptico.jsx';
 import './BarraNavegacion.css';
 
 const PESTANAS = [
@@ -158,12 +158,11 @@ export default function BarraNavegacion() {
           className="boton-mas"
           aria-label="Nuevo movimiento"
           aria-expanded={menuAbierto}
-          onClick={() => {
-            vibrar(); // toque suave al abrir (pedido del dueño, 2026-10-04)
-            setMenuAbierto(true);
-          }}
+          onClick={() => setMenuAbierto(true)}
         >
           <IconoMas tamano={28} grosor={2.6} />
+          {/* Vibración suave al abrir (pedido del dueño, 2026-10-04). */}
+          <ToqueHaptico />
         </button>
       </nav>
 

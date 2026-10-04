@@ -1,6 +1,6 @@
 // Botón de guardar o confirmar con animación de "listo" (pedido del dueño, 2026-10-04): al tocarlo,
 // el botón se encoge hasta un círculo de su mismo color, se dibuja un chulo y el teléfono vibra
-// suave. Rápido y sin rebotes; los tiempos están en comunes.css (.boton-exito).
+// suave (ToqueHaptico). Rápido y sin rebotes; los tiempos están en comunes.css (.boton-exito).
 // - alTocar: hace las comprobaciones. Devuelve false si falta algo (no hay animación ni vibración;
 //   el formulario avisa); si no, devuelve la promesa de lo que guarda (o nada).
 // - alTerminar: cuando terminan la animación y el guardado (volver, cerrar el panel…).
@@ -8,7 +8,7 @@
 // copia de la pantalla que se usa al volver (TransicionPantallas) lo muestra ya con el chulo.
 import { useEffect, useRef, useState } from 'react';
 import { sinMovimiento } from '../utilidades/movimiento.js';
-import { vibrar } from '../utilidades/vibrar.js';
+import ToqueHaptico from './ToqueHaptico.jsx';
 
 // Encoger (280 ms), dibujar el chulo (desde los 200 ms, 220 ms) y un instante para verlo.
 const DURACION_MS = 540;
@@ -26,15 +26,19 @@ export default function BotonExito({ alTocar, alTerminar, className = '', disabl
     };
   }, []);
 
-  const tocar = async () => {
+  const tocar = async (evento) => {
     if (recorte !== null) return;
     const resultado = alTocar();
-    if (resultado === false) return;
-    vibrar();
+    // Si falta algo, el interruptor de ToqueHaptico vuelve a como estaba (por si así iOS no vibra).
+    if (resultado === false) {
+      evento.preventDefault();
+      return;
+    }
     const animar = !sinMovimiento();
     if (animar) {
+      // Lo que sobra a cada lado del círculo, que mide lo mismo que el alto del botón.
       const { width, height } = boton.current.getBoundingClientRect();
-      setRecorte(Math.max(0, (width - height) / 2 - 1));
+      setRecorte(Math.max(0, (width - height) / 2));
     }
     try {
       await Promise.all([resultado, animar && esperar(DURACION_MS)]);
@@ -63,6 +67,8 @@ export default function BotonExito({ alTocar, alTerminar, className = '', disabl
       <svg className="boton-exito-chulo" width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true">
         <path d="M5 12.5l4.5 4.5L19 7.5" pathLength="1" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
+      {/* Al final: encima de todo, para que el dedo lo toque a él (vibración en iOS). */}
+      <ToqueHaptico disabled={!enExito && disabled} />
     </button>
   );
 }

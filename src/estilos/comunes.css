@@ -234,7 +234,9 @@
 
 /* Botón con animación de "listo" (BotonExito.jsx): se encoge hasta un círculo de su color y se
    dibuja un chulo. El recorte va de -1 px (deja ver el aro de 1 px de algunos botones) a lo que
-   sobra a cada lado del círculo. Encoger: 280 ms, arranca y termina suave, sin rebote. El texto se
+   sobra a cada lado de un círculo del alto del botón; arriba y abajo termina en 0. Si terminara en
+   -1 px, el círculo mediría 2 px más que el botón y saldría plano arriba y abajo, porque el botón
+   solo pinta dentro de su caja (captura del dueño, 2026-10-04). Encoger: 280 ms, arranca y termina suave, sin rebote. El texto se
    va en 120 ms; el chulo se dibuja desde los 200 ms en 220 ms. DURACION_MS en BotonExito.jsx es la
    suma con un instante para verlo. */
 .boton-exito {
@@ -244,7 +246,7 @@
 }
 
 .boton-exito.exito {
-  clip-path: inset(-1px var(--recorte) round 999px);
+  clip-path: inset(0 var(--recorte) round 999px);
   pointer-events: none;
 }
 
@@ -280,6 +282,20 @@
   .boton-exito.exito .boton-exito-chulo path {
     transition: none;
   }
+}
+
+/* Interruptor invisible encima de un botón para que iOS vibre al tocarlo (ToqueHaptico.jsx). Del
+   tamaño del botón y recortado a su forma, para que solo cuente el toque sobre el botón. Sin
+   appearance: none (sin la apariencia nativa iOS no vibra). */
+.toque-haptico {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  clip-path: inset(0 round 999px);
+  cursor: pointer;
 }
 
 /* Estado bajo la cifra de un banner (Pagado, Pendiente, Vence…, Vencida): pastilla clara con su
