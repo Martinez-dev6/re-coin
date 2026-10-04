@@ -510,25 +510,11 @@
   color: var(--muted);
 }
 
-.inicio-balance-titulos {
-  display: flex;
+.inicio-balance-titulo {
   flex: 1;
-  flex-direction: column;
   min-width: 0;
-  font-size: 13px;
-  color: var(--muted);
-}
-
-.inicio-balance-titulos strong {
-  font-size: 18px;
+  font-size: 17px;
   font-weight: 700;
-  line-height: 1.2;
-  color: var(--text);
-}
-
-.inicio-balance-ir {
-  flex: none;
-  color: var(--muted);
 }
 
 .inicio-balance-centro {

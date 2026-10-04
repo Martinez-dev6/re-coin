@@ -13,7 +13,6 @@ import {
   IconoBalanza,
   IconoBilletera,
   IconoCalendarioMes,
-  IconoFlecha,
   IconoFlechaAbajo,
   IconoFlechaArriba,
   IconoHoja,
@@ -54,7 +53,7 @@ function Vacio({ texto, boton, alTocar }) {
 }
 
 // Balance del mes (pedido del dueño, 2026-10-04; estilo nuevo el mismo día, a partir de una imagen):
-// cabeza con el mes, la cifra grande con su ícono, y abajo ingresos, gastos y cuánto se ahorró.
+// la cabeza de los bloques (título y "Ver rendimiento"); dentro, "Balance de <mes>", la cifra grande con su ícono, y abajo ingresos, gastos y cuánto se ahorró.
 // El tono de la tarjeta sigue al balance: verde si quedó a favor, rojo si se gastó más de lo que
 // entró y ámbar si quedó parejo (o no hay movimientos). Los mismos totales del banner (pagados y
 // pendientes, sin transferencias). Toda la tarjeta lleva a Rendimiento. ocultos: el ojo de Inicio.
@@ -87,61 +86,63 @@ export function BloqueBalance({ pesos, ocultos, posicion }) {
   const largo = Math.max(pesos(ingresos).length, pesos(gastos).length) > 10;
   const cifraLarga = pesos(Math.abs(balance)).length > 10;
 
+  const verRendimiento = () => navegar('/mi-espacio/rendimiento');
+
   return (
-    <Deslizar
-      as="button"
-      type="button"
-      posicion={posicion}
-      className={`tarjeta inicio-balance ${tono}` + (largo ? ' largo' : '') + (cifraLarga ? ' cifra-larga' : '')}
-      onClick={() => navegar('/mi-espacio/rendimiento')}
-      aria-label={`Balance de ${nombreMes(mes, false)}. Ver rendimiento`}
-    >
-      <span className="inicio-balance-cabeza">
-        <IconoCalendarioMes className="inicio-balance-calendario" />
-        <span className="inicio-balance-titulos">
-          <span>Balance del mes</span>
-          <strong>{nombreMes(mes)}</strong>
+    <>
+      <Cabeza titulo="Balance del mes" enlace="Ver rendimiento" alTocar={verRendimiento} />
+      <Deslizar
+        as="button"
+        type="button"
+        posicion={posicion}
+        className={
+          `tarjeta inicio-balance inicio-bloque-cuerpo ${tono}` + (largo ? ' largo' : '') + (cifraLarga ? ' cifra-larga' : '')
+        }
+        onClick={verRendimiento}
+      >
+        <span className="inicio-balance-cabeza">
+          <IconoCalendarioMes className="inicio-balance-calendario" />
+          <strong className="inicio-balance-titulo">Balance de {nombreMes(mes, false)}</strong>
         </span>
-        <IconoFlecha className="inicio-balance-ir" />
-      </span>
 
-      <span className="inicio-balance-centro">
-        <span className="inicio-balance-icono">
-          <IconoBilletera tamano={26} />
+        <span className="inicio-balance-centro">
+          <span className="inicio-balance-icono">
+            <IconoBilletera tamano={26} />
+          </span>
+          <span className="inicio-balance-cifra">
+            <strong>
+              {signo}
+              {pesos(Math.abs(balance))}
+            </strong>
+            <span>{titulo}</span>
+          </span>
         </span>
-        <span className="inicio-balance-cifra">
-          <strong>
-            {signo}
-            {pesos(Math.abs(balance))}
-          </strong>
-          <span>{titulo}</span>
-        </span>
-      </span>
 
-      <span className="inicio-balance-pie">
-        <span className="inicio-balance-dato">
-          <span className="inicio-balance-dato-nombre">
-            <IconoFlechaArriba tamano={16} className="ingreso" />
-            Ingresos
+        <span className="inicio-balance-pie">
+          <span className="inicio-balance-dato">
+            <span className="inicio-balance-dato-nombre">
+              <IconoFlechaArriba tamano={16} className="ingreso" />
+              Ingresos
+            </span>
+            <strong>{pesos(ingresos)}</strong>
           </span>
-          <strong>{pesos(ingresos)}</strong>
-        </span>
-        <span className="inicio-balance-dato">
-          <span className="inicio-balance-dato-nombre">
-            <IconoFlechaAbajo tamano={16} className="gasto" />
-            Gastos
+          <span className="inicio-balance-dato">
+            <span className="inicio-balance-dato-nombre">
+              <IconoFlechaAbajo tamano={16} className="gasto" />
+              Gastos
+            </span>
+            <strong>{pesos(gastos)}</strong>
           </span>
-          <strong>{pesos(gastos)}</strong>
-        </span>
-        <span className="inicio-balance-ahorro">
-          <span className="inicio-balance-ahorro-cifra">
-            <Icono tamano={18} />
-            <strong>{cifra}</strong>
+          <span className="inicio-balance-ahorro">
+            <span className="inicio-balance-ahorro-cifra">
+              <Icono tamano={18} />
+              <strong>{cifra}</strong>
+            </span>
+            <span>{nota}</span>
           </span>
-          <span>{nota}</span>
         </span>
-      </span>
-    </Deslizar>
+      </Deslizar>
+    </>
   );
 }
 
