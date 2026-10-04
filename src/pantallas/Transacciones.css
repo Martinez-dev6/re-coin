@@ -11,24 +11,6 @@
   height: 48px;
 }
 
-.transacciones-izquierda {
-  display: flex;
-  gap: 6px;
-}
-
-/* Con Volver y la lupa a la izquierda no cabía "Septiembre 2026" en una línea: aquí el mes va en
-   16 px y las flechas en 36 px de ancho (siguen de 44 de alto). El ancho fijo del texto es el del
-   mes más largo, para que las flechas no se muevan al cambiar de mes. */
-.transacciones-fila .mes-flecha {
-  width: 36px;
-}
-
-.transacciones-fila .mes-flechas-texto {
-  min-width: 136px;
-  white-space: nowrap;
-  font-size: 16px;
-}
-
 /* Dos cifras separadas por una línea (también en Planes → Programados). */
 .totales-banner {
   display: flex;
@@ -60,7 +42,7 @@
   letter-spacing: -0.01em;
 }
 
-/* Si los cuatro chips no caben (teléfonos angostos), se desplazan de lado. */
+/* Filtros y los cuatro tipos: si no caben, se desplazan de lado. */
 .transacciones-chips {
   padding: 10px 16px 0;
   overflow-x: auto;
@@ -75,20 +57,17 @@
   padding: 4px 16px 0;
 }
 
-/* Punto sobre el botón de filtros cuando hay alguno activo aparte del tipo. */
-.transacciones-boton-filtros {
-  position: relative;
+/* Chip de filtros: solo el ícono; con filtros activos aparte del tipo, en el color del tema suave
+   y con cuántos son. */
+.transacciones-chip-filtros > span {
+  padding: 0 11px;
+  color: var(--accent-text);
 }
 
-.transacciones-filtros-punto {
-  position: absolute;
-  top: 9px;
-  right: 9px;
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  background: var(--on-banner);
-  box-shadow: 0 0 0 2px var(--banner-bg);
+.transacciones-chip-filtros.activos > span {
+  background: var(--accent-soft);
+  border-color: transparent;
+  font-weight: 700;
 }
 
 .transacciones-aviso-filtros {

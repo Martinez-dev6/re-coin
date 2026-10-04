@@ -2,6 +2,7 @@
 // app de la pantalla de inicio, se borra con ella. Para no perder datos: Mi espacio →
 // Importar y exportar → Copia de seguridad (src/datos/respaldo.js).
 import Dexie from 'dexie';
+import { acentoActual } from '../tema/colores.js';
 import { sumarMeses } from '../utilidades/fechas.js';
 import { CATEGORIAS_INICIALES } from './categoriasIniciales.js';
 
@@ -77,6 +78,19 @@ db.version(5).stores({
   programados: 'id, orden',
   movimientos: 'id, fecha, cuentaId, cuentaDestinoId, categoriaId, *etiquetaIds, tarjetaId, programadoId',
 });
+
+// Versión 6 (2026-10-04): el dueño cambió ocho de los colores principales. Las cuentas con uno de
+// los de antes pasan al que lo reemplazó (colores.js). Las copias viejas se pasan al restaurar.
+db.version(6)
+  .stores({})
+  .upgrade((tx) =>
+    tx
+      .table('cuentas')
+      .toCollection()
+      .modify((cuenta) => {
+        cuenta.color = acentoActual(cuenta.color) ?? null;
+      }),
+  );
 
 // Solo la primera vez que se crea la base de datos. Las nuevas toman orden = Date.now()
 // (ordenAlFinal), así que "Otros" lleva un orden mayor para seguir de último.

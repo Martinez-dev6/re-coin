@@ -2,15 +2,16 @@
 // Se usa localStorage (y no la base de datos) porque se lee de forma inmediata al abrir
 // la app: así no hay un destello del tema equivocado antes de pintar.
 // Ojo: index.html lee esta misma clave en un script en línea; si cambia, cambiarla allá.
-import { ACENTOS, ACENTO_PREDETERMINADO, MODOS, MODO_PREDETERMINADO } from './colores.js';
+import { ACENTOS, ACENTO_PREDETERMINADO, acentoActual, MODOS, MODO_PREDETERMINADO } from './colores.js';
 
 const CLAVE = 'sendo.tema';
 
 export function leerPreferencias() {
   try {
     const guardado = JSON.parse(localStorage.getItem(CLAVE)) ?? {};
+    const acento = acentoActual(guardado.acento);
     return {
-      acento: ACENTOS.some((a) => a.valor === guardado.acento) ? guardado.acento : ACENTO_PREDETERMINADO,
+      acento: ACENTOS.some((a) => a.valor === acento) ? acento : ACENTO_PREDETERMINADO,
       modo: MODOS.includes(guardado.modo) ? guardado.modo : MODO_PREDETERMINADO,
     };
   } catch {

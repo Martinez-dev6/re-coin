@@ -1,5 +1,8 @@
 // Copia de design/tema.js (fuente de verdad de los colores). Si cambia allá, copiarlo aquí.
-// Uso: const t = tema('#2a4dff', 'light')  ->  objeto con todos los colores.
+// Uso: const t = tema('#203fe3', 'light')  ->  objeto con todos los colores.
+// Cambio propio (2026-10-04), no está en design/tema.js: "blackish" pide además poca saturación.
+// Con los colores nuevos del dueño, el vinotinto #5c031a es tan oscuro como el negro (luminancia
+// 0,024) y en modo oscuro su banner pasaba a gris grafito como si fuera el negro.
 // En la app real conviene volcar estos valores a variables CSS (--page-bg, --surface, ...).
 // Tokens extra que solo usa Inicio:
 //   expenseOnWhite: isRed ? '#a3195b' : '#c62828',
@@ -7,7 +10,7 @@
 //   badgeRedText: dark ? '#1a0f0f' : '#ffffff',
 //   badgeGreenBg: dark ? '#5fd39a' : '#0b7a43',
 //   badgeGreenText: dark ? '#0e1a13' : '#ffffff',
-export function tema(accent = '#2a4dff', mode = 'light') {
+export function tema(accent = '#203fe3', mode = 'light') {
 const dark = mode === 'dark';
 const a = accent;
 const h = a.replace('#', '');
@@ -22,7 +25,7 @@ const mx = Math.max(rgb[0], rgb[1], rgb[2]), mn = Math.min(rgb[0], rgb[1], rgb[2
 let hue = 0;
 if (mx !== mn) { const d = mx - mn; hue = mx === rgb[0] ? ((rgb[1] - rgb[2]) / d + 6) % 6 : mx === rgb[1] ? (rgb[2] - rgb[0]) / d + 2 : (rgb[0] - rgb[1]) / d + 4; hue *= 60; }
 const isRed = mx !== mn && (mx - mn) / mx > 0.4 && (hue >= 350 || hue <= 10);
-const blackish = lum(rgb) < 0.03;
+const blackish = lum(rgb) < 0.03 && (mx === 0 || (mx - mn) / mx < 0.5);
 let banner = rgb;
 if (dark && blackish) banner = [43, 45, 55];
 const bl = lum(banner);

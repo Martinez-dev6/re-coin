@@ -49,33 +49,23 @@ export default function Transacciones() {
       <div className="encabezado-fijo">
         <BarraEstado />
         <header className="banner transacciones-banner">
+          {/* Volver (lleva a Inicio), el mes y la lupa. Los filtros van junto a los chips de abajo
+              (pedido del dueño, 2026-10-04): así el mes queda centrado y del tamaño de siempre. */}
           <div className="transacciones-fila">
-            {/* Volver lleva a Inicio (pedido del dueño, 2026-10-04), junto a la lupa. */}
-            <div className="transacciones-izquierda">
-              <button type="button" className="boton-banner" aria-label="Volver a Inicio" onClick={() => navegar('/')}>
-                <IconoVolver />
-              </button>
-              <button
-                type="button"
-                className="boton-banner"
-                aria-label="Buscar"
-                onClick={() => {
-                  prepararTeclado();
-                  navegar('/transacciones/buscar');
-                }}
-              >
-                <IconoBuscar />
-              </button>
-            </div>
+            <button type="button" className="boton-banner" aria-label="Volver a Inicio" onClick={() => navegar('/')}>
+              <IconoVolver />
+            </button>
             <MesConFlechas />
             <button
               type="button"
-              className="boton-banner transacciones-boton-filtros"
-              aria-label={extra ? `Filtros (${extra} activos)` : 'Filtros'}
-              onClick={() => setPanelAbierto(true)}
+              className="boton-banner"
+              aria-label="Buscar"
+              onClick={() => {
+                prepararTeclado();
+                navegar('/transacciones/buscar');
+              }}
             >
-              <IconoFiltros />
-              {extra > 0 && <span className="transacciones-filtros-punto" aria-hidden="true" />}
+              <IconoBuscar />
             </button>
           </div>
           <Deslizar posicion={posicion} distancia={16} className="totales-banner">
@@ -92,7 +82,20 @@ export default function Transacciones() {
         </header>
       </div>
 
+      {/* Si no caben, los chips se desplazan de lado (Transacciones.css). Filtros va de primero para que
+          siempre se vea. */}
       <div className="chips transacciones-chips" role="group" aria-label="Tipo de movimiento">
+        <button
+          type="button"
+          className={'chip transacciones-chip-filtros' + (extra > 0 ? ' activos' : '')}
+          aria-label={extra ? `Filtros (${extra} activos)` : 'Filtros'}
+          onClick={() => setPanelAbierto(true)}
+        >
+          <span>
+            <IconoFiltros tamano={16} />
+            {extra > 0 && extra}
+          </span>
+        </button>
         {TIPOS_FILTRO.map(({ valor, texto }) => (
           <button key={valor} type="button" className="chip" aria-pressed={filtros.tipo === valor} onClick={() => elegirTipo(valor)}>
             <span>{texto}</span>

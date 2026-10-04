@@ -1,5 +1,6 @@
 // Copia de seguridad: todas las tablas de la base de datos en un archivo JSON.
 // Las preferencias de color y modo no van (viven en localStorage y no son datos).
+import { acentoActual } from '../tema/colores.js';
 import { db } from './db.js';
 
 const APP = 'sendo';
@@ -116,11 +117,17 @@ export async function leerCopia(archivo) {
 }
 
 // Reemplaza todo lo guardado por la copia, en una sola operación: si algo falla, no cambia nada.
+// Una copia de antes del 2026-10-04 puede traer cuentas con un color principal que ya no existe:
+// pasan al que lo reemplazó.
 export function restaurarCopia(copia) {
+  const datos = {
+    ...copia.datos,
+    cuentas: (copia.datos.cuentas ?? []).map((c) => ({ ...c, color: acentoActual(c.color) ?? null })),
+  };
   return db.transaction('rw', db.tables, async () => {
     for (const tabla of db.tables) {
       await tabla.clear();
-      await tabla.bulkAdd(copia.datos[tabla.name] ?? []);
+      await tabla.bulkAdd(datos[tabla.name] ?? []);
     }
   });
 }
