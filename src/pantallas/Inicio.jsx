@@ -1,6 +1,7 @@
 import { useLayoutEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Avatar from '../componentes/Avatar.jsx';
+import AvisoCopia from '../componentes/AvisoCopia.jsx';
 import BarraEstado from '../componentes/BarraEstado.jsx';
 import Deslizar from '../componentes/Deslizar.jsx';
 import PanelCuenta from '../componentes/PanelCuenta.jsx';
@@ -239,6 +240,7 @@ export default function Inicio() {
 
       {!cargando && !sinCuentas && (
         <div className="inicio-contenido">
+          <AvisoCopia />
           {bloques.map(({ id }) => (
             <section key={id} className="inicio-bloque">
               {id === 'pendientes' && (

@@ -1,0 +1,103 @@
+/* Aviso de copia de seguridad en Inicio (AvisoCopia.jsx). Va antes de los bloques; el espacio
+   de abajo está dentro de la parte que se encoge, para que al irse no quede un salto. */
+.aviso-copia {
+  display: grid;
+  grid-template-rows: 1fr;
+  animation: aviso-copia-entra 300ms var(--curva-entrar) both;
+  transition:
+    grid-template-rows 320ms var(--curva-suave),
+    opacity 220ms var(--curva-suave);
+}
+
+.aviso-copia.saliendo {
+  grid-template-rows: 0fr;
+  opacity: 0;
+}
+
+@keyframes aviso-copia-entra {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}
+
+.aviso-copia-interior {
+  min-height: 0;
+  overflow: hidden;
+  padding-bottom: 20px;
+}
+
+.aviso-copia-tarjeta {
+  padding: 16px;
+}
+
+.aviso-copia-cabeza {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.aviso-copia-textos {
+  min-width: 0;
+  flex: 1;
+}
+
+.aviso-copia-titulo {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 20px;
+}
+
+.aviso-copia-texto {
+  margin: 4px 0 0;
+  font-size: 13px;
+  line-height: 18px;
+  color: var(--muted);
+}
+
+.aviso-copia-error {
+  margin: 6px 0 0;
+  font-size: 13px;
+  line-height: 18px;
+  color: var(--expense);
+}
+
+.aviso-copia-botones {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.aviso-copia-botones button {
+  height: 38px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 19px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.aviso-copia-ahora-no {
+  background: transparent;
+  color: var(--muted);
+}
+
+.aviso-copia-hacer {
+  background: var(--banner-bg);
+  box-shadow: 0 0 0 1px var(--banner-ring);
+  color: var(--on-banner);
+}
+
+.aviso-copia-hacer:disabled {
+  opacity: 0.6;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aviso-copia {
+    animation: none;
+    transition: none;
+  }
+}

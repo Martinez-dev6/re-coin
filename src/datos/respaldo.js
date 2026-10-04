@@ -1,5 +1,6 @@
 // Copia de seguridad: todas las tablas de la base de datos en un archivo JSON.
 // Las preferencias de color y modo no van (viven en localStorage y no son datos).
+import { cambiarAjustes } from '../estado/ajustes.js';
 import { acentoActual } from '../tema/colores.js';
 import { db } from './db.js';
 
@@ -83,7 +84,34 @@ export async function compartirArchivo(archivo, titulo) {
 export async function exportarCopia(datos) {
   const copia = { app: APP, version: db.verno, creada: new Date().toISOString(), datos };
   const archivo = new File([JSON.stringify(copia, null, 2)], nombreArchivo(), { type: 'application/json' });
-  return compartirArchivo(archivo, 'Copia de Re-Coin');
+  const lista = await compartirArchivo(archivo, 'Copia de Re-Coin');
+  if (lista) marcarCopia();
+  return lista;
+}
+
+const DIA_MS = 24 * 60 * 60 * 1000;
+// Aviso de copia en Inicio (pedido del dueño el 2026-10-04, después de perder sus datos al
+// borrar la app del iPhone para cambiarle el ícono): sale si nunca se hizo una copia y ya hay
+// algunos movimientos, o si la última tiene una semana o más y desde entonces hay movimientos
+// nuevos. "Ahora no" lo aplaza tres días.
+const DIAS_ENTRE_COPIAS = 7;
+const DIAS_AL_POSPONER = 3;
+const MINIMO_SIN_COPIA = 3;
+
+const marcarCopia = () => cambiarAjustes({ ultimaCopia: Date.now(), avisoCopiaPospuesto: null });
+export const posponerAvisoCopia = () => cambiarAjustes({ avisoCopiaPospuesto: Date.now() + DIAS_AL_POSPONER * DIA_MS });
+
+// Días completos desde la última copia, o null si nunca se hizo.
+export const diasDesdeCopia = ({ ultimaCopia }, ahora = Date.now()) =>
+  ultimaCopia ? Math.floor((ahora - ultimaCopia) / DIA_MS) : null;
+
+// Devuelve { dias, nuevos } si toca avisar (dias: null si nunca hubo copia), o null.
+export function avisoDeCopia(movimientos, ajustes, ahora = Date.now()) {
+  if (ajustes.avisoCopiaPospuesto && ahora < ajustes.avisoCopiaPospuesto) return null;
+  const dias = diasDesdeCopia(ajustes, ahora);
+  const nuevos = movimientos.filter((m) => !ajustes.ultimaCopia || (m.creado ?? 0) > ajustes.ultimaCopia).length;
+  if (dias === null) return nuevos >= MINIMO_SIN_COPIA ? { dias, nuevos } : null;
+  return dias >= DIAS_ENTRE_COPIAS && nuevos > 0 ? { dias, nuevos } : null;
 }
 
 // Lee y comprueba un archivo de copia. Devuelve { copia, resumen } o lanza un Error con un
@@ -127,10 +155,13 @@ export function restaurarCopia(copia) {
     ...copia.datos,
     cuentas: (copia.datos.cuentas ?? []).map((c) => ({ ...c, color: acentoActual(c.color) ?? null })),
   };
-  return db.transaction('rw', db.tables, async () => {
-    for (const tabla of db.tables) {
-      await tabla.clear();
-      await tabla.bulkAdd(datos[tabla.name] ?? []);
-    }
-  });
+  // Lo restaurado ya está en una copia: cuenta como la última.
+  return db
+    .transaction('rw', db.tables, async () => {
+      for (const tabla of db.tables) {
+        await tabla.clear();
+        await tabla.bulkAdd(datos[tabla.name] ?? []);
+      }
+    })
+    .then(marcarCopia);
 }

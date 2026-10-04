@@ -8,10 +8,19 @@ import CabeceraSubpagina from '../componentes/CabeceraSubpagina.jsx';
 import { IconoBajar, IconoCsv, IconoEscudoCheck, IconoExcel, IconoFlecha, IconoInfo } from '../componentes/iconos.jsx';
 import PanelInferior from '../componentes/PanelInferior.jsx';
 import { exportarCsv, exportarExcel } from '../datos/exportar.js';
-import { exportarCopia, leerCopia, leerDatos, restaurarCopia } from '../datos/respaldo.js';
+import { diasDesdeCopia, exportarCopia, leerCopia, leerDatos, restaurarCopia } from '../datos/respaldo.js';
+import { useAjustes } from '../estado/ajustes.js';
 import './ImportarExportar.css';
 
 const plural = (n, una, varias) => `${n} ${n === 1 ? una : varias}`;
+
+// Debajo de "Copia de seguridad": cuándo fue la última.
+function textoUltimaCopia(dias) {
+  if (dias === null) return 'Aún no has hecho ninguna';
+  if (dias === 0) return 'Última copia: hoy';
+  if (dias === 1) return 'Última copia: ayer';
+  return `Última copia: hace ${dias} días`;
+}
 
 // tono: color del ícono en "Predeterminado" (ver comunes.css).
 function Fila({ Icono, tono, titulo, detalle, alTocar, ocupado }) {
@@ -37,6 +46,7 @@ export default function ImportarExportar() {
   const [ocupado, setOcupado] = useState(false);
   const [aviso, setAviso] = useState(null); // { texto, error }
   const [porRestaurar, setPorRestaurar] = useState(null); // { copia, resumen }
+  const ultimaCopia = textoUltimaCopia(diasDesdeCopia(useAjustes()));
 
   const exportar = async () => {
     setOcupado(true);
@@ -120,7 +130,7 @@ export default function ImportarExportar() {
             Icono={IconoEscudoCheck}
             tono="g"
             titulo="Copia de seguridad"
-            detalle="Guarda tus cuentas, categorías y movimientos"
+            detalle={ultimaCopia}
             alTocar={exportar}
             ocupado={ocupado || !datos}
           />

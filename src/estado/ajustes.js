@@ -10,7 +10,18 @@ const CLAVE = 'sendo.ajustes';
 // bloquesInicio: [{ id, visible }] en el orden en que se ven en Inicio (ver bloquesDeInicio).
 // colorIconos: 'predeterminado' (cada opción con su color suave) | 'tema' (todos con el color del
 // tema). Mi espacio → Apariencia (pedido del dueño, 2026-10-04).
-const PREDETERMINADOS = { nombre: '', foto: null, semanaEmpieza: 'lunes', bloquesInicio: [], colorIconos: 'predeterminado' };
+// ultimaCopia: cuándo se hizo o restauró la última copia de seguridad (ms), o null.
+// avisoCopiaPospuesto: hasta cuándo no sale el aviso de copia en Inicio ("Ahora no"), o null.
+// Viven aquí y no en la base: al borrar la app se pierden junto con los datos, como debe ser.
+const PREDETERMINADOS = {
+  nombre: '',
+  foto: null,
+  semanaEmpieza: 'lunes',
+  bloquesInicio: [],
+  colorIconos: 'predeterminado',
+  ultimaCopia: null,
+  avisoCopiaPospuesto: null,
+};
 
 // Bloques de Inicio que se pueden mostrar, ocultar y ordenar (Mi espacio → Pantalla de inicio).
 // El saldo con ingresos y gastos (el banner) va siempre arriba. visible: cómo vienen de entrada.
