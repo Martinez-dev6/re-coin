@@ -295,6 +295,7 @@
 .inicio-cuenta-saldo {
   margin-top: 1px;
   font-size: 14px;
+  font-weight: 500;
   color: var(--income);
 }
 
@@ -700,95 +701,35 @@
   color: var(--muted);
 }
 
-/* Gastos del mes: panel de la categoría mayor a la izquierda (su color, oscurecido para que el
-   blanco se lea; en modo oscuro más, porque allá los colores de categoría son claros) y, a la
-   derecha, el total, la nota y el carrusel de las que siguen. Toda la tarjeta lleva a Gráficos. */
+/* Gastos del mes: arriba el total y la dona (un botón, lleva a Gráficos); abajo las categorías en
+   una fila que se desliza de lado, dos a la vez, separadas por una línea. */
 .inicio-grafico {
-  display: grid;
-  grid-template-columns: 40% minmax(0, 1fr);
+  padding: 16px 0 14px;
   overflow: hidden;
   color: var(--text);
-  text-align: left;
-  cursor: pointer;
 }
 
 .inicio-grafico.vacio {
-  display: block;
   padding: 16px;
 }
 
-.inicio-grafico-mayor {
-  --panel: color-mix(in srgb, var(--color-parte) 88%, #000);
-  position: relative;
+.inicio-grafico-arriba {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  padding: 16px 14px;
-  overflow: hidden;
-  background: var(--panel);
-  color: #fff;
-}
-
-:root[data-modo='oscuro'] .inicio-grafico-mayor {
-  --panel: color-mix(in srgb, var(--color-parte) 58%, #000);
-}
-
-.inicio-grafico-ondas {
-  position: absolute;
-  inset: auto 0 0;
+  align-items: center;
+  gap: 12px;
   width: 100%;
-  height: 70%;
+  padding: 0 16px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  text-align: left;
 }
 
-.inicio-grafico-ondas path {
-  fill: #fff;
-  opacity: 0.08;
-}
-
-.inicio-grafico-mayor > :not(svg) {
-  position: relative;
-}
-
-.inicio-grafico-mayor-icono {
-  display: grid;
-  place-items: center;
-  width: 44px;
-  height: 44px;
-  margin-bottom: 14px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.92);
-  color: var(--panel);
-}
-
-.inicio-grafico-mayor-porcentaje {
-  font-size: 30px;
-  font-weight: 800;
-  line-height: 1.1;
-  letter-spacing: -0.02em;
-}
-
-.inicio-grafico-mayor-nombre {
-  max-width: 100%;
-  margin-top: 6px;
-  overflow: hidden;
-  font-size: 14px;
-  font-weight: 600;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.inicio-grafico-mayor-valor {
-  margin-top: 4px;
-  font-size: 13px;
-  white-space: nowrap;
-  opacity: 0.9;
-}
-
-.inicio-grafico-cuerpo {
+.inicio-grafico-textos {
   display: flex;
+  flex: 1;
   flex-direction: column;
   min-width: 0;
-  padding: 16px 0 14px 14px;
 }
 
 .inicio-grafico-etiqueta {
@@ -798,35 +739,63 @@
 
 .inicio-grafico-total {
   margin-top: 2px;
-  font-size: 24px;
-  font-weight: 800;
+  font-size: 28px;
+  font-weight: 700;
   letter-spacing: -0.02em;
   white-space: nowrap;
 }
 
 .inicio-grafico-total.largo {
-  font-size: 20px;
+  font-size: 23px;
 }
 
 .inicio-grafico-nota {
-  margin-top: 4px;
-  padding-right: 14px;
+  margin-top: 2px;
   font-size: 13px;
-  line-height: 1.35;
   color: var(--muted);
 }
 
+.inicio-grafico-dona {
+  flex: none;
+  width: 112px;
+  height: 112px;
+}
+
+.inicio-grafico-dona .dona {
+  width: 100%;
+  height: 100%;
+}
+
+.inicio-grafico-dona .dona-centro {
+  padding: 0 24px;
+}
+
+.inicio-grafico-dona-porcentaje {
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.15;
+}
+
+.inicio-grafico-dona-nombre {
+  max-width: 100%;
+  overflow: hidden;
+  font-size: 11px;
+  color: var(--muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .inicio-grafico-linea {
+  display: block;
   height: 1px;
-  margin: 12px 14px 10px 0;
+  margin: 14px 16px 4px;
   background: var(--divider);
 }
 
-/* Las que siguen: cada una ocupa casi todo el ancho y asoma la siguiente. */
+/* margin (no padding): así el área visible mide justo dos categorías y al final no asoma la anterior. */
 .inicio-carrusel {
   display: flex;
-  gap: 8px;
-  padding-right: 14px;
+  margin: 0 8px;
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   overscroll-behavior-x: contain;
@@ -839,16 +808,42 @@
 }
 
 .inicio-carrusel-item {
+  position: relative;
   display: flex;
-  flex: 0 0 88%;
+  flex: 0 0 50%;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   min-width: 0;
+  padding: 10px 8px;
+  border: 0;
+  border-radius: 16px;
+  background: transparent;
+  color: inherit;
+  text-align: left;
   scroll-snap-align: start;
+  transition: background-color 0.2s ease;
 }
 
-.inicio-carrusel-item:only-child {
-  flex-basis: 100%;
+/* Línea entre una y otra (no en la primera). Un píxel afuera de la fila: si esa categoría queda
+   pegada al borde al deslizar, la línea se recorta y no asoma. */
+.inicio-carrusel-item + .inicio-carrusel-item::before {
+  content: '';
+  position: absolute;
+  left: -1px;
+  top: 14px;
+  bottom: 14px;
+  width: 1px;
+  background: var(--divider);
+  transition: opacity 0.2s ease;
+}
+
+.inicio-carrusel-item.elegida {
+  background: var(--track);
+}
+
+.inicio-carrusel-item.elegida::before,
+.inicio-carrusel-item.elegida + .inicio-carrusel-item::before {
+  opacity: 0;
 }
 
 .inicio-carrusel-texto {
@@ -866,8 +861,8 @@
 }
 
 .inicio-carrusel-porcentaje {
-  font-size: 18px;
-  font-weight: 800;
+  font-size: 19px;
+  font-weight: 700;
   line-height: 1.25;
 }
 
@@ -875,18 +870,6 @@
   font-size: 13px;
   color: var(--muted);
   white-space: nowrap;
-}
-
-.inicio-carrusel-ver {
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--accent-text);
-  white-space: nowrap;
-}
-
-.inicio-carrusel-ir {
-  flex: none;
-  color: var(--muted);
 }
 
 .inicio-grafico-vacio {
@@ -959,4 +942,9 @@
 .inicio-tarjeta-cifras span {
   font-size: 11px;
   color: var(--muted);
+}
+
+/* Cupo disponible de todas las tarjetas: la fila Total de Cuentas, con el cupo total debajo. */
+.inicio-tarjetas-total {
+  min-height: 60px;
 }

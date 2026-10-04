@@ -3,6 +3,7 @@
 // versiones cortas de lo que hay en Rendimiento, Planes, Gráficos y Tarjetas, con "Ver todo" para
 // ir allá. pesos: formato de las
 // cifras (respeta el ojo de Inicio).
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CirculoCategoria from '../componentes/CirculoCategoria.jsx';
 import Deslizar from '../componentes/Deslizar.jsx';
@@ -12,11 +13,11 @@ import {
   IconoBalanza,
   IconoBilletera,
   IconoCalendarioMes,
-  IconoFlecha,
   IconoFlechaAbajo,
   IconoFlechaArriba,
   IconoHoja,
 } from '../componentes/iconos.jsx';
+import { Dona } from '../componentes/Graficos.jsx';
 import { IconoPorNombre } from '../componentes/iconosPorNombre.jsx';
 import { useDatos } from '../datos/DatosContext.jsx';
 import { porCategoria, textoMes, totalDelMes } from '../datos/graficos.js';
@@ -236,105 +237,88 @@ export function BloqueMetas({ pesos }) {
   );
 }
 
-// Gastos del mes (rediseño pedido por el dueño, 2026-10-04, "diseño editorial asimétrico"): a la
-// izquierda un panel del color de la categoría donde más se gastó (ícono, %, nombre y valor); a la
-// derecha el total y, debajo, las que siguen en un carrusel que se desliza (hasta 5; si hay más,
-// una última tarjeta "+N más" que, como todo el bloque, lleva a Gráficos). El carrusel es un scroll
-// horizontal con scroll-snap: deslizar no cuenta como toque, así que no abre Gráficos.
-const MAXIMO_CARRUSEL = 5;
-
-function Ondas() {
-  return (
-    <svg className="inicio-grafico-ondas" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-      <path d="M0,62 C30,48 55,78 100,52 L100,100 L0,100 Z" />
-      <path d="M0,80 C35,66 60,94 100,74 L100,100 L0,100 Z" />
-    </svg>
-  );
-}
+// Gastos del mes (rediseño pedido por el dueño, 2026-10-04, con una imagen de referencia): arriba
+// el total y una dona pequeña con el % y el nombre de la categoría elegida (de entrada, la mayor);
+// abajo las categorías (hasta 5, de la mayor a la menor) en una fila que se desliza de lado, dos a
+// la vez. Tocar una categoría la resalta en la dona (otra vez, la suelta); tocar la dona o el total
+// lleva a Gráficos. Deslizar la fila no cuenta como toque.
+const MAXIMO_CATEGORIAS = 5;
 
 export function BloqueGrafico({ pesos, posicion }) {
   const navegar = useNavigate();
   const { anio, mes } = useMes();
   const { movimientosPorMes, categoria } = useDatos();
   const { total, todas } = porCategoria(movimientosPorMes, categoria, 'gasto', textoMes(anio, mes));
-  const [mayor, ...resto] = todas;
-  const siguientes = resto.slice(0, MAXIMO_CARRUSEL);
-  const faltan = resto.length - siguientes.length;
-  const verGraficos = () => navegar('/mi-espacio/graficos');
-  const icono = (clave) => categoria(clave)?.icono ?? 'cuadricula';
-
-  let nota = '';
-  if (mayor) {
-    nota =
-      todas.length === 1
-        ? `Todos tus gastos fueron en ${mayor.nombre.toLowerCase()}.`
-        : `La mayor parte de tus gastos fue en ${mayor.nombre.toLowerCase()}.`;
-  }
 
   return (
     <>
-      <Cabeza titulo="Gastos del mes" enlace="Ver gráficos" alTocar={verGraficos} />
-      <Deslizar
-        posicion={posicion}
-        className={'tarjeta inicio-grafico inicio-bloque-cuerpo' + (mayor ? '' : ' vacio')}
-        role="button"
-        tabIndex={0}
-        aria-label={`Gastos de ${nombreMes(mes, false)}: ver gráficos`}
-        onClick={verGraficos}
-        onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && verGraficos()}
-      >
-        {!mayor ? (
+      <Cabeza titulo="Gastos del mes" enlace="Ver gráficos" alTocar={() => navegar('/mi-espacio/graficos')} />
+      <Deslizar posicion={posicion} className={'tarjeta inicio-grafico inicio-bloque-cuerpo' + (todas.length ? '' : ' vacio')}>
+        {todas.length === 0 ? (
           <span className="inicio-grafico-vacio">Sin gastos en {nombreMes(mes, false)}.</span>
         ) : (
-          <>
-            <span className="inicio-grafico-mayor" style={{ '--color-parte': mayor.color }}>
-              <Ondas />
-              <span className="inicio-grafico-mayor-icono">
-                <IconoPorNombre nombre={icono(mayor.clave)} tamano={22} />
-              </span>
-              <strong className="inicio-grafico-mayor-porcentaje">{porcentaje(mayor.valor, total)} %</strong>
-              <span className="inicio-grafico-mayor-nombre">{mayor.nombre}</span>
-              <span className="inicio-grafico-mayor-valor">{pesos(mayor.valor)}</span>
-            </span>
-
-            <span className="inicio-grafico-cuerpo">
-              <span className="inicio-grafico-etiqueta">Total de {nombreMes(mes, false)}</span>
-              <strong className={'inicio-grafico-total' + (pesos(total).length > 10 ? ' largo' : '')}>
-                {pesos(total)}
-              </strong>
-              <span className="inicio-grafico-nota">{nota}</span>
-              {siguientes.length > 0 && (
-                <>
-                  <span className="inicio-grafico-linea" />
-                  <span className="inicio-carrusel">
-                    {siguientes.map((p) => (
-                      <span key={p.clave} className="inicio-carrusel-item">
-                        <CirculoCategoria icono={icono(p.clave)} color={categoria(p.clave)?.color ?? null} talla="mediano" />
-                        <span className="inicio-carrusel-texto">
-                          <span className="inicio-carrusel-nombre">{p.nombre}</span>
-                          <strong className="inicio-carrusel-porcentaje">{porcentaje(p.valor, total)} %</strong>
-                          <span className="inicio-carrusel-valor">{pesos(p.valor)}</span>
-                        </span>
-                        <IconoFlecha className="inicio-carrusel-ir" />
-                      </span>
-                    ))}
-                    {faltan > 0 && (
-                      <span className="inicio-carrusel-item mas">
-                        <CirculoCategoria icono="cuadricula" color="acento" talla="mediano" />
-                        <span className="inicio-carrusel-texto">
-                          <strong className="inicio-carrusel-porcentaje">+{faltan} más</strong>
-                          <span className="inicio-carrusel-ver">Ver en gráficos</span>
-                        </span>
-                        <IconoFlecha className="inicio-carrusel-ir" />
-                      </span>
-                    )}
-                  </span>
-                </>
-              )}
-            </span>
-          </>
+          // key: al cambiar de mes se suelta la categoría elegida y la fila vuelve al principio.
+          <GastosDelMes key={textoMes(anio, mes)} todas={todas} total={total} pesos={pesos} mes={mes} />
         )}
       </Deslizar>
+    </>
+  );
+}
+
+function GastosDelMes({ todas, total, pesos, mes }) {
+  const navegar = useNavigate();
+  const { categoria } = useDatos();
+  const [elegida, setElegida] = useState(null);
+  const verGraficos = () => navegar('/mi-espacio/graficos');
+  const visibles = todas.slice(0, MAXIMO_CATEGORIAS);
+  // En la dona, lo que no sale en la fila va junto en gris.
+  const resto = todas.slice(MAXIMO_CATEGORIAS).reduce((t, p) => t + p.valor, 0);
+  const partes = resto > 0 ? [...visibles, { clave: 'otras', nombre: 'Otras', valor: resto, color: 'var(--ch-other)' }] : visibles;
+  const centro = visibles.find((p) => p.clave === elegida) ?? visibles[0];
+  const icono = (clave) => categoria(clave)?.icono ?? 'cuadricula';
+
+  return (
+    <>
+      <button type="button" className="inicio-grafico-arriba" onClick={verGraficos}>
+        <span className="inicio-grafico-textos">
+          <span className="inicio-grafico-etiqueta">Total de {nombreMes(mes, false)}</span>
+          <strong className={'inicio-grafico-total' + (pesos(total).length > 11 ? ' largo' : '')}>{pesos(total)}</strong>
+          <span className="inicio-grafico-nota">{todas.length === 1 ? 'En 1 categoría' : `En ${todas.length} categorías`}</span>
+        </span>
+        <span className="inicio-grafico-dona">
+          <Dona
+            partes={partes}
+            elegida={elegida}
+            etiqueta={`Gastos de ${nombreMes(mes, false)} por categoría`}
+            centro={
+              <>
+                <strong className="inicio-grafico-dona-porcentaje">{porcentaje(centro.valor, total)} %</strong>
+                <span className="inicio-grafico-dona-nombre">{centro.nombre}</span>
+              </>
+            }
+          />
+        </span>
+      </button>
+      <span className="inicio-grafico-linea" />
+      <div className="inicio-carrusel" role="radiogroup" aria-label="Resaltar una categoría">
+        {visibles.map((p) => (
+          <button
+            key={p.clave}
+            type="button"
+            role="radio"
+            aria-checked={elegida === p.clave}
+            className={'inicio-carrusel-item' + (elegida === p.clave ? ' elegida' : '')}
+            onClick={() => setElegida((e) => (e === p.clave ? null : p.clave))}
+          >
+            <CirculoCategoria icono={icono(p.clave)} color={categoria(p.clave)?.color ?? null} talla="mediano" />
+            <span className="inicio-carrusel-texto">
+              <span className="inicio-carrusel-nombre">{p.nombre}</span>
+              <strong className="inicio-carrusel-porcentaje">{porcentaje(p.valor, total)} %</strong>
+              <span className="inicio-carrusel-valor">{pesos(p.valor)}</span>
+            </span>
+          </button>
+        ))}
+      </div>
     </>
   );
 }
@@ -380,6 +364,14 @@ export function BloqueTarjetas({ pesos }) {
               </span>
             );
           })}
+          {/* Última fila, como el Total de Cuentas (pedido del dueño): cupo disponible de todas. */}
+          <span className="inicio-cuentas-total inicio-tarjetas-total">
+            <span className="inicio-cuentas-total-titulo">Cupo disponible</span>
+            <span className="inicio-tarjeta-cifras">
+              <strong>{pesos(tarjetas.reduce((t, x) => t + Math.max(0, x.cupo - x.usado), 0))}</strong>
+              <span>de {pesos(tarjetas.reduce((t, x) => t + x.cupo, 0))}</span>
+            </span>
+          </span>
         </button>
       )}
     </>
