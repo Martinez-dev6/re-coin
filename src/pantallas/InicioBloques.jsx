@@ -8,6 +8,16 @@ import CirculoCategoria from '../componentes/CirculoCategoria.jsx';
 import Deslizar from '../componentes/Deslizar.jsx';
 import FilaPresupuesto from '../componentes/FilaPresupuesto.jsx';
 import { Dona } from '../componentes/Graficos.jsx';
+import {
+  IconoBajada,
+  IconoBalanza,
+  IconoBilletera,
+  IconoCalendarioMes,
+  IconoFlecha,
+  IconoFlechaAbajo,
+  IconoFlechaArriba,
+  IconoHoja,
+} from '../componentes/iconos.jsx';
 import { IconoPorNombre } from '../componentes/iconosPorNombre.jsx';
 import { useDatos } from '../datos/DatosContext.jsx';
 import { porCategoria, textoMes, totalDelMes } from '../datos/graficos.js';
@@ -43,9 +53,17 @@ function Vacio({ texto, boton, alTocar }) {
   );
 }
 
-// Balance del mes (pedido del dueño, 2026-10-04): ingresos − gastos, cuánto se ahorró y una barra
-// por cada uno, del largo de su cifra frente a la mayor. Los mismos totales del banner (pagados y
+// Balance del mes (pedido del dueño, 2026-10-04; estilo nuevo el mismo día, a partir de una imagen):
+// cabeza con el mes, la cifra grande con su ícono, y abajo ingresos, gastos y cuánto se ahorró.
+// El tono de la tarjeta sigue al balance: verde si quedó a favor, rojo si se gastó más de lo que
+// entró y ámbar si quedó parejo (o no hay movimientos). Los mismos totales del banner (pagados y
 // pendientes, sin transferencias). Toda la tarjeta lleva a Rendimiento. ocultos: el ojo de Inicio.
+const TONOS = {
+  positivo: { Icono: IconoHoja, titulo: 'Balance positivo' },
+  negativo: { Icono: IconoBajada, titulo: 'Balance negativo' },
+  parejo: { Icono: IconoBalanza, titulo: 'Balance parejo' },
+};
+
 export function BloqueBalance({ pesos, ocultos, posicion }) {
   const navegar = useNavigate();
   const { anio, mes } = useMes();
@@ -53,48 +71,77 @@ export function BloqueBalance({ pesos, ocultos, posicion }) {
   const ingresos = totalDelMes(movimientosPorMes, 'ingreso', textoMes(anio, mes));
   const gastos = totalDelMes(movimientosPorMes, 'gasto', textoMes(anio, mes));
   const balance = ingresos - gastos;
-  const mayor = Math.max(ingresos, gastos);
-  const signo = ocultos || balance === 0 ? '' : balance < 0 ? '- ' : '+ ';
-  const verRendimiento = () => navegar('/mi-espacio/rendimiento');
+  const tono = balance > 0 ? 'positivo' : balance < 0 ? 'negativo' : 'parejo';
+  const { Icono } = TONOS[tono];
+  const sinMovimientos = ingresos === 0 && gastos === 0;
+  const titulo = sinMovimientos ? 'Sin movimientos este mes' : TONOS[tono].titulo;
+  const signo = ocultos || balance === 0 ? '' : balance < 0 ? '-' : '+';
 
-  let nota = `Sin ingresos ni gastos en ${nombreMes(mes, false)}.`;
-  if (ingresos > 0 && balance >= 0) nota = `Ahorraste el ${porcentaje(balance, ingresos)} % de tus ingresos`;
-  else if (balance < 0) nota = `Gastaste ${pesos(-balance)} más de lo que entró`;
+  // Lo que va en el recuadro de la derecha: cuánto se ahorró o cuánto se pasó, frente a lo que entró.
+  let cifra = `${porcentaje(Math.abs(balance), ingresos)} %`;
+  let nota = tono === 'negativo' ? 'de más' : 'ahorrado';
+  if (ingresos === 0 && !sinMovimientos) [cifra, nota] = ['—', 'sin ingresos'];
 
-  const filas = [
-    { nombre: 'Ingresos', valor: ingresos, color: 'var(--income)' },
-    { nombre: 'Gastos', valor: gastos, color: 'var(--expense)' },
-  ];
+  // Con cifras largas (millones) no caben las tres columnas en un iPhone: el recuadro de ahorro
+  // baja a su propia fila, y la cifra grande se achica un poco.
+  const largo = Math.max(pesos(ingresos).length, pesos(gastos).length) > 10;
+  const cifraLarga = pesos(Math.abs(balance)).length > 10;
 
   return (
-    <>
-      <Cabeza titulo="Balance del mes" enlace="Ver rendimiento" alTocar={verRendimiento} />
-      <Deslizar
-        as="button"
-        type="button"
-        posicion={posicion}
-        className="tarjeta inicio-balance inicio-bloque-cuerpo"
-        onClick={verRendimiento}
-      >
-        <span className="inicio-balance-etiqueta">Balance de {nombreMes(mes, false)}</span>
-        <strong className={'inicio-balance-valor' + (balance < 0 ? ' negativo' : balance > 0 ? ' positivo' : '')}>
-          {signo}
-          {pesos(Math.abs(balance))}
-        </strong>
-        <span className="inicio-balance-nota">{nota}</span>
-        {filas.map(({ nombre, valor, color }) => (
-          <span key={nombre} className="inicio-balance-fila">
-            <span className="inicio-balance-linea">
-              <span>{nombre}</span>
-              <strong>{pesos(valor)}</strong>
-            </span>
-            <span className="barra-progreso">
-              <span style={{ width: `${porcentaje(valor, mayor)}%`, background: color }} />
-            </span>
+    <Deslizar
+      as="button"
+      type="button"
+      posicion={posicion}
+      className={`tarjeta inicio-balance ${tono}` + (largo ? ' largo' : '') + (cifraLarga ? ' cifra-larga' : '')}
+      onClick={() => navegar('/mi-espacio/rendimiento')}
+      aria-label={`Balance de ${nombreMes(mes, false)}. Ver rendimiento`}
+    >
+      <span className="inicio-balance-cabeza">
+        <IconoCalendarioMes className="inicio-balance-calendario" />
+        <span className="inicio-balance-titulos">
+          <span>Balance del mes</span>
+          <strong>{nombreMes(mes)}</strong>
+        </span>
+        <IconoFlecha className="inicio-balance-ir" />
+      </span>
+
+      <span className="inicio-balance-centro">
+        <span className="inicio-balance-icono">
+          <IconoBilletera tamano={26} />
+        </span>
+        <span className="inicio-balance-cifra">
+          <strong>
+            {signo}
+            {pesos(Math.abs(balance))}
+          </strong>
+          <span>{titulo}</span>
+        </span>
+      </span>
+
+      <span className="inicio-balance-pie">
+        <span className="inicio-balance-dato">
+          <span className="inicio-balance-dato-nombre">
+            <IconoFlechaArriba tamano={16} className="ingreso" />
+            Ingresos
           </span>
-        ))}
-      </Deslizar>
-    </>
+          <strong>{pesos(ingresos)}</strong>
+        </span>
+        <span className="inicio-balance-dato">
+          <span className="inicio-balance-dato-nombre">
+            <IconoFlechaAbajo tamano={16} className="gasto" />
+            Gastos
+          </span>
+          <strong>{pesos(gastos)}</strong>
+        </span>
+        <span className="inicio-balance-ahorro">
+          <span className="inicio-balance-ahorro-cifra">
+            <Icono tamano={18} />
+            <strong>{cifra}</strong>
+          </span>
+          <span>{nota}</span>
+        </span>
+      </span>
+    </Deslizar>
   );
 }
 

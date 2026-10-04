@@ -476,67 +476,184 @@
   color: var(--muted);
 }
 
-/* Balance del mes: cifra con signo, nota y una barra por ingresos y otra por gastos. Es un botón
-   (lleva a Rendimiento). */
+/* Balance del mes: cabeza con el mes, cifra grande con su ícono y, abajo, ingresos, gastos y el
+   recuadro de ahorro. --tono sale del balance: verde a favor, rojo en contra, ámbar parejo. Es un
+   botón (lleva a Rendimiento). */
 .inicio-balance {
+  --tono: var(--pending);
+  --tono-suave: color-mix(in srgb, var(--tono) 14%, transparent);
   display: flex;
   flex-direction: column;
+  gap: 18px;
   width: 100%;
   padding: 16px;
   color: var(--text);
   text-align: left;
 }
 
-.inicio-balance-etiqueta {
+.inicio-balance.positivo {
+  --tono: var(--income);
+}
+
+.inicio-balance.negativo {
+  --tono: var(--expense);
+}
+
+.inicio-balance-cabeza {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.inicio-balance-calendario {
+  flex: none;
+  color: var(--muted);
+}
+
+.inicio-balance-titulos {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
   font-size: 13px;
   color: var(--muted);
 }
 
-.inicio-balance-valor {
-  margin-top: 2px;
-  font-size: 24px;
+.inicio-balance-titulos strong {
+  font-size: 18px;
   font-weight: 700;
-  letter-spacing: -0.01em;
+  line-height: 1.2;
+  color: var(--text);
 }
 
-.inicio-balance-valor.positivo {
+.inicio-balance-ir {
+  flex: none;
+  color: var(--muted);
+}
+
+.inicio-balance-centro {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.inicio-balance-icono {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  background: var(--tono-suave);
+  color: var(--tono);
+}
+
+.inicio-balance-cifra {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.inicio-balance-cifra strong {
+  font-size: 30px;
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--tono);
+  white-space: nowrap;
+}
+
+.inicio-balance.cifra-larga .inicio-balance-cifra strong {
+  font-size: 24px;
+}
+
+/* Ingresos | Gastos | recuadro de ahorro, con una línea fina entre los dos primeros. */
+.inicio-balance-pie {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  align-items: center;
+  gap: 12px;
+}
+
+.inicio-balance-dato {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.inicio-balance-dato + .inicio-balance-dato {
+  padding-left: 12px;
+  border-left: 1px solid var(--divider);
+}
+
+.inicio-balance-dato-nombre {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.inicio-balance-dato-nombre .ingreso {
   color: var(--income);
 }
 
-.inicio-balance-valor.negativo {
+.inicio-balance-dato-nombre .gasto {
   color: var(--expense);
 }
 
-.inicio-balance-nota {
-  margin-top: 2px;
-  font-size: 13px;
+.inicio-balance-dato strong {
+  font-size: 15px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.inicio-balance.largo .inicio-balance-pie {
+  grid-template-columns: 1fr 1fr;
+}
+
+.inicio-balance.largo .inicio-balance-ahorro {
+  grid-column: 1 / -1;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+}
+
+.inicio-balance-ahorro {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: var(--tono-suave);
+  font-size: 12px;
   color: var(--muted);
 }
 
-.inicio-balance-fila {
+.inicio-balance-ahorro-cifra {
   display: flex;
-  flex-direction: column;
+  align-items: center;
   gap: 6px;
-  margin-top: 14px;
+  color: var(--tono);
 }
 
-.inicio-balance-fila + .inicio-balance-fila {
-  margin-top: 12px;
+.inicio-balance-ahorro-cifra strong {
+  font-size: 16px;
+  font-weight: 800;
+  white-space: nowrap;
 }
 
-.inicio-balance-linea {
-  display: flex;
-  justify-content: space-between;
-  gap: 8px;
-  font-size: 14px;
-}
-
-.inicio-balance-linea strong {
-  font-weight: 700;
-}
-
-.inicio-balance .barra-progreso > span {
-  transition: width 0.34s var(--curva-entrar);
+/* El tono cambia con el mes (deslizar) o al guardar: que se funda en vez de saltar. */
+.inicio-balance-icono,
+.inicio-balance-ahorro,
+.inicio-balance-cifra strong,
+.inicio-balance-ahorro-cifra {
+  transition:
+    background-color 0.24s var(--curva-suave),
+    color 0.24s var(--curva-suave);
 }
 
 /* Metas */

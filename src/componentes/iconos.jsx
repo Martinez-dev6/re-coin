@@ -39,6 +39,7 @@ import {
   Info,
   Landmark,
   Layers,
+  Leaf,
   LayoutGrid,
   List,
   Lock,
@@ -61,6 +62,7 @@ import {
   Tag,
   TextAlignStart,
   Trash2,
+  TrendingDown,
   TrendingUp,
   TriangleAlert,
   User,
@@ -149,6 +151,9 @@ export const IconoCandado = crear(Lock, 18);
 export const IconoBanco = crear(Landmark, 20);
 export const IconoBalanza = crear(Scale, 18);
 export const IconoBilletera = crear(Wallet, 20);
+export const IconoHoja = crear(Leaf, 20);
+export const IconoBajada = crear(TrendingDown, 20);
+export const IconoCalendarioMes = crear(CalendarDays, 24, 1.8);
 export const IconoBajar = crear(Download, 20);
 export const IconoEscudoCheck = crear(ShieldCheck, 20);
 export const IconoExcel = crear(FileSpreadsheet, 20);
