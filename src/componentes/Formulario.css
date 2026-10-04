@@ -182,9 +182,12 @@
 
 /* ---- Rejilla de colores (categorías) ---- */
 
+/* Filas de 7 (las categorías tienen 14 colores). */
 .rejilla-colores {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(7, 36px);
   justify-content: space-between;
+  row-gap: 14px;
   padding: 16px;
 }
 

@@ -13,7 +13,7 @@
 import { Component, createRef } from 'react';
 import { flushSync } from 'react-dom';
 import { useLocation, useNavigationType } from 'react-router-dom';
-import { CURVA_ENTRAR, CURVA_SUAVE, sinMovimiento } from '../utilidades/movimiento.js';
+import { CURVA_ENTRAR, sinMovimiento } from '../utilidades/movimiento.js';
 import './TransicionPantallas.css';
 
 // El scroll al ir y volver lo maneja este componente, no el navegador.
@@ -52,7 +52,8 @@ function describir(ruta) {
 }
 
 // arriba: cuál va encima (la que se mueve). sobreBarra: también por encima de la barra inferior.
-// Lo que llega usa CURVA_ENTRAR y lo que sale o vuelve, CURVA_SUAVE (ver movimiento.js).
+// Ir y volver usan la misma curva, el resorte (ver movimiento.js): antes al volver se usaba una
+// que arrancaba lenta y el dueño sentía las transiciones forzadas.
 // Sin sombra en el borde: cuando los formularios subían, la sombra quedaba al final justo bajo
 // la barra de estado como una franja más oscura (video del iPhone, 2026-10-03).
 const RECETAS = {
@@ -65,7 +66,7 @@ const RECETAS = {
   },
   volver: {
     duracion: 410,
-    curva: CURVA_SUAVE,
+    curva: CURVA_ENTRAR,
     arriba: 'anterior',
     nueva: [{ transform: 'translateX(-30%)' }, { transform: 'none' }],
     anterior: [{ transform: 'none' }, { transform: 'translateX(100%)' }],

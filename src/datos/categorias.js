@@ -11,6 +11,15 @@ export const COLORES_CATEGORIA = [
   { valor: 'e', nombre: 'Rosa' },
   { valor: 'f', nombre: 'Verde' },
   { valor: 'g', nombre: 'Azul' },
+  // Segunda fila (pedido del dueño, 2026-10-04). Colores en aplicarTema.js (COLORES_EXTRA). Sin
+  // la 'n': es el gris de los íconos de las opciones (data-tono en comunes.css).
+  { valor: 'h', nombre: 'Rojo' },
+  { valor: 'i', nombre: 'Marrón' },
+  { valor: 'j', nombre: 'Lima' },
+  { valor: 'k', nombre: 'Turquesa' },
+  { valor: 'l', nombre: 'Índigo' },
+  { valor: 'm', nombre: 'Fucsia' },
+  { valor: 'o', nombre: 'Gris azulado' },
 ];
 
 // datos: { nombre, tipo, color, icono }. Sin id = categoría nueva. El tipo no cambia al

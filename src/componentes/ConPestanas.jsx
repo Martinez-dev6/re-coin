@@ -6,8 +6,8 @@ import { Outlet } from 'react-router-dom';
 
 export default function ConPestanas() {
   return (
-    // Espacio para que lo último de la lista no quede bajo la barra de 90 px.
-    <div style={{ paddingBottom: 96 }}>
+    // Espacio para que lo último de la lista no quede bajo la barra.
+    <div style={{ paddingBottom: 'calc(var(--barra-nav-alto) + 6px)' }}>
       <Outlet />
     </div>
   );

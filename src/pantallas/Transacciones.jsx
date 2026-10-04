@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import BarraEstado from '../componentes/BarraEstado.jsx';
 import Deslizar from '../componentes/Deslizar.jsx';
 import FilaMovimiento from '../componentes/FilaMovimiento.jsx';
-import { IconoBuscar, IconoFiltros } from '../componentes/iconos.jsx';
+import { IconoBuscar, IconoFiltros, IconoVolver } from '../componentes/iconos.jsx';
 import PanelFiltros, { TIPOS_FILTRO } from '../componentes/PanelFiltros.jsx';
 import { MesConFlechas } from '../componentes/SelectorMes.jsx';
 import {
@@ -50,17 +50,23 @@ export default function Transacciones() {
         <BarraEstado />
         <header className="banner transacciones-banner">
           <div className="transacciones-fila">
-            <button
-              type="button"
-              className="boton-banner"
-              aria-label="Buscar"
-              onClick={() => {
-                prepararTeclado();
-                navegar('/transacciones/buscar');
-              }}
-            >
-              <IconoBuscar />
-            </button>
+            {/* Volver lleva a Inicio (pedido del dueño, 2026-10-04), junto a la lupa. */}
+            <div className="transacciones-izquierda">
+              <button type="button" className="boton-banner" aria-label="Volver a Inicio" onClick={() => navegar('/')}>
+                <IconoVolver />
+              </button>
+              <button
+                type="button"
+                className="boton-banner"
+                aria-label="Buscar"
+                onClick={() => {
+                  prepararTeclado();
+                  navegar('/transacciones/buscar');
+                }}
+              >
+                <IconoBuscar />
+              </button>
+            </div>
             <MesConFlechas />
             <button
               type="button"

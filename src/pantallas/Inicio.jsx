@@ -28,7 +28,7 @@ import { estiloIconoCuenta } from '../tema/colores.js';
 import { enMes, nombreMes } from '../utilidades/fechas.js';
 import { formatearPesos } from '../utilidades/formato.js';
 import { useFilasAnimadas } from '../utilidades/movimiento.js';
-import { BloqueGrafico, BloqueMetas, BloquePresupuestos, BloqueTarjetas } from './InicioBloques.jsx';
+import { BloqueBalance, BloqueGrafico, BloqueMetas, BloquePresupuestos, BloqueTarjetas } from './InicioBloques.jsx';
 import './Inicio.css';
 
 const OCULTO = '$ •••••';
@@ -338,6 +338,7 @@ export default function Inicio() {
                   </div>
                 </>
               )}
+              {id === 'balance' && <BloqueBalance pesos={pesos} ocultos={ocultos} posicion={posicionMes} />}
               {id === 'presupuestos' && <BloquePresupuestos pesos={pesos} posicion={posicionMes} />}
               {id === 'metas' && <BloqueMetas pesos={pesos} />}
               {id === 'grafico' && <BloqueGrafico pesos={pesos} posicion={posicionMes} />}

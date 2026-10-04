@@ -11,6 +11,31 @@ function mezclar(hex, encima, proporcion) {
   return '#' + base.map((v, i) => Math.round(v * (1 - proporcion) + encima[i] * proporcion).toString(16).padStart(2, '0')).join('');
 }
 
+// Colores de categoría que no están en design/tema.js (la segunda fila de la rejilla, 2026-10-04):
+// [claro, oscuro]. Mismo criterio que los de tema.js (tonos 700 y 400): contraste de 5 a 7,9 sobre
+// blanco en claro y de 6 a 11,8 sobre la superficie en oscuro, también sobre su fondo suave.
+const COLORES_EXTRA = {
+  h: ['#b91c1c', '#f87171'],
+  i: ['#8a4b26', '#d6a072'],
+  j: ['#4d7c0f', '#a3e635'],
+  k: ['#0f766e', '#2dd4bf'],
+  l: ['#4338ca', '#818cf8'],
+  m: ['#a21caf', '#e879f9'],
+  o: ['#475569', '#94a3b8'],
+};
+
+function coloresExtra(oscuro) {
+  const variables = {};
+  for (const [letra, par] of Object.entries(COLORES_EXTRA)) {
+    const color = par[oscuro ? 1 : 0];
+    const n = parseInt(color.slice(1), 16);
+    const clave = 'cat' + letra.toUpperCase();
+    variables[clave] = color;
+    variables[clave + 'Soft'] = `rgba(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255},0.14)`;
+  }
+  return variables;
+}
+
 // Tokens que no están en design/tema.js: los de Inicio vienen de su comentario inicial,
 // los demás de los HTML del diseño (paneles inferiores y menú del "+").
 function extras(oscuro, colores) {
@@ -75,7 +100,7 @@ function registrarColor(nombre, valor) {
 function escribirVariables(acento, oscuro) {
   const raiz = document.documentElement;
   const base = tema(acento, oscuro ? 'dark' : 'light');
-  const colores = { ...base, ...extras(oscuro, base), ...coloresDeCuentas(oscuro) };
+  const colores = { ...base, ...extras(oscuro, base), ...coloresExtra(oscuro), ...coloresDeCuentas(oscuro) };
 
   for (const [clave, valor] of Object.entries(colores)) {
     registrarColor(aVariable(clave), valor);

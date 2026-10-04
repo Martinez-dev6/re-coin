@@ -11,6 +11,24 @@
   height: 48px;
 }
 
+.transacciones-izquierda {
+  display: flex;
+  gap: 6px;
+}
+
+/* Con Volver y la lupa a la izquierda no cabía "Septiembre 2026" en una línea: aquí el mes va en
+   16 px y las flechas en 36 px de ancho (siguen de 44 de alto). El ancho fijo del texto es el del
+   mes más largo, para que las flechas no se muevan al cambiar de mes. */
+.transacciones-fila .mes-flecha {
+  width: 36px;
+}
+
+.transacciones-fila .mes-flechas-texto {
+  min-width: 136px;
+  white-space: nowrap;
+  font-size: 16px;
+}
+
 /* Dos cifras separadas por una línea (también en Planes → Programados). */
 .totales-banner {
   display: flex;

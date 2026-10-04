@@ -1,15 +1,30 @@
 // Ritmo de los deslizamientos: pantallas, pestañas, selectores y filas de las listas.
 import { useLayoutEffect, useRef } from 'react';
 
-// Curvas de los deslizamientos (las mismas están en base.css para las transiciones de CSS).
+// Curvas de los deslizamientos.
 // Historia: la primera, (0.32, 0.72, 0, 1), salía de golpe: en el video del iPhone la pantalla
-// ya había recorrido un 20 % en el primer cuadro. La segunda arrancaba en cero y el dueño la
-// sintió lenta. Estas quedan a medio camino (pedido del dueño, 2026-10-03): un arranque suave
-// pero no en cero y duraciones intermedias.
-// - ENTRAR: arranca suave, acelera y frena largo (lo que llega).
-// - SUAVE: arranca y termina suave, sin cola larga (lo que sale, vuelve o se mueve de sitio).
-export const CURVA_ENTRAR = 'cubic-bezier(0.2, 0.2, 0, 1)';
+// ya había recorrido un 20 % en el primer cuadro. La segunda, (0.2, 0, 0, 1), el dueño la sintió
+// lenta. La tercera, (0.2, 0.2, 0, 1), le gustó de velocidad pero la sintió forzada (2026-10-04):
+// medida, recorría el 38 % del camino entre el 4 % y el 15 % del tiempo (un tirón) y luego se
+// arrastraba; y al volver se usaba otra que arrancaba lenta, como dudando.
+// Ahora es un resorte sin rebote, como los de iOS: arranca desde quieto pero gana velocidad
+// enseguida, su punto más rápido es un tercio menos brusco que el de la anterior y frena de forma
+// pareja. Llega a la mitad del tiempo casi al mismo punto que la anterior (91 % contra 90 %), así
+// que la velocidad se siente igual. Es la misma para ir y para volver.
+// - ENTRAR: el resorte (lo que llega, vuelve o cambia de sitio).
+// - SUAVE: arranca y termina suave, sin cola larga (lo que se va, como un panel que baja).
+const RIGIDEZ = 8; // ω·duración: más alto, frena antes
+const resorte = (t) => 1 - (1 + RIGIDEZ * t) * Math.exp(-RIGIDEZ * t);
+const puntos = Array.from({ length: 41 }, (_, i) => +(resorte(i / 40) / resorte(1)).toFixed(4));
+const RESPALDO = 'cubic-bezier(0.25, 0.8, 0.25, 1)'; // navegadores sin linear()
+export const CURVA_ENTRAR =
+  typeof CSS !== 'undefined' && CSS.supports('transition-timing-function', 'linear(0, 1)')
+    ? `linear(${puntos.join(', ')})`
+    : RESPALDO;
 export const CURVA_SUAVE = 'cubic-bezier(0.35, 0.1, 0.15, 1)';
+
+// Las transiciones de CSS usan la misma curva (--curva-entrar; base.css tiene el respaldo).
+document.documentElement.style.setProperty('--curva-entrar', CURVA_ENTRAR);
 
 // Quien activó "Reducir movimiento" en el teléfono no ve deslizamientos.
 export const sinMovimiento = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;

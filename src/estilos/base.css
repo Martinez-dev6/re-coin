@@ -16,6 +16,10 @@
   --safe-top: max(12px, env(safe-area-inset-top));
   --safe-bottom: env(safe-area-inset-bottom);
 
+  /* Alto de la barra inferior. Era 90 px (diseño); el dueño la pidió un poco más abajo
+     (2026-10-04). De aquí salen la barra, el menú del "+" y el espacio al final de las pantallas. */
+  --barra-nav-alto: 82px;
+
   /* Ritmo del fondo oscurecido (paneles y menú del "+") y de la franja de la barra de
      estado. Copia el de iOS, medido cuadro a cuadro en un video del iPhone 15 Pro
      (2026-10-03): cuando la franja cambia de color, iOS hace su propio fundido de la zona
@@ -33,11 +37,12 @@
   --oscurecido-curva: linear;
   --oscurecido-retraso: -10ms;
 
-  /* Deslizamientos (pantallas, selectores, listas, paneles). Las mismas curvas e historia
-     en src/utilidades/movimiento.js.
-     - entrar: arranca suave, acelera y frena largo (lo que llega).
-     - suave: arranca y termina suave, sin cola larga (lo que sale o cambia de sitio). */
-  --curva-entrar: cubic-bezier(0.2, 0.2, 0, 1);
+  /* Deslizamientos (pantallas, selectores, listas, paneles). Curvas e historia en
+     src/utilidades/movimiento.js, que al cargar cambia --curva-entrar por el resorte; este valor
+     es solo el respaldo.
+     - entrar: resorte sin rebote (lo que llega, vuelve o cambia de sitio).
+     - suave: arranca y termina suave, sin cola larga (lo que se va). */
+  --curva-entrar: cubic-bezier(0.25, 0.8, 0.25, 1);
   --curva-suave: cubic-bezier(0.35, 0.1, 0.15, 1);
 
   font-family: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;

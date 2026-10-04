@@ -1,12 +1,13 @@
-/* Medidas de design/html (data-nav2): barra de 90 px, curva de 134 px centrada,
-   pestañas a 40 y 106 px de cada borde, "+" de 64 px que sobresale 22 px. */
+/* Medidas de design/html (data-nav2): curva de 134 px centrada, pestañas a 40 y 106 px de cada
+   borde, "+" de 64 px que sobresale 22 px. El alto (90 px en el diseño) es --barra-nav-alto
+   (base.css): el dueño pidió la barra un poco más abajo. */
 
 .barra-nav {
   position: fixed;
   left: 0;
   right: 0;
   bottom: 0;
-  height: 90px;
+  height: var(--barra-nav-alto);
   z-index: 60;
   isolation: isolate;
 }
@@ -23,11 +24,13 @@
   background: linear-gradient(to bottom, var(--page-bg0) 0%, var(--page-bg) 62%);
 }
 
+/* El dibujo de la curva es más alto que la barra y se recorta: así sigue a --barra-nav-alto. */
 .barra-nav-fondo {
   position: absolute;
   inset: 0;
   z-index: -1;
   display: flex;
+  overflow: hidden;
 }
 
 .barra-nav-fondo svg {
@@ -161,7 +164,7 @@
   position: absolute;
   left: 0;
   right: 0;
-  bottom: 259px;
+  bottom: calc(var(--barra-nav-alto) + 169px);
   text-align: center;
   font-size: 15px;
   font-weight: 700;
@@ -175,12 +178,12 @@
   opacity: 1;
 }
 
-/* Cada opción se ubica respecto al centro del "+" (80 px sobre el borde inferior)
-   y sale desde él. */
+/* Cada opción se ubica respecto al centro del "+" (10 px por debajo del borde de arriba de
+   la barra) y sale desde él. */
 .menu-nuevo-opcion {
   position: absolute;
   left: calc(50% + var(--dx) - 30px);
-  bottom: calc(80px - var(--dy) - 30px);
+  bottom: calc(var(--barra-nav-alto) - 10px - var(--dy) - 30px);
   width: 60px;
   height: 60px;
   transform: translate(calc(-1 * var(--dx)), calc(-1 * var(--dy))) scale(0.4);
@@ -228,7 +231,7 @@
 
 .menu-nuevo-cerrar {
   top: auto;
-  bottom: 48px;
+  bottom: calc(var(--barra-nav-alto) - 42px);
 }
 
 .menu-nuevo-cerrar svg {

@@ -7,11 +7,12 @@ import { etiquetaDia } from '../utilidades/fechas.js';
 import { formatearPesos } from '../utilidades/formato.js';
 import { volver } from '../utilidades/navegacion.js';
 import BarraEstado from './BarraEstado.jsx';
-import { IconoCerrar, IconoCheck, IconoFlecha } from './iconos.jsx';
+import { IconoCheck, IconoFlecha, IconoVolver } from './iconos.jsx';
 import './CabeceraSubpagina.css';
 import './Formulario.css';
 
-// Banner con la X para cerrar sin guardar, el título y contenido opcional debajo.
+// Banner con la flecha de volver (sin guardar), el título y contenido opcional debajo. Antes era
+// una X; con todas las pantallas entrando de lado, el dueño pidió la flecha (2026-10-04).
 // centro: en lugar del título (p. ej. el mes con flechas en Pendientes y en una factura).
 export function CabeceraFormulario({ titulo, volverA, centro, children }) {
   const navegar = useNavigate();
@@ -20,8 +21,8 @@ export function CabeceraFormulario({ titulo, volverA, centro, children }) {
       <BarraEstado />
       <header className="banner formulario-cabecera">
         <div className="cabecera-subpagina-fila">
-          <button type="button" className="boton-banner" aria-label="Cerrar" onClick={() => volver(navegar, volverA)}>
-            <IconoCerrar tamano={20} grosor={2.2} />
+          <button type="button" className="boton-banner" aria-label="Volver" onClick={() => volver(navegar, volverA)}>
+            <IconoVolver />
           </button>
           {centro ? (
             <div className="cabecera-formulario-centro">

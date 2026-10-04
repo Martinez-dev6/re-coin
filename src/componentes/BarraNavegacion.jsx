@@ -1,4 +1,4 @@
-// Barra inferior fija de 90 px con la curva alrededor del "+" (design/html, data-nav2)
+// Barra inferior fija (alto en --barra-nav-alto) con la curva alrededor del "+" (design/html, data-nav2)
 // y el menú en arco que abre el "+": Gasto con tarjeta, Ingreso, Transferencia, Gasto.
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
@@ -136,8 +136,8 @@ export default function BarraNavegacion() {
         <div className="barra-nav-desvanecido" />
         <div className="barra-nav-fondo" aria-hidden="true">
           <span className="barra-nav-lado" />
-          <svg width="136" height="90" viewBox="0 0 136 90" fill="none">
-            <path d="M0 0H1C29 0 33 54 68 54S107 0 135 0H136V90H0Z" fill="var(--nav-bg)" />
+          <svg width="136" height="200" viewBox="0 0 136 200" fill="none">
+            <path d="M0 0H1C29 0 33 54 68 54S107 0 135 0H136V200H0Z" fill="var(--nav-bg)" />
             <path d="M0 0H1C29 0 33 54 68 54S107 0 135 0H136" transform="translate(0 .5)" stroke="var(--line)" strokeWidth="1" />
           </svg>
           <span className="barra-nav-lado" />

@@ -298,7 +298,7 @@
   border-radius: 22px;
   background: #ffffff;
   transform: translateX(calc(var(--i) * (100% + 4px)));
-  transition: transform 0.33s var(--curva-suave);
+  transition: transform 0.33s var(--curva-entrar); /* el resorte, como los deslizamientos */
 }
 
 /* Aviso que aparece subiendo un poco ("Copia lista", errores…). */

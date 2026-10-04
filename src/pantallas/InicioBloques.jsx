@@ -1,6 +1,7 @@
-// Bloques de Inicio que se activan en Mi espacio → Pantalla de inicio: Presupuestos, Metas,
-// Gráfico del mes y Tarjetas de crédito. No están en los diseños: son versiones cortas de lo que
-// hay en Planes, en Gráficos y en Tarjetas, con "Ver todo" para ir allá. pesos: formato de las
+// Bloques de Inicio que se activan en Mi espacio → Pantalla de inicio: Balance del mes,
+// Presupuestos, Metas, Gráfico del mes y Tarjetas de crédito. No están en los diseños: son
+// versiones cortas de lo que hay en Rendimiento, Planes, Gráficos y Tarjetas, con "Ver todo" para
+// ir allá. pesos: formato de las
 // cifras (respeta el ojo de Inicio).
 import { useNavigate } from 'react-router-dom';
 import CirculoCategoria from '../componentes/CirculoCategoria.jsx';
@@ -9,7 +10,7 @@ import FilaPresupuesto from '../componentes/FilaPresupuesto.jsx';
 import { Dona } from '../componentes/Graficos.jsx';
 import { IconoPorNombre } from '../componentes/iconosPorNombre.jsx';
 import { useDatos } from '../datos/DatosContext.jsx';
-import { porCategoria, textoMes } from '../datos/graficos.js';
+import { porCategoria, textoMes, totalDelMes } from '../datos/graficos.js';
 import { presupuestosDelMes } from '../datos/presupuestos.js';
 import { proximaFactura, textoVence } from '../datos/tarjetas.js';
 import { useMes } from '../estado/MesContext.jsx';
@@ -39,6 +40,61 @@ function Vacio({ texto, boton, alTocar }) {
         {boton}
       </button>
     </div>
+  );
+}
+
+// Balance del mes (pedido del dueño, 2026-10-04): ingresos − gastos, cuánto se ahorró y una barra
+// por cada uno, del largo de su cifra frente a la mayor. Los mismos totales del banner (pagados y
+// pendientes, sin transferencias). Toda la tarjeta lleva a Rendimiento. ocultos: el ojo de Inicio.
+export function BloqueBalance({ pesos, ocultos, posicion }) {
+  const navegar = useNavigate();
+  const { anio, mes } = useMes();
+  const { movimientosPorMes } = useDatos();
+  const ingresos = totalDelMes(movimientosPorMes, 'ingreso', textoMes(anio, mes));
+  const gastos = totalDelMes(movimientosPorMes, 'gasto', textoMes(anio, mes));
+  const balance = ingresos - gastos;
+  const mayor = Math.max(ingresos, gastos);
+  const signo = ocultos || balance === 0 ? '' : balance < 0 ? '- ' : '+ ';
+  const verRendimiento = () => navegar('/mi-espacio/rendimiento');
+
+  let nota = `Sin ingresos ni gastos en ${nombreMes(mes, false)}.`;
+  if (ingresos > 0 && balance >= 0) nota = `Ahorraste el ${porcentaje(balance, ingresos)} % de tus ingresos`;
+  else if (balance < 0) nota = `Gastaste ${pesos(-balance)} más de lo que entró`;
+
+  const filas = [
+    { nombre: 'Ingresos', valor: ingresos, color: 'var(--income)' },
+    { nombre: 'Gastos', valor: gastos, color: 'var(--expense)' },
+  ];
+
+  return (
+    <>
+      <Cabeza titulo="Balance del mes" enlace="Ver rendimiento" alTocar={verRendimiento} />
+      <Deslizar
+        as="button"
+        type="button"
+        posicion={posicion}
+        className="tarjeta inicio-balance inicio-bloque-cuerpo"
+        onClick={verRendimiento}
+      >
+        <span className="inicio-balance-etiqueta">Balance de {nombreMes(mes, false)}</span>
+        <strong className={'inicio-balance-valor' + (balance < 0 ? ' negativo' : balance > 0 ? ' positivo' : '')}>
+          {signo}
+          {pesos(Math.abs(balance))}
+        </strong>
+        <span className="inicio-balance-nota">{nota}</span>
+        {filas.map(({ nombre, valor, color }) => (
+          <span key={nombre} className="inicio-balance-fila">
+            <span className="inicio-balance-linea">
+              <span>{nombre}</span>
+              <strong>{pesos(valor)}</strong>
+            </span>
+            <span className="barra-progreso">
+              <span style={{ width: `${porcentaje(valor, mayor)}%`, background: color }} />
+            </span>
+          </span>
+        ))}
+      </Deslizar>
+    </>
   );
 }
 

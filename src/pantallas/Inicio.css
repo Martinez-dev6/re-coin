@@ -97,6 +97,20 @@
   top: calc(var(--safe-top) + 62px - var(--inicio-alto, 0px));
 }
 
+/* Espacio bajo el banner: lo que sube se desvanece un poco antes de llegar a él en vez de
+   cortarse en seco contra su borde (pedido del dueño, 2026-10-04). En reposo cae sobre el
+   margen de arriba del contenido (20 px), que está vacío. */
+.inicio-cabecera::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 100%;
+  height: 14px;
+  pointer-events: none;
+  background: linear-gradient(to bottom, var(--page-bg) 25%, var(--page-bg0));
+}
+
 /* La fila de arriba va aparte y fija: no se desplaza ni pasa por debajo de la franja de la
    barra de estado. Por encima del banner y por debajo de la barra inferior (60). */
 .inicio-fila-fija {
@@ -460,6 +474,69 @@
   padding: 16px;
   font-size: 14px;
   color: var(--muted);
+}
+
+/* Balance del mes: cifra con signo, nota y una barra por ingresos y otra por gastos. Es un botón
+   (lleva a Rendimiento). */
+.inicio-balance {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 16px;
+  color: var(--text);
+  text-align: left;
+}
+
+.inicio-balance-etiqueta {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.inicio-balance-valor {
+  margin-top: 2px;
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.inicio-balance-valor.positivo {
+  color: var(--income);
+}
+
+.inicio-balance-valor.negativo {
+  color: var(--expense);
+}
+
+.inicio-balance-nota {
+  margin-top: 2px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.inicio-balance-fila {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 14px;
+}
+
+.inicio-balance-fila + .inicio-balance-fila {
+  margin-top: 12px;
+}
+
+.inicio-balance-linea {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.inicio-balance-linea strong {
+  font-weight: 700;
+}
+
+.inicio-balance .barra-progreso > span {
+  transition: width 0.34s var(--curva-entrar);
 }
 
 /* Metas */

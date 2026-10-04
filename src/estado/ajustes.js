@@ -18,6 +18,7 @@ const PREDETERMINADOS = { nombre: '', foto: null, semanaEmpieza: 'lunes', bloque
 // aparece al final.
 export const BLOQUES_INICIO = [
   { id: 'pendientes', titulo: 'Pendientes y alertas', detalle: 'Solo si hay algo por pagar o recibir', visible: true },
+  { id: 'balance', titulo: 'Balance del mes', detalle: 'Ingresos contra gastos', visible: true },
   { id: 'cuentas', titulo: 'Cuentas', detalle: 'Saldo de cada cuenta', visible: true },
   { id: 'presupuestos', titulo: 'Presupuestos', detalle: 'Cuánto llevas gastado', visible: false },
   { id: 'metas', titulo: 'Metas', detalle: 'Avance de tus ahorros', visible: false },
