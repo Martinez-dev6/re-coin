@@ -4,10 +4,11 @@
 // partes al instante. Los movimientos se leen todos: para el uso de una persona son pocos
 // miles y así el saldo de cada cuenta se calcula en un solo lugar.
 import { useLiveQuery } from 'dexie-react-hooks';
-import { createContext, useContext, useMemo } from 'react';
+import { createContext, useContext, useEffect, useMemo } from 'react';
 import { db } from './db.js';
 import { ahorradoPorMeta } from './metas.js';
 import { ordenarMovimientos, saldosPorCuenta } from './movimientos.js';
+import { registrarVencidos } from './programados.js';
 import { cuotasComoGastos, resumenTarjetas } from './tarjetas.js';
 
 const DatosContext = createContext(null);
@@ -21,6 +22,16 @@ export function DatosProvider({ children }) {
   const presupuestos = useLiveQuery(() => db.presupuestos.orderBy('orden').toArray());
   const metas = useLiveQuery(() => db.metas.orderBy('orden').toArray());
   const aportes = useLiveQuery(() => db.aportes.orderBy('fecha').reverse().toArray());
+  const programados = useLiveQuery(() => db.programados.orderBy('orden').toArray());
+
+  // Programados: al abrir la app y al volver a ella (puede ser otro día), lo que ya llegó se
+  // registra como pendiente (programados.js).
+  useEffect(() => {
+    const registrar = () => document.visibilityState === 'visible' && registrarVencidos().catch(() => {});
+    registrar();
+    document.addEventListener('visibilitychange', registrar);
+    return () => document.removeEventListener('visibilitychange', registrar);
+  }, []);
 
   const valor = useMemo(() => {
     const categoriasPorId = new Map((categorias ?? []).map((c) => [c.id, c]));
@@ -49,8 +60,8 @@ export function DatosProvider({ children }) {
     return {
       // Mientras se lee la base de datos (unos milisegundos al abrir). Sirve para no mostrar
       // un momento "Crea tu primera cuenta" a quien ya tiene cuentas.
-      cargando: [cuentas, categorias, etiquetas, movimientos, tarjetas, presupuestos, metas, aportes].includes(
-        undefined,
+      cargando: [cuentas, categorias, etiquetas, movimientos, tarjetas, presupuestos, metas, aportes, programados].some(
+        (tabla) => tabla === undefined,
       ),
       cuentas: listaCuentas,
       categorias: categorias ?? [],
@@ -59,6 +70,7 @@ export function DatosProvider({ children }) {
       presupuestos: presupuestos ?? [],
       // Cada meta con ahorrado ("Ya tengo" + aportes) y sus aportes (más recientes primero).
       metas: listaMetas,
+      programados: programados ?? [],
       // Más recientes primero.
       movimientos: listaMovimientos,
       movimientosPorMes: porMes,
@@ -67,7 +79,7 @@ export function DatosProvider({ children }) {
       etiqueta: (id) => etiquetasPorId.get(id),
       tarjeta,
     };
-  }, [cuentas, categorias, etiquetas, movimientos, tarjetas, presupuestos, metas, aportes]);
+  }, [cuentas, categorias, etiquetas, movimientos, tarjetas, presupuestos, metas, aportes, programados]);
 
   return <DatosContext.Provider value={valor}>{children}</DatosContext.Provider>;
 }

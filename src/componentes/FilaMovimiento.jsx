@@ -21,7 +21,7 @@ const CLASE = {
 // estado: 'pendiente' | 'pagado' | texto libre (p. ej. "En 13 días").
 // alTocar: la fila es un botón (abre el detalle).
 export default function FilaMovimiento({ movimiento, detalle, estado, mostrarRepetir = false, alTocar }) {
-  const { tipo, valor, categoriaId, programado } = movimiento;
+  const { tipo, valor, categoriaId, programadoId } = movimiento;
   const buscarCategoria = useDatos().categoria;
   const categoria = buscarCategoria(categoriaId);
   const Fila = alTocar ? 'button' : 'div';
@@ -45,7 +45,7 @@ export default function FilaMovimiento({ movimiento, detalle, estado, mostrarRep
       <div className="fila-movimiento-textos">
         <div className="fila-movimiento-titulo">
           <span className="fila-movimiento-texto">{tituloMovimiento(movimiento, buscarCategoria)}</span>
-          {mostrarRepetir && programado && (
+          {mostrarRepetir && programadoId && (
             <span className="fila-movimiento-repetir" title="Programado">
               <IconoRepetir tamano={13} />
             </span>

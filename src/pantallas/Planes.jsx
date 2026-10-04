@@ -20,8 +20,9 @@ import { MesConFlechas } from '../componentes/SelectorMes.jsx';
 import { useDatos } from '../datos/DatosContext.jsx';
 import { ahorroMensual, aportar } from '../datos/metas.js';
 import { presupuestosDelMes } from '../datos/presupuestos.js';
+import { fechasFuturas, textoFrecuencia } from '../datos/programados.js';
 import { useMes } from '../estado/MesContext.jsx';
-import { diasHasta, enMes, etiquetaDia, fechaCorta } from '../utilidades/fechas.js';
+import { diasHasta, enMes, etiquetaDia, fechaCorta, hoyTexto } from '../utilidades/fechas.js';
 import { formatearPesos } from '../utilidades/formato.js';
 import './Planes.css';
 import './Transacciones.css';
@@ -29,11 +30,9 @@ import './Transacciones.css';
 const SECCIONES = [
   { valor: 'presupuestos', texto: 'Presupuestos', nuevo: '/presupuestos/nuevo' },
   { valor: 'metas', texto: 'Metas', nuevo: '/metas/nueva' },
-  { valor: 'programados', texto: 'Programados', nuevo: '/pendiente/nuevo-programado' },
+  { valor: 'programados', texto: 'Programados', nuevo: '/programados/nuevo' },
 ];
 
-// Los programados llegan después (paso 7b).
-const PROGRAMADOS = [];
 
 const porcentaje = (parte, todo) => (todo > 0 ? Math.round((parte / todo) * 100) : 0);
 
@@ -223,24 +222,90 @@ const IconoAhorro = (p) => <IconoPorNombre nombre="alcancia" tamano={18} {...p} 
 
 // ---------- Programados ----------
 
-const FRECUENCIA = { semana: 'Cada semana', mes: 'Cada mes', anio: 'Cada año', dia: 'Cada día' };
+const DIAS_SEMANA = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
+const dos = (n) => String(n).padStart(2, '0');
 
-function estadoProgramado(p) {
-  const dias = diasHasta(p.proxima);
-  if (dias <= 0 && !p.pagado) return 'pendiente';
+// Lo programado de un mes: lo que ya se registró (movimientos con programadoId; Pendiente o
+// Pagado) y las fechas que faltan (aún no son movimientos). Más próximo primero.
+function programadosDelMes({ programados, movimientosPorMes }, anio, mes) {
+  const desde = `${anio}-${dos(mes + 1)}-01`;
+  const hasta = `${anio}-${dos(mes + 1)}-${new Date(anio, mes + 1, 0).getDate()}`;
+  const registrados = movimientosPorMes.filter((m) => m.programadoId && m.fecha >= desde && m.fecha <= hasta);
+  const futuros = programados.flatMap((p) =>
+    fechasFuturas(p, desde, hasta).map((fecha) => ({
+      ...p,
+      id: `${p.id}-${fecha}`,
+      programadoId: p.id,
+      fecha,
+      futuro: true,
+    })),
+  );
+  return [...registrados, ...futuros].sort((a, b) => a.fecha.localeCompare(b.fecha));
+}
+
+// "Hoy", "Mañana", "En 13 días" para lo que falta; Pendiente o Pagado para lo ya registrado.
+function estadoProgramado(item) {
+  if (!item.futuro) return item.pagado ? 'pagado' : 'pendiente';
+  const dias = diasHasta(item.fecha);
+  if (dias <= 0) return 'Hoy';
   if (dias === 1) return 'Mañana';
   return `En ${dias} días`;
 }
 
-function Programados({ lista }) {
+// Lo ya registrado abre el movimiento; lo que falta abre el programado para editarlo.
+function FilasProgramadas({ items, navegar, frecuenciaDe }) {
+  return (
+    <div className="tarjeta-lista">
+      {items.map((item) => (
+        <FilaMovimiento
+          key={item.id}
+          movimiento={item}
+          detalle={
+            <>
+              <IconoRepetir />
+              {textoFrecuencia(frecuenciaDe(item.programadoId))}
+            </>
+          }
+          estado={estadoProgramado(item)}
+          alTocar={() => navegar(item.futuro ? `/programados/${item.programadoId}` : `/movimientos/${item.id}`)}
+        />
+      ))}
+    </div>
+  );
+}
+
+function Programados({ items, programados, anio, mes, navegar }) {
   const [vista, setVista] = useState('lista');
+  const [diaElegido, setDiaElegido] = useState(null);
+  const frecuenciaDe = (id) => programados.find((p) => p.id === id)?.frecuencia;
+
+  if (programados.length === 0) {
+    return (
+      <div className="tarjeta vacio planes-vacio">
+        <p>Aún no tienes movimientos programados, como el arriendo o el sueldo.</p>
+        <button type="button" className="boton-principal" onClick={() => navegar('/programados/nuevo')}>
+          Crear programado
+        </button>
+      </div>
+    );
+  }
 
   const porDia = [];
-  for (const p of [...lista].sort((a, b) => a.proxima.localeCompare(b.proxima))) {
+  for (const item of items) {
     const grupo = porDia.at(-1);
-    if (grupo?.fecha === p.proxima) grupo.items.push(p);
-    else porDia.push({ fecha: p.proxima, items: [p] });
+    if (grupo?.fecha === item.fecha) grupo.items.push(item);
+    else porDia.push({ fecha: item.fecha, items: [item] });
   }
+
+  // Calendario: semanas de lunes a domingo. Elegido: el día tocado, o hoy si es de este mes.
+  const vacios = (new Date(anio, mes, 1).getDay() + 6) % 7;
+  const diasDelMes = new Date(anio, mes + 1, 0).getDate();
+  const textoDia = (dia) => `${anio}-${dos(mes + 1)}-${dos(dia)}`;
+  const hoy = hoyTexto();
+  let elegido = textoDia(1);
+  if (diaElegido && enMes(diaElegido, anio, mes)) elegido = diaElegido;
+  else if (enMes(hoy, anio, mes)) elegido = hoy;
+  const delDia = items.filter((i) => i.fecha === elegido);
 
   return (
     <>
@@ -257,35 +322,94 @@ function Programados({ lista }) {
             Calendario
           </span>
         </button>
+        {vista === 'calendario' && (
+          <span className="calendario-leyenda" aria-hidden="true">
+            <span>
+              <i className="punto gasto" /> Gasto
+            </span>
+            <span>
+              <i className="punto ingreso" /> Ingreso
+            </span>
+          </span>
+        )}
       </div>
 
       <Deslizar posicion={vista === 'lista' ? 0 : 1}>
-        {vista === 'calendario' && (
-          <div className="tarjeta vacio">La vista de calendario se construye junto con los movimientos programados (paso 7).</div>
+        {vista === 'lista' && porDia.length === 0 && (
+          <div className="tarjeta vacio">No hay movimientos programados este mes.</div>
         )}
-        {vista === 'lista' && porDia.length === 0 && <div className="tarjeta vacio">No hay movimientos programados este mes.</div>}
         {vista === 'lista' &&
-          porDia.map(({ fecha, items }) => (
+          porDia.map(({ fecha, items: delGrupo }) => (
             <section key={fecha}>
               <h2 className="titulo-dia">{etiquetaDia(fecha)}</h2>
-              <div className="tarjeta-lista">
-                {items.map((p) => (
-                  <FilaMovimiento
-                    key={p.id}
-                    movimiento={p}
-                    detalle={
-                      <>
-                        <IconoRepetir />
-                        {FRECUENCIA[p.frecuencia]}
-                      </>
-                    }
-                    estado={estadoProgramado(p)}
-                  />
-                ))}
-              </div>
+              <FilasProgramadas items={delGrupo} navegar={navegar} frecuenciaDe={frecuenciaDe} />
             </section>
           ))}
+
+        {vista === 'calendario' && (
+          <>
+            <div className="tarjeta calendario">
+              <div className="calendario-semana">
+                {DIAS_SEMANA.map((d) => (
+                  <span key={d}>{d}</span>
+                ))}
+              </div>
+              <div className="calendario-dias">
+                {Array.from({ length: vacios }, (_, i) => (
+                  <span key={'v' + i} />
+                ))}
+                {Array.from({ length: diasDelMes }, (_, i) => {
+                  const fecha = textoDia(i + 1);
+                  const delMismoDia = items.filter((it) => it.fecha === fecha);
+                  const hayGasto = delMismoDia.some((it) => it.tipo === 'gasto');
+                  const hayIngreso = delMismoDia.some((it) => it.tipo === 'ingreso');
+                  return (
+                    <button
+                      key={fecha}
+                      type="button"
+                      className="calendario-dia"
+                      aria-pressed={fecha === elegido}
+                      aria-label={etiquetaDia(fecha) + (delMismoDia.length ? `, ${delMismoDia.length} programados` : '')}
+                      onClick={() => setDiaElegido(fecha)}
+                    >
+                      <span className={'calendario-numero' + (fecha === hoy ? ' hoy' : '')}>{i + 1}</span>
+                      <span className="calendario-puntos">
+                        {hayGasto && <i className="punto gasto" />}
+                        {hayIngreso && <i className="punto ingreso" />}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+            <h2 className="titulo-dia">{etiquetaDia(elegido)}</h2>
+            {delDia.length === 0 ? (
+              <div className="tarjeta vacio">Nada programado este día.</div>
+            ) : (
+              <FilasProgramadas items={delDia} navegar={navegar} frecuenciaDe={frecuenciaDe} />
+            )}
+          </>
+        )}
       </Deslizar>
+
+      {/* Todos, para editarlos aunque este mes no tengan fechas. */}
+      <h2 className="titulo-seccion">Tus programados</h2>
+      <div className="tarjeta-lista">
+        {programados.map((p) => (
+          <FilaMovimiento
+            key={p.id}
+            movimiento={p}
+            detalle={
+              <>
+                <IconoRepetir />
+                {textoFrecuencia(p.frecuencia)}
+                {p.termina ? ` · hasta ${fechaCorta(p.termina)}` : ''}
+              </>
+            }
+            alTocar={() => navegar('/programados/' + p.id)}
+          />
+        ))}
+      </div>
     </>
   );
 }
@@ -307,7 +431,7 @@ export default function Planes() {
   const posicion = actual.valor === 'metas' ? [indice] : [indice, anio * 12 + mes];
 
   const presupuestos = presupuestosDelMes(datos.presupuestos, datos.movimientosPorMes, anio, mes);
-  const programados = PROGRAMADOS.filter((p) => enMes(p.proxima, anio, mes));
+  const programados = programadosDelMes(datos, anio, mes);
 
   let resumen;
   if (actual.valor === 'presupuestos') {
@@ -396,7 +520,9 @@ export default function Planes() {
             }}
           />
         )}
-        {actual.valor === 'programados' && <Programados lista={programados} />}
+        {actual.valor === 'programados' && (
+          <Programados items={programados} programados={datos.programados} anio={anio} mes={mes} navegar={navegar} />
+        )}
       </Deslizar>
 
       <PanelAportar meta={metaAportar} abierto={panelAportar} alCerrar={() => setPanelAportar(false)} />

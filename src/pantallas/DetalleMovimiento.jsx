@@ -58,8 +58,10 @@ function Contenido({ movimiento: m }) {
   const { cuenta, categoria: buscarCategoria, etiqueta, tarjeta } = useDatos();
   const [panelEliminar, setPanelEliminar] = useState(false);
   const eliminando = useRef(false);
-  // Solo los gastos e ingresos tienen Pagado / Pendiente.
+  // Los gastos e ingresos tienen Pagado / Pendiente; una transferencia, solo si es programada
+  // (se registra pendiente).
   const conEstado = m.tipo === 'gasto' || m.tipo === 'ingreso';
+  const conChip = conEstado || (m.tipo === 'transferencia' && Boolean(m.programadoId));
   // El pago de una factura se hace desde la factura; aquí solo se puede eliminar.
   const editable = m.tipo !== 'pagoTarjeta';
   const categoria = buscarCategoria(m.categoriaId);
@@ -112,7 +114,7 @@ function Contenido({ movimiento: m }) {
             {formatearPesos(m.valor)}
           </div>
           {/* Tocar el estado lo cambia: así se marca como pagado lo que estaba pendiente. */}
-          {conEstado && (
+          {conChip && (
             <button
               type="button"
               className="detalle-estado"

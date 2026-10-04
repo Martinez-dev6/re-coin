@@ -35,9 +35,12 @@ export default function FormularioCuenta() {
 
 function Campos({ cuenta }) {
   const navegar = useNavigate();
-  const { movimientos } = useDatos();
+  const { movimientos, programados } = useDatos();
   const usos = cuenta
     ? movimientos.filter((m) => m.cuentaId === cuenta.id || m.cuentaDestinoId === cuenta.id).length
+    : 0;
+  const programadosDeLaCuenta = cuenta
+    ? programados.filter((p) => p.cuentaId === cuenta.id || p.cuentaDestinoId === cuenta.id).length
     : 0;
   const [datos, setDatos] = useState(
     () =>
@@ -162,7 +165,8 @@ function Campos({ cuenta }) {
       <PanelInferior abierto={panelEliminar} alCerrar={() => setPanelEliminar(false)} titulo="¿Eliminar la cuenta?">
         <p className="panel-texto">
           Se borra «{cuenta?.nombre}» de este teléfono
-          {usos > 0 && ` con ${usos === 1 ? 'su movimiento' : `sus ${usos} movimientos`}`}. No se puede deshacer.
+          {usos > 0 && ` con ${usos === 1 ? 'su movimiento' : `sus ${usos} movimientos`}`}.
+          {programadosDeLaCuenta > 0 && ' También se borran sus programados.'} No se puede deshacer.
         </p>
         <button type="button" className="boton-peligro" onClick={eliminar}>
           Eliminar

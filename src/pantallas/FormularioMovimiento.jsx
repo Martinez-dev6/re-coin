@@ -17,6 +17,7 @@ import {
   Segmentado,
 } from '../componentes/Formulario.jsx';
 import {
+  IconoBasura,
   IconoCalendario,
   IconoCapas,
   IconoCategorias,
@@ -29,6 +30,8 @@ import {
   IconoMas,
   IconoNota,
   IconoRecibo,
+  IconoReloj,
+  IconoRepetir,
   IconoTarjeta,
   IconoTexto,
 } from '../componentes/iconos.jsx';
@@ -37,9 +40,10 @@ import PanelInferior, { DURACION_PANEL_MS } from '../componentes/PanelInferior.j
 import { useDatos } from '../datos/DatosContext.jsx';
 import { guardarEtiqueta } from '../datos/etiquetas.js';
 import { faltante, guardarMovimiento, TIPOS_MOVIMIENTO } from '../datos/movimientos.js';
+import { eliminarProgramado, FRECUENCIAS, guardarProgramado, textoFrecuencia } from '../datos/programados.js';
 import { cuotasDe, facturaDeFecha, nombreFactura, sumarMeses } from '../datos/tarjetas.js';
 import { estiloIconoCuenta } from '../tema/colores.js';
-import { hoyTexto } from '../utilidades/fechas.js';
+import { fechaCorta, hoyTexto } from '../utilidades/fechas.js';
 import { formatearPesos } from '../utilidades/formato.js';
 import { volver } from '../utilidades/navegacion.js';
 import './FormularioMovimiento.css';
@@ -50,6 +54,8 @@ const TITULOS = {
   transferencia: ['Nueva transferencia', 'Editar transferencia', 'Guardar transferencia'],
   gastoTarjeta: ['Gasto con tarjeta', 'Editar gasto con tarjeta', 'Guardar gasto de tarjeta'],
 };
+
+const TITULOS_PROGRAMADO = ['Nuevo programado', 'Editar programado', 'Guardar programado'];
 
 // Ruta (/nuevo/…) → tipo.
 const TIPO_POR_RUTA = { gasto: 'gasto', ingreso: 'ingreso', transferencia: 'transferencia', 'gasto-tarjeta': 'gastoTarjeta' };
@@ -64,6 +70,8 @@ const IconoHacia = (p) => <IconoIngresoDiagonal tamano={18} grosor={2} {...p} />
 const IconoPagado = (p) => <IconoCheckCirculo tamano={18} grosor={2} {...p} />;
 
 const IconoCuotas = (p) => <IconoCapas tamano={18} {...p} />;
+const IconoRepetirFila = (p) => <IconoRepetir tamano={18} grosor={2} {...p} />;
+const IconoTermina = (p) => <IconoReloj tamano={18} grosor={2} {...p} />;
 const IconoFactura = (p) => <IconoRecibo tamano={18} {...p} />;
 
 const EJEMPLOS = {
@@ -143,8 +151,19 @@ const CAMPOS = [
   'factura',
 ];
 
-function datosIniciales({ movimiento, tipoInicial, cuentaPedida, cuentas, tarjetas }) {
+function datosIniciales({ movimiento, programado, tipoInicial, cuentaPedida, cuentas, tarjetas }) {
   if (movimiento) return Object.fromEntries(CAMPOS.map((campo) => [campo, movimiento[campo] ?? null]));
+  // Un programado guarda la plantilla del movimiento; su "fecha" en el formulario es Empieza.
+  if (programado) {
+    return {
+      ...Object.fromEntries(CAMPOS.map((campo) => [campo, programado[campo] ?? null])),
+      etiquetaIds: programado.etiquetaIds ?? [],
+      observacion: programado.observacion ?? '',
+      fecha: programado.empieza,
+      frecuencia: programado.frecuencia,
+      termina: programado.termina,
+    };
+  }
   const existe = (lista) => (id) => lista.some((x) => x.id === id);
   const cuentaId = [cuentaPedida, leer(CLAVE_ULTIMA_CUENTA), cuentas[0]?.id].find(existe(cuentas)) ?? null;
   const tarjetaId = [leer(CLAVE_ULTIMA_TARJETA), tarjetas[0]?.id].find(existe(tarjetas)) ?? null;
@@ -164,10 +183,14 @@ function datosIniciales({ movimiento, tipoInicial, cuentaPedida, cuentas, tarjet
     tarjetaId,
     cuotas: 1,
     factura: tarjeta ? facturaDeFecha(tarjeta, fecha) : null,
+    frecuencia: 'mes',
+    termina: null,
   };
 }
 
-function Campos({ clave, movimiento, tipoInicial, cuentaPedida }) {
+// esProgramado: es el formulario de un programado (FormularioProgramado, más abajo): sin Pagado
+// y con Frecuencia, Empieza y Termina. programado: el que se edita.
+function Campos({ clave, movimiento, programado, esProgramado = false, tipoInicial, cuentaPedida }) {
   const navegar = useNavigate();
   const {
     cuentas,
@@ -181,7 +204,7 @@ function Campos({ clave, movimiento, tipoInicial, cuentaPedida }) {
   } = useDatos();
   const borrador = borradores.get(clave);
   const [datos, setDatos] = useState(
-    () => borrador?.datos ?? datosIniciales({ movimiento, tipoInicial, cuentaPedida, cuentas, tarjetas }),
+    () => borrador?.datos ?? datosIniciales({ movimiento, programado, tipoInicial, cuentaPedida, cuentas, tarjetas }),
   );
   // Mientras no se toque "Pagado" a mano, una fecha futura lo apaga y una de hoy o antes lo prende.
   const [pagadoAMano, setPagadoAMano] = useState(borrador?.pagadoAMano ?? Boolean(movimiento));
@@ -210,8 +233,11 @@ function Campos({ clave, movimiento, tipoInicial, cuentaPedida }) {
   const conTarjeta = tipo === 'gastoTarjeta';
   // Las categorías son de gasto o de ingreso; el gasto con tarjeta usa las de gasto.
   const tipoCategoria = tipo === 'ingreso' ? 'ingreso' : 'gasto';
-  const [tituloNuevo, tituloEditar, textoGuardar] = TITULOS[tipo];
-  const volverA = movimiento ? `/movimientos/${movimiento.id}` : '/';
+  const [tituloNuevo, tituloEditar, textoGuardar] = esProgramado ? TITULOS_PROGRAMADO : TITULOS[tipo];
+  const editando = Boolean(movimiento || programado);
+  let volverA = '/';
+  if (movimiento) volverA = `/movimientos/${movimiento.id}`;
+  else if (esProgramado) volverA = '/planes/programados';
 
   const cambiarTipo = (nuevo) =>
     setDatos((d) => {
@@ -271,7 +297,8 @@ function Campos({ clave, movimiento, tipoInicial, cuentaPedida }) {
     }
     setGuardando(true);
     try {
-      await guardarMovimiento(movimiento?.id, datos);
+      if (esProgramado) await guardarProgramado(programado?.id, datos);
+      else await guardarMovimiento(movimiento?.id, datos);
       if (conTarjeta) recordar(CLAVE_ULTIMA_TARJETA, datos.tarjetaId);
       else recordar(CLAVE_ULTIMA_CUENTA, datos.cuentaId);
       borradores.delete(clave);
@@ -310,7 +337,20 @@ function Campos({ clave, movimiento, tipoInicial, cuentaPedida }) {
       <EntradaTexto valor={datos.descripcion} alCambiar={(descripcion) => cambiar({ descripcion })} ejemplo={EJEMPLOS[tipo]} />
     </Campo>
   );
-  const filaFecha = (
+  // En un programado, la fecha es cuándo empieza, y van también Frecuencia y Termina.
+  const filaFecha = esProgramado ? (
+    <>
+      <Campo Icono={IconoRepetirFila} etiqueta="Frecuencia" alTocar={() => setPanel('frecuencia')}>
+        {textoFrecuencia(datos.frecuencia)}
+      </Campo>
+      <Campo Icono={IconoFecha} etiqueta="Empieza" conFlecha>
+        <EntradaFecha valor={datos.fecha} alCambiar={(fecha) => cambiar({ fecha })} />
+      </Campo>
+      <Campo Icono={IconoTermina} etiqueta="Termina" alTocar={() => setPanel('termina')}>
+        {datos.termina ? fechaCorta(datos.termina) : 'Nunca'}
+      </Campo>
+    </>
+  ) : (
     <Campo Icono={IconoFecha} etiqueta="Fecha" conFlecha>
       <EntradaFecha valor={datos.fecha} alCambiar={cambiarFecha} />
     </Campo>
@@ -323,7 +363,7 @@ function Campos({ clave, movimiento, tipoInicial, cuentaPedida }) {
 
   return (
     <div>
-      <CabeceraFormulario titulo={movimiento ? tituloEditar : tituloNuevo} volverA={volverA}>
+      <CabeceraFormulario titulo={editando ? tituloEditar : tituloNuevo} volverA={volverA}>
         <MontoEditable ref={monto} etiqueta="Valor" valor={datos.valor} alCambiar={(valor) => cambiar({ valor })} />
         {/* Al editar no se cambia el tipo: la categoría y las cuentas dependen de él. El gasto con
             tarjeta tiene su propio formulario, sin estas opciones (design/capturas/GastoTarjeta.png). */}
@@ -392,18 +432,28 @@ function Campos({ clave, movimiento, tipoInicial, cuentaPedida }) {
             </Campo>
             {filaFecha}
             {filaEtiquetas}
-            <Campo Icono={IconoPagado} etiqueta={tipo === 'ingreso' ? 'Recibido' : 'Pagado'}>
-              <Interruptor
-                activo={datos.pagado}
-                etiqueta={tipo === 'ingreso' ? 'Recibido' : 'Pagado'}
-                alCambiar={(pagado) => {
-                  setPagadoAMano(true);
-                  cambiar({ pagado });
-                }}
-              />
-            </Campo>
+            {/* Un programado se registra siempre como pendiente (decisión del dueño). */}
+            {!esProgramado && (
+              <Campo Icono={IconoPagado} etiqueta={tipo === 'ingreso' ? 'Recibido' : 'Pagado'}>
+                <Interruptor
+                  activo={datos.pagado}
+                  etiqueta={tipo === 'ingreso' ? 'Recibido' : 'Pagado'}
+                  alCambiar={(pagado) => {
+                    setPagadoAMano(true);
+                    cambiar({ pagado });
+                  }}
+                />
+              </Campo>
+            )}
             {filaObservacion}
           </div>
+        )}
+
+        {programado && (
+          <button type="button" className="formulario-eliminar" onClick={() => setPanel('eliminar')}>
+            <IconoBasura />
+            Eliminar programado
+          </button>
         )}
       </div>
 
@@ -620,8 +670,131 @@ function Campos({ clave, movimiento, tipoInicial, cuentaPedida }) {
           onChange={(evento) => cambiar({ observacion: evento.target.value })}
         />
       </PanelInferior>
+
+      {esProgramado && (
+        <>
+          <PanelInferior
+            abierto={panel === 'frecuencia'}
+            alCerrar={() => setPanel(null)}
+            titulo="Frecuencia"
+            accion={{ texto: 'Listo', alTocar: () => setPanel(null) }}
+          >
+            <div role="radiogroup" aria-label="Frecuencia">
+              {FRECUENCIAS.map((f) => {
+                const marcada = f.valor === datos.frecuencia;
+                return (
+                  <button
+                    key={f.valor}
+                    type="button"
+                    role="radio"
+                    aria-checked={marcada}
+                    className="panel-opcion panel-lista-opcion"
+                    onClick={() => cambiar({ frecuencia: f.valor })}
+                  >
+                    <span className="panel-opcion-textos">
+                      <span className="panel-opcion-titulo">{f.texto}</span>
+                    </span>
+                    <span className={'radio' + (marcada ? ' marcado' : '')}>{marcada && <IconoCheck tamano={14} />}</span>
+                  </button>
+                );
+              })}
+            </div>
+            {datos.frecuencia === 'quincena' && (
+              <p className="rejilla-dias-nota">
+                El día en que empieza y 15 días después (o antes), cada mes. Por ejemplo, el 15 y el 30.
+              </p>
+            )}
+          </PanelInferior>
+
+          <PanelInferior
+            abierto={panel === 'termina'}
+            alCerrar={() => setPanel(null)}
+            titulo="Termina"
+            accion={{ texto: 'Listo', alTocar: () => setPanel(null) }}
+          >
+            <div role="radiogroup" aria-label="Termina">
+              <button
+                type="button"
+                role="radio"
+                aria-checked={!datos.termina}
+                className="panel-opcion panel-lista-opcion"
+                onClick={() => cambiar({ termina: null })}
+              >
+                <span className="panel-opcion-textos">
+                  <span className="panel-opcion-titulo">Nunca</span>
+                </span>
+                <span className={'radio' + (!datos.termina ? ' marcado' : '')}>
+                  {!datos.termina && <IconoCheck tamano={14} />}
+                </span>
+              </button>
+              <label className="panel-opcion panel-lista-opcion termina-fecha">
+                <span className="panel-opcion-textos">
+                  <span className="panel-opcion-titulo">En una fecha</span>
+                  <span className="panel-opcion-detalle">
+                    {datos.termina ? fechaCorta(datos.termina) : 'Tocar para elegir'}
+                  </span>
+                </span>
+                <span className={'radio' + (datos.termina ? ' marcado' : '')}>
+                  {datos.termina && <IconoCheck tamano={14} />}
+                </span>
+                <input
+                  className="campo-fecha"
+                  type="date"
+                  aria-label="Fecha en que termina"
+                  min={datos.fecha}
+                  value={datos.termina ?? ''}
+                  onClick={(evento) => {
+                    try {
+                      evento.currentTarget.showPicker?.();
+                    } catch {
+                      // Ya estaba abierto o el navegador no lo permite: el toque lo abre igual.
+                    }
+                  }}
+                  onChange={(evento) => evento.target.value && cambiar({ termina: evento.target.value })}
+                />
+              </label>
+            </div>
+          </PanelInferior>
+
+          <PanelInferior abierto={panel === 'eliminar'} alCerrar={() => setPanel(null)} titulo="¿Eliminar el programado?">
+            <p className="panel-texto">
+              Deja de registrarse desde hoy. Los movimientos que ya se registraron se quedan en Transacciones.
+            </p>
+            <button
+              type="button"
+              className="boton-peligro"
+              onClick={() => {
+                setPanel(null);
+                setTimeout(() => {
+                  borradores.delete(clave);
+                  volver(navegar, volverA);
+                  eliminarProgramado(programado.id);
+                }, DURACION_PANEL_MS + 30);
+              }}
+            >
+              Eliminar
+            </button>
+            <button type="button" className="boton-secundario" onClick={() => setPanel(null)}>
+              Cancelar
+            </button>
+          </PanelInferior>
+        </>
+      )}
     </div>
   );
+}
+
+// Nuevo programado (/programados/nuevo) y editar programado (/programados/:id).
+// design/capturas/NuevoProgramado.png, sin "Registrar solo": siempre se registra como pendiente.
+export function FormularioProgramado() {
+  const { id } = useParams();
+  const { key: clave } = useLocation();
+  const { programados, cargando } = useDatos();
+  const editando = id !== 'nuevo';
+  const programado = editando ? programados.find((p) => p.id === id) : undefined;
+  if (cargando) return <CabeceraFormulario titulo={TITULOS_PROGRAMADO[0]} volverA="/planes/programados" />;
+  if (editando && !programado) return <Navigate to="/planes/programados" replace />;
+  return <Campos key={clave} clave={clave} esProgramado programado={programado} tipoInicial="gasto" />;
 }
 
 // Lista de etiquetas para marcar, y un campo para crear una nueva (queda marcada).

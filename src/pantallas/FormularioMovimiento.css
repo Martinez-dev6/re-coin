@@ -283,3 +283,9 @@
   flex-shrink: 0;
   margin-top: 1px;
 }
+
+/* Panel Termina: la opción "En una fecha" lleva encima un campo de fecha invisible. */
+.termina-fecha {
+  position: relative;
+  color: var(--text);
+}
