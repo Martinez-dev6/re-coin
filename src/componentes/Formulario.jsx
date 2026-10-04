@@ -101,6 +101,29 @@ export function Campo({ Icono, etiqueta, alTocar, conFlecha = Boolean(alTocar), 
   );
 }
 
+// Pesos dentro de un Campo ("Ya tengo"), con el teclado numérico y el formato $ 1.234. Como el
+// monto del banner: en cero queda vacío y "$ 0" es solo el ejemplo.
+export function EntradaPesos({ valor, alCambiar, etiqueta, ref }) {
+  return (
+    <input
+      ref={ref}
+      className="campo-entrada"
+      type="text"
+      inputMode="numeric"
+      pattern="[0-9]*"
+      enterKeyHint="done"
+      autoComplete="off"
+      aria-label={etiqueta}
+      placeholder={formatearPesos(0)}
+      value={valor ? formatearPesos(valor) : ''}
+      onFocus={cursorAlFinal}
+      onClick={cursorAlFinal}
+      onChange={(evento) => alCambiar(Number(evento.target.value.replace(/\D/g, '').slice(0, 12)) || 0)}
+      onKeyDown={(evento) => evento.key === 'Enter' && evento.currentTarget.blur()}
+    />
+  );
+}
+
 // Texto dentro de un Campo. 16 px: con menos, el iPhone hace zoom al escribir.
 export function EntradaTexto({ valor, alCambiar, ejemplo, maximo = 40 }) {
   return (
@@ -121,7 +144,8 @@ export function EntradaTexto({ valor, alCambiar, ejemplo, maximo = 40 }) {
 // Fecha dentro de un Campo (con conFlecha): se ve el texto ("Hoy · 2 de octubre") y encima hay
 // un campo de fecha invisible que ocupa toda la fila; al tocarlo, el iPhone abre su selector.
 // valor: 'AAAA-MM-DD'.
-export function EntradaFecha({ valor, alCambiar }) {
+// formato: otra forma de mostrarla (p. ej. fechaCorta, "31 dic 2026").
+export function EntradaFecha({ valor, alCambiar, formato }) {
   const anio = Number(valor.slice(0, 4));
   const abrir = (evento) => {
     try {
@@ -132,7 +156,7 @@ export function EntradaFecha({ valor, alCambiar }) {
   };
   return (
     <>
-      {etiquetaDia(valor) + (anio !== new Date().getFullYear() ? ` de ${anio}` : '')}
+      {formato ? formato(valor) : etiquetaDia(valor) + (anio !== new Date().getFullYear() ? ` de ${anio}` : '')}
       <input
         className="campo-fecha"
         type="date"

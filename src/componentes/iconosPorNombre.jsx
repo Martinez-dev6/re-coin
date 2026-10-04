@@ -460,6 +460,7 @@ export const ETIQUETAS_ICONO = Object.fromEntries(TODOS.map(([nombre, , etiqueta
 // Los que se ven de entrada en los formularios (el resto, en "Más íconos").
 export const ICONOS_CUENTA = ['banco', 'billetera', 'tarjeta', 'efectivo', 'alcancia', 'monedas', 'tendencia'];
 export const ICONOS_TARJETA = ['tarjeta', 'bolsa', 'carrito', 'regalo', 'estrella', 'avion', 'maleta'];
+export const ICONOS_META = ['portatil', 'escudo', 'tiquete-avion', 'casa', 'regalo', 'estrella', 'alcancia'];
 
 export const ICONOS_CATEGORIA = [
   'carrito',

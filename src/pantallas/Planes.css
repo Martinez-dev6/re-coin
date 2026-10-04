@@ -141,6 +141,7 @@ button.presupuesto {
 
 /* Metas */
 .tarjeta-meta {
+  position: relative;
   margin-bottom: 10px;
   padding: 14px 16px;
   background: var(--surface);
@@ -176,7 +177,19 @@ button.presupuesto {
   font-weight: 700;
 }
 
+/* Botón invisible que cubre toda la tarjeta (abre la meta); Aportar va por encima. */
+.meta-abrir {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: inherit;
+  background: transparent;
+}
+
 .meta-aportar {
+  position: relative;
   height: 44px;
   padding: 0;
   border: 0;
@@ -236,4 +249,9 @@ button.presupuesto {
 /* Sin presupuestos (o metas, o programados): texto y botón para crear. */
 .planes-vacio p {
   margin: 0 0 4px;
+}
+
+/* Panel Aportar: el campo del valor. */
+.aportar-campo {
+  margin-bottom: 4px;
 }

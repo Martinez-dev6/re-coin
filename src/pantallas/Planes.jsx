@@ -4,6 +4,7 @@ import BarraEstado from '../componentes/BarraEstado.jsx';
 import CirculoCategoria from '../componentes/CirculoCategoria.jsx';
 import Deslizar from '../componentes/Deslizar.jsx';
 import FilaMovimiento from '../componentes/FilaMovimiento.jsx';
+import { Campo, EntradaPesos } from '../componentes/Formulario.jsx';
 import {
   IconoAlerta,
   IconoAviso,
@@ -13,23 +14,25 @@ import {
   IconoMas,
   IconoRepetir,
 } from '../componentes/iconos.jsx';
+import { IconoPorNombre } from '../componentes/iconosPorNombre.jsx';
+import PanelInferior from '../componentes/PanelInferior.jsx';
 import { MesConFlechas } from '../componentes/SelectorMes.jsx';
 import { useDatos } from '../datos/DatosContext.jsx';
+import { ahorroMensual, aportar } from '../datos/metas.js';
 import { presupuestosDelMes } from '../datos/presupuestos.js';
 import { useMes } from '../estado/MesContext.jsx';
-import { aFecha, diasHasta, enMes, etiquetaDia, fechaCorta, hoyTexto } from '../utilidades/fechas.js';
+import { diasHasta, enMes, etiquetaDia, fechaCorta } from '../utilidades/fechas.js';
 import { formatearPesos } from '../utilidades/formato.js';
 import './Planes.css';
 import './Transacciones.css';
 
 const SECCIONES = [
   { valor: 'presupuestos', texto: 'Presupuestos', nuevo: '/presupuestos/nuevo' },
-  { valor: 'metas', texto: 'Metas', nuevo: '/pendiente/nueva-meta' },
+  { valor: 'metas', texto: 'Metas', nuevo: '/metas/nueva' },
   { valor: 'programados', texto: 'Programados', nuevo: '/pendiente/nuevo-programado' },
 ];
 
-// Metas y programados llegan después (paso 7b).
-const METAS = [];
+// Los programados llegan después (paso 7b).
 const PROGRAMADOS = [];
 
 const porcentaje = (parte, todo) => (todo > 0 ? Math.round((parte / todo) * 100) : 0);
@@ -118,20 +121,23 @@ function Presupuestos({ lista, navegar }) {
 
 // ---------- Metas ----------
 
-// Meses que quedan contando el actual: de octubre a diciembre son 3.
-function mesesRestantes(fechaLimite) {
-  const hoy = aFecha(hoyTexto());
-  const limite = aFecha(fechaLimite);
-  return Math.max(1, (limite.getFullYear() - hoy.getFullYear()) * 12 + limite.getMonth() - hoy.getMonth() + 1);
-}
+// Cuánto ahorrar al mes para llegar a tiempo con una meta.
+const mensualDe = (m) => ahorroMensual(m.objetivo, m.ahorrado, m.fechaLimite);
 
-const ahorroMensual = (m) => Math.max(0, Math.ceil((m.objetivo - m.ahorrado) / mesesRestantes(m.fechaLimite)));
-
-function Metas({ navegar }) {
-  if (METAS.length === 0) return <div className="tarjeta vacio">Aún no tienes metas de ahorro.</div>;
-  const ahorrado = METAS.reduce((t, m) => t + m.ahorrado, 0);
-  const objetivo = METAS.reduce((t, m) => t + m.objetivo, 0);
-  const mensual = METAS.reduce((t, m) => t + ahorroMensual(m), 0);
+function Metas({ metas, navegar, alAportar }) {
+  if (metas.length === 0) {
+    return (
+      <div className="tarjeta vacio planes-vacio">
+        <p>Aún no tienes metas de ahorro.</p>
+        <button type="button" className="boton-principal" onClick={() => navegar('/metas/nueva')}>
+          Crear meta
+        </button>
+      </div>
+    );
+  }
+  const ahorrado = metas.reduce((t, m) => t + m.ahorrado, 0);
+  const objetivo = metas.reduce((t, m) => t + m.objetivo, 0);
+  const mensual = metas.reduce((t, m) => t + mensualDe(m), 0);
 
   return (
     <>
@@ -140,28 +146,30 @@ function Metas({ navegar }) {
           <CirculoCategoria icono="diana" color="acento" />
           <div className="meta-textos">
             <div className="meta-nombre">General</div>
-            <div className="meta-detalle">{METAS.length} metas activas</div>
+            <div className="meta-detalle">{metas.length === 1 ? '1 meta activa' : `${metas.length} metas activas`}</div>
           </div>
           <div className="meta-porcentaje">{porcentaje(ahorrado, objetivo)} %</div>
         </div>
         <div className="barra-progreso meta-barra">
-          <span style={{ width: `${porcentaje(ahorrado, objetivo)}%` }} />
+          <span style={{ width: `${Math.min(porcentaje(ahorrado, objetivo), 100)}%` }} />
         </div>
         <div className="meta-cifras">
           {formatearPesos(ahorrado)} <span>de {formatearPesos(objetivo)}</span>
         </div>
-        <div className="meta-consejo">Ahorra {formatearPesos(mensual)} al mes para cumplirlas a tiempo</div>
+        {mensual > 0 && <div className="meta-consejo">Ahorra {formatearPesos(mensual)} al mes para cumplirlas a tiempo</div>}
       </div>
 
-      {METAS.map((m) => (
+      {metas.map((m) => (
         <div key={m.id} className="tarjeta-meta">
+          {/* Toda la tarjeta abre la meta; el botón Aportar queda por encima. */}
+          <button type="button" className="meta-abrir" aria-label={`Editar ${m.nombre}`} onClick={() => navegar('/metas/' + m.id)} />
           <div className="meta-cabeza">
-            <CirculoCategoria icono={m.icono} color={m.color} />
+            <CirculoCategoria icono={m.icono} color="acento" />
             <div className="meta-textos">
               <div className="meta-nombre">{m.nombre}</div>
               <div className="meta-detalle">Meta: {fechaCorta(m.fechaLimite)}</div>
             </div>
-            <button type="button" className="meta-aportar" onClick={() => navegar('/pendiente/aportar')}>
+            <button type="button" className="meta-aportar" onClick={() => alAportar(m)}>
               <span>
                 <IconoMas tamano={16} />
                 Aportar
@@ -177,12 +185,41 @@ function Metas({ navegar }) {
             </div>
             <div className="meta-porcentaje">{porcentaje(m.ahorrado, m.objetivo)} %</div>
           </div>
-          <div className="meta-consejo">Ahorra {formatearPesos(ahorroMensual(m))} al mes para llegar a tiempo</div>
+          <div className="meta-consejo">
+            {mensualDe(m) > 0 ? `Ahorra ${formatearPesos(mensualDe(m))} al mes para llegar a tiempo` : '¡Meta cumplida!'}
+          </div>
         </div>
       ))}
     </>
   );
 }
+
+// Panel para aportar a una meta: el valor y el botón. Solo suma a la meta (no mueve dinero).
+function PanelAportar({ meta, abierto, alCerrar }) {
+  const [valor, setValor] = useState(0);
+  const listo = async () => {
+    await aportar(meta.id, valor);
+    setValor(0);
+    alCerrar();
+  };
+  return (
+    <PanelInferior abierto={abierto} alCerrar={alCerrar} titulo={meta ? `Aportar a ${meta.nombre}` : 'Aportar'}>
+      <p className="panel-texto">
+        Suma a lo ahorrado en la meta, con fecha de hoy. Tus cuentas no cambian: el dinero ya está donde lo guardas.
+      </p>
+      <div className="tarjeta campos aportar-campo">
+        <Campo Icono={IconoAhorro} etiqueta="Valor">
+          <EntradaPesos valor={valor} etiqueta="Valor del aporte" alCambiar={setValor} />
+        </Campo>
+      </div>
+      <button type="button" className="boton-principal" disabled={!(valor > 0)} onClick={listo}>
+        Aportar {valor > 0 ? formatearPesos(valor) : ''}
+      </button>
+    </PanelInferior>
+  );
+}
+
+const IconoAhorro = (p) => <IconoPorNombre nombre="alcancia" tamano={18} {...p} />;
 
 // ---------- Programados ----------
 
@@ -260,6 +297,9 @@ export default function Planes() {
   const { seccion = 'presupuestos' } = useParams();
   const { anio, mes } = useMes();
   const datos = useDatos();
+  // La meta a la que se aporta; se queda mientras el panel baja.
+  const [metaAportar, setMetaAportar] = useState(null);
+  const [panelAportar, setPanelAportar] = useState(false);
   const actual = SECCIONES.find((s) => s.valor === seccion) ?? SECCIONES[0];
   const indice = SECCIONES.indexOf(actual);
   // Al cambiar de sección o de mes, el resumen y la lista entran deslizándose desde ese lado.
@@ -283,8 +323,8 @@ export default function Planes() {
       </div>
     );
   } else if (actual.valor === 'metas') {
-    const ahorrado = METAS.reduce((t, m) => t + m.ahorrado, 0);
-    const objetivo = METAS.reduce((t, m) => t + m.objetivo, 0);
+    const ahorrado = datos.metas.reduce((t, m) => t + m.ahorrado, 0);
+    const objetivo = datos.metas.reduce((t, m) => t + m.objetivo, 0);
     resumen = (
       <div className="planes-resumen">
         <div className="planes-resumen-etiqueta">Ahorrado en tus metas</div>
@@ -346,9 +386,20 @@ export default function Planes() {
 
       <Deslizar posicion={posicion} className="planes-contenido">
         {actual.valor === 'presupuestos' && <Presupuestos lista={presupuestos} navegar={navegar} />}
-        {actual.valor === 'metas' && <Metas navegar={navegar} />}
+        {actual.valor === 'metas' && (
+          <Metas
+            metas={datos.metas}
+            navegar={navegar}
+            alAportar={(m) => {
+              setMetaAportar(m);
+              setPanelAportar(true);
+            }}
+          />
+        )}
         {actual.valor === 'programados' && <Programados lista={programados} />}
       </Deslizar>
+
+      <PanelAportar meta={metaAportar} abierto={panelAportar} alCerrar={() => setPanelAportar(false)} />
     </div>
   );
 }

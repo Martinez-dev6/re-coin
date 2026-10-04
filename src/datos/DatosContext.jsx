@@ -6,6 +6,7 @@
 import { useLiveQuery } from 'dexie-react-hooks';
 import { createContext, useContext, useMemo } from 'react';
 import { db } from './db.js';
+import { ahorradoPorMeta } from './metas.js';
 import { ordenarMovimientos, saldosPorCuenta } from './movimientos.js';
 import { cuotasComoGastos, resumenTarjetas } from './tarjetas.js';
 
@@ -18,6 +19,8 @@ export function DatosProvider({ children }) {
   const movimientos = useLiveQuery(() => db.movimientos.toArray());
   const tarjetas = useLiveQuery(() => db.tarjetas.orderBy('orden').toArray());
   const presupuestos = useLiveQuery(() => db.presupuestos.orderBy('orden').toArray());
+  const metas = useLiveQuery(() => db.metas.orderBy('orden').toArray());
+  const aportes = useLiveQuery(() => db.aportes.orderBy('fecha').reverse().toArray());
 
   const valor = useMemo(() => {
     const categoriasPorId = new Map((categorias ?? []).map((c) => [c.id, c]));
@@ -31,6 +34,12 @@ export function DatosProvider({ children }) {
     const listaTarjetas = (tarjetas ?? []).map((t) => ({ ...t, ...resumen.get(t.id) }));
     const tarjetasPorId = new Map(listaTarjetas.map((t) => [t.id, t]));
     const tarjeta = (id) => tarjetasPorId.get(id);
+    const ahorrado = ahorradoPorMeta(metas ?? [], aportes ?? []);
+    const listaMetas = (metas ?? []).map((m) => ({
+      ...m,
+      ahorrado: ahorrado.get(m.id),
+      aportes: (aportes ?? []).filter((a) => a.metaId === m.id),
+    }));
     // Como se ven mes a mes (Inicio, Transacciones, Pendientes): cada compra con tarjeta partida
     // en sus cuotas, en el día en que vence cada una (ver cuotasComoGastos).
     const porMes = ordenarMovimientos([
@@ -40,12 +49,16 @@ export function DatosProvider({ children }) {
     return {
       // Mientras se lee la base de datos (unos milisegundos al abrir). Sirve para no mostrar
       // un momento "Crea tu primera cuenta" a quien ya tiene cuentas.
-      cargando: [cuentas, categorias, etiquetas, movimientos, tarjetas, presupuestos].includes(undefined),
+      cargando: [cuentas, categorias, etiquetas, movimientos, tarjetas, presupuestos, metas, aportes].includes(
+        undefined,
+      ),
       cuentas: listaCuentas,
       categorias: categorias ?? [],
       etiquetas: etiquetas ?? [],
       tarjetas: listaTarjetas,
       presupuestos: presupuestos ?? [],
+      // Cada meta con ahorrado ("Ya tengo" + aportes) y sus aportes (más recientes primero).
+      metas: listaMetas,
       // Más recientes primero.
       movimientos: listaMovimientos,
       movimientosPorMes: porMes,
@@ -54,7 +67,7 @@ export function DatosProvider({ children }) {
       etiqueta: (id) => etiquetasPorId.get(id),
       tarjeta,
     };
-  }, [cuentas, categorias, etiquetas, movimientos, tarjetas, presupuestos]);
+  }, [cuentas, categorias, etiquetas, movimientos, tarjetas, presupuestos, metas, aportes]);
 
   return <DatosContext.Provider value={valor}>{children}</DatosContext.Provider>;
 }
