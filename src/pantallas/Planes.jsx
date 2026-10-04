@@ -16,7 +16,7 @@ import { IconoPorNombre } from '../componentes/iconosPorNombre.jsx';
 import PanelInferior from '../componentes/PanelInferior.jsx';
 import { MesConFlechas } from '../componentes/SelectorMes.jsx';
 import { useDatos } from '../datos/DatosContext.jsx';
-import { ahorroMensual, aportar } from '../datos/metas.js';
+import { ahorroPorPeriodo, aportar, frecuenciaMeta } from '../datos/metas.js';
 import { presupuestosDelMes } from '../datos/presupuestos.js';
 import { fechasFuturas, textoFrecuencia } from '../datos/programados.js';
 import { useAjustes } from '../estado/ajustes.js';
@@ -75,10 +75,11 @@ function Presupuestos({ lista, navegar }) {
 
 // ---------- Metas ----------
 
-// Cuánto ahorrar al mes para llegar a tiempo con una meta.
-const mensualDe = (m) => ahorroMensual(m.objetivo, m.ahorrado, m.fechaLimite);
-
 function Metas({ metas, navegar, alAportar }) {
+  const { semanaEmpieza } = useAjustes();
+  // Cuánto ahorrar para llegar a tiempo, en la frecuencia de cada meta (o en otra, para General).
+  const ahorroDe = (m, frecuencia = m.frecuencia) =>
+    ahorroPorPeriodo(m.objetivo, m.ahorrado, m.fechaLimite, frecuenciaMeta(frecuencia).valor, semanaEmpieza);
   if (metas.length === 0) {
     return (
       <div className="tarjeta vacio planes-vacio">
@@ -91,7 +92,10 @@ function Metas({ metas, navegar, alAportar }) {
   }
   const ahorrado = metas.reduce((t, m) => t + m.ahorrado, 0);
   const objetivo = metas.reduce((t, m) => t + m.objetivo, 0);
-  const mensual = metas.reduce((t, m) => t + mensualDe(m), 0);
+  // General: si todas las metas usan la misma frecuencia, en esa; si no, al mes.
+  const frecuencias = new Set(metas.map((m) => frecuenciaMeta(m.frecuencia).valor));
+  const general = frecuenciaMeta(frecuencias.size === 1 ? [...frecuencias][0] : 'mes');
+  const sugeridoGeneral = metas.reduce((t, m) => t + ahorroDe(m, general.valor), 0);
 
   return (
     <>
@@ -110,7 +114,11 @@ function Metas({ metas, navegar, alAportar }) {
         <div className="meta-cifras">
           {formatearPesos(ahorrado)} <span>de {formatearPesos(objetivo)}</span>
         </div>
-        {mensual > 0 && <div className="meta-consejo">Ahorra {formatearPesos(mensual)} al mes para cumplirlas a tiempo</div>}
+        {sugeridoGeneral > 0 && (
+          <div className="meta-consejo">
+            Ahorra {formatearPesos(sugeridoGeneral)} {general.cada} para cumplirlas a tiempo
+          </div>
+        )}
       </div>
 
       {metas.map((m) => (
@@ -140,7 +148,9 @@ function Metas({ metas, navegar, alAportar }) {
             <div className="meta-porcentaje">{porcentaje(m.ahorrado, m.objetivo)} %</div>
           </div>
           <div className="meta-consejo">
-            {mensualDe(m) > 0 ? `Ahorra ${formatearPesos(mensualDe(m))} al mes para llegar a tiempo` : '¡Meta cumplida!'}
+            {ahorroDe(m) > 0
+              ? `Ahorra ${formatearPesos(ahorroDe(m))} ${frecuenciaMeta(m.frecuencia).cada} para llegar a tiempo`
+              : '¡Meta cumplida!'}
           </div>
         </div>
       ))}

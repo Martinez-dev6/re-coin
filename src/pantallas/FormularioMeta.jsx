@@ -1,5 +1,6 @@
 // Nueva meta (/metas/nueva) y editar meta (/metas/:id). design/capturas/NuevaMeta.png
-// Al editar se ven también sus aportes, y tocar uno permite borrarlo.
+// Al editar se ven también sus aportes, y tocar uno permite borrarlo. "Ahorrar" elige si la cifra
+// sugerida es al día, a la semana, a la quincena o al mes; el panel muestra las cuatro.
 import { useRef, useState } from 'react';
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
 import {
@@ -11,12 +12,28 @@ import {
   MontoEditable,
   PieFormulario,
 } from '../componentes/Formulario.jsx';
-import { IconoBanco, IconoBasura, IconoCalendario, IconoCheck, IconoInfo, IconoTexto } from '../componentes/iconos.jsx';
+import {
+  IconoBanco,
+  IconoBasura,
+  IconoCalendario,
+  IconoCheck,
+  IconoInfo,
+  IconoRepetir,
+  IconoTexto,
+} from '../componentes/iconos.jsx';
 import { ICONOS_META, IconoPorNombre } from '../componentes/iconosPorNombre.jsx';
 import PanelInferior, { DURACION_PANEL_MS } from '../componentes/PanelInferior.jsx';
 import SelectorIcono from '../componentes/SelectorIcono.jsx';
 import { useDatos } from '../datos/DatosContext.jsx';
-import { ahorroMensual, eliminarAporte, eliminarMeta, guardarMeta } from '../datos/metas.js';
+import {
+  ahorroPorPeriodo,
+  eliminarAporte,
+  eliminarMeta,
+  FRECUENCIAS_META,
+  frecuenciaMeta,
+  guardarMeta,
+} from '../datos/metas.js';
+import { useAjustes } from '../estado/ajustes.js';
 import { estiloIconoCuenta } from '../tema/colores.js';
 import { diaYMes, fechaCorta, hoyTexto } from '../utilidades/fechas.js';
 import { formatearPesos } from '../utilidades/formato.js';
@@ -27,6 +44,7 @@ const LISTA = '/planes/metas';
 
 const IconoFechaLimite = (p) => <IconoCalendario tamano={18} {...p} />;
 const IconoYaTengo = (p) => <IconoPorNombre nombre="signo-pesos" tamano={18} {...p} />;
+const IconoAhorrar = (p) => <IconoRepetir tamano={18} grosor={2} {...p} />;
 
 // Un año desde hoy.
 function enUnAnio() {
@@ -48,12 +66,14 @@ export default function FormularioMeta() {
 function Campos({ meta }) {
   const navegar = useNavigate();
   const { cuentas, cuenta } = useDatos();
+  const { semanaEmpieza } = useAjustes();
   const [datos, setDatos] = useState(() =>
     meta
       ? {
           nombre: meta.nombre,
           objetivo: meta.objetivo,
           fechaLimite: meta.fechaLimite,
+          frecuencia: frecuenciaMeta(meta.frecuencia).valor,
           ahorradoInicial: meta.ahorradoInicial ?? 0,
           cuentaId: meta.cuentaId,
           icono: meta.icono,
@@ -62,12 +82,13 @@ function Campos({ meta }) {
           nombre: '',
           objetivo: 0,
           fechaLimite: enUnAnio(),
+          frecuencia: 'mes',
           ahorradoInicial: 0,
           cuentaId: cuentas[0]?.id ?? null,
           icono: 'alcancia',
         },
   );
-  const [panel, setPanel] = useState(null); // 'cuenta' | 'eliminar' | 'aporte'
+  const [panel, setPanel] = useState(null); // 'cuenta' | 'frecuencia' | 'eliminar' | 'aporte'
   // El aporte que se va a borrar; se queda mientras el panel baja.
   const [aporte, setAporte] = useState(null);
   const [aviso, setAviso] = useState(null);
@@ -78,7 +99,9 @@ function Campos({ meta }) {
 
   // Con lo ahorrado de verdad (también los aportes), no solo con "Ya tengo".
   const ahorrado = (meta?.ahorrado ?? 0) - (meta?.ahorradoInicial ?? 0) + datos.ahorradoInicial;
-  const mensual = ahorroMensual(datos.objetivo, ahorrado, datos.fechaLimite);
+  const ahorroCada = (frecuencia) => ahorroPorPeriodo(datos.objetivo, ahorrado, datos.fechaLimite, frecuencia, semanaEmpieza);
+  const frecuencia = frecuenciaMeta(datos.frecuencia);
+  const sugerido = ahorroCada(frecuencia.valor);
 
   const guardar = async () => {
     setGuardando(true);
@@ -123,6 +146,9 @@ function Campos({ meta }) {
           <Campo Icono={IconoFechaLimite} etiqueta="Fecha límite" conFlecha>
             <EntradaFecha valor={datos.fechaLimite} alCambiar={(fechaLimite) => cambiar({ fechaLimite })} formato={fechaCorta} />
           </Campo>
+          <Campo Icono={IconoAhorrar} etiqueta="Ahorrar" alTocar={() => setPanel('frecuencia')}>
+            {frecuencia.texto}
+          </Campo>
           <Campo Icono={IconoYaTengo} etiqueta="Ya tengo">
             <EntradaPesos
               valor={datos.ahorradoInicial}
@@ -138,8 +164,8 @@ function Campos({ meta }) {
           <p className="formulario-nota">
             <IconoInfo />
             <span>
-              {mensual > 0
-                ? `Para llegar a tiempo tendrías que ahorrar ${formatearPesos(mensual)} al mes.`
+              {sugerido > 0
+                ? `Para llegar a tiempo tendrías que ahorrar ${formatearPesos(sugerido)} ${frecuencia.cada}.`
                 : 'Ya tienes lo de esta meta.'}
             </span>
           </p>
@@ -212,6 +238,40 @@ function Campos({ meta }) {
                 </span>
                 <span className="panel-opcion-textos">
                   <span className="panel-opcion-titulo">{c.nombre}</span>
+                </span>
+                <span className={'radio' + (marcada ? ' marcado' : '')}>{marcada && <IconoCheck tamano={14} />}</span>
+              </button>
+            );
+          })}
+        </div>
+      </PanelInferior>
+
+      <PanelInferior
+        abierto={panel === 'frecuencia'}
+        alCerrar={() => setPanel(null)}
+        titulo="Ahorrar"
+        accion={{ texto: 'Listo', alTocar: () => setPanel(null) }}
+      >
+        <div role="radiogroup" aria-label="Cada cuánto ahorrar">
+          {FRECUENCIAS_META.map((f) => {
+            const marcada = f.valor === frecuencia.valor;
+            const cifra = ahorroCada(f.valor);
+            return (
+              <button
+                key={f.valor}
+                type="button"
+                role="radio"
+                aria-checked={marcada}
+                className="panel-opcion panel-lista-opcion"
+                onClick={() => cambiar({ frecuencia: f.valor })}
+              >
+                <span className="panel-opcion-textos">
+                  <span className="panel-opcion-titulo">{f.texto}</span>
+                  {datos.objetivo > 0 && cifra > 0 && (
+                    <span className="panel-opcion-detalle">
+                      {formatearPesos(cifra)} {f.cada}
+                    </span>
+                  )}
                 </span>
                 <span className={'radio' + (marcada ? ' marcado' : '')}>{marcada && <IconoCheck tamano={14} />}</span>
               </button>

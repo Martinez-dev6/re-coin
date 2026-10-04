@@ -62,7 +62,8 @@ db.version(4)
 //   presupuestos: id, categoriaId, limite, desde ('AAAA-MM'), repetir (true = todos los meses
 //                 desde 'desde'; false = solo ese mes), avisarAl (porcentaje: 50–100), orden
 //   metas:        id, nombre, objetivo, fechaLimite ('AAAA-MM-DD'), ahorradoInicial ("Ya tengo"),
-//                 cuentaId (dónde se guarda; solo informativo), icono, orden
+//                 cuentaId (dónde se guarda; solo informativo), icono, orden,
+//                 frecuencia (2026-10-04, opcional: 'dia' | 'semana' | 'quincena' | 'mes'; sin ella, 'mes')
 //   aportes:      id, metaId, valor, fecha. Solo suman a la meta: no mueven dinero.
 //   programados:  id, plantilla del movimiento (tipo, valor, descripcion, categoriaId, cuentaId,
 //                 cuentaDestinoId, etiquetaIds, observacion), frecuencia ('dia' | 'semana' |

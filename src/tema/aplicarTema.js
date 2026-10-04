@@ -52,6 +52,12 @@ function extras(oscuro, colores) {
     badgeGreenText: oscuro ? '#0e1a13' : '#ffffff',
     // Círculos del menú del "+".
     menuBg: oscuro ? '#2b2c38' : '#ffffff',
+    // Íconos de Transferencia (azul) y Gasto con tarjeta (amarillo) en ese menú: fijos, no siguen
+    // el color del tema, como los de Ingreso y Gasto (pedido del dueño, 2026-10-04). Contraste
+    // sobre el círculo: azul 5,2 y 5,4; amarillo 3,1 (el amarillo más claro que aún se distingue
+    // sobre blanco) y 9.
+    menuTransferencia: oscuro ? '#60a5fa' : '#2563eb',
+    menuTarjeta: oscuro ? '#facc15' : '#bf8700',
     menuBorde: oscuro ? 'rgba(255,255,255,0.16)' : 'rgba(0,0,0,0.06)',
     // Fondo oscurecido detrás de un panel inferior o del menú del "+".
     scrim: `rgba(${scrimRgb.join(',')},${scrimAlfa})`,

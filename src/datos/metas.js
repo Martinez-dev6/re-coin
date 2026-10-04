@@ -11,18 +11,48 @@ export function ahorradoPorMeta(metas, aportes) {
   return ahorrado;
 }
 
-// Meses que quedan contando el actual: de octubre a diciembre son 3. Si la fecha ya pasó, 1.
-export function mesesRestantes(fechaLimite) {
-  const hoy = aFecha(hoyTexto());
-  const limite = aFecha(fechaLimite);
-  return Math.max(1, (limite.getFullYear() - hoy.getFullYear()) * 12 + limite.getMonth() - hoy.getMonth() + 1);
+// Cada cuánto se quiere ahorrar para una meta (pedido del dueño, 2026-10-04; antes solo al mes).
+// cada: cómo se lee en las frases ("ahorra $ 10.000 a la semana").
+export const FRECUENCIAS_META = [
+  { valor: 'dia', texto: 'Diario', cada: 'al día' },
+  { valor: 'semana', texto: 'Semanal', cada: 'a la semana' },
+  { valor: 'quincena', texto: 'Quincenal', cada: 'a la quincena' },
+  { valor: 'mes', texto: 'Mensual', cada: 'al mes' },
+];
+// Las metas de antes no tienen frecuencia: son mensuales.
+export const frecuenciaMeta = (valor) => FRECUENCIAS_META.find((f) => f.valor === valor) ?? FRECUENCIAS_META[3];
+
+const DIA_MS = 24 * 60 * 60 * 1000;
+const diasEntre = (desde, hasta) => Math.round((hasta - desde) / DIA_MS);
+
+// Primer día de la semana de una fecha (lunes o domingo, como en Ajustes).
+function inicioSemana(fecha, semanaEmpieza) {
+  const corrimiento = semanaEmpieza === 'domingo' ? fecha.getDay() : (fecha.getDay() + 6) % 7;
+  return new Date(fecha.getFullYear(), fecha.getMonth(), fecha.getDate() - corrimiento);
 }
 
-// Cuánto ahorrar al mes para llegar a tiempo (0 si ya se cumplió).
-export const ahorroMensual = (objetivo, ahorrado, fechaLimite) =>
-  Math.max(0, Math.ceil((objetivo - ahorrado) / mesesRestantes(fechaLimite)));
+// Quincena como número corrido: del 1 al 15 es la primera del mes y del 16 al final, la segunda.
+const numeroQuincena = (fecha) => fecha.getFullYear() * 24 + fecha.getMonth() * 2 + (fecha.getDate() > 15 ? 1 : 0);
 
-// datos: { nombre, objetivo, fechaLimite, ahorradoInicial, cuentaId, icono }. Sin id = meta nueva.
+// Periodos que quedan hasta la fecha límite contando el actual (hoy, esta semana, esta quincena o
+// este mes), como ya se hacía con los meses: de octubre a diciembre son 3 meses. Si la fecha ya
+// pasó, 1.
+export function periodosRestantes(fechaLimite, frecuencia = 'mes', semanaEmpieza = 'lunes') {
+  const hoy = aFecha(hoyTexto());
+  const limite = aFecha(fechaLimite);
+  let periodos;
+  if (frecuencia === 'dia') periodos = diasEntre(hoy, limite) + 1;
+  else if (frecuencia === 'semana') periodos = diasEntre(inicioSemana(hoy, semanaEmpieza), inicioSemana(limite, semanaEmpieza)) / 7 + 1;
+  else if (frecuencia === 'quincena') periodos = numeroQuincena(limite) - numeroQuincena(hoy) + 1;
+  else periodos = (limite.getFullYear() - hoy.getFullYear()) * 12 + limite.getMonth() - hoy.getMonth() + 1;
+  return Math.max(1, periodos);
+}
+
+// Cuánto ahorrar en cada periodo para llegar a tiempo (0 si ya se cumplió).
+export const ahorroPorPeriodo = (objetivo, ahorrado, fechaLimite, frecuencia, semanaEmpieza) =>
+  Math.max(0, Math.ceil((objetivo - ahorrado) / periodosRestantes(fechaLimite, frecuencia, semanaEmpieza)));
+
+// datos: { nombre, objetivo, fechaLimite, frecuencia, ahorradoInicial, cuentaId, icono }. Sin id = meta nueva.
 export async function guardarMeta(id, datos) {
   const nombre = datos.nombre.trim();
   if (!nombre) throw new Error('Escribe el nombre de la meta.');
@@ -31,6 +61,7 @@ export async function guardarMeta(id, datos) {
     nombre,
     objetivo: Math.round(datos.objetivo),
     fechaLimite: datos.fechaLimite,
+    frecuencia: frecuenciaMeta(datos.frecuencia).valor,
     ahorradoInicial: Math.max(0, Math.round(datos.ahorradoInicial) || 0),
     cuentaId: datos.cuentaId ?? null,
     icono: datos.icono,

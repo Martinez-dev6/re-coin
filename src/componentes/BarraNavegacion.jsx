@@ -26,11 +26,12 @@ const PESTANAS = [
 
 // Posición de cada círculo respecto al centro del "+" (medidas de design/html/MenuMas.html).
 // De izquierda a derecha. El gasto, el que más se usa, va último: abajo a la derecha, donde
-// llega el pulgar (pedido del dueño, 2026-10-04).
+// llega el pulgar (pedido del dueño, 2026-10-04). Cada ícono con su color fijo, sin importar el
+// color del tema: tarjeta amarilla, ingreso verde, transferencia azul, gasto rojo.
 const OPCIONES = [
-  { texto: 'Gasto con tarjeta', ruta: '/nuevo/gasto-tarjeta', Icono: (p) => <IconoTarjeta tamano={26} grosor={2.2} {...p} />, color: 'var(--accent-text)', dx: -127, dy: -46 },
+  { texto: 'Gasto con tarjeta', ruta: '/nuevo/gasto-tarjeta', Icono: (p) => <IconoTarjeta tamano={26} grosor={2.2} {...p} />, color: 'var(--menu-tarjeta)', dx: -127, dy: -46 },
   { texto: 'Ingreso', ruta: '/nuevo/ingreso', Icono: IconoIngreso, color: 'var(--income)', dx: -57, dy: -122 },
-  { texto: 'Transferencia', ruta: '/nuevo/transferencia', Icono: IconoTransferencia, color: 'var(--accent-text)', dx: 57, dy: -122 },
+  { texto: 'Transferencia', ruta: '/nuevo/transferencia', Icono: IconoTransferencia, color: 'var(--menu-transferencia)', dx: 57, dy: -122 },
   { texto: 'Gasto', ruta: '/nuevo/gasto', Icono: IconoGasto, color: 'var(--expense)', dx: 127, dy: -46 },
 ];
 
