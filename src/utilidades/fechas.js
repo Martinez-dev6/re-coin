@@ -24,6 +24,18 @@ export const hoyTexto = () => textoDeFecha(new Date());
 // "3:45 p. m." (hora local, en el formato de Colombia).
 export const horaCorta = (d) => d.toLocaleTimeString('es-CO', { hour: 'numeric', minute: '2-digit' });
 
+// La hora de ahora como 'HH:MM' (la que guarda un movimiento).
+export function horaActual() {
+  const d = new Date();
+  return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+}
+
+// 'HH:MM' → "3:45 p. m.".
+export function textoHora(hora) {
+  const [h, m] = hora.split(':').map(Number);
+  return horaCorta(new Date(2000, 0, 1, h, m));
+}
+
 export function diasHasta(texto) {
   return Math.round((aFecha(texto) - aFecha(hoyTexto())) / 86400000);
 }

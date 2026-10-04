@@ -77,49 +77,55 @@
 /* Color de los íconos de las opciones (Mi espacio → Apariencia; ajustes.js pone data-iconos en
    <html>). En "Predeterminado" cada opción con data-tono lleva su propio color suave: una letra
    de la paleta de las categorías (--cat-a…--cat-g, validada en claro y oscuro) o n, gris. En
-   "Color del tema" se quedan con el del tema (lo de arriba). */
-:root[data-iconos='predeterminado'] .icono-circulo[data-tono] {
+   "Color del tema" se quedan con el del tema (lo de arriba). También los íconos de los campos
+   (.campo-icono) que llevan tono, como en Reajustar saldo (pedido del dueño, 2026-10-04). */
+:root[data-iconos='predeterminado'] :is(.icono-circulo, .campo-icono)[data-tono] {
   transition:
     background-color 0.25s ease,
     color 0.25s ease;
 }
 
-:root[data-iconos='predeterminado'] .icono-circulo[data-tono='a'] {
+:root[data-iconos='predeterminado'] :is(.icono-circulo, .campo-icono)[data-tono='a'] {
   background: var(--cat-a-soft);
   color: var(--cat-a);
 }
 
-:root[data-iconos='predeterminado'] .icono-circulo[data-tono='b'] {
+:root[data-iconos='predeterminado'] :is(.icono-circulo, .campo-icono)[data-tono='b'] {
   background: var(--cat-b-soft);
   color: var(--cat-b);
 }
 
-:root[data-iconos='predeterminado'] .icono-circulo[data-tono='c'] {
+:root[data-iconos='predeterminado'] :is(.icono-circulo, .campo-icono)[data-tono='c'] {
   background: var(--cat-c-soft);
   color: var(--cat-c);
 }
 
-:root[data-iconos='predeterminado'] .icono-circulo[data-tono='d'] {
+:root[data-iconos='predeterminado'] :is(.icono-circulo, .campo-icono)[data-tono='d'] {
   background: var(--cat-d-soft);
   color: var(--cat-d);
 }
 
-:root[data-iconos='predeterminado'] .icono-circulo[data-tono='e'] {
+:root[data-iconos='predeterminado'] :is(.icono-circulo, .campo-icono)[data-tono='e'] {
   background: var(--cat-e-soft);
   color: var(--cat-e);
 }
 
-:root[data-iconos='predeterminado'] .icono-circulo[data-tono='f'] {
+:root[data-iconos='predeterminado'] :is(.icono-circulo, .campo-icono)[data-tono='f'] {
   background: var(--cat-f-soft);
   color: var(--cat-f);
 }
 
-:root[data-iconos='predeterminado'] .icono-circulo[data-tono='g'] {
+:root[data-iconos='predeterminado'] :is(.icono-circulo, .campo-icono)[data-tono='g'] {
   background: var(--cat-g-soft);
   color: var(--cat-g);
 }
 
-:root[data-iconos='predeterminado'] .icono-circulo[data-tono='n'] {
+:root[data-iconos='predeterminado'] :is(.icono-circulo, .campo-icono)[data-tono='h'] {
+  background: var(--cat-h-soft);
+  color: var(--cat-h);
+}
+
+:root[data-iconos='predeterminado'] :is(.icono-circulo, .campo-icono)[data-tono='n'] {
   background: var(--track);
   color: var(--muted);
 }

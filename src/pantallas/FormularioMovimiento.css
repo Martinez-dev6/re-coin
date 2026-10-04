@@ -34,6 +34,14 @@
   color: var(--transfer-text);
 }
 
+/* Azul fijo, no el del tema (transferencia en Reajustar saldo, como el ícono del menú del "+").
+   Texto blanco: contraste 5,2. */
+.boton-principal.guardar-azul {
+  background: #2563eb;
+  box-shadow: none;
+  color: #ffffff;
+}
+
 /* "Elige una categoría.": sobre el botón Guardar. */
 .movimiento-aviso {
   margin: 0 0 10px;
@@ -313,4 +321,18 @@
 
 .reajuste-opcion .panel-opcion-detalle {
   line-height: 17px;
+}
+
+.reajuste-opcion:disabled {
+  opacity: 0.5;
+}
+
+/* El botón cambia de color según lo elegido, con un fundido (no de golpe), y conserva el
+   encogimiento de la animación de "listo" (.boton-exito en comunes.css). */
+.boton-exito.reajuste-boton {
+  transition:
+    clip-path 0.28s cubic-bezier(0.3, 0, 0.15, 1),
+    background-color 0.3s ease,
+    color 0.3s ease,
+    opacity 0.3s ease;
 }

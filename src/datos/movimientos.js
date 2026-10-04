@@ -7,7 +7,7 @@
 // - Los gastos con tarjeta no tocan las cuentas (van a las facturas; ver tarjetas.js) y cada
 //   cuota cuenta como gasto en el mes en que se paga. El pago de una factura resta de la cuenta
 //   y, como una transferencia, no es gasto otra vez.
-import { hoyTexto } from '../utilidades/fechas.js';
+import { horaActual, hoyTexto, textoDeFecha } from '../utilidades/fechas.js';
 import { db, nuevoId } from './db.js';
 
 // Las tres opciones de arriba del formulario (el gasto con tarjeta tiene su formulario).
@@ -116,6 +116,8 @@ export async function guardarMovimiento(id, datos) {
     cuentaId: conTarjeta ? null : datos.cuentaId,
     cuentaDestinoId: transferencia ? datos.cuentaDestinoId : null,
     fecha: datos.fecha || hoyTexto(),
+    // 'ahora' (formulario con fecha de hoy, sin tocar la hora): la hora en que se guarda.
+    hora: datos.hora === 'ahora' ? horaActual() : datos.hora || null,
     pagado: transferencia || conTarjeta ? true : Boolean(datos.pagado),
     etiquetaIds: transferencia ? [] : [...new Set(datos.etiquetaIds)],
     observacion: datos.observacion.trim(),
@@ -133,6 +135,18 @@ export async function guardarMovimiento(id, datos) {
 }
 
 export const cambiarPagado = (id, pagado) => db.movimientos.update(id, { pagado });
+
+// Hora de un movimiento ('HH:MM') o null (decidido por el dueño, 2026-10-04): lo que se registra
+// al momento (con fecha de hoy) la lleva sola; para otra fecha es opcional y se elige a mano. Los
+// de antes no tienen el campo: si se registraron el mismo día de su fecha, se toma la hora en que
+// se crearon; si no (se anotaron después), no tienen hora.
+export function horaDe(m) {
+  if (m.hora !== undefined) return m.hora;
+  if (!m.creado) return null;
+  const creado = new Date(m.creado);
+  if (textoDeFecha(creado) !== m.fecha) return null;
+  return `${String(creado.getHours()).padStart(2, '0')}:${String(creado.getMinutes()).padStart(2, '0')}`;
+}
 
 // Marca como pagado (o recibido) un pendiente, desde la cuenta de la que de verdad salió (o a la
 // que entró), que puede no ser la que se había puesto.

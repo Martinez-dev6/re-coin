@@ -329,3 +329,23 @@
   display: flex;
   justify-content: center;
 }
+
+/* ---- Hora (EntradaHora): campo de hora invisible encima del texto; 16 px para que el iPhone no
+   acerque la pantalla al tocarlo ---- */
+
+.campo-hora {
+  position: relative;
+  margin-right: 10px;
+}
+
+.campo-hora-entrada {
+  position: absolute;
+  inset: -12px -8px;
+  width: calc(100% + 16px);
+  height: calc(100% + 24px);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  opacity: 0;
+  font-size: 16px;
+}

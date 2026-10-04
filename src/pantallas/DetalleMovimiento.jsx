@@ -2,7 +2,7 @@
 // Sin barra inferior: entra desde la derecha por encima de ella (TransicionPantallas.jsx).
 // Tocar el estado (Pendiente / Pagado) abre una ventana para confirmarlo, con la animación de
 // "listo" (pedido del dueño, 2026-10-04: antes cambiaba al instante y se prestaba a confusión).
-// La hora es la de cuando se registró (campo creado).
+// La hora solo sale si el movimiento la tiene (horaDe en movimientos.js).
 import { useRef, useState } from 'react';
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
 import BotonExito from '../componentes/BotonExito.jsx';
@@ -28,9 +28,9 @@ import {
 import PanelConfirmarPago from '../componentes/PanelConfirmarPago.jsx';
 import PanelInferior, { DURACION_PANEL_MS } from '../componentes/PanelInferior.jsx';
 import { useDatos } from '../datos/DatosContext.jsx';
-import { cambiarPagado, eliminarMovimiento, tituloMovimiento } from '../datos/movimientos.js';
+import { cambiarPagado, eliminarMovimiento, horaDe, tituloMovimiento } from '../datos/movimientos.js';
 import { nombreFactura } from '../datos/tarjetas.js';
-import { diaYMes, etiquetaDia, horaCorta, textoDeFecha } from '../utilidades/fechas.js';
+import { etiquetaDia, textoHora } from '../utilidades/fechas.js';
 import { formatearPesos } from '../utilidades/formato.js';
 import { volver } from '../utilidades/navegacion.js';
 import './DetalleMovimiento.css';
@@ -102,9 +102,7 @@ function Contenido({ movimiento: m }) {
   const anio = Number(m.fecha.slice(0, 4));
   const fecha = etiquetaDia(m.fecha) + (anio !== new Date().getFullYear() ? ` de ${anio}` : '');
   const etiquetas = m.etiquetaIds.map((e) => etiqueta(e)?.nombre).filter(Boolean);
-  // Cuándo se registró: solo la hora si fue el mismo día del movimiento; si no, también el día.
-  const creado = m.creado ? new Date(m.creado) : null;
-  const mismoDia = creado && textoDeFecha(creado) === m.fecha;
+  const hora = horaDe(m);
 
   let textoPendiente = `El dinero vuelve a ${nombreCuenta(m.cuentaId)} hasta que la marques como hecha.`;
   if (m.tipo === 'gasto') textoPendiente = `Deja de restarse del saldo de ${nombreCuenta(m.cuentaId)} hasta que lo marques como pagado.`;
@@ -187,9 +185,9 @@ function Contenido({ movimiento: m }) {
           <Campo Icono={IconoFecha} etiqueta="Fecha">
             {fecha}
           </Campo>
-          {creado && (
-            <Campo Icono={IconoHora} etiqueta={mismoDia ? 'Hora' : 'Registrado'}>
-              {mismoDia ? horaCorta(creado) : `${diaYMes(textoDeFecha(creado))} · ${horaCorta(creado)}`}
+          {hora && (
+            <Campo Icono={IconoHora} etiqueta="Hora">
+              {textoHora(hora)}
             </Campo>
           )}
           {etiquetas.length > 0 && (

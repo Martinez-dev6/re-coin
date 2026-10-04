@@ -89,6 +89,7 @@ export function registrarVencidos() {
             cuentaId: p.cuentaId,
             cuentaDestinoId: p.cuentaDestinoId,
             fecha,
+            hora: null, // se registra solo al abrir la app: no es la hora en que se hizo
             pagado: false,
             etiquetaIds: p.etiquetaIds ?? [],
             observacion: p.observacion ?? '',

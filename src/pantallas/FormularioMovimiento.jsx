@@ -11,6 +11,7 @@ import {
   CabeceraFormulario,
   Campo,
   EntradaFecha,
+  EntradaHora,
   EntradaTexto,
   Interruptor,
   MontoEditable,
@@ -40,11 +41,11 @@ import { IconoPorNombre } from '../componentes/iconosPorNombre.jsx';
 import PanelInferior, { DURACION_PANEL_MS } from '../componentes/PanelInferior.jsx';
 import { useDatos } from '../datos/DatosContext.jsx';
 import { guardarEtiqueta } from '../datos/etiquetas.js';
-import { faltante, guardarMovimiento, TIPOS_MOVIMIENTO } from '../datos/movimientos.js';
+import { faltante, guardarMovimiento, horaDe, TIPOS_MOVIMIENTO } from '../datos/movimientos.js';
 import { eliminarProgramado, FRECUENCIAS, guardarProgramado, textoFrecuencia } from '../datos/programados.js';
 import { cuotasDe, facturaDeFecha, nombreFactura, sumarMeses } from '../datos/tarjetas.js';
 import { estiloIconoCuenta } from '../tema/colores.js';
-import { fechaCorta, hoyTexto } from '../utilidades/fechas.js';
+import { fechaCorta, horaActual, hoyTexto, textoHora } from '../utilidades/fechas.js';
 import { formatearPesos } from '../utilidades/formato.js';
 import { volver } from '../utilidades/navegacion.js';
 import './FormularioMovimiento.css';
@@ -73,6 +74,7 @@ const IconoPagado = (p) => <IconoCheckCirculo tamano={18} grosor={2} {...p} />;
 const IconoCuotas = (p) => <IconoCapas tamano={18} {...p} />;
 const IconoRepetirFila = (p) => <IconoRepetir tamano={18} grosor={2} {...p} />;
 const IconoTermina = (p) => <IconoReloj tamano={18} grosor={2} {...p} />;
+const IconoHora = (p) => <IconoReloj tamano={18} grosor={2} {...p} />;
 const IconoFactura = (p) => <IconoRecibo tamano={18} {...p} />;
 
 const EJEMPLOS = {
@@ -144,6 +146,7 @@ const CAMPOS = [
   'cuentaId',
   'cuentaDestinoId',
   'fecha',
+  'hora', // null, 'HH:MM' o, solo en el formulario, 'ahora' (la hora en que se guarde)
   'pagado',
   'etiquetaIds',
   'observacion',
@@ -154,7 +157,7 @@ const CAMPOS = [
 ];
 
 function datosIniciales({ movimiento, programado, tipoInicial, cuentaPedida, cuentas, tarjetas }) {
-  if (movimiento) return Object.fromEntries(CAMPOS.map((campo) => [campo, movimiento[campo] ?? null]));
+  if (movimiento) return { ...Object.fromEntries(CAMPOS.map((campo) => [campo, movimiento[campo] ?? null])), hora: horaDe(movimiento) };
   // Un programado guarda la plantilla del movimiento; su "fecha" en el formulario es Empieza.
   if (programado) {
     return {
@@ -162,6 +165,7 @@ function datosIniciales({ movimiento, programado, tipoInicial, cuentaPedida, cue
       etiquetaIds: programado.etiquetaIds ?? [],
       observacion: programado.observacion ?? '',
       fecha: programado.empieza,
+      hora: null,
       frecuencia: programado.frecuencia,
       termina: programado.termina,
     };
@@ -179,6 +183,7 @@ function datosIniciales({ movimiento, programado, tipoInicial, cuentaPedida, cue
     cuentaId,
     cuentaDestinoId: cuentas.find((c) => c.id !== cuentaId)?.id ?? null,
     fecha,
+    hora: 'ahora',
     pagado: true,
     etiquetaIds: [],
     observacion: '',
@@ -212,14 +217,17 @@ function Campos({ clave, movimiento, programado, esProgramado = false, tipoInici
   const [pagadoAMano, setPagadoAMano] = useState(borrador?.pagadoAMano ?? Boolean(movimiento));
   // Igual con la factura de un gasto con tarjeta: sigue a la fecha y a la tarjeta (día de cierre).
   const [facturaAMano, setFacturaAMano] = useState(borrador?.facturaAMano ?? Boolean(movimiento));
+  // Y con la hora (decidido por el dueño, 2026-10-04): con fecha de hoy va sola ("Ahora", la hora
+  // en que se guarda); con otra fecha, sin hora, salvo que se prenda y se elija a mano.
+  const [horaAMano, setHoraAMano] = useState(borrador?.horaAMano ?? Boolean(movimiento));
   // 'categoria' | 'cuentaId' | 'cuentaDestinoId' | 'tarjetaId' | 'cuotas' | 'factura' | 'etiquetas' | 'observacion'
   const [panel, setPanel] = useState(null);
   const [aviso, setAviso] = useState(null);
   const monto = useRef(null);
 
   useEffect(() => {
-    borradores.set(clave, { datos, pagadoAMano, facturaAMano });
-  }, [clave, datos, pagadoAMano, facturaAMano]);
+    borradores.set(clave, { datos, pagadoAMano, facturaAMano, horaAMano });
+  }, [clave, datos, pagadoAMano, facturaAMano, horaAMano]);
 
   // El aviso ("Elige una categoría.") se va solo.
   useEffect(() => {
@@ -257,10 +265,18 @@ function Campos({ clave, movimiento, programado, esProgramado = false, tipoInici
     return facturaAMano || !tarjeta ? actual : facturaDeFecha(tarjeta, fecha);
   };
 
+  // La hora de una fecha: sola si es hoy; si no, nada. Elegida a mano, se queda (y "Ahora" pasa a
+  // ser la hora de este momento, para que no cambie si se guarda más tarde con otra fecha).
+  const horaSegun = (fecha, actual) => {
+    if (horaAMano) return actual === 'ahora' && fecha !== hoyTexto() ? horaActual() : actual;
+    return fecha === hoyTexto() ? 'ahora' : null;
+  };
+
   const cambiarFecha = (fecha) =>
     setDatos((d) => ({
       ...d,
       fecha,
+      hora: horaSegun(fecha, d.hora),
       pagado: pagadoAMano ? d.pagado : fecha <= hoyTexto(),
       factura: facturaSegun(d.tarjetaId, fecha, d.factura),
     }));
@@ -355,6 +371,30 @@ function Campos({ clave, movimiento, programado, esProgramado = false, tipoInici
       <EntradaFecha valor={datos.fecha} alCambiar={cambiarFecha} />
     </Campo>
   );
+  // Hora: interruptor para ponerla o quitarla y, puesta, el reloj al tocar la hora. No va en un
+  // programado (se registra solo, sin hora).
+  const filaHora = !esProgramado && (
+    <Campo Icono={IconoHora} etiqueta="Hora">
+      {datos.hora && (
+        <EntradaHora
+          valor={datos.hora === 'ahora' ? horaActual() : datos.hora}
+          texto={datos.hora === 'ahora' ? 'Ahora' : textoHora(datos.hora)}
+          alCambiar={(hora) => {
+            setHoraAMano(true);
+            cambiar({ hora });
+          }}
+        />
+      )}
+      <Interruptor
+        activo={Boolean(datos.hora)}
+        etiqueta="Con hora"
+        alCambiar={(con) => {
+          setHoraAMano(true);
+          cambiar({ hora: con ? (datos.fecha === hoyTexto() ? 'ahora' : horaActual()) : null });
+        }}
+      />
+    </Campo>
+  );
   const filaObservacion = (
     <Campo Icono={IconoNota} etiqueta="Observación" alTocar={() => setPanel('observacion')}>
       {datos.observacion ? <span className="campo-recortado">{datos.observacion}</span> : vacio('Agregar nota')}
@@ -408,6 +448,7 @@ function Campos({ clave, movimiento, programado, esProgramado = false, tipoInici
               {datos.factura ? nombreFactura(datos.factura) : vacio('Elegir')}
             </Campo>
             {filaFecha}
+            {filaHora}
             {filaEtiquetas}
             {filaObservacion}
           </div>
@@ -420,6 +461,7 @@ function Campos({ clave, movimiento, programado, esProgramado = false, tipoInici
               {nombreCuenta(datos.cuentaDestinoId) ?? vacio('Elegir')}
             </Campo>
             {filaFecha}
+            {filaHora}
             {filaDescripcion}
             {filaObservacion}
           </div>
@@ -431,6 +473,7 @@ function Campos({ clave, movimiento, programado, esProgramado = false, tipoInici
               {nombreCuenta(datos.cuentaId) ?? vacio('Elegir')}
             </Campo>
             {filaFecha}
+            {filaHora}
             {filaEtiquetas}
             {/* Un programado se registra siempre como pendiente (decisión del dueño). */}
             {!esProgramado && (

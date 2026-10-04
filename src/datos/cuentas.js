@@ -1,6 +1,6 @@
 // Cuentas: tipos, saldo, reajuste de saldo y guardado.
 import { esAcento } from '../tema/colores.js';
-import { hoyTexto } from '../utilidades/fechas.js';
+import { horaActual, hoyTexto } from '../utilidades/fechas.js';
 import { formatearPesos } from '../utilidades/formato.js';
 import { db, nuevoId, ordenAlFinal } from './db.js';
 import { movimientosDeCuenta } from './movimientos.js';
@@ -27,7 +27,9 @@ export const tipoCuenta = (valor) => TIPOS_CUENTA.find((t) => t.valor === valor)
 //   escribió.
 // modo 'registrar': la diferencia queda como un gasto "Faltante" o un ingreso "Sobrante", pagado y
 //   de hoy, sin categoría (ajuste: true lo deja guardar así). Se edita como cualquier movimiento.
-export async function reajustarSaldo(cuenta, saldoReal, modo) {
+// modo 'transferir' (pedido del dueño, 2026-10-04): la diferencia fue a otra de las cuentas (si
+//   falta) o vino de otra (si sobra): queda como una transferencia de hoy con otraCuentaId.
+export async function reajustarSaldo(cuenta, saldoReal, modo, otraCuentaId = null) {
   const diferencia = Math.round(saldoReal) - cuenta.saldo;
   if (!diferencia) return;
   if (modo === 'corregir') {
@@ -35,18 +37,24 @@ export async function reajustarSaldo(cuenta, saldoReal, modo) {
     return;
   }
   const sobra = diferencia > 0;
+  const transferir = modo === 'transferir';
+  if (transferir && !otraCuentaId) throw new Error('Elige la otra cuenta.');
+  let tipo = sobra ? 'ingreso' : 'gasto';
+  if (transferir) tipo = 'transferencia';
   await db.movimientos.add({
     id: nuevoId(),
-    tipo: sobra ? 'ingreso' : 'gasto',
+    tipo,
     valor: Math.abs(diferencia),
-    descripcion: sobra ? 'Sobrante' : 'Faltante',
+    descripcion: transferir ? 'Reajuste de saldo' : sobra ? 'Sobrante' : 'Faltante',
     categoriaId: null,
-    cuentaId: cuenta.id,
-    cuentaDestinoId: null,
+    // En una transferencia, si sobra el dinero vino de la otra cuenta; si falta, se fue a ella.
+    cuentaId: transferir && sobra ? otraCuentaId : cuenta.id,
+    cuentaDestinoId: transferir ? (sobra ? cuenta.id : otraCuentaId) : null,
     fecha: hoyTexto(),
+    hora: horaActual(),
     pagado: true,
     etiquetaIds: [],
-    observacion: `Reajuste de saldo: la app tenía ${formatearPesos(cuenta.saldo)} y en la cuenta había ${formatearPesos(saldoReal)}.`,
+    observacion: `Reajuste de saldo${transferir ? ` de ${cuenta.nombre}` : ''}: la app tenía ${formatearPesos(cuenta.saldo)} y en la cuenta había ${formatearPesos(saldoReal)}.`,
     tarjetaId: null,
     cuotas: null,
     factura: null,

@@ -6,7 +6,7 @@
 // - Cambiado el mismo día, tras probarlo: cada cuota cuenta como gasto en el mes en que se paga
 //   su factura (y está pendiente hasta pagarla), no en el mes de la compra. Ver cuotasComoGastos.
 // Una factura se nombra por el mes en que se paga: 'AAAA-MM'.
-import { aFecha, diasHasta, MESES, sumarMeses } from '../utilidades/fechas.js';
+import { aFecha, diasHasta, horaActual, hoyTexto, MESES, sumarMeses } from '../utilidades/fechas.js';
 import { db, nuevoId, ordenAlFinal } from './db.js';
 
 export { sumarMeses };
@@ -178,6 +178,7 @@ export async function pagarFactura(tarjeta, factura, cuentaId, fecha) {
     tarjetaId: tarjeta.id,
     factura: factura.mes,
     fecha,
+    hora: fecha === hoyTexto() ? horaActual() : null,
     pagado: true,
     etiquetaIds: [],
     observacion: '',

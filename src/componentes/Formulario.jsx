@@ -78,10 +78,11 @@ export function MontoEditable({ etiqueta, valor, alCambiar, ref }) {
 
 // Fila de 54 px: ícono, etiqueta y valor. Con alTocar es un botón con flecha.
 // conFlecha: la flecha sin alTocar (cuando lo que se toca es un campo encima, como la fecha).
-export function Campo({ Icono, etiqueta, alTocar, conFlecha = Boolean(alTocar), children }) {
+// tono: color propio del ícono cuando "Color de los íconos" es Predeterminado (data-tono, comunes.css).
+export function Campo({ Icono, etiqueta, alTocar, conFlecha = Boolean(alTocar), tono, children }) {
   const contenido = (
     <>
-      <span className="campo-icono">
+      <span className="campo-icono" data-tono={tono}>
         <Icono />
       </span>
       <span className="campo-etiqueta">{etiqueta}</span>
@@ -168,6 +169,31 @@ export function EntradaFecha({ valor, alCambiar, formato }) {
         onChange={(evento) => evento.target.value && alCambiar(evento.target.value)}
       />
     </>
+  );
+}
+
+// Hora con el reloj del iPhone: un campo de hora invisible encima del texto, como EntradaFecha.
+// valor: 'HH:MM' (con la que abre el reloj); texto: lo que se ve ("Ahora", "3:45 p. m.").
+export function EntradaHora({ valor, texto, alCambiar }) {
+  const abrir = (evento) => {
+    try {
+      evento.currentTarget.showPicker?.();
+    } catch {
+      // Ya estaba abierto o el navegador no lo permite: el toque lo abre igual.
+    }
+  };
+  return (
+    <span className="campo-hora">
+      {texto}
+      <input
+        className="campo-hora-entrada"
+        type="time"
+        aria-label="Hora"
+        value={valor}
+        onClick={abrir}
+        onChange={(evento) => evento.target.value && alCambiar(evento.target.value)}
+      />
+    </span>
   );
 }
 
