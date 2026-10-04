@@ -5,8 +5,6 @@ import CabeceraSubpagina from '../componentes/CabeceraSubpagina.jsx';
 const TITULOS = {
   perfil: 'Perfil',
   'pantalla-inicio': 'Pantalla de inicio',
-  graficos: 'Gráficos',
-  rendimiento: 'Rendimiento',
   recordatorio: 'Recordatorio diario',
   ajustes: 'Ajustes',
   ayuda: 'Ayuda y soporte',

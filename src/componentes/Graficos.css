@@ -1,0 +1,81 @@
+/* Gráficos (Graficos.jsx). Medidas de design/html/Graficos.html y Rendimiento.html. */
+
+.dona {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  margin: 0 auto;
+}
+
+.dona svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.dona-fondo {
+  fill: none;
+  stroke: var(--track);
+}
+
+.dona-parte {
+  fill: none;
+  cursor: pointer;
+  transition:
+    stroke-width 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.dona-parte.apagada {
+  opacity: 0.35;
+}
+
+.dona-centro {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  pointer-events: none;
+}
+
+.barras {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.barras-guia {
+  stroke: var(--grid);
+  stroke-width: 1;
+}
+
+.barras-eje,
+.barras-mes {
+  font-size: 11px;
+  fill: var(--muted);
+}
+
+.barras-grupo.elegido .barras-mes {
+  font-weight: 700;
+  fill: var(--text);
+}
+
+.barras-valor {
+  font-size: 12px;
+  font-weight: 700;
+  fill: var(--text);
+}
+
+.barras-toque {
+  fill: transparent;
+  cursor: pointer;
+}
+
+.barras path {
+  transition: d 0.34s var(--curva-suave);
+}

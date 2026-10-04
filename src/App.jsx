@@ -15,12 +15,14 @@ import FormularioMeta from './pantallas/FormularioMeta.jsx';
 import FormularioMovimiento, { FormularioProgramado } from './pantallas/FormularioMovimiento.jsx';
 import FormularioPresupuesto from './pantallas/FormularioPresupuesto.jsx';
 import FormularioTarjeta from './pantallas/FormularioTarjeta.jsx';
+import Graficos from './pantallas/Graficos.jsx';
 import ImportarExportar from './pantallas/ImportarExportar.jsx';
 import Inicio from './pantallas/Inicio.jsx';
 import MiEspacio from './pantallas/MiEspacio.jsx';
 import Pendiente from './pantallas/Pendiente.jsx';
 import Pendientes from './pantallas/Pendientes.jsx';
 import Planes from './pantallas/Planes.jsx';
+import Rendimiento from './pantallas/Rendimiento.jsx';
 import Tarjetas from './pantallas/Tarjetas.jsx';
 import Transacciones from './pantallas/Transacciones.jsx';
 
@@ -43,6 +45,8 @@ export default function App() {
           <Route path="/mi-espacio/tarjetas" element={<Tarjetas />} />
           <Route path="/mi-espacio/categorias" element={<Categorias />} />
           <Route path="/mi-espacio/etiquetas" element={<Etiquetas />} />
+          <Route path="/mi-espacio/graficos" element={<Graficos />} />
+          <Route path="/mi-espacio/rendimiento" element={<Rendimiento />} />
           <Route path="/mi-espacio/importar-exportar" element={<ImportarExportar />} />
           <Route path="/pendiente/:pantalla" element={<Pendiente />} />
         </Route>
