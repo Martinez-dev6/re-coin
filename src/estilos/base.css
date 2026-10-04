@@ -37,12 +37,11 @@
   --oscurecido-curva: linear;
   --oscurecido-retraso: -10ms;
 
-  /* Deslizamientos (pantallas, selectores, listas, paneles). Curvas e historia en
-     src/utilidades/movimiento.js, que al cargar cambia --curva-entrar por el resorte; este valor
-     es solo el respaldo.
-     - entrar: resorte sin rebote (lo que llega, vuelve o cambia de sitio).
+  /* Deslizamientos (pantallas, selectores, listas, paneles). Las mismas curvas e historia en
+     src/utilidades/movimiento.js. Solo cubic-bezier: con linear() el iPhone se veía a saltos.
+     - entrar: parecida a un resorte sin rebote (lo que llega, vuelve o cambia de sitio).
      - suave: arranca y termina suave, sin cola larga (lo que se va). */
-  --curva-entrar: cubic-bezier(0.25, 0.8, 0.25, 1);
+  --curva-entrar: cubic-bezier(0.27, 0.34, 0.08, 1);
   --curva-suave: cubic-bezier(0.35, 0.1, 0.15, 1);
 
   font-family: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;

@@ -6,8 +6,11 @@ import { Outlet } from 'react-router-dom';
 
 export default function ConPestanas() {
   return (
-    // Espacio para que lo último de la lista no quede bajo la barra.
-    <div style={{ paddingBottom: 'calc(var(--barra-nav-alto) + 6px)' }}>
+    // Espacio al final para que, con el scroll hasta abajo, lo último se vea entero: por encima
+    // de la barra, del "+" (sobresale 22 px) y de casi todo el desvanecido, con 18 px de aire.
+    // Antes quedaba 6 px sobre la barra y el "+" tapaba la última fila (captura del dueño,
+    // 2026-10-04, en Inicio con Metas al final).
+    <div style={{ paddingBottom: 'calc(var(--barra-nav-alto) + 40px)' }}>
       <Outlet />
     </div>
   );
