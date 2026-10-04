@@ -700,67 +700,164 @@
   color: var(--muted);
 }
 
-/* Gráfico del mes: dona pequeña a la izquierda y leyenda a la derecha. Es un botón (lleva a
-   Gráficos). */
+/* Gastos del mes: dona centrada con el total, una línea y el carrusel de categorías con sus
+   puntos. Cada tarjeta del carrusel mide el 66 % de la pista: así asoman las de los lados y se
+   entiende que se desliza. */
 .inicio-grafico {
   display: flex;
-  align-items: center;
-  gap: 16px;
-  width: 100%;
-  padding: 16px;
+  flex-direction: column;
+  align-items: stretch;
+  padding: 18px 0 14px;
   color: var(--text);
-  text-align: left;
 }
 
 .inicio-grafico .dona {
-  width: 128px;
-  height: 128px;
-  flex-shrink: 0;
-  margin: 0;
+  width: 168px;
+  height: 168px;
+}
+
+.inicio-grafico .dona-parte {
+  transition:
+    stroke-width 0.26s var(--curva-entrar),
+    opacity 0.26s var(--curva-suave);
 }
 
 .inicio-grafico-total {
-  max-width: 84px;
-  font-size: 14px;
-  font-weight: 700;
+  max-width: 112px;
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.inicio-grafico-leyenda {
-  display: block;
-  flex-grow: 1;
-  min-width: 0;
+.inicio-grafico-centro-nota {
+  margin-top: 2px;
+  font-size: 12px;
+  color: var(--muted);
 }
 
-.inicio-grafico-fila {
+.inicio-grafico-linea {
+  height: 1px;
+  margin: 18px 16px 14px;
+  background: var(--divider);
+}
+
+.inicio-carrusel {
   display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.inicio-carrusel::-webkit-scrollbar {
+  display: none;
+}
+
+/* Espacio a cada lado para que la primera y la última también queden al centro (con padding
+   el porcentaje de las tarjetas se calcula sobre otro ancho y la última no se centraba). */
+.inicio-carrusel::before,
+.inicio-carrusel::after {
+  content: '';
+  flex: 0 0 calc(17% - 10px);
+}
+
+/* Con una sola categoría no hay nada que deslizar: va centrada. */
+.inicio-carrusel.unica {
+  justify-content: center;
+}
+
+.inicio-carrusel-item {
+  display: flex;
+  flex: 0 0 66%;
   align-items: center;
-  gap: 8px;
-  width: 100%;
-  height: 30px;
-  font-size: 13px;
-}
-
-.inicio-grafico-fila > i {
-  width: 10px;
-  height: 10px;
-  flex-shrink: 0;
-  border-radius: 3px;
-}
-
-.inicio-grafico-fila > span {
-  flex-grow: 1;
+  gap: 12px;
   min-width: 0;
+  padding: 12px 14px;
+  border: 0;
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--color-parte) 10%, transparent);
+  color: var(--text);
+  text-align: left;
+  scroll-snap-align: center;
+  opacity: 0.45;
+  transform: scale(0.94);
+  transition:
+    opacity 0.26s var(--curva-suave),
+    transform 0.26s var(--curva-entrar);
+}
+
+.inicio-carrusel-item.activa {
+  opacity: 1;
+  transform: none;
+}
+
+.inicio-carrusel-texto {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.inicio-carrusel-nombre {
   overflow: hidden;
+  font-size: 13px;
+  font-weight: 600;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-weight: 600;
+}
+
+.inicio-carrusel-porcentaje {
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.inicio-carrusel-valor {
+  font-size: 13px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.inicio-carrusel-puntos {
+  display: flex;
+  justify-content: center;
+  gap: 2px;
+  margin-top: 8px;
+}
+
+/* El punto se ve de 6 px pero el toque es de 20 px. */
+.inicio-carrusel-puntos button {
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.inicio-carrusel-puntos button::after {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--track);
+  transition:
+    width 0.26s var(--curva-entrar),
+    background-color 0.26s var(--curva-suave);
+}
+
+.inicio-carrusel-puntos button.activo::after {
+  width: 16px;
+  background: var(--accent-text);
 }
 
 .inicio-grafico-vacio {
-  flex-grow: 1;
+  padding: 0 16px;
   font-size: 14px;
   color: var(--muted);
 }

@@ -3,6 +3,7 @@
 // versiones cortas de lo que hay en Rendimiento, Planes, Gráficos y Tarjetas, con "Ver todo" para
 // ir allá. pesos: formato de las
 // cifras (respeta el ojo de Inicio).
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CirculoCategoria from '../componentes/CirculoCategoria.jsx';
 import Deslizar from '../componentes/Deslizar.jsx';
@@ -236,9 +237,11 @@ export function BloqueMetas({ pesos }) {
   );
 }
 
-// Gastos del mes por categoría: la dona pequeña y la leyenda. Toda la tarjeta lleva a Gráficos
-// (pedido del dueño, 2026-10-04: cada cosa de Inicio debe llevar a su sección); allá se toca cada
-// parte para ver su valor.
+// Gastos del mes (rediseño pedido por el dueño, 2026-10-04): la dona con el total en el centro y,
+// debajo, un carrusel con una categoría por tarjeta (las mismas partes de la dona: 4 y "Otros").
+// La que queda al centro del carrusel se resalta en la dona; tocar un trozo de la dona o un punto
+// lleva el carrusel a esa categoría. El carrusel es un scroll horizontal con scroll-snap: así el
+// deslizamiento es el del sistema (inercia y freno de iOS), sin animaciones hechas a mano.
 export function BloqueGrafico({ pesos, posicion }) {
   const navegar = useNavigate();
   const { anio, mes } = useMes();
@@ -249,34 +252,105 @@ export function BloqueGrafico({ pesos, posicion }) {
   return (
     <>
       <Cabeza titulo="Gastos del mes" enlace="Ver gráficos" alTocar={verGraficos} />
-      <Deslizar
-        as="button"
-        type="button"
-        posicion={posicion}
-        className="tarjeta inicio-grafico inicio-bloque-cuerpo"
-        aria-label={`Gastos de ${nombreMes(mes, false)}: ver gráficos`}
-        onClick={verGraficos}
-      >
-        <Dona
-          partes={partes}
-          elegida={null}
-          etiqueta={`Gastos de ${nombreMes(mes, false)} por categoría`}
-          centro={<strong className="inicio-grafico-total">{pesos(total)}</strong>}
-        />
+      <Deslizar posicion={posicion} className="tarjeta inicio-grafico inicio-bloque-cuerpo">
         {partes.length === 0 ? (
           <span className="inicio-grafico-vacio">Sin gastos en {nombreMes(mes, false)}.</span>
         ) : (
-          <span className="inicio-grafico-leyenda">
-            {partes.map((p) => (
-              <span key={p.clave} className="inicio-grafico-fila">
-                <i style={{ background: p.color }} />
-                <span>{p.nombre}</span>
-                <strong>{porcentaje(p.valor, total)} %</strong>
-              </span>
-            ))}
-          </span>
+          // key: al cambiar de mes el carrusel vuelve a la primera categoría.
+          <CarruselGastos key={textoMes(anio, mes)} partes={partes} total={total} pesos={pesos} mes={mes} />
         )}
       </Deslizar>
+    </>
+  );
+}
+
+function CarruselGastos({ partes, total, pesos, mes }) {
+  const { categoria } = useDatos();
+  const [indice, setIndice] = useState(0);
+  const pista = useRef(null);
+  const cuadro = useRef(0);
+  const elegida = partes[Math.min(indice, partes.length - 1)];
+
+  // El índice sale de la tarjeta más cercana al centro de la pista (una vez por cuadro).
+  const alDesplazar = () => {
+    cancelAnimationFrame(cuadro.current);
+    cuadro.current = requestAnimationFrame(() => {
+      const el = pista.current;
+      if (!el) return;
+      const centro = el.scrollLeft + el.clientWidth / 2;
+      let cercana = 0;
+      let distancia = Infinity;
+      [...el.children].forEach((hijo, i) => {
+        const d = Math.abs(hijo.offsetLeft + hijo.offsetWidth / 2 - centro);
+        if (d < distancia) [cercana, distancia] = [i, d];
+      });
+      setIndice(cercana);
+    });
+  };
+  useEffect(() => () => cancelAnimationFrame(cuadro.current), []);
+
+  const ir = (i) => {
+    const el = pista.current;
+    const hijo = el?.children[i];
+    if (!hijo) return;
+    el.scrollTo({ left: hijo.offsetLeft - (el.clientWidth - hijo.offsetWidth) / 2, behavior: 'smooth' });
+  };
+
+  return (
+    <>
+      <Dona
+        partes={partes}
+        elegida={partes.length > 1 ? elegida.clave : null}
+        alElegir={(clave) => clave && ir(partes.findIndex((p) => p.clave === clave))}
+        etiqueta={`Gastos de ${nombreMes(mes, false)} por categoría`}
+        centro={
+          <>
+            <strong className="inicio-grafico-total">{pesos(total)}</strong>
+            <span className="inicio-grafico-centro-nota">Total de gastos</span>
+          </>
+        }
+      />
+      <span className="inicio-grafico-linea" />
+      <div
+        ref={pista}
+        className={'inicio-carrusel' + (partes.length === 1 ? ' unica' : '')}
+        onScroll={alDesplazar}
+        aria-label="Categorías"
+      >
+        {partes.map((p, i) => {
+          const c = categoria(p.clave);
+          return (
+            <button
+              key={p.clave}
+              type="button"
+              className={'inicio-carrusel-item' + (i === indice ? ' activa' : '')}
+              style={{ '--color-parte': p.color }}
+              aria-current={i === indice || undefined}
+              onClick={() => (i === indice ? null : ir(i))}
+            >
+              <CirculoCategoria icono={c?.icono ?? 'cuadricula'} color={c?.color ?? null} talla="mediano" />
+              <span className="inicio-carrusel-texto">
+                <span className="inicio-carrusel-nombre">{p.nombre}</span>
+                <strong className="inicio-carrusel-porcentaje">{porcentaje(p.valor, total)} %</strong>
+                <span className="inicio-carrusel-valor">{pesos(p.valor)}</span>
+              </span>
+            </button>
+          );
+        })}
+      </div>
+      {partes.length > 1 && (
+        <span className="inicio-carrusel-puntos">
+          {partes.map((p, i) => (
+            <button
+              key={p.clave}
+              type="button"
+              className={i === indice ? 'activo' : undefined}
+              aria-label={p.nombre}
+              onClick={() => ir(i)}
+            />
+          ))}
+        </span>
+      )}
     </>
   );
 }
