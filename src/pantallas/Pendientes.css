@@ -1,0 +1,5 @@
+/* Pendientes (Pendientes.jsx): misma lista que Transacciones. */
+
+.pendientes-lista {
+  padding: 10px 16px calc(32px + var(--safe-bottom));
+}

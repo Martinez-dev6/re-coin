@@ -2,6 +2,7 @@
 // app de la pantalla de inicio, se borra con ella. Para no perder datos: Mi espacio →
 // Importar y exportar → Copia de seguridad (src/datos/respaldo.js).
 import Dexie from 'dexie';
+import { sumarMeses } from '../utilidades/fechas.js';
 import { CATEGORIAS_INICIALES } from './categoriasIniciales.js';
 
 export const db = new Dexie('sendo');
@@ -37,6 +38,23 @@ db.version(3).stores({
   movimientos: 'id, fecha, cuentaId, cuentaDestinoId, categoriaId, *etiquetaIds, tarjetaId',
   tarjetas: 'id, orden',
 });
+
+// La factura pasa a nombrarse por el mes en que se paga, no por el mes en que cierra (2026-10-03).
+// Solo cambia en las tarjetas que se pagan el mes siguiente al cierre (día de pago ≤ día de cierre).
+db.version(4)
+  .stores({})
+  .upgrade(async (tx) => {
+    const tarjetas = await tx.table('tarjetas').toArray();
+    const alMesSiguiente = tarjetas.filter((t) => t.diaPago <= t.diaCierre).map((t) => t.id);
+    if (alMesSiguiente.length === 0) return;
+    await tx
+      .table('movimientos')
+      .where('tarjetaId')
+      .anyOf(alMesSiguiente)
+      .modify((m) => {
+        if (m.factura) m.factura = sumarMeses(m.factura, 1);
+      });
+  });
 
 // Solo la primera vez que se crea la base de datos. Las nuevas toman orden = Date.now()
 // (ordenAlFinal), así que "Otros" lleva un orden mayor para seguir de último.

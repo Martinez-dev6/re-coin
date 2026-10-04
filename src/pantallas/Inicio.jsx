@@ -32,7 +32,7 @@ const sumar = (lista) => lista.reduce((total, m) => total + m.valor, 0);
 export default function Inicio() {
   const navegar = useNavigate();
   const { anio, mes } = useMes();
-  const { cuentas, movimientos, cargando } = useDatos();
+  const { cuentas, movimientosPorMes, cargando } = useDatos();
   const sinCuentas = !cargando && cuentas.length === 0;
   const [ocultos, alternarOcultos] = useSaldosOcultos();
   const [panelMes, setPanelMes] = useState(false);
@@ -103,9 +103,10 @@ export default function Inicio() {
   }, []);
 
   // Las transferencias no son ingresos ni gastos (decisión del dueño, 2026-10-03).
-  const delMes = movimientos.filter((m) => enMes(m.fecha, anio, mes));
+  // Las cuotas de tarjeta cuentan en el mes en que se pagan (movimientosPorMes, DatosContext).
+  const delMes = movimientosPorMes.filter((m) => enMes(m.fecha, anio, mes));
   const ingresos = delMes.filter((m) => m.tipo === 'ingreso');
-  const gastos = delMes.filter(esGasto); // con los de tarjeta, en el mes de la compra
+  const gastos = delMes.filter(esGasto);
   const gastosPendientes = gastos.filter((m) => !m.pagado);
   const ingresosPendientes = ingresos.filter((m) => !m.pagado);
   const saldo = saldoTotal(cuentas);
@@ -219,7 +220,7 @@ export default function Inicio() {
         <div className="inicio-contenido">
           <h2 className="inicio-titulo">Pendientes y alertas</h2>
           <Deslizar posicion={posicionMes} className="inicio-pendientes">
-            <button type="button" className="tarjeta inicio-pendiente" onClick={() => navegar('/transacciones')}>
+            <button type="button" className="tarjeta inicio-pendiente" onClick={() => navegar('/pendientes?tipo=gasto')}>
               <div className="inicio-pendiente-cabeza">
                 <span className="inicio-pendiente-icono">
                   <IconoFlechaAbajo tamano={18} grosor={2} />
@@ -233,7 +234,7 @@ export default function Inicio() {
                 {pesos(sumar(gastosPendientes))}
               </div>
             </button>
-            <button type="button" className="tarjeta inicio-pendiente" onClick={() => navegar('/transacciones')}>
+            <button type="button" className="tarjeta inicio-pendiente" onClick={() => navegar('/pendientes?tipo=ingreso')}>
               <div className="inicio-pendiente-cabeza">
                 <span className="inicio-pendiente-icono">
                   <IconoFlechaArriba tamano={18} grosor={2} />

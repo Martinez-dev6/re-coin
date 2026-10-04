@@ -36,6 +36,7 @@ const FORMULARIOS = [
   /^\/etiquetas\//,
   /^\/tarjetas\//,
   /^\/movimientos\/[^/]+\/editar$/,
+  /^\/pendientes$/,
 ];
 const SIN_BARRA = [/^\/movimientos\/[^/]+$/];
 

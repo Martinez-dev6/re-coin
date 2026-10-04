@@ -23,6 +23,13 @@ export function diasHasta(texto) {
   return Math.round((aFecha(texto) - aFecha(hoyTexto())) / 86400000);
 }
 
+// 'AAAA-MM' más n meses.
+export function sumarMeses(mes, n) {
+  const [anio, m] = mes.split('-').map(Number);
+  const d = new Date(anio, m - 1 + n, 1);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+}
+
 export function nombreMes(mes, conMayuscula = true) {
   return conMayuscula ? mayuscula(MESES[mes]) : MESES[mes];
 }

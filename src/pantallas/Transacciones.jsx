@@ -6,6 +6,7 @@ import FilaMovimiento from '../componentes/FilaMovimiento.jsx';
 import { IconoBuscar, IconoFiltros } from '../componentes/iconos.jsx';
 import { MesConFlechas } from '../componentes/SelectorMes.jsx';
 import { useDatos } from '../datos/DatosContext.jsx';
+import { detalleMovimiento, estadoMovimiento, rutaMovimiento } from '../datos/movimientos.js';
 import { useMes } from '../estado/MesContext.jsx';
 import { enMes, etiquetaDia } from '../utilidades/fechas.js';
 import { formatearPesos } from '../utilidades/formato.js';
@@ -28,16 +29,6 @@ const FILTRO_DE_TIPO = {
   pagoTarjeta: 'transferencia',
 };
 
-function detalle(m, { cuenta, categoria, tarjeta }) {
-  const nombreCuenta = (id) => cuenta(id)?.nombre ?? 'Cuenta eliminada';
-  const nombreTarjeta = tarjeta(m.tarjetaId)?.nombre ?? 'Tarjeta eliminada';
-  const nombreCategoria = categoria(m.categoriaId)?.nombre ?? 'Sin categoría';
-  if (m.tipo === 'transferencia') return `${nombreCuenta(m.cuentaId)} → ${nombreCuenta(m.cuentaDestinoId)}`;
-  if (m.tipo === 'pagoTarjeta') return `${nombreCuenta(m.cuentaId)} → ${nombreTarjeta}`;
-  if (m.tipo === 'gastoTarjeta') return `${nombreCategoria} · ${nombreTarjeta}${m.cuotas > 1 ? ` · ${m.cuotas} cuotas` : ''}`;
-  return `${nombreCategoria} · ${nombreCuenta(m.cuentaId)}`;
-}
-
 // En "Todo" el banner muestra el neto (ingresos − gastos); en los demás, la suma del tipo.
 function total(lista, filtro) {
   if (filtro !== 'todo') return lista.reduce((t, m) => t + m.valor, 0);
@@ -45,17 +36,15 @@ function total(lista, filtro) {
   return lista.reduce((t, m) => t + (signo[FILTRO_DE_TIPO[m.tipo]] ?? 0) * m.valor, 0);
 }
 
-// Pendiente o Pagado: solo para gastos e ingresos (las compras con tarjeta se pagan en la factura).
-const estadoDe = (m) => (m.tipo === 'gasto' || m.tipo === 'ingreso' ? (m.pagado ? 'pagado' : 'pendiente') : undefined);
-
 export default function Transacciones() {
   const navegar = useNavigate();
   const { anio, mes } = useMes();
   const [filtro, setFiltro] = useState('todo');
   const datos = useDatos();
 
-  // datos.movimientos ya viene ordenado: más recientes primero.
-  const visibles = datos.movimientos.filter(
+  // Ya viene ordenado (más recientes primero) y con cada compra con tarjeta en sus cuotas, cada
+  // una en el mes en que se paga.
+  const visibles = datos.movimientosPorMes.filter(
     (m) => enMes(m.fecha, anio, mes) && (filtro === 'todo' || FILTRO_DE_TIPO[m.tipo] === filtro),
   );
 
@@ -117,10 +106,10 @@ export default function Transacciones() {
                 <FilaMovimiento
                   key={m.id}
                   movimiento={m}
-                  detalle={detalle(m, datos)}
-                  estado={estadoDe(m)}
+                  detalle={detalleMovimiento(m, datos)}
+                  estado={estadoMovimiento(m)}
                   mostrarRepetir
-                  alTocar={() => navegar('/movimientos/' + m.id)}
+                  alTocar={() => navegar(rutaMovimiento(m))}
                 />
               ))}
             </div>

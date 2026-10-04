@@ -17,6 +17,7 @@ import ImportarExportar from './pantallas/ImportarExportar.jsx';
 import Inicio from './pantallas/Inicio.jsx';
 import MiEspacio from './pantallas/MiEspacio.jsx';
 import Pendiente from './pantallas/Pendiente.jsx';
+import Pendientes from './pantallas/Pendientes.jsx';
 import Planes from './pantallas/Planes.jsx';
 import Tarjetas from './pantallas/Tarjetas.jsx';
 import Transacciones from './pantallas/Transacciones.jsx';
@@ -47,6 +48,7 @@ export default function App() {
 
         {/* Sin barra inferior: el detalle de un movimiento y los formularios */}
         <Route path="/movimientos/:id" element={<DetalleMovimiento />} />
+        <Route path="/pendientes" element={<Pendientes />} />
         <Route path="/nuevo/:pantalla" element={<FormularioMovimiento />} />
         <Route path="/movimientos/:id/editar" element={<FormularioMovimiento />} />
         <Route path="/cuentas/:id" element={<FormularioCuenta />} />

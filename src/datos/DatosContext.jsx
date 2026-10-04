@@ -7,7 +7,7 @@ import { useLiveQuery } from 'dexie-react-hooks';
 import { createContext, useContext, useMemo } from 'react';
 import { db } from './db.js';
 import { ordenarMovimientos, saldosPorCuenta } from './movimientos.js';
-import { resumenTarjetas } from './tarjetas.js';
+import { cuotasComoGastos, resumenTarjetas } from './tarjetas.js';
 
 const DatosContext = createContext(null);
 
@@ -29,6 +29,13 @@ export function DatosProvider({ children }) {
     // Cada tarjeta con usado (lo que se debe) y facturas (ver resumenTarjetas).
     const listaTarjetas = (tarjetas ?? []).map((t) => ({ ...t, ...resumen.get(t.id) }));
     const tarjetasPorId = new Map(listaTarjetas.map((t) => [t.id, t]));
+    const tarjeta = (id) => tarjetasPorId.get(id);
+    // Como se ven mes a mes (Inicio, Transacciones, Pendientes): cada compra con tarjeta partida
+    // en sus cuotas, en el día en que vence cada una (ver cuotasComoGastos).
+    const porMes = ordenarMovimientos([
+      ...listaMovimientos.filter((m) => m.tipo !== 'gastoTarjeta'),
+      ...cuotasComoGastos(listaMovimientos, tarjeta),
+    ]);
     return {
       // Mientras se lee la base de datos (unos milisegundos al abrir). Sirve para no mostrar
       // un momento "Crea tu primera cuenta" a quien ya tiene cuentas.
@@ -39,10 +46,11 @@ export function DatosProvider({ children }) {
       tarjetas: listaTarjetas,
       // Más recientes primero.
       movimientos: listaMovimientos,
+      movimientosPorMes: porMes,
       cuenta: (id) => cuentasPorId.get(id),
       categoria: (id) => categoriasPorId.get(id),
       etiqueta: (id) => etiquetasPorId.get(id),
-      tarjeta: (id) => tarjetasPorId.get(id),
+      tarjeta,
     };
   }, [cuentas, categorias, etiquetas, movimientos, tarjetas]);
 

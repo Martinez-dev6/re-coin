@@ -1,12 +1,12 @@
 // Movimientos: ingresos, gastos, transferencias, gastos con tarjeta y pagos de tarjeta.
-// Modelo en db.js (versiones 2 y 3).
+// Modelo en db.js (versiones 2 a 4).
 // Decidido por el dueño (2026-10-03):
 // - El saldo de una cuenta es su saldo inicial más los movimientos pagados; los pendientes no
 //   cuentan hasta marcarlos como pagados.
 // - Las transferencias solo mueven saldo entre cuentas: no son ingresos ni gastos del mes.
-// - Los gastos con tarjeta no tocan las cuentas (van a las facturas; ver tarjetas.js) y cuentan
-//   como gasto en el mes de la compra. El pago de una factura resta de la cuenta y, como una
-//   transferencia, no es gasto otra vez.
+// - Los gastos con tarjeta no tocan las cuentas (van a las facturas; ver tarjetas.js) y cada
+//   cuota cuenta como gasto en el mes en que se paga. El pago de una factura resta de la cuenta
+//   y, como una transferencia, no es gasto otra vez.
 import { hoyTexto } from '../utilidades/fechas.js';
 import { db, nuevoId } from './db.js';
 
@@ -47,6 +47,36 @@ export function tituloMovimiento(m, categoria) {
   if (m.tipo === 'transferencia') return 'Transferencia';
   if (m.tipo === 'pagoTarjeta') return 'Pago de tarjeta';
   return categoria(m.categoriaId)?.nombre ?? (m.tipo === 'ingreso' ? 'Ingreso' : 'Gasto');
+}
+
+// Texto pequeño bajo el título en las listas: "Transporte · Nequi", "Nequi → Ahorros",
+// "Transporte · Cuota 1 de 2 · Tarjeta principal" (la cuota antes de la tarjeta, para que no la
+// corten los puntos suspensivos). datos: lo de useDatos().
+export function detalleMovimiento(m, { cuenta, categoria, tarjeta }) {
+  const nombreCuenta = (id) => cuenta(id)?.nombre ?? 'Cuenta eliminada';
+  const nombreTarjeta = tarjeta(m.tarjetaId)?.nombre ?? 'Tarjeta eliminada';
+  const nombreCategoria = categoria(m.categoriaId)?.nombre ?? 'Sin categoría';
+  if (m.tipo === 'transferencia') return `${nombreCuenta(m.cuentaId)} → ${nombreCuenta(m.cuentaDestinoId)}`;
+  if (m.tipo === 'pagoTarjeta') return `${nombreCuenta(m.cuentaId)} → ${nombreTarjeta}`;
+  if (m.tipo === 'gastoTarjeta') {
+    const cuota = m.cuotas > 1 && m.cuota ? ` · Cuota ${m.cuota} de ${m.cuotas}` : '';
+    return `${nombreCategoria}${cuota} · ${nombreTarjeta}`;
+  }
+  return `${nombreCategoria} · ${nombreCuenta(m.cuentaId)}`;
+}
+
+// Pagado o Pendiente en las listas: los gastos, los ingresos y las cuotas de tarjeta (pagadas
+// cuando se paga su factura). Las transferencias y los pagos de tarjeta no llevan.
+export function estadoMovimiento(m) {
+  if (m.tipo === 'transferencia' || m.tipo === 'pagoTarjeta') return undefined;
+  return m.pagado ? 'pagado' : 'pendiente';
+}
+
+// Adónde lleva tocar una fila: una cuota de tarjeta abre su factura (donde se paga); lo demás,
+// el detalle del movimiento.
+export function rutaMovimiento(m) {
+  if (m.movimientoId) return `/mi-espacio/tarjetas/${m.tarjetaId}/${m.factura}`;
+  return `/movimientos/${m.id}`;
 }
 
 // Lo que le falta a un movimiento para poder guardarse (o null). campo: dónde llevar al usuario.
