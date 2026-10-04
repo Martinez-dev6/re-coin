@@ -9,6 +9,7 @@ import FilaPresupuesto from '../componentes/FilaPresupuesto.jsx';
 import { Campo, EntradaPesos } from '../componentes/Formulario.jsx';
 import {
   IconoCalendario,
+  IconoInicio,
   IconoLista,
   IconoMas,
   IconoRepetir,
@@ -458,7 +459,10 @@ export default function Planes() {
         <BarraEstado />
         <header className="banner planes-banner">
           <div className="planes-fila">
-            <span className="planes-hueco" />
+            {/* Casita a Inicio, como en Transacciones (pedido del dueño, 2026-10-04). */}
+            <button type="button" className="boton-banner" aria-label="Ir a Inicio" onClick={() => navegar('/')}>
+              <IconoInicio tamano={20} />
+            </button>
             <MesConFlechas />
             <button type="button" className="boton-banner" aria-label="Nuevo" onClick={() => navegar(actual.nuevo)}>
               <IconoMas />

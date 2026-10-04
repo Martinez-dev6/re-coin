@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import BarraEstado from '../componentes/BarraEstado.jsx';
 import Deslizar from '../componentes/Deslizar.jsx';
 import FilaMovimiento from '../componentes/FilaMovimiento.jsx';
-import { IconoBuscar, IconoFiltros, IconoVolver } from '../componentes/iconos.jsx';
+import { IconoBuscar, IconoFiltros, IconoInicio } from '../componentes/iconos.jsx';
 import PanelFiltros, { TIPOS_FILTRO } from '../componentes/PanelFiltros.jsx';
 import { MesConFlechas } from '../componentes/SelectorMes.jsx';
 import {
@@ -49,11 +49,11 @@ export default function Transacciones() {
       <div className="encabezado-fijo">
         <BarraEstado />
         <header className="banner transacciones-banner">
-          {/* Volver (lleva a Inicio), el mes y la lupa. Los filtros van junto a los chips de abajo
+          {/* Casita (lleva a Inicio; pedido del dueño, 2026-10-04, en vez de la flecha), el mes y la lupa. Los filtros van junto a los chips de abajo
               (pedido del dueño, 2026-10-04): así el mes queda centrado y del tamaño de siempre. */}
           <div className="transacciones-fila">
-            <button type="button" className="boton-banner" aria-label="Volver a Inicio" onClick={() => navegar('/')}>
-              <IconoVolver />
+            <button type="button" className="boton-banner" aria-label="Ir a Inicio" onClick={() => navegar('/')}>
+              <IconoInicio tamano={20} />
             </button>
             <MesConFlechas />
             <button
