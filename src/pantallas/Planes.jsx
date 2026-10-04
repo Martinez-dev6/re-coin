@@ -21,6 +21,7 @@ import { useDatos } from '../datos/DatosContext.jsx';
 import { ahorroMensual, aportar } from '../datos/metas.js';
 import { presupuestosDelMes } from '../datos/presupuestos.js';
 import { fechasFuturas, textoFrecuencia } from '../datos/programados.js';
+import { useAjustes } from '../estado/ajustes.js';
 import { useMes } from '../estado/MesContext.jsx';
 import { diasHasta, enMes, etiquetaDia, fechaCorta, hoyTexto } from '../utilidades/fechas.js';
 import { formatearPesos } from '../utilidades/formato.js';
@@ -222,7 +223,11 @@ const IconoAhorro = (p) => <IconoPorNombre nombre="alcancia" tamano={18} {...p} 
 
 // ---------- Programados ----------
 
-const DIAS_SEMANA = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
+// Empezando en lunes o en domingo, según Ajustes.
+const DIAS_SEMANA = {
+  lunes: ['L', 'M', 'X', 'J', 'V', 'S', 'D'],
+  domingo: ['D', 'L', 'M', 'X', 'J', 'V', 'S'],
+};
 const dos = (n) => String(n).padStart(2, '0');
 
 // Lo programado de un mes: lo que ya se registró (movimientos con programadoId; Pendiente o
@@ -278,6 +283,7 @@ function Programados({ items, programados, anio, mes, navegar }) {
   const [vista, setVista] = useState('calendario'); // Calendario de entrada (pedido del dueño: la lista se ve saturada).
   const [diaElegido, setDiaElegido] = useState(null);
   const frecuenciaDe = (id) => programados.find((p) => p.id === id)?.frecuencia;
+  const { semanaEmpieza } = useAjustes();
 
   if (programados.length === 0) {
     return (
@@ -297,8 +303,9 @@ function Programados({ items, programados, anio, mes, navegar }) {
     else porDia.push({ fecha: item.fecha, items: [item] });
   }
 
-  // Calendario: semanas de lunes a domingo. Elegido: el día tocado, o hoy si es de este mes.
-  const vacios = (new Date(anio, mes, 1).getDay() + 6) % 7;
+  // Calendario: semanas de lunes a domingo, o de domingo a sábado (Ajustes). Elegido: el día
+  // tocado, o hoy si es de este mes.
+  const vacios = (new Date(anio, mes, 1).getDay() + (semanaEmpieza === 'lunes' ? 6 : 0)) % 7;
   const diasDelMes = new Date(anio, mes + 1, 0).getDate();
   const textoDia = (dia) => `${anio}-${dos(mes + 1)}-${dos(dia)}`;
   const hoy = hoyTexto();
@@ -350,7 +357,7 @@ function Programados({ items, programados, anio, mes, navegar }) {
           <>
             <div className="tarjeta calendario">
               <div className="calendario-semana">
-                {DIAS_SEMANA.map((d) => (
+                {DIAS_SEMANA[semanaEmpieza].map((d) => (
                   <span key={d}>{d}</span>
                 ))}
               </div>

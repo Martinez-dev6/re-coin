@@ -1,5 +1,6 @@
 import { useLayoutEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Avatar from '../componentes/Avatar.jsx';
 import BarraEstado from '../componentes/BarraEstado.jsx';
 import Deslizar from '../componentes/Deslizar.jsx';
 import {
@@ -12,7 +13,6 @@ import {
   IconoMas,
   IconoOjo,
   IconoOjoTachado,
-  IconoPerfil,
 } from '../componentes/iconos.jsx';
 import { IconoPorNombre } from '../componentes/iconosPorNombre.jsx';
 import { PanelElegirMes } from '../componentes/SelectorMes.jsx';
@@ -164,8 +164,8 @@ export default function Inicio() {
 
       {/* Fila de arriba: fija, por encima del banner. */}
       <div ref={fila} className="inicio-fila inicio-fila-fija">
-        <button type="button" className="boton-banner" aria-label="Perfil" onClick={() => navegar('/pendiente/perfil')}>
-          <IconoPerfil />
+        <button type="button" className="boton-banner inicio-perfil" aria-label="Perfil" onClick={() => navegar('/mi-espacio/perfil')}>
+          <Avatar tamano={44} />
         </button>
         <div className="inicio-fila-centro">
           <button

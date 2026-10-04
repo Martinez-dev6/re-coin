@@ -413,3 +413,9 @@
 .inicio-alerta-texto strong {
   font-weight: 600;
 }
+
+/* Botón de perfil: el fondo lo pone el avatar (foto o iniciales). */
+.inicio-perfil {
+  background: transparent;
+  overflow: hidden;
+}

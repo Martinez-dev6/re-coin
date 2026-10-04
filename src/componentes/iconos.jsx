@@ -12,6 +12,8 @@ import {
   ArrowUpRight,
   Bell,
   Calendar,
+  CalendarDays,
+  Camera,
   CalendarCheck,
   ChartColumn,
   Check,
@@ -20,6 +22,7 @@ import {
   ChevronRight,
   CircleAlert,
   CircleCheck,
+  CircleDollarSign,
   CircleHelp,
   Clock,
   Contrast,
@@ -30,6 +33,7 @@ import {
   EyeOff,
   FileSpreadsheet,
   FileText,
+  Globe,
   House,
   Info,
   Landmark,
@@ -44,6 +48,7 @@ import {
   Pencil,
   Plus,
   ReceiptText,
+  RefreshCw,
   Repeat,
   Search,
   Settings,
@@ -124,6 +129,11 @@ export const IconoImportar = crear(ArrowDownUp);
 export const IconoCampana = crear(Bell);
 export const IconoAjustes = crear(Settings);
 export const IconoAyuda = crear(CircleHelp);
+export const IconoCamara = crear(Camera, 17);
+export const IconoSincronizar = crear(RefreshCw, 20);
+export const IconoMoneda = crear(CircleDollarSign);
+export const IconoIdioma = crear(Globe);
+export const IconoSemana = crear(CalendarDays);
 
 // Cuentas, respaldo y vista previa de Apariencia
 export const IconoBanco = crear(Landmark, 20);

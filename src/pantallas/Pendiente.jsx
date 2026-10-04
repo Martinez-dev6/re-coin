@@ -3,11 +3,8 @@ import { useParams } from 'react-router-dom';
 import CabeceraSubpagina from '../componentes/CabeceraSubpagina.jsx';
 
 const TITULOS = {
-  perfil: 'Perfil',
   'pantalla-inicio': 'Pantalla de inicio',
   recordatorio: 'Recordatorio diario',
-  ajustes: 'Ajustes',
-  ayuda: 'Ayuda y soporte',
   'nuevo-presupuesto': 'Nuevo presupuesto',
   'nueva-meta': 'Nueva meta',
   'nuevo-programado': 'Nuevo programado',

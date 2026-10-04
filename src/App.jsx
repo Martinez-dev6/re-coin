@@ -2,7 +2,9 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import BarraNavegacion from './componentes/BarraNavegacion.jsx';
 import ConPestanas from './componentes/ConPestanas.jsx';
 import TransicionPantallas from './componentes/TransicionPantallas.jsx';
+import Ajustes from './pantallas/Ajustes.jsx';
 import Apariencia from './pantallas/Apariencia.jsx';
+import Ayuda from './pantallas/Ayuda.jsx';
 import Busqueda from './pantallas/Busqueda.jsx';
 import Categorias from './pantallas/Categorias.jsx';
 import Cuentas from './pantallas/Cuentas.jsx';
@@ -22,6 +24,7 @@ import Inicio from './pantallas/Inicio.jsx';
 import MiEspacio from './pantallas/MiEspacio.jsx';
 import Pendiente from './pantallas/Pendiente.jsx';
 import Pendientes from './pantallas/Pendientes.jsx';
+import Perfil from './pantallas/Perfil.jsx';
 import Planes from './pantallas/Planes.jsx';
 import Rendimiento from './pantallas/Rendimiento.jsx';
 import Tarjetas from './pantallas/Tarjetas.jsx';
@@ -50,6 +53,9 @@ export default function App() {
           <Route path="/mi-espacio/graficos" element={<Graficos />} />
           <Route path="/mi-espacio/rendimiento" element={<Rendimiento />} />
           <Route path="/mi-espacio/importar-exportar" element={<ImportarExportar />} />
+          <Route path="/mi-espacio/perfil" element={<Perfil />} />
+          <Route path="/mi-espacio/ajustes" element={<Ajustes />} />
+          <Route path="/mi-espacio/ayuda" element={<Ayuda />} />
           <Route path="/pendiente/:pantalla" element={<Pendiente />} />
         </Route>
 

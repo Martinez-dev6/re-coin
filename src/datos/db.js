@@ -78,15 +78,22 @@ db.version(5).stores({
 // Solo la primera vez que se crea la base de datos. Las nuevas toman orden = Date.now()
 // (ordenAlFinal), así que "Otros" lleva un orden mayor para seguir de último.
 const ORDEN_ULTIMAS = 9e15;
-db.on('populate', (tx) =>
-  tx.table('categorias').bulkAdd(
-    CATEGORIAS_INICIALES.map(({ alFinal, ...c }, i) => ({
-      ...c,
-      id: nuevoId(),
-      orden: (alFinal ? ORDEN_ULTIMAS : 0) + i + 1,
-    })),
-  ),
-);
+const categoriasIniciales = () =>
+  CATEGORIAS_INICIALES.map(({ alFinal, ...c }, i) => ({
+    ...c,
+    id: nuevoId(),
+    orden: (alFinal ? ORDEN_ULTIMAS : 0) + i + 1,
+  }));
+db.on('populate', (tx) => tx.table('categorias').bulkAdd(categoriasIniciales()));
+
+// Ajustes → Borrar todos los datos: deja la base como recién instalada (sin cuentas ni
+// movimientos y con las categorías de siempre), en una sola operación.
+export function borrarTodo() {
+  return db.transaction('rw', db.tables, async () => {
+    for (const tabla of db.tables) await tabla.clear();
+    await db.categorias.bulkAdd(categoriasIniciales());
+  });
+}
 
 // Identificadores de texto únicos: sirven igual cuando haya sincronización (Supabase).
 export const nuevoId = () => crypto.randomUUID();

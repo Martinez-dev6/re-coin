@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Avatar from '../componentes/Avatar.jsx';
 import BarraEstado from '../componentes/BarraEstado.jsx';
 import PanelInferior from '../componentes/PanelInferior.jsx';
 import {
@@ -23,11 +24,9 @@ import {
   IconoTarjeta,
 } from '../componentes/iconos.jsx';
 import { useDatos } from '../datos/DatosContext.jsx';
+import { useAjustes } from '../estado/ajustes.js';
 import { useTema } from '../tema/TemaContext.jsx';
 import './MiEspacio.css';
-
-// Mientras no exista la pantalla Perfil (y la base de datos), el encabezado es fijo.
-const PERFIL = { nombre: 'José Martínez', iniciales: 'JM' };
 
 const OPCIONES_MODO = [
   { valor: 'claro', titulo: 'Claro', detalle: 'Siempre claro', Icono: IconoSol },
@@ -63,6 +62,7 @@ export default function MiEspacio() {
   const navegar = useNavigate();
   const { acento, modo, cambiarModo } = useTema();
   const { cuentas, tarjetas } = useDatos();
+  const { nombre } = useAjustes();
   const [panelModo, setPanelModo] = useState(false);
   const pendiente = (clave) => () => navegar('/pendiente/' + clave);
   const modoActual = OPCIONES_MODO.find((o) => o.valor === modo);
@@ -73,17 +73,15 @@ export default function MiEspacio() {
         <BarraEstado />
         <header className="banner mi-espacio-cabecera">
           <div className="mi-espacio-perfil">
-            <div className="mi-espacio-avatar" aria-hidden="true">
-              {PERFIL.iniciales}
-            </div>
+            <Avatar tamano={46} />
             <div className="mi-espacio-nombre">
-              <h1>{PERFIL.nombre}</h1>
+              <h1>{nombre.trim() || 'Mi espacio'}</h1>
               <p>
                 {cuentas.length === 1 ? '1 cuenta' : `${cuentas.length} cuentas`} ·{' '}
                 {tarjetas.length === 1 ? '1 tarjeta' : `${tarjetas.length} tarjetas`}
               </p>
             </div>
-            <button type="button" className="boton-banner" aria-label="Editar perfil" onClick={pendiente('perfil')}>
+            <button type="button" className="boton-banner" aria-label="Editar perfil" onClick={() => navegar('/mi-espacio/perfil')}>
               <IconoLapiz />
             </button>
           </div>
@@ -119,8 +117,8 @@ export default function MiEspacio() {
         </Grupo>
 
         <div className="tarjeta mi-espacio-grupo mi-espacio-grupo-suelto">
-          <Fila Icono={IconoAjustes} texto="Ajustes" onClick={pendiente('ajustes')} />
-          <Fila Icono={IconoAyuda} texto="Ayuda y soporte" onClick={pendiente('ayuda')} />
+          <Fila Icono={IconoAjustes} texto="Ajustes" onClick={() => navegar('/mi-espacio/ajustes')} />
+          <Fila Icono={IconoAyuda} texto="Ayuda y soporte" onClick={() => navegar('/mi-espacio/ayuda')} />
         </div>
 
         {/* Para comprobar qué versión tiene abierta el teléfono. */}
