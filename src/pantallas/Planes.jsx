@@ -24,10 +24,12 @@ import { MesConFlechas } from '../componentes/SelectorMes.jsx';
 import { useDatos } from '../datos/DatosContext.jsx';
 import { ahorroPorPeriodo, aportar, frecuenciaMeta } from '../datos/metas.js';
 import { presupuestosDelMes } from '../datos/presupuestos.js';
+import { detalleMovimiento, esGasto, estadoMovimiento, rutaMovimiento } from '../datos/movimientos.js';
 import { fechasFuturas, textoFrecuencia } from '../datos/programados.js';
+import { facturaDeFecha, fechaPagoFactura } from '../datos/tarjetas.js';
 import { useAjustes } from '../estado/ajustes.js';
 import { useMes } from '../estado/MesContext.jsx';
-import { diasHasta, diaYMes, enMes, etiquetaDia, fechaCorta, hoyTexto } from '../utilidades/fechas.js';
+import { diasHasta, diaYMes, enMes, etiquetaDia, fechaCorta, hoyTexto, sumarMeses } from '../utilidades/fechas.js';
 import { prepararTeclado } from '../utilidades/teclado.js';
 import { formatearPesos } from '../utilidades/formato.js';
 import './Planes.css';
@@ -269,58 +271,70 @@ const DIAS_SEMANA = {
 };
 const dos = (n) => String(n).padStart(2, '0');
 
-// Lo programado de un mes: lo que ya se registró (movimientos con programadoId; Pendiente o
-// Pagado) y las fechas que faltan (aún no son movimientos). Más próximo primero.
-function programadosDelMes({ programados, movimientos, movimientosPorMes }, anio, mes) {
+// Todo lo del mes para el calendario (Sesión 9, pedido del dueño: Planes es "otra pestaña de
+// Transacciones, pero en calendario"): los movimientos del mes como en Transacciones
+// (movimientosPorMes: cada cuota de tarjeta el día en que se paga su factura, pagos de factura,
+// transferencias, pendientes y pagados) y las fechas de los programados que aún no son movimientos
+// (meses siguientes). Un gasto con tarjeta programado que falta va, como sus cuotas, el día en que
+// se paga su factura. Más próximo primero.
+function movimientosDelCalendario({ programados, movimientosPorMes, tarjeta }, anio, mes) {
   const desde = `${anio}-${dos(mes + 1)}-01`;
   const hasta = `${anio}-${dos(mes + 1)}-${new Date(anio, mes + 1, 0).getDate()}`;
-  const delMes = (m) => m.programadoId && m.fecha >= desde && m.fecha <= hasta;
-  // Un gasto con tarjeta programado (suscripción) va el día del cobro, no el de pago de cada cuota.
-  const registrados = [
-    ...movimientosPorMes.filter((m) => delMes(m) && !m.movimientoId),
-    ...movimientos.filter((m) => delMes(m) && m.tipo === 'gastoTarjeta'),
-  ];
-  const futuros = programados.flatMap((p) =>
-    fechasFuturas(p, desde, hasta).map((fecha) => ({
-      ...p,
-      id: `${p.id}-${fecha}`,
-      programadoId: p.id,
-      fecha,
-      futuro: true,
-    })),
-  );
+  const enRango = (fecha) => fecha >= desde && fecha <= hasta;
+  const registrados = movimientosPorMes.filter((m) => enRango(m.fecha));
+  const futuros = programados.flatMap((p) => {
+    const t = p.tipo === 'gastoTarjeta' ? tarjeta(p.tarjetaId) : null;
+    if (p.tipo === 'gastoTarjeta' && !t) return [];
+    // Para una tarjeta, se buscan las compras desde un mes antes: su factura puede pagarse este mes.
+    const desdeCompra = t ? `${sumarMeses(desde.slice(0, 7), -1)}-01` : desde;
+    return fechasFuturas(p, desdeCompra, hasta)
+      .map((compra) => ({
+        ...p,
+        id: `${p.id}-${compra}`,
+        programadoId: p.id,
+        fecha: t ? fechaPagoFactura(t, facturaDeFecha(t, compra)) : compra,
+        futuro: true,
+      }))
+      .filter((item) => enRango(item.fecha));
+  });
   return [...registrados, ...futuros].sort((a, b) => a.fecha.localeCompare(b.fecha));
 }
 
-// "Hoy", "Mañana", "En 13 días" para lo que falta; Pendiente o Pagado para lo ya registrado.
+// "Hoy", "Mañana", "En 13 días" para lo programado que falta; Pendiente o Pagado (o nada, en las
+// transferencias y pagos de tarjeta) para lo ya registrado, como en Transacciones.
 function estadoProgramado(item) {
-  // Un gasto con tarjeta ya registrado no se paga solo: va en su factura.
-  if (!item.futuro && item.tipo === 'gastoTarjeta') return 'En factura';
-  if (!item.futuro) return item.pagado ? 'pagado' : 'pendiente';
+  if (!item.futuro) return estadoMovimiento(item);
   const dias = diasHasta(item.fecha);
   if (dias <= 0) return 'Hoy';
   if (dias === 1) return 'Mañana';
   return `En ${dias} días`;
 }
 
-// Lo ya registrado abre el movimiento; lo que falta abre el programado para editarlo.
+// Lo ya registrado abre lo mismo que en Transacciones (el movimiento, o la factura de una cuota);
+// lo programado que falta abre el programado para editarlo. Lo que se repite lleva el ícono de
+// repetir junto al título; lo que falta dice su frecuencia.
 function FilasProgramadas({ items, navegar, frecuenciaDe }) {
-  const { tarjeta } = useDatos();
+  const datos = useDatos();
   return (
     <div className="tarjeta-lista">
       {items.map((item) => (
         <FilaMovimiento
           key={item.id}
           movimiento={item}
+          mostrarRepetir={!item.futuro}
           detalle={
-            <>
-              <IconoRepetir />
-              {textoFrecuencia(frecuenciaDe(item.programadoId))}
-              {item.tarjetaId ? ` · ${tarjeta(item.tarjetaId)?.nombre ?? 'Tarjeta'}` : ''}
-            </>
+            item.futuro ? (
+              <>
+                <IconoRepetir />
+                {textoFrecuencia(frecuenciaDe(item.programadoId))}
+                {item.tarjetaId ? ` · ${datos.tarjeta(item.tarjetaId)?.nombre ?? 'Tarjeta'}` : ''}
+              </>
+            ) : (
+              detalleMovimiento(item, datos)
+            )
           }
           estado={estadoProgramado(item)}
-          alTocar={() => navegar(item.futuro ? `/programados/${item.programadoId}` : `/movimientos/${item.id}`)}
+          alTocar={() => navegar(item.futuro ? `/programados/${item.programadoId}` : rutaMovimiento(item))}
         />
       ))}
     </div>
@@ -328,13 +342,16 @@ function FilasProgramadas({ items, navegar, frecuenciaDe }) {
 }
 
 // Solo el calendario y los programados guardados (pedido del dueño, Sesión 9: se quitaron la vista
-// Lista y "Crear programado"). Tocar un día muestra lo de ese día.
+// Lista y "Crear programado"). El calendario lleva todo lo del mes, no solo lo programado. Tocar un
+// día muestra lo de ese día.
 function Programados({ items, programados, anio, mes, navegar }) {
   const [diaElegido, setDiaElegido] = useState(null);
   const frecuenciaDe = (id) => programados.find((p) => p.id === id)?.frecuencia;
   const { semanaEmpieza } = useAjustes();
   const { tarjeta } = useDatos();
-  const hayTransferencias = programados.some((p) => p.tipo === 'transferencia');
+  // Transferencias y pagos de tarjeta van en azul (solo mueven dinero entre lo propio).
+  const esTransferencia = (it) => it.tipo === 'transferencia' || it.tipo === 'pagoTarjeta';
+  const hayTransferencias = items.some(esTransferencia);
   const [panelNuevo, setPanelNuevo] = useState(false);
   const { elegir } = useMes();
   const ahora = new Date();
@@ -382,16 +399,16 @@ function Programados({ items, programados, anio, mes, navegar }) {
           {Array.from({ length: diasDelMes }, (_, i) => {
             const fecha = textoDia(i + 1);
             const delMismoDia = items.filter((it) => it.fecha === fecha);
-            const hayGasto = delMismoDia.some((it) => it.tipo === 'gasto' || it.tipo === 'gastoTarjeta');
+            const hayGasto = delMismoDia.some(esGasto);
             const hayIngreso = delMismoDia.some((it) => it.tipo === 'ingreso');
-            const hayTransferencia = delMismoDia.some((it) => it.tipo === 'transferencia');
+            const hayTransferencia = delMismoDia.some(esTransferencia);
             return (
               <button
                 key={fecha}
                 type="button"
                 className="calendario-dia"
                 aria-pressed={fecha === elegido}
-                aria-label={etiquetaDia(fecha) + (delMismoDia.length ? `, ${delMismoDia.length} programados` : '')}
+                aria-label={etiquetaDia(fecha) + (delMismoDia.length ? `, ${delMismoDia.length} movimientos` : '')}
                 onClick={() => setDiaElegido(fecha)}
               >
                 <span className={'calendario-numero' + (fecha === hoy ? ' hoy' : '')}>{i + 1}</span>
@@ -434,7 +451,7 @@ function Programados({ items, programados, anio, mes, navegar }) {
       </div>
       <Deslizar posicion={Number(elegido.replaceAll('-', ''))} distancia={16}>
         {delDia.length === 0 ? (
-          <div className="tarjeta vacio">Nada programado este día.</div>
+          <div className="tarjeta vacio">Sin movimientos este día.</div>
         ) : (
           <FilasProgramadas items={delDia} navegar={navegar} frecuenciaDe={frecuenciaDe} />
         )}
@@ -519,7 +536,7 @@ export default function Planes() {
   const posicion = actual.valor === 'metas' ? [indice] : [indice, anio * 12 + mes];
 
   const presupuestos = presupuestosDelMes(datos.presupuestos, datos.movimientosPorMes, anio, mes);
-  const programados = programadosDelMes(datos, anio, mes);
+  const programados = movimientosDelCalendario(datos, anio, mes);
 
   let resumen;
   if (actual.valor === 'presupuestos') {
@@ -549,18 +566,19 @@ export default function Planes() {
       </div>
     );
   } else {
-    // Los gastos con tarjeta programados cuentan como gastos.
+    // Todo lo del mes en el calendario (pagado, pendiente y lo programado que falta), sin
+    // transferencias ni pagos de tarjeta, como los totales de Inicio.
     const suma = (tipo) =>
-      programados.filter((p) => (p.tipo === 'gastoTarjeta' ? 'gasto' : p.tipo) === tipo).reduce((t, p) => t + p.valor, 0);
+      programados.filter((m) => (tipo === 'gasto' ? esGasto(m) : m.tipo === tipo)).reduce((t, m) => t + m.valor, 0);
     resumen = (
       <div className="totales-banner">
         <div>
-          <div className="totales-banner-etiqueta">Gastos programados</div>
+          <div className="totales-banner-etiqueta">Gastos del mes</div>
           <div className="totales-banner-valor">{formatearPesos(suma('gasto'))}</div>
         </div>
         <span className="totales-banner-divisor" />
         <div>
-          <div className="totales-banner-etiqueta">Ingresos programados</div>
+          <div className="totales-banner-etiqueta">Ingresos del mes</div>
           <div className="totales-banner-valor">{formatearPesos(suma('ingreso'))}</div>
         </div>
       </div>
