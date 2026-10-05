@@ -35,12 +35,13 @@ import { formatearPesos } from '../utilidades/formato.js';
 import './Planes.css';
 import './Transacciones.css';
 
-// Programados no tiene "+": se crean desde el formulario de un gasto, ingreso o transferencia con
-// "… recurrente" prendido (pedido del dueño, Sesión 9).
+// Calendario (antes "Programados") va de primero y es lo que abre /planes (pedido del dueño, Sesión 9):
+// muestra todo lo del mes. No tiene "+": los programados se crean desde el formulario de un
+// movimiento con "… recurrente" prendido, y cada día tiene su "+ Agregar".
 const SECCIONES = [
+  { valor: 'calendario', texto: 'Calendario', nuevo: null },
   { valor: 'presupuestos', texto: 'Presupuestos', nuevo: '/presupuestos/nuevo' },
   { valor: 'metas', texto: 'Metas', nuevo: '/metas/nueva' },
-  { valor: 'programados', texto: 'Programados', nuevo: null },
 ];
 
 const porcentaje = (parte, todo) => (todo > 0 ? Math.round((parte / todo) * 100) : 0);
@@ -523,7 +524,7 @@ function Programados({ items, programados, anio, mes, navegar }) {
 
 export default function Planes() {
   const navegar = useNavigate();
-  const { seccion = 'presupuestos' } = useParams();
+  const { seccion = 'calendario' } = useParams();
   const { anio, mes } = useMes();
   const datos = useDatos();
   // La meta a la que se aporta; se queda mientras el panel baja.
@@ -617,7 +618,7 @@ export default function Planes() {
                 role="tab"
                 aria-selected={valor === actual.valor}
                 className="planes-seccion"
-                onClick={() => navegar(valor === 'presupuestos' ? '/planes' : '/planes/' + valor, { replace: true })}
+                onClick={() => navegar(valor === 'calendario' ? '/planes' : '/planes/' + valor, { replace: true })}
               >
                 {texto}
               </button>
@@ -638,7 +639,7 @@ export default function Planes() {
             }}
           />
         )}
-        {actual.valor === 'programados' && (
+        {actual.valor === 'calendario' && (
           <Programados items={programados} programados={datos.programados} anio={anio} mes={mes} navegar={navegar} />
         )}
       </Deslizar>

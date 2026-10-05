@@ -36,7 +36,7 @@ const PREGUNTAS = [
   {
     pregunta: '¿Cuándo se registran los programados?',
     respuesta:
-      'Se crean al registrar un gasto, un ingreso o una transferencia con «… recurrente» prendido. Al abrir la app (o al volver a ella), cada fecha del mes en curso se crea como un movimiento pendiente; las de los meses siguientes se ven en Planes → Programados. El iPhone no deja que la app trabaje cerrada, así que no se registran en segundo plano.',
+      'Se crean al registrar un gasto, un ingreso o una transferencia con «… recurrente» prendido. Al abrir la app (o al volver a ella), cada fecha del mes en curso se crea como un movimiento pendiente; las de los meses siguientes se ven en Planes → Calendario. El iPhone no deja que la app trabaje cerrada, así que no se registran en segundo plano.',
   },
   {
     pregunta: '¿Cómo paso mis datos a otro teléfono?',

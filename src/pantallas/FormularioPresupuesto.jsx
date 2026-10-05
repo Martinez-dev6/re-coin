@@ -27,7 +27,7 @@ import { volver } from '../utilidades/navegacion.js';
 import './FormularioMovimiento.css';
 import '../componentes/SelectorMes.css';
 
-const LISTA = '/planes';
+const LISTA = '/planes/presupuestos';
 const AVISOS = [50, 60, 70, 80, 90, 100];
 const CORTOS = MESES.map((m) => m.charAt(0).toUpperCase() + m.slice(1, 3));
 

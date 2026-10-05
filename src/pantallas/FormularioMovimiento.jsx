@@ -311,7 +311,7 @@ function Campos({ clave, movimiento, programado, esProgramado = false, tipoInici
   const recurrente = puedeRepetir && Boolean(datos.recurrente);
   let volverA = '/';
   if (movimiento) volverA = `/movimientos/${movimiento.id}`;
-  else if (esProgramado) volverA = '/planes/programados';
+  else if (esProgramado) volverA = '/planes';
 
   const cambiarTipo = (nuevo) =>
     setDatos((d) => {
@@ -1031,8 +1031,8 @@ export function FormularioProgramado() {
   const { programados, cargando } = useDatos();
   const editando = id !== 'nuevo';
   const programado = editando ? programados.find((p) => p.id === id) : undefined;
-  if (cargando) return <CabeceraFormulario titulo={TITULOS_PROGRAMADO[0]} volverA="/planes/programados" />;
-  if (editando && !programado) return <Navigate to="/planes/programados" replace />;
+  if (cargando) return <CabeceraFormulario titulo={TITULOS_PROGRAMADO[0]} volverA="/planes" />;
+  if (editando && !programado) return <Navigate to="/planes" replace />;
   return <Campos key={clave} clave={clave} esProgramado programado={programado} tipoInicial="gasto" />;
 }
 

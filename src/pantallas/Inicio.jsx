@@ -291,7 +291,7 @@ export default function Inicio() {
                           key={p.id}
                           type="button"
                           className={'inicio-alerta ' + p.alerta}
-                          onClick={() => navegar('/planes')}
+                          onClick={() => navegar('/planes/presupuestos')}
                         >
                           <span className="inicio-alerta-icono">
                             {p.alerta === 'excedido' ? <IconoAlerta tamano={16} /> : <IconoAviso tamano={16} />}
