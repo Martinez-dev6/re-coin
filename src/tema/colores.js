@@ -39,6 +39,13 @@ export function estiloIconoCuenta(color) {
   return indice < 0 ? undefined : { background: `var(--acento${indice}-suave)`, color: `var(--acento${indice}-texto)` };
 }
 
+// Lo mismo como variables del tema (--accent-soft y --accent-text) para un solo elemento: lo que
+// dentro use el color del tema toma el de la cuenta o tarjeta. Sin color, undefined (el del tema).
+export function variablesAcento(color) {
+  const indice = ACENTOS.findIndex((a) => a.valor === color);
+  return indice < 0 ? undefined : { '--accent-soft': `var(--acento${indice}-suave)`, '--accent-text': `var(--acento${indice}-texto)` };
+}
+
 // 'claro' | 'oscuro' | 'auto' (igual que el iPhone)
 export const MODOS = ['claro', 'oscuro', 'auto'];
 export const MODO_PREDETERMINADO = 'claro';

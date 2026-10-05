@@ -18,7 +18,6 @@ import SelectorIcono from '../componentes/SelectorIcono.jsx';
 import { useDatos } from '../datos/DatosContext.jsx';
 import { eliminarTarjeta, guardarTarjeta } from '../datos/tarjetas.js';
 import { estiloIconoCuenta } from '../tema/colores.js';
-import { useAcentoPantalla } from '../tema/TemaContext.jsx';
 import { formatearPesos } from '../utilidades/formato.js';
 import { volver } from '../utilidades/navegacion.js';
 import './FormularioMovimiento.css';
@@ -59,8 +58,6 @@ function Campos({ tarjeta }) {
         }
       : { nombre: '', cupo: 0, diaCierre: 15, diaPago: 25, cuentaPagoId: cuentas[0]?.id ?? null, icono: 'tarjeta', color: null },
   );
-  // Como en Nueva cuenta: el formulario va con el color elegido, así se ve en vivo el del ícono.
-  useAcentoPantalla(datos.color);
   const [panel, setPanel] = useState(null); // 'diaCierre' | 'diaPago' | 'cuenta' | 'eliminar'
   const eliminando = useRef(false);
   const cambiar = (cambios) => setDatos((d) => ({ ...d, ...cambios }));
@@ -123,7 +120,13 @@ function Campos({ tarjeta }) {
         </div>
 
         <h2 className="titulo-seccion">Ícono</h2>
-        <SelectorIcono sugeridos={ICONOS_TARJETA} elegido={datos.icono} alElegir={(icono) => cambiar({ icono })} />
+        {/* Solo el ícono lleva el color de la tarjeta; el formulario sigue con el del tema (pedido del dueño). */}
+        <SelectorIcono
+          sugeridos={ICONOS_TARJETA}
+          elegido={datos.icono}
+          alElegir={(icono) => cambiar({ icono })}
+          color={datos.color}
+        />
 
         <h2 className="titulo-seccion">Color</h2>
         <SelectorColorCuenta valor={datos.color} alCambiar={(color) => cambiar({ color })} etiqueta="Color de la tarjeta" />
