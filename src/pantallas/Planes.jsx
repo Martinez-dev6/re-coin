@@ -1,21 +1,16 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import BarraEstado from '../componentes/BarraEstado.jsx';
 import BotonExito from '../componentes/BotonExito.jsx';
+import CifraAnimada from '../componentes/CifraAnimada.jsx';
 import CirculoCategoria from '../componentes/CirculoCategoria.jsx';
 import Deslizar from '../componentes/Deslizar.jsx';
 import FilaMovimiento from '../componentes/FilaMovimiento.jsx';
 import FilaPresupuesto from '../componentes/FilaPresupuesto.jsx';
 import { Campo, EntradaPesos } from '../componentes/Formulario.jsx';
-import {
-  IconoCalendario,
-  IconoInicio,
-  IconoLista,
-  IconoMas,
-  IconoRepetir,
-} from '../componentes/iconos.jsx';
+import { IconoCheck, IconoInicio, IconoMas, IconoRepetir } from '../componentes/iconos.jsx';
 import { IconoPorNombre } from '../componentes/iconosPorNombre.jsx';
-import PanelInferior from '../componentes/PanelInferior.jsx';
+import PanelInferior, { DURACION_PANEL_MS } from '../componentes/PanelInferior.jsx';
 import { MesConFlechas } from '../componentes/SelectorMes.jsx';
 import { useDatos } from '../datos/DatosContext.jsx';
 import { ahorroPorPeriodo, aportar, frecuenciaMeta } from '../datos/metas.js';
@@ -28,12 +23,13 @@ import { formatearPesos } from '../utilidades/formato.js';
 import './Planes.css';
 import './Transacciones.css';
 
+// Programados no tiene "+": se crean desde el formulario de un gasto, ingreso o transferencia con
+// "… recurrente" prendido (pedido del dueño, Sesión 9).
 const SECCIONES = [
   { valor: 'presupuestos', texto: 'Presupuestos', nuevo: '/presupuestos/nuevo' },
   { valor: 'metas', texto: 'Metas', nuevo: '/metas/nueva' },
-  { valor: 'programados', texto: 'Programados', nuevo: '/programados/nuevo' },
+  { valor: 'programados', texto: 'Programados', nuevo: null },
 ];
-
 
 const porcentaje = (parte, todo) => (todo > 0 ? Math.round((parte / todo) * 100) : 0);
 
@@ -108,13 +104,15 @@ function Metas({ metas, navegar, alAportar }) {
             <div className="meta-nombre">General</div>
             <div className="meta-detalle">{metas.length === 1 ? '1 meta activa' : `${metas.length} metas activas`}</div>
           </div>
-          <div className="meta-porcentaje">{porcentaje(ahorrado, objetivo)} %</div>
+          <div className="meta-porcentaje">
+            <CifraAnimada valor={porcentaje(ahorrado, objetivo)} formato={conPorcentaje} />
+          </div>
         </div>
         <div className="barra-progreso meta-barra">
           <span style={{ width: `${Math.min(porcentaje(ahorrado, objetivo), 100)}%` }} />
         </div>
         <div className="meta-cifras">
-          {formatearPesos(ahorrado)} <span>de {formatearPesos(objetivo)}</span>
+          <CifraAnimada valor={ahorrado} /> <span>de {formatearPesos(objetivo)}</span>
         </div>
         {sugeridoGeneral > 0 && (
           <div className="meta-consejo">
@@ -126,7 +124,12 @@ function Metas({ metas, navegar, alAportar }) {
       {metas.map((m) => (
         <div key={m.id} className="tarjeta-meta">
           {/* Toda la tarjeta abre la meta; el botón Aportar queda por encima. */}
-          <button type="button" className="meta-abrir" aria-label={`Editar ${m.nombre}`} onClick={() => navegar('/metas/' + m.id)} />
+          <button
+            type="button"
+            className="meta-abrir"
+            aria-label={`Editar ${m.nombre}`}
+            onClick={() => navegar('/metas/' + m.id)}
+          />
           <div className="meta-cabeza">
             <CirculoCategoria icono={m.icono} color="acento" />
             <div className="meta-textos">
@@ -145,9 +148,11 @@ function Metas({ metas, navegar, alAportar }) {
           </div>
           <div className="meta-linea">
             <div className="meta-cifras">
-              {formatearPesos(m.ahorrado)} <span>de {formatearPesos(m.objetivo)}</span>
+              <CifraAnimada valor={m.ahorrado} /> <span>de {formatearPesos(m.objetivo)}</span>
             </div>
-            <div className="meta-porcentaje">{porcentaje(m.ahorrado, m.objetivo)} %</div>
+            <div className="meta-porcentaje">
+              <CifraAnimada valor={porcentaje(m.ahorrado, m.objetivo)} formato={conPorcentaje} />
+            </div>
           </div>
           <div className="meta-consejo">
             {ahorroDe(m) > 0
@@ -160,28 +165,81 @@ function Metas({ metas, navegar, alAportar }) {
   );
 }
 
-// Panel para aportar a una meta: el valor y el botón. Solo suma a la meta (no mueve dinero).
+const conPorcentaje = (n) => `${n} %`;
+
+// Lo que toca ahorrar en el periodo de la meta, como se lee en el panel.
+const PERIODO_ACTUAL = { dia: 'hoy', semana: 'esta semana', quincena: 'esta quincena', mes: 'este mes' };
+
+// Panel para aportar a una meta. Solo suma a la meta (no mueve dinero). Desde la Sesión 9 (pedido
+// del dueño) ofrece lo que toca ahorrar en el periodo de la meta (hoy, esta semana, esta quincena o
+// este mes, según su frecuencia) u otro valor. El aporte se guarda cuando el panel ya bajó, para
+// que se vea contar la cifra de la meta (CifraAnimada).
 function PanelAportar({ meta, abierto, alCerrar }) {
-  const [valor, setValor] = useState(0);
-  // El panel se cierra cuando el botón termina su animación de "listo" (BotonExito).
-  const listo = () => (valor > 0 ? aportar(meta.id, valor) : false);
+  const { semanaEmpieza } = useAjustes();
+  const [opcion, setOpcion] = useState('sugerido');
+  const [otro, setOtro] = useState(0);
+  const frecuencia = frecuenciaMeta(meta?.frecuencia).valor;
+  const sugerido = meta ? ahorroPorPeriodo(meta.objetivo, meta.ahorrado, meta.fechaLimite, frecuencia, semanaEmpieza) : 0;
+  const conSugerido = sugerido > 0;
+  const valor = conSugerido && opcion === 'sugerido' ? sugerido : otro;
+
+  // Cada vez que se abre, parte de lo sugerido (si la meta aún no se cumple) y sin otro valor.
+  useEffect(() => {
+    if (!abierto) return;
+    setOpcion('sugerido');
+    setOtro(0);
+  }, [abierto]);
+
+  const opcionAporte = (clave, titulo, detalle) => {
+    const marcada = clave === opcion;
+    return (
+      <button
+        type="button"
+        role="radio"
+        aria-checked={marcada}
+        className="panel-opcion aportar-opcion"
+        onClick={() => setOpcion(clave)}
+      >
+        <span className="panel-opcion-textos">
+          <span className="panel-opcion-titulo">{titulo}</span>
+          {detalle && <span className="panel-opcion-detalle">{detalle}</span>}
+        </span>
+        <span className={'radio' + (marcada ? ' marcado' : '')}>{marcada && <IconoCheck tamano={14} />}</span>
+      </button>
+    );
+  };
+
   return (
     <PanelInferior abierto={abierto} alCerrar={alCerrar} titulo={meta ? `Aportar a ${meta.nombre}` : 'Aportar'}>
       <p className="panel-texto">
         Suma a lo ahorrado en la meta, con fecha de hoy. Tus cuentas no cambian: el dinero ya está donde lo guardas.
       </p>
-      <div className="tarjeta campos aportar-campo">
-        <Campo Icono={IconoAhorro} etiqueta="Valor">
-          <EntradaPesos valor={valor} etiqueta="Valor del aporte" alCambiar={setValor} />
-        </Campo>
-      </div>
+      {conSugerido && (
+        <div className="aportar-opciones" role="radiogroup" aria-label="Cuánto aportar">
+          {opcionAporte(
+            'sugerido',
+            `Lo de ${PERIODO_ACTUAL[frecuencia]}: ${formatearPesos(sugerido)}`,
+            'Lo que toca ahorrar para llegar a tiempo',
+          )}
+          {opcionAporte('otro', 'Otro valor')}
+        </div>
+      )}
+      {(!conSugerido || opcion === 'otro') && (
+        <div className="tarjeta campos aportar-campo">
+          <Campo Icono={IconoAhorro} etiqueta="Valor">
+            <EntradaPesos valor={otro} etiqueta="Valor del aporte" alCambiar={setOtro} />
+          </Campo>
+        </div>
+      )}
       <BotonExito
         className="boton-principal"
         disabled={!(valor > 0)}
-        alTocar={listo}
+        alTocar={() => valor > 0}
         alTerminar={() => {
-          setValor(0);
+          const metaId = meta.id;
+          const aporte = valor;
           alCerrar();
+          setTimeout(() => aportar(metaId, aporte), DURACION_PANEL_MS);
         }}
       >
         Aportar {valor > 0 ? formatearPesos(valor) : ''}
@@ -250,29 +308,13 @@ function FilasProgramadas({ items, navegar, frecuenciaDe }) {
   );
 }
 
+// Solo el calendario y los programados guardados (pedido del dueño, Sesión 9: se quitaron la vista
+// Lista y "Crear programado"). Tocar un día muestra lo de ese día.
 function Programados({ items, programados, anio, mes, navegar }) {
-  const [vista, setVista] = useState('calendario'); // Calendario de entrada (pedido del dueño: la lista se ve saturada).
   const [diaElegido, setDiaElegido] = useState(null);
   const frecuenciaDe = (id) => programados.find((p) => p.id === id)?.frecuencia;
   const { semanaEmpieza } = useAjustes();
-
-  if (programados.length === 0) {
-    return (
-      <div className="tarjeta vacio planes-vacio">
-        <p>Aún no tienes movimientos programados, como el arriendo o el sueldo.</p>
-        <button type="button" className="boton-principal" onClick={() => navegar('/programados/nuevo')}>
-          Crear programado
-        </button>
-      </div>
-    );
-  }
-
-  const porDia = [];
-  for (const item of items) {
-    const grupo = porDia.at(-1);
-    if (grupo?.fecha === item.fecha) grupo.items.push(item);
-    else porDia.push({ fecha: item.fecha, items: [item] });
-  }
+  const hayTransferencias = programados.some((p) => p.tipo === 'transferencia');
 
   // Calendario: semanas de lunes a domingo, o de domingo a sábado (Ajustes). Elegido: el día
   // tocado, o hoy si es de este mes.
@@ -287,107 +329,93 @@ function Programados({ items, programados, anio, mes, navegar }) {
 
   return (
     <>
-      <div className="chips planes-vistas" role="group" aria-label="Vista">
-        <button type="button" className="chip" aria-pressed={vista === 'lista'} onClick={() => setVista('lista')}>
-          <span>
-            <IconoLista tamano={14} grosor={2.2} />
-            Lista
-          </span>
-        </button>
-        <button type="button" className="chip" aria-pressed={vista === 'calendario'} onClick={() => setVista('calendario')}>
-          <span>
-            <IconoCalendario />
-            Calendario
-          </span>
-        </button>
-        {vista === 'calendario' && (
-          <span className="calendario-leyenda" aria-hidden="true">
-            <span>
-              <i className="punto gasto" /> Gasto
-            </span>
-            <span>
-              <i className="punto ingreso" /> Ingreso
-            </span>
-          </span>
-        )}
-      </div>
-
-      <Deslizar posicion={vista === 'lista' ? 0 : 1}>
-        {vista === 'lista' && porDia.length === 0 && (
-          <div className="tarjeta vacio">No hay movimientos programados este mes.</div>
-        )}
-        {vista === 'lista' &&
-          porDia.map(({ fecha, items: delGrupo }) => (
-            <section key={fecha}>
-              <h2 className="titulo-dia">{etiquetaDia(fecha)}</h2>
-              <FilasProgramadas items={delGrupo} navegar={navegar} frecuenciaDe={frecuenciaDe} />
-            </section>
+      <div className="tarjeta calendario">
+        <div className="calendario-semana">
+          {DIAS_SEMANA[semanaEmpieza].map((d) => (
+            <span key={d}>{d}</span>
           ))}
-
-        {vista === 'calendario' && (
-          <>
-            <div className="tarjeta calendario">
-              <div className="calendario-semana">
-                {DIAS_SEMANA[semanaEmpieza].map((d) => (
-                  <span key={d}>{d}</span>
-                ))}
-              </div>
-              <div className="calendario-dias">
-                {Array.from({ length: vacios }, (_, i) => (
-                  <span key={'v' + i} />
-                ))}
-                {Array.from({ length: diasDelMes }, (_, i) => {
-                  const fecha = textoDia(i + 1);
-                  const delMismoDia = items.filter((it) => it.fecha === fecha);
-                  const hayGasto = delMismoDia.some((it) => it.tipo === 'gasto');
-                  const hayIngreso = delMismoDia.some((it) => it.tipo === 'ingreso');
-                  return (
-                    <button
-                      key={fecha}
-                      type="button"
-                      className="calendario-dia"
-                      aria-pressed={fecha === elegido}
-                      aria-label={etiquetaDia(fecha) + (delMismoDia.length ? `, ${delMismoDia.length} programados` : '')}
-                      onClick={() => setDiaElegido(fecha)}
-                    >
-                      <span className={'calendario-numero' + (fecha === hoy ? ' hoy' : '')}>{i + 1}</span>
-                      <span className="calendario-puntos">
-                        {hayGasto && <i className="punto gasto" />}
-                        {hayIngreso && <i className="punto ingreso" />}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-            <h2 className="titulo-dia">{etiquetaDia(elegido)}</h2>
-            {delDia.length === 0 ? (
-              <div className="tarjeta vacio">Nada programado este día.</div>
-            ) : (
-              <FilasProgramadas items={delDia} navegar={navegar} frecuenciaDe={frecuenciaDe} />
-            )}
-          </>
+        </div>
+        <div className="calendario-dias">
+          {Array.from({ length: vacios }, (_, i) => (
+            <span key={'v' + i} />
+          ))}
+          {Array.from({ length: diasDelMes }, (_, i) => {
+            const fecha = textoDia(i + 1);
+            const delMismoDia = items.filter((it) => it.fecha === fecha);
+            const hayGasto = delMismoDia.some((it) => it.tipo === 'gasto');
+            const hayIngreso = delMismoDia.some((it) => it.tipo === 'ingreso');
+            const hayTransferencia = delMismoDia.some((it) => it.tipo === 'transferencia');
+            return (
+              <button
+                key={fecha}
+                type="button"
+                className="calendario-dia"
+                aria-pressed={fecha === elegido}
+                aria-label={etiquetaDia(fecha) + (delMismoDia.length ? `, ${delMismoDia.length} programados` : '')}
+                onClick={() => setDiaElegido(fecha)}
+              >
+                <span className={'calendario-numero' + (fecha === hoy ? ' hoy' : '')}>{i + 1}</span>
+                <span className="calendario-puntos">
+                  {hayGasto && <i className="punto gasto" />}
+                  {hayIngreso && <i className="punto ingreso" />}
+                  {hayTransferencia && <i className="punto transferencia" />}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+        {/* Qué es cada punto (pedido del dueño, Sesión 9). */}
+        <div className="calendario-leyenda" aria-hidden="true">
+          <span>
+            <i className="punto gasto" /> Gasto
+          </span>
+          <span>
+            <i className="punto ingreso" /> Ingreso
+          </span>
+          {hayTransferencias && (
+            <span>
+              <i className="punto transferencia" /> Transferencia
+            </span>
+          )}
+        </div>
+      </div>
+      <h2 className="titulo-dia">{etiquetaDia(elegido)}</h2>
+      <Deslizar posicion={Number(elegido.replaceAll('-', ''))} distancia={16}>
+        {delDia.length === 0 ? (
+          <div className="tarjeta vacio">Nada programado este día.</div>
+        ) : (
+          <FilasProgramadas items={delDia} navegar={navegar} frecuenciaDe={frecuenciaDe} />
         )}
       </Deslizar>
 
-      {/* Todos, para editarlos aunque este mes no tengan fechas. */}
+      {/* Todos, para editarlos o eliminarlos aunque este mes no tengan fechas. */}
       <h2 className="titulo-seccion">Tus programados</h2>
-      <div className="tarjeta-lista">
-        {programados.map((p) => (
-          <FilaMovimiento
-            key={p.id}
-            movimiento={p}
-            detalle={
-              <>
-                <IconoRepetir />
-                {textoFrecuencia(p.frecuencia)}
-                {p.termina ? ` · hasta ${fechaCorta(p.termina)}` : ''}
-              </>
-            }
-            alTocar={() => navegar('/programados/' + p.id)}
-          />
-        ))}
-      </div>
+      {programados.length === 0 && (
+        <div className="tarjeta vacio planes-vacio">
+          <p>Aún no tienes programados, como el arriendo o el sueldo.</p>
+          <p className="planes-vacio-nota">
+            Al registrar un gasto o un ingreso, prende «Gasto recurrente» para que se repita.
+          </p>
+        </div>
+      )}
+      {programados.length > 0 && (
+        <div className="tarjeta-lista">
+          {programados.map((p) => (
+            <FilaMovimiento
+              key={p.id}
+              movimiento={p}
+              detalle={
+                <>
+                  <IconoRepetir />
+                  {textoFrecuencia(p.frecuencia)}
+                  {p.termina ? ` · hasta ${fechaCorta(p.termina)}` : ''}
+                </>
+              }
+              alTocar={() => navegar('/programados/' + p.id)}
+            />
+          ))}
+        </div>
+      )}
     </>
   );
 }
@@ -430,7 +458,9 @@ export default function Planes() {
     resumen = (
       <div className="planes-resumen">
         <div className="planes-resumen-etiqueta">Ahorrado en tus metas</div>
-        <div className="planes-resumen-valor">{formatearPesos(ahorrado)}</div>
+        <div className="planes-resumen-valor">
+          <CifraAnimada valor={ahorrado} />
+        </div>
         <div className="planes-resumen-etiqueta">
           de {formatearPesos(objetivo)} · {porcentaje(ahorrado, objetivo)} % completado
         </div>
@@ -464,9 +494,14 @@ export default function Planes() {
               <IconoInicio tamano={20} />
             </button>
             <MesConFlechas />
-            <button type="button" className="boton-banner" aria-label="Nuevo" onClick={() => navegar(actual.nuevo)}>
-              <IconoMas />
-            </button>
+            {actual.nuevo ? (
+              <button type="button" className="boton-banner" aria-label="Nuevo" onClick={() => navegar(actual.nuevo)}>
+                <IconoMas />
+              </button>
+            ) : (
+              // Mismo lugar vacío, para que el mes siga centrado.
+              <span className="boton-banner planes-hueco" aria-hidden="true" />
+            )}
           </div>
           <Deslizar posicion={posicion} distancia={16}>
             {resumen}

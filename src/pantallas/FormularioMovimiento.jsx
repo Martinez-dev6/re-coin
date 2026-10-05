@@ -2,7 +2,9 @@
 // /nuevo/transferencia, /nuevo/gasto-tarjeta; ?cuenta=id elige la cuenta) y editar un movimiento
 // (/movimientos/:id/editar). design/capturas/NuevoGasto.png, NuevoIngreso.png,
 // NuevaTransferencia.png, GastoTarjeta.png, SelectorCategoria.png y SelectorCuenta.png.
-// "Repetir" queda para Programados.
+// Desde la Sesión 9 (pedido del dueño) los programados se crean aquí: el interruptor "Gasto
+// recurrente" (o ingreso, o transferencia) muestra Frecuencia y Termina, y al guardar se crea el
+// movimiento y el programado que lo repite (guardarRecurrente en programados.js).
 import { useEffect, useRef, useState } from 'react';
 import { Navigate, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import BotonExito from '../componentes/BotonExito.jsx';
@@ -45,7 +47,13 @@ import { useDatos } from '../datos/DatosContext.jsx';
 import { guardarEtiqueta } from '../datos/etiquetas.js';
 import { favoritoDe, guardarFavorito, sugerirFavoritos, usarFavorito } from '../datos/favoritos.js';
 import { faltante, guardarMovimiento, horaDe, TIPOS_MOVIMIENTO } from '../datos/movimientos.js';
-import { eliminarProgramado, FRECUENCIAS, guardarProgramado, textoFrecuencia } from '../datos/programados.js';
+import {
+  eliminarProgramado,
+  FRECUENCIAS,
+  guardarProgramado,
+  guardarRecurrente,
+  textoFrecuencia,
+} from '../datos/programados.js';
 import { cuotasDe, facturaDeFecha, nombreFactura, sumarMeses } from '../datos/tarjetas.js';
 import { estiloIconoCuenta } from '../tema/colores.js';
 import { fechaCorta, horaActual, hoyTexto, textoHora } from '../utilidades/fechas.js';
@@ -62,6 +70,20 @@ const TITULOS = {
 };
 
 const TITULOS_PROGRAMADO = ['Nuevo programado', 'Editar programado', 'Guardar programado'];
+
+// Interruptor para repetir el movimiento (Sesión 9).
+const TEXTO_RECURRENTE = {
+  gasto: 'Gasto recurrente',
+  ingreso: 'Ingreso recurrente',
+  transferencia: 'Transferencia recurrente',
+};
+
+// Formas de eliminar un programado (eliminarProgramado en programados.js).
+const ELIMINAR_PROGRAMADO = [
+  { valor: 'solo', titulo: 'Solo el programado', detalle: 'Deja de repetirse. Lo ya registrado se queda en Transacciones.' },
+  { valor: 'realizados', titulo: 'El programado y sus realizados', detalle: 'También borra los movimientos que ya se pagaron.' },
+  { valor: 'todo', titulo: 'Todo', detalle: 'El programado y todos sus movimientos, pagados y pendientes.' },
+];
 
 // Ruta (/nuevo/…) → tipo.
 const TIPO_POR_RUTA = { gasto: 'gasto', ingreso: 'ingreso', transferencia: 'transferencia', 'gasto-tarjeta': 'gastoTarjeta' };
@@ -196,6 +218,7 @@ function datosIniciales({ movimiento, programado, tipoInicial, cuentaPedida, cue
     factura: tarjeta ? facturaDeFecha(tarjeta, fecha) : null,
     frecuencia: 'mes',
     termina: null,
+    recurrente: false,
   };
 }
 
@@ -222,9 +245,6 @@ function Campos({ clave, movimiento, programado, esProgramado = false, tipoInici
   const [pagadoAMano, setPagadoAMano] = useState(borrador?.pagadoAMano ?? Boolean(movimiento));
   // Igual con la factura de un gasto con tarjeta: sigue a la fecha y a la tarjeta (día de cierre).
   const [facturaAMano, setFacturaAMano] = useState(borrador?.facturaAMano ?? Boolean(movimiento));
-  // Y con la hora (decidido por el dueño, 2026-10-04): con fecha de hoy va sola ("Ahora", la hora
-  // en que se guarda); con otra fecha, sin hora, salvo que se prenda y se elija a mano.
-  const [horaAMano, setHoraAMano] = useState(borrador?.horaAMano ?? Boolean(movimiento));
   // Corazón de favorito: null = sin tocar (se ve marcado si la descripción ya es un favorito y al
   // guardar no cambia nada); true o false = tocado a mano (al guardar crea, actualiza o quita).
   const [corazonAMano, setCorazonAMano] = useState(borrador?.corazonAMano ?? null);
@@ -235,6 +255,8 @@ function Campos({ clave, movimiento, programado, esProgramado = false, tipoInici
   const salida = useRef(null);
   // 'categoria' | 'cuentaId' | 'cuentaDestinoId' | 'tarjetaId' | 'cuotas' | 'factura' | 'etiquetas' | 'observacion'
   const [panel, setPanel] = useState(null);
+  // Forma de eliminar un programado (ELIMINAR_PROGRAMADO).
+  const [modoEliminar, setModoEliminar] = useState('solo');
   const [aviso, setAviso] = useState(null);
   const monto = useRef(null);
 
@@ -249,8 +271,8 @@ function Campos({ clave, movimiento, programado, esProgramado = false, tipoInici
   }, []);
 
   useEffect(() => {
-    borradores.set(clave, { datos, pagadoAMano, facturaAMano, horaAMano, corazonAMano });
-  }, [clave, datos, pagadoAMano, facturaAMano, horaAMano, corazonAMano]);
+    borradores.set(clave, { datos, pagadoAMano, facturaAMano, corazonAMano });
+  }, [clave, datos, pagadoAMano, facturaAMano, corazonAMano]);
 
   // El aviso ("Elige una categoría.") se va solo.
   useEffect(() => {
@@ -267,6 +289,9 @@ function Campos({ clave, movimiento, programado, esProgramado = false, tipoInici
   const tipoCategoria = tipo === 'ingreso' ? 'ingreso' : 'gasto';
   const [tituloNuevo, tituloEditar, textoGuardar] = esProgramado ? TITULOS_PROGRAMADO : TITULOS[tipo];
   const editando = Boolean(movimiento || programado);
+  // "Gasto recurrente": solo al crear un gasto, ingreso o transferencia.
+  const puedeRepetir = !editando && !esProgramado && !conTarjeta;
+  const recurrente = puedeRepetir && Boolean(datos.recurrente);
   let volverA = '/';
   if (movimiento) volverA = `/movimientos/${movimiento.id}`;
   else if (esProgramado) volverA = '/planes/programados';
@@ -288,11 +313,13 @@ function Campos({ clave, movimiento, programado, esProgramado = false, tipoInici
     return facturaAMano || !tarjeta ? actual : facturaDeFecha(tarjeta, fecha);
   };
 
-  // La hora de una fecha: sola si es hoy; si no, nada. Elegida a mano, se queda (y "Ahora" pasa a
-  // ser la hora de este momento, para que no cambie si se guarda más tarde con otra fecha).
+  // La hora solo va en lo que se registra en el momento (pedido del dueño, Sesión 9): con fecha de
+  // hoy, "Ahora" (la hora en que se guarda) o la que se eligió; con otra fecha, sin hora y sin la
+  // fila. Al editar, en su fecha de siempre el movimiento conserva la suya.
   const horaSegun = (fecha, actual) => {
-    if (horaAMano) return actual === 'ahora' && fecha !== hoyTexto() ? horaActual() : actual;
-    return fecha === hoyTexto() ? 'ahora' : null;
+    if (movimiento && fecha === movimiento.fecha) return horaDe(movimiento);
+    if (fecha === hoyTexto()) return actual ?? 'ahora';
+    return null;
   };
 
   const cambiarFecha = (fecha) =>
@@ -390,6 +417,7 @@ function Campos({ clave, movimiento, programado, esProgramado = false, tipoInici
     setAviso(null); // el aviso de antes ("Elige una categoría.") no se queda encima del chulo
     return (async () => {
       if (esProgramado) await guardarProgramado(programado?.id, datos);
+      else if (recurrente) await guardarRecurrente(datos);
       else await guardarMovimiento(movimiento?.id, datos);
       if (!esProgramado && corazonAMano !== null) await guardarFavorito(datos, corazonAMano);
       if (conTarjeta) recordar(CLAVE_ULTIMA_TARJETA, datos.tarjetaId);
@@ -474,47 +502,52 @@ function Campos({ clave, movimiento, programado, esProgramado = false, tipoInici
       )}
     </div>
   );
-  // En un programado, la fecha es cuándo empieza, y van también Frecuencia y Termina.
-  const filaFecha = esProgramado ? (
+  // Frecuencia y Termina: en un programado y en un movimiento nuevo con "… recurrente" prendido.
+  const filasRepetir = (
     <>
       <Campo Icono={IconoRepetirFila} etiqueta="Frecuencia" alTocar={() => setPanel('frecuencia')}>
         {textoFrecuencia(datos.frecuencia)}
       </Campo>
-      <Campo Icono={IconoFecha} etiqueta="Empieza" conFlecha>
-        <EntradaFecha valor={datos.fecha} alCambiar={(fecha) => cambiar({ fecha })} />
-      </Campo>
       <Campo Icono={IconoTermina} etiqueta="Termina" alTocar={() => setPanel('termina')}>
         {datos.termina ? fechaCorta(datos.termina) : 'Nunca'}
       </Campo>
+    </>
+  );
+  // En un programado, la fecha es cuándo empieza.
+  const filaFecha = esProgramado ? (
+    <>
+      <Campo Icono={IconoFecha} etiqueta="Empieza" conFlecha>
+        <EntradaFecha valor={datos.fecha} alCambiar={(fecha) => cambiar({ fecha })} />
+      </Campo>
+      {filasRepetir}
     </>
   ) : (
     <Campo Icono={IconoFecha} etiqueta="Fecha" conFlecha>
       <EntradaFecha valor={datos.fecha} alCambiar={cambiarFecha} />
     </Campo>
   );
-  // Hora: interruptor para ponerla o quitarla y, puesta, el reloj al tocar la hora. No va en un
-  // programado (se registra solo, sin hora).
-  const filaHora = !esProgramado && (
+  // Hora: solo si el movimiento es del momento (fecha de hoy); tocarla abre el reloj. Sin fila en
+  // otra fecha ni en un programado (se registra solo, sin hora).
+  const filaHora = !esProgramado && datos.hora && (
     <Campo Icono={IconoHora} etiqueta="Hora">
-      {datos.hora && (
-        <EntradaHora
-          valor={datos.hora === 'ahora' ? horaActual() : datos.hora}
-          texto={datos.hora === 'ahora' ? 'Ahora' : textoHora(datos.hora)}
-          alCambiar={(hora) => {
-            setHoraAMano(true);
-            cambiar({ hora });
-          }}
-        />
-      )}
-      <Interruptor
-        activo={Boolean(datos.hora)}
-        etiqueta="Con hora"
-        alCambiar={(con) => {
-          setHoraAMano(true);
-          cambiar({ hora: con ? (datos.fecha === hoyTexto() ? 'ahora' : horaActual()) : null });
-        }}
+      <EntradaHora
+        valor={datos.hora === 'ahora' ? horaActual() : datos.hora}
+        texto={datos.hora === 'ahora' ? 'Ahora' : textoHora(datos.hora)}
+        alCambiar={(hora) => cambiar({ hora })}
       />
     </Campo>
+  );
+  const filaRecurrente = puedeRepetir && (
+    <>
+      <Campo Icono={IconoRepetirFila} etiqueta={TEXTO_RECURRENTE[tipo]}>
+        <Interruptor
+          activo={recurrente}
+          etiqueta={TEXTO_RECURRENTE[tipo]}
+          alCambiar={(activo) => cambiar({ recurrente: activo })}
+        />
+      </Campo>
+      {recurrente && filasRepetir}
+    </>
   );
   const filaObservacion = (
     <Campo Icono={IconoNota} etiqueta="Observación" alTocar={() => setPanel('observacion')}>
@@ -581,6 +614,7 @@ function Campos({ clave, movimiento, programado, esProgramado = false, tipoInici
             </Campo>
             {filaFecha}
             {filaHora}
+            {filaRecurrente}
             {filaObservacion}
           </div>
         ) : (
@@ -592,6 +626,7 @@ function Campos({ clave, movimiento, programado, esProgramado = false, tipoInici
             </Campo>
             {filaFecha}
             {filaHora}
+            {filaRecurrente}
             {filaEtiquetas}
             {/* Un programado se registra siempre como pendiente (decisión del dueño). */}
             {!esProgramado && (
@@ -832,7 +867,7 @@ function Campos({ clave, movimiento, programado, esProgramado = false, tipoInici
         />
       </PanelInferior>
 
-      {esProgramado && (
+      {(esProgramado || puedeRepetir) && (
         <>
           <PanelInferior
             abierto={panel === 'frecuencia'}
@@ -917,10 +952,28 @@ function Campos({ clave, movimiento, programado, esProgramado = false, tipoInici
             </div>
           </PanelInferior>
 
-          <PanelInferior abierto={panel === 'eliminar'} alCerrar={() => setPanel(null)} titulo="¿Eliminar el programado?">
-            <p className="panel-texto">
-              Deja de registrarse desde hoy. Los movimientos que ya se registraron se quedan en Transacciones.
-            </p>
+          <PanelInferior abierto={panel === 'eliminar'} alCerrar={() => setPanel(null)} titulo="¿Qué quieres eliminar?">
+            <div role="radiogroup" aria-label="Qué eliminar" className="eliminar-programado">
+              {ELIMINAR_PROGRAMADO.map((o) => {
+                const marcada = o.valor === modoEliminar;
+                return (
+                  <button
+                    key={o.valor}
+                    type="button"
+                    role="radio"
+                    aria-checked={marcada}
+                    className="panel-opcion eliminar-programado-opcion"
+                    onClick={() => setModoEliminar(o.valor)}
+                  >
+                    <span className="panel-opcion-textos">
+                      <span className="panel-opcion-titulo">{o.titulo}</span>
+                      <span className="panel-opcion-detalle">{o.detalle}</span>
+                    </span>
+                    <span className={'radio' + (marcada ? ' marcado' : '')}>{marcada && <IconoCheck tamano={14} />}</span>
+                  </button>
+                );
+              })}
+            </div>
             <BotonExito
               className="boton-peligro"
               alTerminar={() => {
@@ -928,7 +981,7 @@ function Campos({ clave, movimiento, programado, esProgramado = false, tipoInici
                 setTimeout(() => {
                   borradores.delete(clave);
                   volver(navegar, volverA);
-                  eliminarProgramado(programado.id);
+                  eliminarProgramado(programado.id, modoEliminar);
                 }, DURACION_PANEL_MS + 30);
               }}
             >

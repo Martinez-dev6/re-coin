@@ -77,7 +77,8 @@ export default function PanelConfirmarPago({ movimiento: m, abierto, alCerrar })
         })}
       </div>
       <BotonExito
-        className="boton-principal confirmar-pago-boton"
+        // Del color de lo que se confirma (pedido del dueño, Sesión 9): ingreso verde, gasto rojo.
+        className={'boton-principal confirmar-pago-boton ' + (ingreso ? 'guardar-ingreso' : 'guardar-gasto')}
         disabled={!cuentaId}
         alTocar={confirmar}
         alTerminar={alCerrar}

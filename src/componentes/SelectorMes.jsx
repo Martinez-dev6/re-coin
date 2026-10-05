@@ -61,12 +61,16 @@ export function PanelElegirMes({ abierto, alCerrar }) {
         <button type="button" className="mes-flecha" aria-label="Año anterior" onClick={() => setAnioVista((a) => a - 1)}>
           <IconoAnterior />
         </button>
-        <span>{anioVista}</span>
+        {/* Al cambiar de año, el año y los meses entran desde ese lado (Sesión 9: antes parecía que
+            no pasaba nada). */}
+        <Deslizar as="span" posicion={anioVista} distancia={16} aria-live="polite">
+          {anioVista}
+        </Deslizar>
         <button type="button" className="mes-flecha" aria-label="Año siguiente" onClick={() => setAnioVista((a) => a + 1)}>
           <IconoSiguiente />
         </button>
       </div>
-      <div className="elegir-mes-rejilla">
+      <Deslizar posicion={anioVista} className="elegir-mes-rejilla">
         {CORTOS.map((corto, indice) => {
           const elegido = mesElegido.anio === anioVista && mesElegido.mes === indice;
           return (
@@ -82,7 +86,7 @@ export function PanelElegirMes({ abierto, alCerrar }) {
             </button>
           );
         })}
-      </div>
+      </Deslizar>
       <button type="button" className="boton-principal" onClick={confirmar}>
         Ver {nombreMes(mesElegido.mes, false)} {mesElegido.anio}
       </button>

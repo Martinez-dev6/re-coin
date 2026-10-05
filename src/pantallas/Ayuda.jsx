@@ -16,12 +16,12 @@ const PREGUNTAS = [
   {
     pregunta: '¿Cómo se calcula el saldo de una cuenta?',
     respuesta:
-      'Es el saldo inicial más los ingresos y menos los gastos que ya están pagados. Lo pendiente no cuenta hasta que lo marques como pagado (con el chulito en Pendientes o tocando Pendiente en el detalle).',
+      'Es el saldo inicial más los ingresos y menos los gastos que ya están pagados. Lo pendiente no cuenta hasta que lo marques como pagado (tocándolo en Pendientes o tocando Pendiente en el detalle).',
   },
   {
     pregunta: '¿Qué es un movimiento pendiente?',
     respuesta:
-      'Uno que aún no ha pasado por tu cuenta: los de fecha futura, los programados que ya llegaron y las cuotas de tarjeta cuya factura no has pagado. Suman en los totales del mes, pero no en el saldo.',
+      'Uno que aún no ha pasado por tu cuenta: los de fecha futura, los programados de este mes y las cuotas de tarjeta cuya factura no has pagado. Suman en los totales del mes, pero no en el saldo.',
   },
   {
     pregunta: '¿Las transferencias cuentan como gasto?',
@@ -36,7 +36,7 @@ const PREGUNTAS = [
   {
     pregunta: '¿Cuándo se registran los programados?',
     respuesta:
-      'Al abrir la app (o al volver a ella). Cada fecha que ya llegó se crea como un movimiento pendiente. El iPhone no deja que la app trabaje cerrada, así que no se registran en segundo plano.',
+      'Se crean al registrar un gasto, un ingreso o una transferencia con «… recurrente» prendido. Al abrir la app (o al volver a ella), cada fecha del mes en curso se crea como un movimiento pendiente; las de los meses siguientes se ven en Planes → Programados. El iPhone no deja que la app trabaje cerrada, así que no se registran en segundo plano.',
   },
   {
     pregunta: '¿Cómo paso mis datos a otro teléfono?',

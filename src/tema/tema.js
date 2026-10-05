@@ -62,7 +62,9 @@ muted: dark ? '#a0a0ae' : '#5b5f70',
 income: dark ? '#5fd39a' : '#0b7a43',
 expense: dark ? (isRed ? '#f9a8d4' : '#ff8a80') : (isRed ? '#a3195b' : '#c62828'),
 expenseOnWhite: isRed ? '#a3195b' : '#c62828',
-pending: dark ? '#fbbf24' : '#b45309',
+// Amarillo más vivo desde la Sesión 9 (pedido del dueño: el ámbar de antes, #b45309, se confundía
+// con el rojo de los gastos). En claro #a16207 (4,9:1 sobre blanco); en oscuro #facc15.
+pending: dark ? '#facc15' : '#a16207',
 track: dark ? '#2a2a34' : '#e7e9f0',
 swRing: dark ? 'rgba(255,255,255,0.22)' : 'rgba(0,0,0,0.10)',
 swBg: dark ? hex(at) : '#9a9eb0',

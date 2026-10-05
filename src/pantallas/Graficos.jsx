@@ -25,7 +25,9 @@ export default function Graficos() {
   const [tipo, setTipo] = useState('gasto');
   const [parte, setParte] = useState(null);
   const elegido = textoMes(anio, mes);
-  const { total, cantidad, partes } = porCategoria(movimientosPorMes, categoria, tipo, elegido);
+  // Todas las categorías, cada una con su color, sin juntar las pequeñas en "Otros" (pedido del
+  // dueño, Sesión 9: aquí se ven completas; "Otros" de Inicio trae a esta pantalla).
+  const { total, cantidad, todas: partes } = porCategoria(movimientosPorMes, categoria, tipo, elegido);
   const tocada = partes.find((p) => p.clave === parte);
   const meses = ventanaDeMeses(elegido);
   const porcentaje = (valor) => (total > 0 ? Math.round((valor / total) * 100) : 0);
@@ -71,8 +73,9 @@ export default function Graficos() {
               )
             }
           />
-          {/* La leyenda guarda siempre el alto de 5 filas (lo más que puede tener): así, al cambiar
-              de mes o de tipo, lo de abajo no sube ni baja (pedido del dueño, 2026-10-04). */}
+          {/* La leyenda guarda al menos el alto de 5 filas: así, al cambiar de mes o de tipo, lo de
+              abajo no sube ni baja con pocas categorías (pedido del dueño, 2026-10-04). Con más de
+              5, crece. */}
           <div className="graficos-leyenda">
             {partes.length === 0 ? (
               <p className="graficos-vacio">

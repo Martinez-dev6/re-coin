@@ -58,6 +58,10 @@ function extras(oscuro, colores) {
     // sobre blanco) y 9.
     menuTransferencia: oscuro ? '#60a5fa' : '#2563eb',
     menuTarjeta: oscuro ? '#facc15' : '#bf8700',
+    // Pastilla "Pendiente" de las filas (Sesión 9): amarilla, para que no se confunda con el rojo de
+    // los gastos. Texto sobre su fondo: 5,9:1 en claro.
+    pendienteFondo: oscuro ? 'rgba(250,204,21,0.16)' : '#fef08a',
+    pendienteTexto: oscuro ? '#facc15' : '#854d0e',
     menuBorde: oscuro ? 'rgba(255,255,255,0.16)' : 'rgba(0,0,0,0.06)',
     // Fondo oscurecido detrás de un panel inferior o del menú del "+".
     scrim: `rgba(${scrimRgb.join(',')},${scrimAlfa})`,

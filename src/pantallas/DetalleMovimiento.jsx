@@ -8,6 +8,7 @@ import { Navigate, useNavigate, useParams } from 'react-router-dom';
 import BotonExito from '../componentes/BotonExito.jsx';
 import CabeceraSubpagina from '../componentes/CabeceraSubpagina.jsx';
 import CirculoCategoria from '../componentes/CirculoCategoria.jsx';
+import EditarTransferencia from '../componentes/EditarTransferencia.jsx';
 import { Campo, PieFormulario } from '../componentes/Formulario.jsx';
 import {
   IconoBasura,
@@ -67,6 +68,8 @@ function Contenido({ movimiento: m }) {
   // programada) o 'pendiente' (volver a dejarlo pendiente).
   const [panelEstado, setPanelEstado] = useState(null);
   const cerrarEstado = () => setPanelEstado(null);
+  // Una transferencia se edita en una ventana flotante encima del detalle (Sesión 9).
+  const [editarTransferencia, setEditarTransferencia] = useState(false);
   const eliminando = useRef(false);
   // Los gastos e ingresos tienen Pagado / Pendiente; una transferencia, solo si es programada
   // (se registra pendiente).
@@ -215,7 +218,13 @@ function Contenido({ movimiento: m }) {
             Eliminar
           </button>
           {editable && (
-            <button type="button" className="boton-principal" onClick={() => navegar(`/movimientos/${m.id}/editar`)}>
+            <button
+              type="button"
+              className="boton-principal"
+              onClick={() =>
+                m.tipo === 'transferencia' ? setEditarTransferencia(true) : navegar(`/movimientos/${m.id}/editar`)
+              }
+            >
               <IconoLapiz tamano={18} />
               Editar
             </button>
@@ -223,13 +232,21 @@ function Contenido({ movimiento: m }) {
         </div>
       </PieFormulario>
 
+      {m.tipo === 'transferencia' && (
+        <EditarTransferencia movimiento={m} abierto={editarTransferencia} alCerrar={() => setEditarTransferencia(false)} />
+      )}
+
       <PanelConfirmarPago movimiento={m} abierto={panelEstado === 'pagar'} alCerrar={cerrarEstado} />
 
       <PanelInferior abierto={panelEstado === 'hecha'} alCerrar={cerrarEstado} titulo="¿Ya hiciste la transferencia?">
         <p className="panel-texto">
           Pasan {formatearPesos(m.valor)} de {nombreCuenta(m.cuentaId)} a {nombreCuenta(m.cuentaDestinoId)}.
         </p>
-        <BotonExito className="boton-principal" alTocar={() => cambiarPagado(m.id, true)} alTerminar={cerrarEstado}>
+        <BotonExito
+          className="boton-principal guardar-transferencia"
+          alTocar={() => cambiarPagado(m.id, true)}
+          alTerminar={cerrarEstado}
+        >
           Marcar como hecha
         </BotonExito>
         <button type="button" className="boton-secundario" onClick={cerrarEstado}>
@@ -239,7 +256,11 @@ function Contenido({ movimiento: m }) {
 
       <PanelInferior abierto={panelEstado === 'pendiente'} alCerrar={cerrarEstado} titulo="¿Marcar como pendiente?">
         <p className="panel-texto">{textoPendiente}</p>
-        <BotonExito className="boton-principal" alTocar={() => cambiarPagado(m.id, false)} alTerminar={cerrarEstado}>
+        <BotonExito
+          className="boton-principal guardar-pendiente"
+          alTocar={() => cambiarPagado(m.id, false)}
+          alTerminar={cerrarEstado}
+        >
           Marcar como pendiente
         </BotonExito>
         <button type="button" className="boton-secundario" onClick={cerrarEstado}>

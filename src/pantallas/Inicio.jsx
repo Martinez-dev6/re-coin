@@ -150,7 +150,7 @@ export default function Inicio() {
           {/* Lugar de la fila de arriba, que va fija aparte (m\u00e1s abajo). */}
           <div className="inicio-fila" />
           <div ref={etiquetaSaldo} className="inicio-saldo-etiqueta">
-            Saldo actual en cuentas
+            Saldo disponible
           </div>
           <div ref={montoSaldo} className="inicio-saldo">
             {cargando ? '\u00a0' : ocultos ? OCULTO : <ConteoSaldo valor={saldo} />}
@@ -201,7 +201,7 @@ export default function Inicio() {
             <IconoAbajo />
           </button>
           <div ref={compacto} className="inicio-compacto" aria-hidden="true">
-            <span>Saldo actual</span>
+            <span>Saldo disponible</span>
             <strong>{pesos(saldo)}</strong>
           </div>
         </div>

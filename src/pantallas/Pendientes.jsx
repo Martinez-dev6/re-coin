@@ -1,11 +1,12 @@
 // Gastos o ingresos pendientes de un mes (/pendientes?tipo=gasto|ingreso): el mes elegido en
 // Inicio, que se cambia con las flechas de arriba. Se abre desde las tarjetas "Pendientes y
 // alertas" de Inicio (pedido del dueño, 2026-10-03: antes llevaban a Transacciones). Sube como un
-// formulario y se cierra con la X. No está en los diseños. La flecha de cada fila abre el panel para
-// marcarlo como pagado (PanelConfirmarPago); antes era un chulito, y el dueño pidió una flecha simple
-// (2026-10-04): el chulo queda para la animación de "listo" al confirmar.
+// formulario y se cierra con la X. No está en los diseños. Tocar una fila (o su flecha) abre el panel
+// para marcarlo como pagado (PanelConfirmarPago); desde la Sesión 9 ya no abre el detalle (pedido del
+// dueño: aquí un pendiente solo se marca). Antes la flecha era un chulito; el chulo queda para la
+// animación de "listo" al confirmar.
 import { useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import Deslizar from '../componentes/Deslizar.jsx';
 import FilaMovimiento from '../componentes/FilaMovimiento.jsx';
 import { CabeceraFormulario, Segmentado } from '../componentes/Formulario.jsx';
@@ -13,7 +14,7 @@ import { IconoFlecha } from '../componentes/iconos.jsx';
 import PanelConfirmarPago from '../componentes/PanelConfirmarPago.jsx';
 import { MesConFlechas } from '../componentes/SelectorMes.jsx';
 import { useDatos } from '../datos/DatosContext.jsx';
-import { detalleMovimiento, esGasto, rutaMovimiento } from '../datos/movimientos.js';
+import { detalleMovimiento, esGasto } from '../datos/movimientos.js';
 import { useMes } from '../estado/MesContext.jsx';
 import { enMes, etiquetaDia, nombreMes } from '../utilidades/fechas.js';
 import { formatearPesos } from '../utilidades/formato.js';
@@ -25,7 +26,6 @@ const TIPOS = [
 ];
 
 export default function Pendientes() {
-  const navegar = useNavigate();
   const [parametros] = useSearchParams();
   const [tipo, setTipo] = useState(parametros.get('tipo') === 'ingreso' ? 'ingreso' : 'gasto');
   const { anio, mes } = useMes();
@@ -77,12 +77,15 @@ export default function Pendientes() {
                     movimiento={m}
                     detalle={detalleMovimiento(m, datos)}
                     estado="pendiente"
-                    alTocar={() => navegar(rutaMovimiento(m))}
+                    alTocar={() => {
+                      setPorConfirmar(m);
+                      setPanel(true);
+                    }}
                   />
                   {/* La flecha: marcar como pagado (o recibido), con confirmación. */}
                   <button
                     type="button"
-                    className="pendientes-marcar"
+                    className={'pendientes-marcar ' + (tipo === 'ingreso' ? 'ingreso' : 'gasto')}
                     aria-label={tipo === 'ingreso' ? 'Marcar como recibido' : 'Marcar como pagado'}
                     onClick={() => {
                       setPorConfirmar(m);

@@ -104,7 +104,7 @@ export default function Apariencia() {
         <h2 className="titulo-seccion">Vista previa</h2>
         <div className="tarjeta apariencia-vista" aria-hidden="true">
           <div className="apariencia-vista-banner">
-            <div className="apariencia-vista-etiqueta">Saldo actual en cuentas</div>
+            <div className="apariencia-vista-etiqueta">Saldo disponible</div>
             <div className="apariencia-vista-saldo">{formatearPesos(MUESTRA.saldo)}</div>
           </div>
           <div className="apariencia-vista-controles">

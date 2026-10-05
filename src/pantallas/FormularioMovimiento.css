@@ -533,3 +533,18 @@
     animation: none;
   }
 }
+
+/* ¿Qué quieres eliminar? (programado): tres opciones con su explicación, y el botón rojo debajo. */
+.eliminar-programado {
+  margin-bottom: 16px;
+}
+
+.eliminar-programado-opcion {
+  height: auto;
+  min-height: 64px;
+  padding: 12px 0;
+}
+
+.eliminar-programado-opcion .panel-opcion-detalle {
+  line-height: 18px;
+}

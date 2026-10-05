@@ -176,9 +176,18 @@
   margin: 0 0 4px;
 }
 
-/* Panel Aportar: el campo del valor. */
+/* Panel Aportar: lo sugerido u otro valor (Sesión 9) y el campo del valor. */
+.aportar-opciones {
+  margin: -6px 0 10px;
+}
+
 .aportar-campo {
-  margin-bottom: 4px;
+  margin-bottom: 16px;
+}
+
+/* Al aportar, la barra crece mientras la cifra cuenta (CifraAnimada, 750 ms). */
+.meta-barra > span {
+  transition: width 0.75s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 /* ---- Programados: calendario (design/html/Planes-Calendario.html) ---- */
@@ -201,11 +210,12 @@
   gap: 5px;
 }
 
-/* Gasto: punto relleno rojo. Ingreso: aro verde. */
+/* Un punto por tipo, relleno con su color (Sesión 9: más grandes y el ingreso relleno, para que
+   se distingan a simple vista): gasto rojo, ingreso verde, transferencia azul. */
 .punto {
-  width: 6px;
-  height: 6px;
-  border-radius: 3px;
+  width: 7px;
+  height: 7px;
+  border-radius: 4px;
 }
 
 .punto.gasto {
@@ -213,7 +223,7 @@
 }
 
 .punto.ingreso {
-  border: 1.5px solid var(--income);
+  background: var(--income);
 }
 
 .calendario {
@@ -276,6 +286,29 @@
 .calendario-puntos {
   display: flex;
   gap: 3px;
-  height: 6px;
+  height: 7px;
   margin-top: 3px;
+}
+
+/* Leyenda bajo el calendario (Sesión 9): qué es cada punto. */
+.calendario .calendario-leyenda {
+  justify-content: center;
+  gap: 16px;
+  margin: 6px 0 4px;
+  padding-top: 8px;
+  border-top: 1px solid var(--divider);
+}
+
+.punto.transferencia {
+  background: var(--menu-transferencia);
+}
+
+/* Sin el "+" en Programados: el mismo lugar, vacío, para que el mes siga centrado. */
+.planes-hueco {
+  visibility: hidden;
+}
+
+.planes-vacio-nota {
+  font-size: 13px;
+  color: var(--muted);
 }

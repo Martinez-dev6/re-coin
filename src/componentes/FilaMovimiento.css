@@ -113,8 +113,13 @@ button.fila-movimiento {
   color: var(--muted);
 }
 
+/* Pendiente: pastilla amarilla (Sesión 9, pedido del dueño: en texto ámbar se confundía con el
+   rojo de los gastos). Claro: 5,9:1; oscuro: el amarillo sobre su fondo suave. */
 .fila-movimiento-estado.pendiente {
-  color: var(--pending);
+  padding: 1px 6px 1px 5px;
+  border-radius: 8px;
+  background: var(--pendiente-fondo);
+  color: var(--pendiente-texto);
 }
 
 .fila-movimiento-estado.pagado {

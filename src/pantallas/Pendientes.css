@@ -40,3 +40,12 @@
 .pendientes-marcar:active {
   background: var(--page-bg);
 }
+
+/* La flecha, del color de lo que marca (Sesión 9): gasto rojo, ingreso verde. */
+.pendientes-marcar.gasto {
+  color: var(--expense);
+}
+
+.pendientes-marcar.ingreso {
+  color: var(--income);
+}

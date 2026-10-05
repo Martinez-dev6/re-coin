@@ -1,9 +1,16 @@
 // Movimientos programados (arriendo cada mes, sueldo cada quincena…). Modelo en db.js (versión 5).
-// Decidido por el dueño (2026-10-03): al abrir la app, cada fecha que ya llegó se registra como un
-// movimiento **pendiente** (que luego se marca como pagado); las futuras solo se ven en Planes.
-// Una PWA en el iPhone no corre en segundo plano: por eso se hace al abrir, no a la hora exacta.
+// Decidido por el dueño (2026-10-03): al abrir la app, cada fecha registrada queda como un
+// movimiento **pendiente** (que luego se marca como pagado). Desde la Sesión 9 (2026-10-05, pedido
+// del dueño) se registran todas las fechas **hasta el fin del mes en curso**, no solo las que ya
+// llegaron: así lo programado de este mes sale en Pendientes aunque aún no sea el día. Las de los
+// meses siguientes solo se ven en Planes. Una PWA en el iPhone no corre en segundo plano: por eso
+// se hace al abrir, no a la hora exacta.
+// Desde la Sesión 9 los programados se crean desde el formulario de un gasto, ingreso o
+// transferencia (interruptor "… recurrente", guardarRecurrente); en Planes solo se ven, se editan
+// y se eliminan.
 import { aFecha, hoyTexto } from '../utilidades/fechas.js';
 import { db, nuevoId, ordenAlFinal } from './db.js';
+import { guardarMovimiento } from './movimientos.js';
 
 export const FRECUENCIAS = [
   { valor: 'dia', texto: 'Cada día' },
@@ -68,16 +75,22 @@ export function fechasFuturas(p, desde, hasta) {
   return fechasEntre(p, desde > despuesDe ? desde : despuesDe, hasta);
 }
 
-// Registra como movimientos pendientes las fechas que ya llegaron y aún no se registraron.
-// Se puede llamar varias veces: lo registrado queda en 'hasta' y no se repite.
+// Último día del mes en curso ('AAAA-MM-DD'): hasta ahí se registra.
+function finDeMes() {
+  const hoy = new Date();
+  return aTexto(new Date(hoy.getFullYear(), hoy.getMonth() + 1, 0));
+}
+
+// Registra como movimientos pendientes las fechas de este mes (hasta su último día) que aún no se
+// registraron. Se puede llamar varias veces: lo registrado queda en 'hasta' y no se repite.
 let registrando = null;
 export function registrarVencidos() {
   if (registrando) return registrando;
   registrando = db
     .transaction('rw', db.programados, db.movimientos, async () => {
-      const hoy = hoyTexto();
+      const limite = finDeMes();
       for (const p of await db.programados.toArray()) {
-        const fechas = fechasFuturas(p, '0000-01-01', hoy);
+        const fechas = fechasFuturas(p, '0000-01-01', limite);
         if (fechas.length === 0) continue;
         await db.movimientos.bulkAdd(
           fechas.map((fecha, i) => ({
@@ -109,11 +122,11 @@ export function registrarVencidos() {
   return registrando;
 }
 
-// datos: los del formulario (como un movimiento) más frecuencia, empieza y termina.
-// Sin id = programado nuevo. Al editar, lo ya registrado no cambia; desde hoy rige lo nuevo.
-export async function guardarProgramado(id, datos) {
+// Plantilla del programado a partir de los datos del formulario (como un movimiento, más
+// frecuencia y termina; su fecha es cuándo empieza).
+function camposProgramado(datos) {
   const transferencia = datos.tipo === 'transferencia';
-  const campos = {
+  return {
     tipo: datos.tipo,
     valor: Math.round(datos.valor),
     descripcion: datos.descripcion.trim(),
@@ -126,16 +139,65 @@ export async function guardarProgramado(id, datos) {
     empieza: datos.fecha,
     termina: datos.termina && datos.termina >= datos.fecha ? datos.termina : null,
   };
+}
+
+// Los pendientes de un programado registrados por adelantado (fecha después de hoy): al editarlo
+// o eliminarlo se quitan, porque aún no han llegado.
+const adelantados = (id) =>
+  db.movimientos
+    .where('programadoId')
+    .equals(id)
+    .filter((m) => !m.pagado && m.fecha > hoyTexto());
+
+// datos: los del formulario. Sin id = programado nuevo. Al editar, lo registrado hasta hoy no
+// cambia; lo registrado por adelantado se vuelve a crear con los datos nuevos.
+export async function guardarProgramado(id, datos) {
+  const campos = camposProgramado(datos);
   if (id) {
-    const anterior = await db.programados.get(id);
-    // Si se mueve el inicio a una fecha posterior a lo registrado, se sigue desde ahí.
-    const hasta = anterior?.hasta && anterior.hasta >= campos.empieza ? anterior.hasta : null;
-    await db.programados.update(id, { ...campos, hasta });
+    await db.transaction('rw', db.programados, db.movimientos, async () => {
+      const anterior = await db.programados.get(id);
+      await adelantados(id).delete();
+      // Queda registrado hasta hoy, o hasta un adelantado que ya se marcó como pagado.
+      const quedan = await db.movimientos.where('programadoId').equals(id).toArray();
+      const ultimo = quedan.reduce((max, m) => (m.fecha > max ? m.fecha : max), '');
+      let hasta = anterior?.hasta ?? null;
+      if (hasta && hasta > hoyTexto()) hasta = hoyTexto();
+      if (hasta && ultimo > hasta) hasta = ultimo;
+      // Si se mueve el inicio a una fecha posterior a lo registrado, se sigue desde ahí.
+      if (hasta && hasta < campos.empieza) hasta = null;
+      await db.programados.update(id, { ...campos, hasta });
+    });
   } else {
     await db.programados.add({ ...campos, id: nuevoId(), hasta: null, orden: ordenAlFinal() });
   }
   await registrarVencidos();
 }
 
-// Los movimientos ya registrados se quedan (son historia); solo dejan de crearse nuevos.
-export const eliminarProgramado = (id) => db.programados.delete(id);
+// Un gasto, ingreso o transferencia nuevo con "… recurrente" prendido (Sesión 9): el movimiento de
+// esa fecha (pagado o pendiente, como se dejó en el formulario) y el programado que lo repite. La
+// primera fecha ya es ese movimiento, así que el programado registra desde la siguiente.
+export async function guardarRecurrente(datos) {
+  const campos = camposProgramado(datos);
+  const programadoId = nuevoId();
+  await db.transaction('rw', db.programados, db.movimientos, async () => {
+    await db.programados.add({ ...campos, id: programadoId, hasta: campos.empieza, orden: ordenAlFinal() });
+    await guardarMovimiento(null, { ...datos, programadoId });
+  });
+  await registrarVencidos();
+}
+
+// Formas de eliminar un programado (pedido del dueño, Sesión 9):
+// - 'solo': deja de repetirse; lo ya registrado se queda en Transacciones (menos lo registrado por
+//   adelantado, que aún no llega).
+// - 'realizados': además borra sus movimientos ya pagados.
+// - 'todo': el programado y todos sus movimientos, pagados y pendientes.
+export function eliminarProgramado(id, modo = 'solo') {
+  return db.transaction('rw', db.programados, db.movimientos, async () => {
+    if (modo === 'todo') await db.movimientos.where('programadoId').equals(id).delete();
+    else {
+      await adelantados(id).delete();
+      if (modo === 'realizados') await db.movimientos.where('programadoId').equals(id).filter((m) => m.pagado).delete();
+    }
+    await db.programados.delete(id);
+  });
+}

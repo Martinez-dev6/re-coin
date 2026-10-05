@@ -118,7 +118,8 @@ export async function guardarMovimiento(id, datos) {
     fecha: datos.fecha || hoyTexto(),
     // 'ahora' (formulario con fecha de hoy, sin tocar la hora): la hora en que se guarda.
     hora: datos.hora === 'ahora' ? horaActual() : datos.hora || null,
-    pagado: transferencia || conTarjeta ? true : Boolean(datos.pagado),
+    // Una transferencia nueva va hecha; al editar una programada aún pendiente, sigue pendiente.
+    pagado: conTarjeta ? true : transferencia ? datos.pagado !== false : Boolean(datos.pagado),
     etiquetaIds: transferencia ? [] : [...new Set(datos.etiquetaIds)],
     observacion: datos.observacion.trim(),
     tarjetaId: conTarjeta ? datos.tarjetaId : null,
@@ -129,7 +130,8 @@ export async function guardarMovimiento(id, datos) {
     await db.movimientos.update(id, campos);
     return id;
   }
-  const nuevo = { ...campos, id: nuevoId(), creado: Date.now() };
+  // programadoId: el programado que se crea con él (guardarRecurrente en programados.js).
+  const nuevo = { ...campos, id: nuevoId(), creado: Date.now(), programadoId: datos.programadoId ?? null };
   await db.movimientos.add(nuevo);
   return nuevo.id;
 }

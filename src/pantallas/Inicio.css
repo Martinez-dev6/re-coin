@@ -480,45 +480,70 @@
   color: var(--muted);
 }
 
-/* Balance del mes: cabeza con el mes, cifra grande con su ícono y, abajo, ingresos, gastos y el
-   recuadro de ahorro. --tono sale del balance: verde a favor, rojo en contra, ámbar parejo. Es un
-   botón (lleva a Rendimiento). */
+/* Balance del mes (Sesión 9, "opción 2" apilada): arriba el balance proyectado (cabeza, cifra
+   grande con su ícono, ingresos | gastos y el aviso de ahorro) y abajo, en un recuadro de su color,
+   el balance actual "En vivo". --tono sale de cada balance: verde a favor, rojo en contra, ámbar
+   parejo. Es un botón (lleva a Rendimiento). */
 .inicio-balance {
   --tono: var(--pending);
   --tono-suave: color-mix(in srgb, var(--tono) 14%, transparent);
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 16px;
   width: 100%;
   padding: 16px;
   color: var(--text);
   text-align: left;
 }
 
-.inicio-balance.positivo {
+.inicio-balance.positivo,
+.inicio-balance-vivo.positivo {
   --tono: var(--income);
 }
 
-.inicio-balance.negativo {
+.inicio-balance.negativo,
+.inicio-balance-vivo.negativo {
   --tono: var(--expense);
 }
 
 .inicio-balance-cabeza {
   display: flex;
-  align-items: center;
-  gap: 12px;
+  align-items: flex-start;
+  gap: 10px;
 }
 
 .inicio-balance-calendario {
   flex: none;
+  margin-top: 1px;
   color: var(--muted);
 }
 
-.inicio-balance-titulo {
+.inicio-balance-titulos {
+  display: flex;
   flex: 1;
+  flex-direction: column;
   min-width: 0;
-  font-size: 17px;
+}
+
+.inicio-balance-titulo {
+  font-size: 16px;
   font-weight: 700;
+  line-height: 1.3;
+}
+
+.inicio-balance-subtitulo {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.inicio-balance-etiqueta {
+  flex: none;
+  padding: 3px 9px;
+  border-radius: 10px;
+  background: var(--track);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
 }
 
 .inicio-balance-centro {
@@ -559,12 +584,13 @@
   font-size: 24px;
 }
 
-/* Ingresos | Gastos | recuadro de ahorro, con una línea fina entre los dos primeros. */
+/* Ingresos | Gastos, con una línea fina entre los dos y otra arriba. */
 .inicio-balance-pie {
   display: grid;
-  grid-template-columns: 1fr 1fr auto;
-  align-items: center;
+  grid-template-columns: 1fr 1fr;
   gap: 12px;
+  padding-top: 14px;
+  border-top: 1px solid var(--divider);
 }
 
 .inicio-balance-dato {
@@ -587,60 +613,142 @@
   color: var(--muted);
 }
 
-.inicio-balance-dato-nombre .ingreso {
+.inicio-balance .ingreso {
   color: var(--income);
 }
 
-.inicio-balance-dato-nombre .gasto {
+.inicio-balance .gasto {
   color: var(--expense);
 }
 
 .inicio-balance-dato strong {
-  font-size: 15px;
+  font-size: 17px;
   font-weight: 700;
   white-space: nowrap;
 }
 
-.inicio-balance.largo .inicio-balance-pie {
-  grid-template-columns: 1fr 1fr;
-}
-
-.inicio-balance.largo .inicio-balance-ahorro {
-  grid-column: 1 / -1;
-  flex-direction: row;
-  align-items: center;
-  gap: 8px;
-}
-
-.inicio-balance-ahorro {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  padding: 10px 12px;
-  border-radius: 14px;
-  background: var(--tono-suave);
-  font-size: 12px;
-  color: var(--muted);
-}
-
-.inicio-balance-ahorro-cifra {
+/* "59 % más gastos que ingresos" / "23 % de tus ingresos ahorrado". */
+.inicio-balance-aviso {
   display: flex;
   align-items: center;
   gap: 6px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: var(--tono-suave);
+  font-size: 13px;
   color: var(--tono);
 }
 
-.inicio-balance-ahorro-cifra strong {
-  font-size: 16px;
+.inicio-balance-aviso strong {
+  font-size: 14px;
   font-weight: 800;
   white-space: nowrap;
 }
 
+.inicio-balance-aviso span {
+  color: var(--text);
+}
+
+/* Balance actual (solo lo pagado): recuadro de su propio tono. */
+.inicio-balance-vivo {
+  --tono: var(--pending);
+  --tono-suave: color-mix(in srgb, var(--tono) 12%, transparent);
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: end;
+  gap: 8px 12px;
+  padding: 14px;
+  border-radius: 16px;
+  background: var(--tono-suave);
+}
+
+.inicio-balance-vivo.largo {
+  grid-template-columns: 1fr;
+}
+
+.inicio-balance-vivo-textos {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.inicio-balance-vivo-cabeza {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--tono);
+}
+
+/* Punto que late suave, como algo en vivo. */
+.inicio-balance-vivo-punto {
+  width: 7px;
+  height: 7px;
+  border-radius: 4px;
+  background: var(--tono);
+  animation: balance-vivo 2s ease-in-out infinite;
+}
+
+@keyframes balance-vivo {
+  50% {
+    opacity: 0.35;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .inicio-balance-vivo-punto {
+    animation: none;
+  }
+}
+
+.inicio-balance-vivo-titulo {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.inicio-balance-vivo-cifra {
+  font-size: 24px;
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: var(--tono);
+  white-space: nowrap;
+}
+
+.inicio-balance-vivo-nota {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.inicio-balance-vivo-datos {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.inicio-balance-vivo-datos > span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.inicio-balance-vivo.largo .inicio-balance-vivo-datos {
+  flex-direction: row;
+  gap: 16px;
+}
+
 /* El tono cambia con el mes (deslizar) o al guardar: que se funda en vez de saltar. */
 .inicio-balance-icono,
-.inicio-balance-ahorro,
+.inicio-balance-aviso,
+.inicio-balance-vivo,
 .inicio-balance-cifra strong,
-.inicio-balance-ahorro-cifra {
+.inicio-balance-vivo-cifra,
+.inicio-balance-vivo-cabeza {
   transition:
     background-color 0.24s var(--curva-suave),
     color 0.24s var(--curva-suave);
@@ -861,6 +969,32 @@
   font-size: 13px;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+/* "Otros" al final de la fila (Sesión 9): círculo gris, como su parte de la dona, y una flecha
+   junto al nombre: lleva a Gráficos, donde se ven todas las categorías. */
+.inicio-carrusel-otros-icono {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--track);
+  color: var(--ch-other);
+}
+
+.inicio-carrusel-otros .inicio-carrusel-nombre {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-weight: 600;
+  color: var(--accent-text);
+}
+
+.inicio-carrusel-otros .inicio-carrusel-nombre svg {
+  flex-shrink: 0;
 }
 
 .inicio-carrusel-porcentaje {
