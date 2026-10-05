@@ -460,28 +460,24 @@ function Programados({ items, programados, anio, mes, navegar }) {
       </Deslizar>
 
       {/* Las series que se repiten, aparte (Sesión 9: listadas justo bajo el día parecían un segundo
-          gasto). Un botón con cuántas hay; abre una ventana con todas para editarlas o eliminarlas. */}
+          gasto). Solo el título (pedido del dueño); abre una ventana con todas para editarlas o eliminarlas. */}
       <button type="button" className="tarjeta programados-lista-boton" onClick={() => setPanelSeries(true)}>
         <span className="icono-circulo">
           <IconoRepetir tamano={16} />
         </span>
         <span className="programados-lista-textos">
           <strong>Tus programados</strong>
-          <span>
-            {programados.length === 0
-              ? 'Prende «Gasto recurrente» al registrar un gasto o un ingreso.'
-              : programados.length === 1
-                ? '1 que se repite'
-                : `${programados.length} que se repiten`}
-          </span>
         </span>
-        {programados.length > 0 && <IconoFlecha />}
+        <IconoFlecha />
       </button>
 
       <PanelInferior abierto={panelSeries} alCerrar={() => setPanelSeries(false)} titulo="Tus programados">
         <div className="panel-desplazable">
           {programados.length === 0 ? (
-            <p className="panel-texto">Aún no tienes programados, como el arriendo o el sueldo.</p>
+            <p className="panel-texto">
+              Aún no tienes programados, como el arriendo o el sueldo. Al registrar un gasto o un ingreso, prende
+              «Gasto recurrente» para que se repita.
+            </p>
           ) : (
             programados.map((p) => (
               <FilaMovimiento

@@ -7,10 +7,11 @@
 import { useEffect, useState } from 'react';
 import { useDatos } from '../datos/DatosContext.jsx';
 import { faltante, guardarMovimiento, horaDe } from '../datos/movimientos.js';
+import { cambiaLaSerie, editarEnSerie } from '../datos/programados.js';
 import { nombreFactura } from '../datos/tarjetas.js';
 import { CUOTAS, opcionesFactura, PanelEtiquetas, textoCuotas } from '../pantallas/FormularioMovimiento.jsx';
 import { estiloIconoCuenta } from '../tema/colores.js';
-import { horaActual, hoyTexto, textoHora } from '../utilidades/fechas.js';
+import { diaYMes, horaActual, hoyTexto, textoHora } from '../utilidades/fechas.js';
 import { formatearPesos } from '../utilidades/formato.js';
 import BotonExito from './BotonExito.jsx';
 import CirculoCategoria from './CirculoCategoria.jsx';
@@ -83,8 +84,13 @@ export default function EditarMovimiento({ movimiento: m, abierto, alCerrar }) {
     categoria: buscarCategoria,
     etiqueta: buscarEtiqueta,
     tarjeta: buscarTarjeta,
+    programados,
   } = useDatos();
   const [datos, setDatos] = useState(() => desde(m));
+  // De un programado que sigue existiendo: al guardar un cambio que comparte con la serie, se
+  // pregunta a cuáles aplicarlo (Sesión 9, pedido del dueño), como al eliminar.
+  const enSerie = Boolean(m.programadoId && programados.some((p) => p.id === m.programadoId));
+  const [modoSerie, setModoSerie] = useState('solo');
   // 'categoria' | 'cuentaId' | 'cuentaDestinoId' | 'tarjetaId' | 'cuotas' | 'factura' | 'etiquetas' | 'observacion'
   const [panel, setPanel] = useState(null);
   const [aviso, setAviso] = useState(null);
@@ -100,6 +106,7 @@ export default function EditarMovimiento({ movimiento: m, abierto, alCerrar }) {
     if (!abierto) return;
     setDatos(desde(m));
     setAviso(null);
+    setModoSerie('solo');
     // Solo al abrir.
   }, [abierto]);
 
@@ -128,8 +135,21 @@ export default function EditarMovimiento({ movimiento: m, abierto, alCerrar }) {
       return false;
     }
     setAviso(null);
+    if (enSerie && cambiaLaSerie(m, datos)) {
+      setPanel('serie');
+      return false;
+    }
     return guardarMovimiento(m.id, datos);
   };
+  const OPCIONES_SERIE = [
+    { valor: 'solo', titulo: 'Solo este', detalle: `El del ${diaYMes(m.fecha)}. Los demás quedan igual.` },
+    {
+      valor: 'siguientes',
+      titulo: 'Este y los siguientes',
+      detalle: 'También los que vienen y aún no se pagan, y lo que se registre después.',
+    },
+    { valor: 'todos', titulo: 'Toda la serie', detalle: 'Todos los que aún no se pagan, también los de antes. Lo pagado no cambia.' },
+  ];
 
   const vacio = (texto) => <span className="campo-vacio">{texto}</span>;
   const nombreCuenta = (id) => buscarCuenta(id)?.nombre ?? vacio('Elegir');
@@ -241,6 +261,41 @@ export default function EditarMovimiento({ movimiento: m, abierto, alCerrar }) {
           {textoGuardar}
         </BotonExito>
       </VentanaFlotante>
+
+      {/* ¿A cuáles aplicar el cambio? Solo si es de una serie y cambió algo que comparte con ella. */}
+      <PanelInferior abierto={panel === 'serie'} alCerrar={() => setPanel(null)} titulo="Se repite: ¿a cuáles aplicar el cambio?">
+        <div role="radiogroup" aria-label="A cuáles aplicar el cambio" className="eliminar-programado">
+          {OPCIONES_SERIE.map((o) => {
+            const marcada = o.valor === modoSerie;
+            return (
+              <button
+                key={o.valor}
+                type="button"
+                role="radio"
+                aria-checked={marcada}
+                className="panel-opcion eliminar-programado-opcion"
+                onClick={() => setModoSerie(o.valor)}
+              >
+                <span className="panel-opcion-textos">
+                  <span className="panel-opcion-titulo">{o.titulo}</span>
+                  <span className="panel-opcion-detalle">{o.detalle}</span>
+                </span>
+                <span className={'radio' + (marcada ? ' marcado' : '')}>{marcada && <IconoCheck tamano={14} />}</span>
+              </button>
+            );
+          })}
+        </div>
+        <BotonExito
+          className={'boton-principal guardar-' + (conTarjeta ? 'gasto' : tipo)}
+          alTocar={() => editarEnSerie(m, datos, modoSerie)}
+          alTerminar={() => {
+            setPanel(null);
+            alCerrar();
+          }}
+        >
+          Guardar
+        </BotonExito>
+      </PanelInferior>
 
       {/* Paneles de elección: encima de la ventana (se montan después, así quedan arriba). */}
       <PanelInferior abierto={panel === 'categoria'} alCerrar={() => setPanel(null)} titulo="Categoría" accion={listo}>

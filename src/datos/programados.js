@@ -247,3 +247,48 @@ export function eliminarDesde(id, fecha) {
     await db.programados.update(id, { termina: p.termina && p.termina < termina ? p.termina : termina });
   });
 }
+
+// Lo que se copia de un movimiento a su serie al editarlo (no la fecha, la hora ni si se pagó).
+const CAMPOS_SERIE = ['valor', 'descripcion', 'categoriaId', 'cuentaId', 'cuentaDestinoId', 'etiquetaIds', 'observacion', 'tarjetaId', 'cuotas'];
+
+// ¿Cambió algo de lo que comparte con su serie? Si no (solo fecha, hora o pagado), no se pregunta.
+export function cambiaLaSerie(original, datos) {
+  const igual = (a, b) => JSON.stringify(a ?? null) === JSON.stringify(b ?? null);
+  return CAMPOS_SERIE.some((campo) => {
+    const nuevo = campo === 'valor' ? Math.round(datos.valor) : campo === 'descripcion' || campo === 'observacion' ? (datos[campo] ?? '').trim() : datos[campo];
+    return !igual(original[campo], nuevo);
+  });
+}
+
+// Aún por llegar: lo que no se ha pagado (un gasto con tarjeta, mientras su fecha no llega).
+const porLlegar = (m) => (m.tipo === 'gastoTarjeta' ? m.fecha > hoyTexto() : !m.pagado);
+
+// Editar un movimiento de un programado (Sesión 9, pedido del dueño: "que me pregunte si es solo
+// este"). modo:
+// - 'solo': solo este movimiento.
+// - 'siguientes': este, los de la serie de su fecha en adelante que aún no se pagan, y la plantilla
+//   del programado (lo que se registre después sale con los datos nuevos).
+// - 'todos': este, todos los de la serie que aún no se pagan (también los de antes) y la plantilla.
+// Lo ya pagado se queda como se registró: cambiarlo movería saldos del pasado.
+export async function editarEnSerie(movimiento, datos, modo) {
+  await guardarMovimiento(movimiento.id, datos);
+  if (modo === 'solo' || !movimiento.programadoId) return;
+  await db.transaction('rw', db.programados, db.movimientos, db.tarjetas, async () => {
+    const p = await db.programados.get(movimiento.programadoId);
+    if (!p) return;
+    const plantilla = camposProgramado({ ...datos, frecuencia: p.frecuencia, fecha: p.empieza, termina: p.termina });
+    delete plantilla.frecuencia;
+    delete plantilla.empieza;
+    delete plantilla.termina;
+    await db.programados.update(p.id, plantilla);
+    const tarjeta = plantilla.tarjetaId ? await db.tarjetas.get(plantilla.tarjetaId) : null;
+    await db.movimientos
+      .where('programadoId')
+      .equals(p.id)
+      .filter((m) => m.id !== movimiento.id && porLlegar(m) && (modo === 'todos' || m.fecha >= movimiento.fecha))
+      .modify((m) => {
+        Object.assign(m, plantilla);
+        if (tarjeta) m.factura = facturaDeFecha(tarjeta, m.fecha);
+      });
+  });
+}

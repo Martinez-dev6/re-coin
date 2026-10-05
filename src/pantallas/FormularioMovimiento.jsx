@@ -588,7 +588,7 @@ function Campos({ clave, movimiento, programado, esProgramado = false, tipoInici
             selector no sale: antes salía bloqueado y parecía que no funcionaba (pedido del dueño,
             2026-10-04). El gasto con tarjeta tiene su propio formulario, sin estas opciones
             (design/capturas/GastoTarjeta.png). */}
-        {!conTarjeta && !movimiento && !fechaPedida && (
+        {!conTarjeta && !movimiento && !fechaPedida && !esProgramado && (
           <Segmentado opciones={TIPOS_MOVIMIENTO} valor={tipo} etiqueta="Tipo de movimiento" alCambiar={cambiarTipo} />
         )}
       </CabeceraFormulario>
