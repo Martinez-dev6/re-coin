@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import BarraEstado from '../componentes/BarraEstado.jsx';
 import BotonExito from '../componentes/BotonExito.jsx';
+import { abrirMenuNuevo } from '../componentes/BarraNavegacion.jsx';
 import CifraAnimada from '../componentes/CifraAnimada.jsx';
 import CirculoCategoria from '../componentes/CirculoCategoria.jsx';
 import Deslizar from '../componentes/Deslizar.jsx';
@@ -11,12 +12,9 @@ import { Campo, EntradaPesos } from '../componentes/Formulario.jsx';
 import {
   IconoCalendario,
   IconoCheck,
-  IconoGasto,
-  IconoIngreso,
   IconoInicio,
   IconoMas,
   IconoRepetir,
-  IconoTarjeta,
 } from '../componentes/iconos.jsx';
 import { IconoPorNombre } from '../componentes/iconosPorNombre.jsx';
 import PanelInferior, { DURACION_PANEL_MS } from '../componentes/PanelInferior.jsx';
@@ -29,8 +27,7 @@ import { fechasFuturas, textoFrecuencia } from '../datos/programados.js';
 import { facturaDeFecha, fechaPagoFactura } from '../datos/tarjetas.js';
 import { useAjustes } from '../estado/ajustes.js';
 import { useMes } from '../estado/MesContext.jsx';
-import { diasHasta, diaYMes, enMes, etiquetaDia, fechaCorta, hoyTexto, sumarMeses } from '../utilidades/fechas.js';
-import { prepararTeclado } from '../utilidades/teclado.js';
+import { diasHasta, enMes, etiquetaDia, fechaCorta, hoyTexto, sumarMeses } from '../utilidades/fechas.js';
 import { formatearPesos } from '../utilidades/formato.js';
 import './Planes.css';
 import './Transacciones.css';
@@ -353,7 +350,6 @@ function Programados({ items, programados, anio, mes, navegar }) {
   // Transferencias y pagos de tarjeta van en azul (solo mueven dinero entre lo propio).
   const esTransferencia = (it) => it.tipo === 'transferencia' || it.tipo === 'pagoTarjeta';
   const hayTransferencias = items.some(esTransferencia);
-  const [panelNuevo, setPanelNuevo] = useState(false);
   const { elegir } = useMes();
   const ahora = new Date();
   const enMesActual = anio === ahora.getFullYear() && mes === ahora.getMonth();
@@ -437,14 +433,15 @@ function Programados({ items, programados, anio, mes, navegar }) {
           )}
         </div>
       </div>
-      {/* El día elegido y, a su lado, "+" para registrar un gasto o un ingreso en ese día (Sesión 9). */}
+      {/* El día elegido y, a su lado, "+ Agregar": abre el menú del "+" de la barra para ese día
+          ("Movimiento para el 22 de octubre"; con hoy, el de siempre). Sesión 9, pedido del dueño. */}
       <div className="programados-dia">
         <h2 className="titulo-dia">{etiquetaDia(elegido)}</h2>
         <button
           type="button"
           className="programados-dia-mas"
           aria-label={`Agregar un movimiento el ${etiquetaDia(elegido)}`}
-          onClick={() => setPanelNuevo(true)}
+          onClick={() => abrirMenuNuevo(elegido)}
         >
           <IconoMas tamano={16} />
           Agregar
@@ -457,35 +454,6 @@ function Programados({ items, programados, anio, mes, navegar }) {
           <FilasProgramadas items={delDia} navegar={navegar} frecuenciaDe={frecuenciaDe} />
         )}
       </Deslizar>
-
-      {/* "+" del día: ¿gasto, ingreso o gasto con tarjeta? Lleva al formulario de siempre con el día ya puesto y sin el
-          selector de tipo (?fecha=, FormularioMovimiento). Sin "… recurrente" prendido. */}
-      <PanelInferior abierto={panelNuevo} alCerrar={() => setPanelNuevo(false)} titulo={`Agregar el ${diaYMes(elegido)}`}>
-        <div className="programados-nuevo">
-          {[
-            { tipo: 'gasto', texto: 'Gasto', Icono: IconoGasto },
-            { tipo: 'ingreso', texto: 'Ingreso', Icono: IconoIngreso },
-            // También con tarjeta (suscripciones): se puede prender "Gasto recurrente" en el formulario.
-            { tipo: 'gasto-tarjeta', texto: 'Con tarjeta', Icono: IconoTarjeta },
-          ].map(({ tipo, texto, Icono }) => (
-            <button
-              key={tipo}
-              type="button"
-              className={'programados-nuevo-opcion ' + tipo}
-              onClick={() => {
-                prepararTeclado();
-                setPanelNuevo(false);
-                navegar(`/nuevo/${tipo}?fecha=${elegido}`);
-              }}
-            >
-              <span className="programados-nuevo-icono">
-                <Icono tamano={24} />
-              </span>
-              {texto}
-            </button>
-          ))}
-        </div>
-      </PanelInferior>
 
       {/* Todos, para editarlos o eliminarlos aunque este mes no tengan fechas. */}
       <h2 className="titulo-seccion">Tus programados</h2>

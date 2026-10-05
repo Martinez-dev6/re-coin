@@ -1,6 +1,6 @@
 // Barra inferior fija (alto en --barra-nav-alto) con la curva alrededor del "+" (design/html, data-nav2)
 // y el menú en arco que abre el "+": Gasto con tarjeta, Ingreso, Transferencia, Gasto.
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { createPortal } from 'react-dom';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import {
@@ -15,6 +15,7 @@ import {
   IconoTransferencia,
 } from './iconos.jsx';
 import { useOscurecido } from '../estado/useOscurecido.js';
+import { diaYMes, hoyTexto } from '../utilidades/fechas.js';
 import { prepararTeclado } from '../utilidades/teclado.js';
 import ToqueHaptico from './ToqueHaptico.jsx';
 import './BarraNavegacion.css';
@@ -39,7 +40,31 @@ const OPCIONES = [
 
 const DURACION_MS = 220;
 
-function MenuNuevo({ abierto, alCerrar }) {
+// El menú también se abre desde fuera de la barra (Sesión 9, pedido del dueño): "+ Agregar" de un día
+// del calendario de Planes. Con una fecha que no es hoy, el título dice "Movimiento para el 22 de
+// octubre" y cada opción abre su formulario con esa fecha (?fecha=, sin el selector de tipo); con
+// hoy (o sin fecha), es el menú de siempre.
+let pedido = { abierto: false, fecha: null };
+const oyentes = new Set();
+const avisar = () => oyentes.forEach((oyente) => oyente());
+export function abrirMenuNuevo(fecha = null) {
+  pedido = { abierto: true, fecha: fecha && fecha !== hoyTexto() ? fecha : null };
+  avisar();
+}
+function cerrarMenuNuevo() {
+  pedido = { ...pedido, abierto: false };
+  avisar();
+}
+const useMenuNuevo = () =>
+  useSyncExternalStore(
+    (oyente) => {
+      oyentes.add(oyente);
+      return () => oyentes.delete(oyente);
+    },
+    () => pedido,
+  );
+
+function MenuNuevo({ abierto, fecha, alCerrar }) {
   const navegar = useNavigate();
   const [montado, setMontado] = useState(abierto);
   const [visible, setVisible] = useState(false);
@@ -107,16 +132,17 @@ function MenuNuevo({ abierto, alCerrar }) {
   }, [abierto]);
 
   if (!montado) return null;
+  const titulo = fecha ? `Movimiento para el ${diaYMes(fecha)}` : 'Nuevo movimiento';
 
   return createPortal(
     <div
       className={'menu-nuevo' + (visible ? ' visible' : '') + (bajoFormulario ? ' bajo-formulario' : '')}
       role="dialog"
       aria-modal="true"
-      aria-label="Nuevo movimiento"
+      aria-label={titulo}
     >
       <div className="menu-nuevo-fondo" onClick={() => alCerrarRef.current()} />
-      <div className="menu-nuevo-titulo">Nuevo movimiento</div>
+      <div className="menu-nuevo-titulo">{titulo}</div>
       {OPCIONES.map(({ texto, ruta, Icono, color, dx, dy }, indice) => (
         <div
           key={texto}
@@ -138,7 +164,7 @@ function MenuNuevo({ abierto, alCerrar }) {
               prepararTeclado();
               setBajoFormulario(true);
               alCerrarRef.current();
-              navegar(ruta);
+              navegar(fecha ? `${ruta}?fecha=${fecha}` : ruta);
             }}
           >
             <Icono />
@@ -158,11 +184,11 @@ function MenuNuevo({ abierto, alCerrar }) {
 }
 
 export default function BarraNavegacion() {
-  const [menuAbierto, setMenuAbierto] = useState(false);
+  const { abierto: menuAbierto, fecha } = useMenuNuevo();
   const { pathname } = useLocation();
 
   // Cerrar el menú si cambia la pantalla.
-  useEffect(() => setMenuAbierto(false), [pathname]);
+  useEffect(() => cerrarMenuNuevo(), [pathname]);
 
   return (
     <>
@@ -190,7 +216,7 @@ export default function BarraNavegacion() {
           className="boton-mas"
           aria-label="Nuevo movimiento"
           aria-expanded={menuAbierto}
-          onClick={() => setMenuAbierto(true)}
+          onClick={() => abrirMenuNuevo()}
         >
           <IconoMas tamano={28} grosor={2.6} />
           {/* Vibración suave al abrir (pedido del dueño, 2026-10-04). */}
@@ -198,7 +224,7 @@ export default function BarraNavegacion() {
         </button>
       </nav>
 
-      <MenuNuevo abierto={menuAbierto} alCerrar={() => setMenuAbierto(false)} />
+      <MenuNuevo abierto={menuAbierto} fecha={fecha} alCerrar={cerrarMenuNuevo} />
     </>
   );
 }

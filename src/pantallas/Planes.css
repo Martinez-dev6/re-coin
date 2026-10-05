@@ -340,56 +340,6 @@
   opacity: 0.7;
 }
 
-/* Ventana del "+": Gasto e Ingreso, dos botones grandes lado a lado con el color de cada uno. */
-.programados-nuevo {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 12px;
-  margin-top: 4px;
-}
-
-.programados-nuevo-opcion {
-  --tono: var(--expense);
-  --relleno: var(--expense-on-white); /* el rojo normal también en oscuro, con el ícono blanco */
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  padding: 18px 8px 16px;
-  border: 0;
-  border-radius: 20px;
-  background: color-mix(in srgb, var(--tono) 12%, transparent);
-  color: var(--text);
-  font-size: 15px;
-  font-weight: 700;
-}
-
-.programados-nuevo-opcion.ingreso {
-  --tono: var(--income);
-  --relleno: var(--income-on-white);
-}
-
-/* Con tarjeta: el amarillo del menú del "+". */
-.programados-nuevo-opcion.gasto-tarjeta {
-  --tono: var(--menu-tarjeta);
-  --relleno: #bf8700;
-}
-
-.programados-nuevo-icono {
-  width: 52px;
-  height: 52px;
-  border-radius: 26px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--relleno);
-  color: #ffffff;
-}
-
-.programados-nuevo-opcion:active {
-  opacity: 0.75;
-}
-
 /* "Mes actual" sobre el calendario, a la derecha, solo viendo otro mes. */
 .programados-mes-actual {
   display: flex;
