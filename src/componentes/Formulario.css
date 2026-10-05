@@ -352,3 +352,8 @@
   opacity: 0;
   font-size: 16px;
 }
+
+/* En oscuro los colores de categoría son claros: el chulo va oscuro para que se vea. */
+:root[data-modo='oscuro'] .rejilla-colores > button {
+  color: #14151c;
+}

@@ -1,25 +1,35 @@
 // Categorías: colores elegibles y guardado.
 import { db, nuevoId, ordenAlFinal } from './db.js';
 
-// Letras del par --cat-X del tema, en el orden del diseño (design/html/NuevaCategoria.html).
+// Letras del par --cat-X del tema (a–g en tema.js; las demás en COLORES_EXTRA de aplicarTema.js).
+// Sin la 'n': es el gris de los íconos de las opciones (data-tono en comunes.css). Las letras no
+// cambian nunca (las categorías guardadas y las copias las usan); solo el orden.
+// Orden (Sesión 9, pedido del dueño): tres filas de siete en las que ningún color se parece a sus
+// vecinos, ni al lado ni arriba o abajo, y un neutro (piedra, gris, grafito) por fila. Se buscó
+// con la diferencia de color CIELAB entre vecinos (la menor de todas queda alta).
 // aria-label con el nombre: en pantalla solo se ven los círculos.
 export const COLORES_CATEGORIA = [
-  { valor: 'a', nombre: 'Naranja' },
-  { valor: 'b', nombre: 'Verde azulado' },
-  { valor: 'c', nombre: 'Morado' },
-  { valor: 'd', nombre: 'Ámbar' },
-  { valor: 'e', nombre: 'Rosa' },
-  { valor: 'f', nombre: 'Verde' },
-  { valor: 'g', nombre: 'Azul' },
-  // Segunda fila (pedido del dueño, 2026-10-04). Colores en aplicarTema.js (COLORES_EXTRA). Sin
-  // la 'n': es el gris de los íconos de las opciones (data-tono en comunes.css).
   { valor: 'h', nombre: 'Rojo' },
-  { valor: 'i', nombre: 'Marrón' },
-  { valor: 'j', nombre: 'Lima' },
   { valor: 'k', nombre: 'Turquesa' },
+  { valor: 'e', nombre: 'Rosa' },
+  { valor: 'q', nombre: 'Celeste' },
+  { valor: 'j', nombre: 'Lima' },
   { valor: 'l', nombre: 'Índigo' },
-  { valor: 'm', nombre: 'Fucsia' },
+  { valor: 'v', nombre: 'Piedra' },
   { valor: 'o', nombre: 'Gris azulado' },
+  { valor: 'a', nombre: 'Naranja' },
+  { valor: 'u', nombre: 'Esmeralda' },
+  { valor: 'd', nombre: 'Ámbar' },
+  { valor: 's', nombre: 'Azul marino' },
+  { valor: 'i', nombre: 'Marrón' },
+  { valor: 'm', nombre: 'Fucsia' },
+  { valor: 'c', nombre: 'Morado' },
+  { valor: 'f', nombre: 'Verde' },
+  { valor: 'r', nombre: 'Vino' },
+  { valor: 'b', nombre: 'Verde azulado' },
+  { valor: 'p', nombre: 'Mostaza' },
+  { valor: 'g', nombre: 'Azul' },
+  { valor: 't', nombre: 'Grafito' },
 ];
 
 // datos: { nombre, tipo, color, icono }. Sin id = categoría nueva. El tipo no cambia al

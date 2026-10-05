@@ -22,6 +22,15 @@ const COLORES_EXTRA = {
   l: ['#4338ca', '#818cf8'],
   m: ['#a21caf', '#e879f9'],
   o: ['#475569', '#94a3b8'],
+  // Tercera fila (Sesión 9, pedido del dueño: más variedad, en tres filas). En claro, 3:1 o más sobre
+  // blanco; en oscuro, los tonos claros.
+  p: ['#a16207', '#facc15'], // mostaza
+  q: ['#0369a1', '#7dd3fc'], // celeste
+  r: ['#9f1239', '#fda4af'], // vino
+  s: ['#1e3a8a', '#93c5fd'], // azul marino
+  t: ['#27272a', '#e4e4e7'], // grafito
+  u: ['#047857', '#34d399'], // esmeralda
+  v: ['#78716c', '#d6d3d1'], // piedra
 };
 
 function coloresExtra(oscuro) {
