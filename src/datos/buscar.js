@@ -1,6 +1,9 @@
 // Filtros de Transacciones y búsqueda de movimientos.
 // Los filtros y lo buscado se guardan aquí (en memoria) para que sigan iguales al abrir un
-// movimiento y volver; al cerrar la app vuelven a empezar.
+// movimiento y volver; al cerrar la app vuelven a empezar. Desde la Sesión 9 (pedido del dueño) los
+// filtros también se borran si se sale de Transacciones a otra parte de la app y no se vuelve en 10
+// segundos (abrir un movimiento o una factura desde ahí no cuenta como salir). Se borran justo
+// antes de que la pantalla se dibuje al volver, así no se ve un cambio.
 import { useState } from 'react';
 import { formatearPesos } from '../utilidades/formato.js';
 import { tituloMovimiento } from './movimientos.js';
@@ -21,9 +24,35 @@ export const FILTROS_VACIOS = { tipo: 'todo', estado: 'todos', cuentas: [], cate
 
 const guardado = { filtros: FILTROS_VACIOS, busqueda: '' };
 
-// Como useState, pero lo elegido sobrevive a salir de la pantalla y volver.
-function usarGuardado(clave) {
-  const [valor, setValor] = useState(guardado[clave]);
+const ESPERA_FILTROS_MS = 10000;
+// Cuándo se salió de la zona de Transacciones (null = se está en ella, o no hay reloj corriendo).
+let salida = null;
+
+// Si se salió hace más de 10 segundos, los filtros vuelven a vacíos.
+function revisarFiltros() {
+  if (salida !== null && Date.now() - salida > ESPERA_FILTROS_MS) guardado.filtros = FILTROS_VACIOS;
+}
+
+// La zona de Transacciones: la lista, la búsqueda y lo que se abre desde ahí.
+export const enZonaTransacciones = (ruta) => /^\/(transacciones|movimientos|facturas)(\/|$)/.test(ruta);
+
+// La llama App en cada cambio de pantalla: al salir de la zona arranca el reloj; al entrar se revisa.
+export function seguirZonaTransacciones(ruta) {
+  if (enZonaTransacciones(ruta)) {
+    revisarFiltros();
+    salida = null;
+  } else if (salida === null) {
+    salida = Date.now();
+  }
+}
+
+// Como useState, pero lo elegido sobrevive a salir de la pantalla y volver. antes: se corre antes de
+// leer lo guardado (en el primer dibujo).
+function usarGuardado(clave, antes) {
+  const [valor, setValor] = useState(() => {
+    antes?.();
+    return guardado[clave];
+  });
   const cambiar = (nuevo) =>
     setValor((anterior) => {
       const siguiente = typeof nuevo === 'function' ? nuevo(anterior) : nuevo;
@@ -33,16 +62,18 @@ function usarGuardado(clave) {
   return [valor, cambiar];
 }
 
-export const useFiltrosTransacciones = () => usarGuardado('filtros');
+export const useFiltrosTransacciones = () => usarGuardado('filtros', revisarFiltros);
 
 // Deja elegido un tipo en Transacciones antes de ir allá (Ingresos y Gastos del banner de Inicio).
 // Quita los demás filtros, para que la lista sume lo mismo que se tocó en Inicio.
 export function fijarTipoTransacciones(tipo) {
   guardado.filtros = { ...FILTROS_VACIOS, tipo };
+  salida = null; // recién puestos: no caducan
 }
 // "Ver movimientos" de la ventana de una cuenta: Transacciones solo con esa cuenta.
 export function fijarCuentaTransacciones(cuentaId) {
   guardado.filtros = { ...FILTROS_VACIOS, cuentas: [cuentaId] };
+  salida = null; // recién puestos: no caducan
 }
 export const useBusqueda = () => usarGuardado('busqueda');
 

@@ -1,8 +1,10 @@
-import { Navigate, Route, Routes } from 'react-router-dom';
+import { useEffect } from 'react';
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import BarraNavegacion from './componentes/BarraNavegacion.jsx';
 import ConPestanas from './componentes/ConPestanas.jsx';
 import TransicionPantallas from './componentes/TransicionPantallas.jsx';
 import VentanasGlobales from './componentes/VentanasGlobales.jsx';
+import { seguirZonaTransacciones } from './datos/buscar.js';
 import Ajustes from './pantallas/Ajustes.jsx';
 import Apariencia from './pantallas/Apariencia.jsx';
 import Ayuda from './pantallas/Ayuda.jsx';
@@ -33,6 +35,10 @@ import Transacciones from './pantallas/Transacciones.jsx';
 // Si se agrega una pantalla sin barra o una pestaña, actualizar también SIN_BARRA y PESTANAS en
 // TransicionPantallas.jsx (deciden la animación y si se muestra la barra inferior).
 export default function App() {
+  // Reloj de los filtros de Transacciones: se borran si se sale y no se vuelve en 10 s (buscar.js).
+  const { pathname } = useLocation();
+  useEffect(() => seguirZonaTransacciones(pathname), [pathname]);
+
   return (
     <>
     <TransicionPantallas barra={<BarraNavegacion />}>
