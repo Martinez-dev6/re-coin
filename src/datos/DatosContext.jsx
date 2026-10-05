@@ -23,6 +23,7 @@ export function DatosProvider({ children }) {
   const metas = useLiveQuery(() => db.metas.orderBy('orden').toArray());
   const aportes = useLiveQuery(() => db.aportes.orderBy('fecha').reverse().toArray());
   const programados = useLiveQuery(() => db.programados.orderBy('orden').toArray());
+  const favoritos = useLiveQuery(() => db.favoritos.toArray());
 
   // Programados: al abrir la app y al volver a ella (puede ser otro día), lo que ya llegó se
   // registra como pendiente (programados.js).
@@ -60,7 +61,7 @@ export function DatosProvider({ children }) {
     return {
       // Mientras se lee la base de datos (unos milisegundos al abrir). Sirve para no mostrar
       // un momento "Crea tu primera cuenta" a quien ya tiene cuentas.
-      cargando: [cuentas, categorias, etiquetas, movimientos, tarjetas, presupuestos, metas, aportes, programados].some(
+      cargando: [cuentas, categorias, etiquetas, movimientos, tarjetas, presupuestos, metas, aportes, programados, favoritos].some(
         (tabla) => tabla === undefined,
       ),
       cuentas: listaCuentas,
@@ -71,6 +72,8 @@ export function DatosProvider({ children }) {
       // Cada meta con ahorrado ("Ya tengo" + aportes) y sus aportes (más recientes primero).
       metas: listaMetas,
       programados: programados ?? [],
+      // Movimientos favoritos (favoritos.js).
+      favoritos: favoritos ?? [],
       // Más recientes primero.
       movimientos: listaMovimientos,
       movimientosPorMes: porMes,
@@ -79,7 +82,7 @@ export function DatosProvider({ children }) {
       etiqueta: (id) => etiquetasPorId.get(id),
       tarjeta,
     };
-  }, [cuentas, categorias, etiquetas, movimientos, tarjetas, presupuestos, metas, aportes, programados]);
+  }, [cuentas, categorias, etiquetas, movimientos, tarjetas, presupuestos, metas, aportes, programados, favoritos]);
 
   return <DatosContext.Provider value={valor}>{children}</DatosContext.Provider>;
 }

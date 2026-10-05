@@ -93,6 +93,13 @@ db.version(6)
       }),
   );
 
+// Versión 7 (2026-10-04): movimientos favoritos (el corazón junto a la descripción; favoritos.js).
+//   favoritos: id, tipo, descripcion, categoriaId, cuentaId, cuentaDestinoId, tarjetaId, cuotas,
+//              etiquetaIds [], observacion, usado (Date.now() de la última vez que se guardó o eligió)
+db.version(7).stores({
+  favoritos: 'id, tipo',
+});
+
 // Solo la primera vez que se crea la base de datos. Las nuevas toman orden = Date.now()
 // (ordenAlFinal), así que "Otros" lleva un orden mayor para seguir de último.
 const ORDEN_ULTIMAS = 9e15;

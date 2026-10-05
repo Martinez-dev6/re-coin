@@ -36,6 +36,7 @@ const VALIDAR = {
   metas: (m) => esTexto(m.id) && esTexto(m.nombre) && esNumero(m.objetivo) && esNumero(m.orden),
   aportes: (a) => esTexto(a.id) && esTexto(a.metaId) && esNumero(a.valor) && /^\d{4}-\d{2}-\d{2}$/.test(a.fecha),
   programados: (p) => esTexto(p.id) && esTexto(p.tipo) && esNumero(p.valor) && esTexto(p.frecuencia) && esNumero(p.orden),
+  favoritos: (f) => esTexto(f.id) && esTexto(f.tipo) && esTexto(f.descripcion),
   tarjetas: (t) =>
     esTexto(t.id) && esTexto(t.nombre) && esNumero(t.cupo) && esNumero(t.diaCierre) && esNumero(t.diaPago) && esNumero(t.orden),
 };

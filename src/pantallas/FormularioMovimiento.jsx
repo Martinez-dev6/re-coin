@@ -25,6 +25,7 @@ import {
   IconoCategorias,
   IconoCheck,
   IconoCheckCirculo,
+  IconoCorazon,
   IconoCuentas,
   IconoEtiqueta,
   IconoGastoDiagonal,
@@ -39,8 +40,10 @@ import {
 } from '../componentes/iconos.jsx';
 import { IconoPorNombre } from '../componentes/iconosPorNombre.jsx';
 import PanelInferior, { DURACION_PANEL_MS } from '../componentes/PanelInferior.jsx';
+import ToqueHaptico from '../componentes/ToqueHaptico.jsx';
 import { useDatos } from '../datos/DatosContext.jsx';
 import { guardarEtiqueta } from '../datos/etiquetas.js';
+import { favoritoDe, guardarFavorito, sugerirFavoritos, usarFavorito } from '../datos/favoritos.js';
 import { faltante, guardarMovimiento, horaDe, TIPOS_MOVIMIENTO } from '../datos/movimientos.js';
 import { eliminarProgramado, FRECUENCIAS, guardarProgramado, textoFrecuencia } from '../datos/programados.js';
 import { cuotasDe, facturaDeFecha, nombreFactura, sumarMeses } from '../datos/tarjetas.js';
@@ -209,6 +212,7 @@ function Campos({ clave, movimiento, programado, esProgramado = false, tipoInici
     categoria: buscarCategoria,
     etiqueta: buscarEtiqueta,
     tarjeta: buscarTarjeta,
+    favoritos,
   } = useDatos();
   const borrador = borradores.get(clave);
   const [datos, setDatos] = useState(
@@ -221,6 +225,11 @@ function Campos({ clave, movimiento, programado, esProgramado = false, tipoInici
   // Y con la hora (decidido por el dueño, 2026-10-04): con fecha de hoy va sola ("Ahora", la hora
   // en que se guarda); con otra fecha, sin hora, salvo que se prenda y se elija a mano.
   const [horaAMano, setHoraAMano] = useState(borrador?.horaAMano ?? Boolean(movimiento));
+  // Corazón de favorito: null = sin tocar (se ve marcado si la descripción ya es un favorito y al
+  // guardar no cambia nada); true o false = tocado a mano (al guardar crea, actualiza o quita).
+  const [corazonAMano, setCorazonAMano] = useState(borrador?.corazonAMano ?? null);
+  // Sube cada vez que se marca: vuelve a dibujar el corazón para repetir su latido.
+  const [latidos, setLatidos] = useState(0);
   // 'categoria' | 'cuentaId' | 'cuentaDestinoId' | 'tarjetaId' | 'cuotas' | 'factura' | 'etiquetas' | 'observacion'
   const [panel, setPanel] = useState(null);
   const [aviso, setAviso] = useState(null);
@@ -237,8 +246,8 @@ function Campos({ clave, movimiento, programado, esProgramado = false, tipoInici
   }, []);
 
   useEffect(() => {
-    borradores.set(clave, { datos, pagadoAMano, facturaAMano, horaAMano });
-  }, [clave, datos, pagadoAMano, facturaAMano, horaAMano]);
+    borradores.set(clave, { datos, pagadoAMano, facturaAMano, horaAMano, corazonAMano });
+  }, [clave, datos, pagadoAMano, facturaAMano, horaAMano, corazonAMano]);
 
   // El aviso ("Elige una categoría.") se va solo.
   useEffect(() => {
@@ -292,6 +301,44 @@ function Campos({ clave, movimiento, programado, esProgramado = false, tipoInici
       factura: facturaSegun(d.tarjetaId, fecha, d.factura),
     }));
 
+  // Favoritos (favoritos.js): el corazón junto a la descripción y, debajo, los que coinciden con lo
+  // escrito. No van en los programados.
+  const corazon = corazonAMano ?? Boolean(favoritoDe(favoritos, tipo, datos.descripcion));
+  const sugerencias = esProgramado ? [] : sugerirFavoritos(favoritos, tipo, datos.descripcion);
+  const alternarCorazon = (evento) => {
+    evento.preventDefault(); // dentro de la fila (un <label>): que no enfoque la descripción
+    if (!corazon && !datos.descripcion.trim()) {
+      setAviso('Escribe una descripción para guardarlo como favorito.');
+      return;
+    }
+    if (!corazon) setLatidos((n) => n + 1);
+    setCorazonAMano(!corazon);
+  };
+  // Llena el formulario con lo guardado en el favorito, menos el valor, la fecha y la hora. Lo que
+  // ya no existe (una cuenta o categoría borrada) se queda como estaba.
+  const elegirFavorito = (favorito) => {
+    usarFavorito(favorito.id);
+    document.activeElement?.blur(); // baja el teclado para ver el formulario lleno
+    setDatos((d) => {
+      const categoria = buscarCategoria(favorito.categoriaId);
+      const cuentaId = buscarCuenta(favorito.cuentaId) ? favorito.cuentaId : d.cuentaId;
+      const destino = buscarCuenta(favorito.cuentaDestinoId) ? favorito.cuentaDestinoId : d.cuentaDestinoId;
+      const tarjetaId = buscarTarjeta(favorito.tarjetaId) ? favorito.tarjetaId : d.tarjetaId;
+      return {
+        ...d,
+        descripcion: favorito.descripcion,
+        categoriaId: categoria?.tipo === tipoCategoria ? favorito.categoriaId : d.categoriaId,
+        cuentaId,
+        cuentaDestinoId: destino === cuentaId ? d.cuentaDestinoId : destino,
+        tarjetaId,
+        factura: facturaSegun(tarjetaId, d.fecha, d.factura),
+        cuotas: favorito.cuotas ?? d.cuotas,
+        etiquetaIds: (favorito.etiquetaIds ?? []).filter((id) => buscarEtiqueta(id)),
+        observacion: favorito.observacion ?? '',
+      };
+    });
+  };
+
   const elegirTarjeta = (tarjetaId) =>
     setDatos((d) => ({ ...d, tarjetaId, factura: facturaSegun(tarjetaId, d.fecha, d.factura) }));
 
@@ -329,6 +376,7 @@ function Campos({ clave, movimiento, programado, esProgramado = false, tipoInici
     return (async () => {
       if (esProgramado) await guardarProgramado(programado?.id, datos);
       else await guardarMovimiento(movimiento?.id, datos);
+      if (!esProgramado && corazonAMano !== null) await guardarFavorito(datos, corazonAMano);
       if (conTarjeta) recordar(CLAVE_ULTIMA_TARJETA, datos.tarjetaId);
       else recordar(CLAVE_ULTIMA_CUENTA, datos.cuentaId);
       borradores.delete(clave);
@@ -360,9 +408,49 @@ function Campos({ clave, movimiento, programado, esProgramado = false, tipoInici
     </Campo>
   );
   const filaDescripcion = (
-    <Campo Icono={IconoTexto} etiqueta="Descripción">
-      <EntradaTexto valor={datos.descripcion} alCambiar={(descripcion) => cambiar({ descripcion })} ejemplo={EJEMPLOS[tipo]} />
-    </Campo>
+    <>
+      <Campo Icono={IconoTexto} etiqueta="Descripción">
+        <EntradaTexto valor={datos.descripcion} alCambiar={(descripcion) => cambiar({ descripcion })} ejemplo={EJEMPLOS[tipo]} />
+        {!esProgramado && (
+          <button
+            type="button"
+            className="corazon"
+            aria-pressed={corazon}
+            aria-label={corazon ? 'Quitar de favoritos' : 'Guardar como favorito'}
+            onClick={alternarCorazon}
+          >
+            <span key={latidos} className={'corazon-dibujo' + (latidos > 0 && corazon ? ' latido' : '')}>
+              <IconoCorazon />
+            </span>
+            {latidos > 0 && corazon && <span key={'onda' + latidos} className="corazon-onda" />}
+            <ToqueHaptico />
+          </button>
+        )}
+      </Campo>
+      {sugerencias.length > 0 && (
+        <div className="favoritos-sugeridos" aria-label="Favoritos">
+          {sugerencias.map((f) => (
+            <button key={f.id} type="button" className="favorito-sugerido" onClick={() => elegirFavorito(f)}>
+              <span className="favorito-sugerido-icono">
+                <IconoCorazon tamano={14} />
+              </span>
+              <span className="favorito-sugerido-textos">
+                <span className="favorito-sugerido-nombre">{f.descripcion}</span>
+                <span className="favorito-sugerido-detalle">
+                  {[
+                    buscarCategoria(f.categoriaId)?.nombre,
+                    f.tipo === 'gastoTarjeta' ? buscarTarjeta(f.tarjetaId)?.nombre : buscarCuenta(f.cuentaId)?.nombre,
+                  ]
+                    .filter(Boolean)
+                    .join(' · ')}
+                </span>
+              </span>
+              <span className="favorito-sugerido-usar">Usar</span>
+            </button>
+          ))}
+        </div>
+      )}
+    </>
   );
   // En un programado, la fecha es cuándo empieza, y van también Frecuencia y Termina.
   const filaFecha = esProgramado ? (

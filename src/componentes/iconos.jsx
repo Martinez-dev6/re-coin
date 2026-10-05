@@ -12,9 +12,9 @@ import {
   ArrowUpRight,
   Bell,
   Calendar,
+  CalendarCheck,
   CalendarDays,
   Camera,
-  CalendarCheck,
   ChartColumn,
   Check,
   ChevronDown,
@@ -35,18 +35,19 @@ import {
   FileText,
   Globe,
   GripVertical,
+  Heart,
   House,
   Info,
   Landmark,
   Layers,
-  Leaf,
   LayoutGrid,
+  Leaf,
   List,
-  Lock,
-  NotebookText,
   ListFilter,
+  Lock,
   Minus,
   Moon,
+  NotebookText,
   Palette,
   PanelsTopLeft,
   Pencil,
@@ -156,5 +157,6 @@ export const IconoBajada = crear(TrendingDown, 20);
 export const IconoCalendarioMes = crear(CalendarDays, 24, 1.8);
 export const IconoBajar = crear(Download, 20);
 export const IconoEscudoCheck = crear(ShieldCheck, 20);
+export const IconoCorazon = crear(Heart, 20, 2);
 export const IconoExcel = crear(FileSpreadsheet, 20);
 export const IconoCsv = crear(FileText, 20);
