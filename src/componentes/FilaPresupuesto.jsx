@@ -20,7 +20,8 @@ function estadoPresupuesto(gastado, limite, avisarAl = 90, pesos = formatearPeso
 
 // alTocar: la fila es un botón (abre Editar presupuesto); la de "General" no.
 // pesos: cómo escribir las cifras (en Inicio, con los saldos ocultos, salen con puntos).
-export default function FilaPresupuesto({ nombre, icono, color, gastado, limite, avisarAl, alTocar, pesos = formatearPesos }) {
+// periodo: "esta semana", "esta quincena"… si no es mensual (Sesión 9), junto a las cifras.
+export default function FilaPresupuesto({ nombre, icono, color, gastado, limite, avisarAl, periodo, alTocar, pesos = formatearPesos }) {
   const estado = estadoPresupuesto(gastado, limite, avisarAl, pesos);
   const barra = estado.clase === 'ok' ? 'var(--accent-text)' : estado.color;
   const Fila = alTocar ? 'button' : 'div';
@@ -41,6 +42,7 @@ export default function FilaPresupuesto({ nombre, icono, color, gastado, limite,
         <div className="presupuesto-linea">
           <span className="presupuesto-cifras">
             {pesos(gastado)} de {pesos(limite)}
+            {periodo && <span className="presupuesto-periodo"> · {periodo}</span>}
           </span>
           <span className="presupuesto-porcentaje" style={{ color: estado.clase === 'ok' ? 'var(--muted)' : estado.color }}>
             {estado.usado} %

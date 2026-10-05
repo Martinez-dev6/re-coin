@@ -93,6 +93,9 @@ const suscribir = (oyente) => {
 
 export const useAjustes = () => useSyncExternalStore(suscribir, () => actual);
 
+// Para cálculos fuera de React (las semanas de los presupuestos semanales).
+export const semanaEmpiezaActual = () => actual.semanaEmpieza;
+
 // "José Martínez" → "JM"; "Ana" → "A".
 export function iniciales(nombre) {
   return nombre

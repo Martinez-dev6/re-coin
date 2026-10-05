@@ -21,7 +21,7 @@ import PanelInferior, { DURACION_PANEL_MS } from '../componentes/PanelInferior.j
 import { MesConFlechas } from '../componentes/SelectorMes.jsx';
 import { useDatos } from '../datos/DatosContext.jsx';
 import { ahorroPorPeriodo, aportar, frecuenciaMeta } from '../datos/metas.js';
-import { presupuestosDelMes } from '../datos/presupuestos.js';
+import { periodoActual, presupuestosDelMes } from '../datos/presupuestos.js';
 import { detalleMovimiento, esGasto, estadoMovimiento, rutaMovimiento } from '../datos/movimientos.js';
 import { fechasFuturas, textoFrecuencia } from '../datos/programados.js';
 import { facturaDeFecha, fechaPagoFactura } from '../datos/tarjetas.js';
@@ -73,6 +73,7 @@ function Presupuestos({ lista, navegar }) {
             gastado={p.gastado}
             limite={p.limite}
             avisarAl={p.avisarAl}
+            periodo={periodoActual(p)}
             alTocar={() => navegar('/presupuestos/' + p.id)}
           />
         );

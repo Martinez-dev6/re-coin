@@ -22,7 +22,7 @@ import { Dona } from '../componentes/Graficos.jsx';
 import { IconoPorNombre } from '../componentes/iconosPorNombre.jsx';
 import { useDatos } from '../datos/DatosContext.jsx';
 import { porCategoria, textoMes, totalDelMes } from '../datos/graficos.js';
-import { presupuestosDelMes } from '../datos/presupuestos.js';
+import { periodoActual, presupuestosDelMes } from '../datos/presupuestos.js';
 import { proximaFactura, textoVence } from '../datos/tarjetas.js';
 import { useMes } from '../estado/MesContext.jsx';
 import { estiloIconoCuenta } from '../tema/colores.js';
@@ -221,6 +221,7 @@ export function BloquePresupuestos({ pesos, posicion }) {
                   gastado={p.gastado}
                   limite={p.limite}
                   avisarAl={p.avisarAl}
+                  periodo={periodoActual(p)}
                   pesos={pesos}
                   alTocar={() => navegar('/presupuestos/' + p.id)}
                 />

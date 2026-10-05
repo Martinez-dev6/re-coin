@@ -1,5 +1,7 @@
 // Nuevo presupuesto (/presupuestos/nuevo) y editar presupuesto (/presupuestos/:id).
-// design/capturas/NuevoPresupuesto.png. Por ahora el periodo es siempre mensual.
+// design/capturas/NuevoPresupuesto.png. Periodo semanal, quincenal, mensual o anual (Sesión 9, pedido
+// del dueño; antes solo mensual). "Empieza" es un mes, con el mismo panel y la misma animación al
+// cambiar de año que "Elegir mes" de Inicio.
 import { useRef, useState } from 'react';
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
 import CirculoCategoria from '../componentes/CirculoCategoria.jsx';
@@ -20,7 +22,8 @@ import {
 } from '../componentes/iconos.jsx';
 import PanelInferior, { DURACION_PANEL_MS } from '../componentes/PanelInferior.jsx';
 import { useDatos } from '../datos/DatosContext.jsx';
-import { eliminarPresupuesto, guardarPresupuesto, textoMes } from '../datos/presupuestos.js';
+import Deslizar from '../componentes/Deslizar.jsx';
+import { eliminarPresupuesto, guardarPresupuesto, PERIODOS, periodoDe, textoMes } from '../datos/presupuestos.js';
 import { useMes } from '../estado/MesContext.jsx';
 import { MESES, nombreMes } from '../utilidades/fechas.js';
 import { volver } from '../utilidades/navegacion.js';
@@ -54,9 +57,10 @@ function Campos({ presupuesto }) {
   const { categorias, categoria: buscarCategoria } = useDatos();
   const [datos, setDatos] = useState(
     () =>
-      presupuesto ?? { categoriaId: null, limite: 0, desde: textoMes(anio, mes), repetir: true, avisarAl: 80 },
+      presupuesto ?? { categoriaId: null, limite: 0, periodo: 'mes', desde: textoMes(anio, mes), repetir: true, avisarAl: 80 },
   );
-  const [panel, setPanel] = useState(null); // 'categoria' | 'desde' | 'aviso' | 'eliminar'
+  const [panel, setPanel] = useState(null); // 'categoria' | 'periodo' | 'desde' | 'aviso' | 'eliminar'
+  const periodo = periodoDe(datos);
   const [anioVista, setAnioVista] = useState(Number(datos.desde.slice(0, 4)));
   const [aviso, setAviso] = useState(null);
   const eliminando = useRef(false);
@@ -116,14 +120,18 @@ function Campos({ presupuesto }) {
               <span className="campo-vacio">Elegir</span>
             )}
           </Campo>
-          <Campo Icono={IconoPeriodo} etiqueta="Periodo">
-            Mensual
+          <Campo Icono={IconoPeriodo} etiqueta="Periodo" alTocar={() => setPanel('periodo')}>
+            {periodo.texto}
           </Campo>
           <Campo Icono={IconoEmpieza} etiqueta="Empieza" alTocar={() => setPanel('desde')}>
             {textoDesde(datos.desde)}
           </Campo>
-          <Campo Icono={IconoRepetirFila} etiqueta="Repetir cada mes">
-            <Interruptor activo={datos.repetir} etiqueta="Repetir cada mes" alCambiar={(repetir) => cambiar({ repetir })} />
+          <Campo Icono={IconoRepetirFila} etiqueta={`Repetir ${periodo.cada}`}>
+            <Interruptor
+              activo={datos.repetir}
+              etiqueta={`Repetir ${periodo.cada}`}
+              alCambiar={(repetir) => cambiar({ repetir })}
+            />
           </Campo>
           <Campo Icono={IconoCampana} etiqueta="Avisarme al" alTocar={() => setPanel('aviso')}>
             {datos.avisarAl} %
@@ -132,7 +140,8 @@ function Campos({ presupuesto }) {
         <p className="formulario-nota">
           <IconoInfo />
           <span>
-            Te avisamos en Inicio y en Planes cuando llegues al {datos.avisarAl} % y cuando te pases del límite.
+            Te avisamos en Inicio y en Planes cuando llegues al {datos.avisarAl} % y cuando te pases del límite
+            {periodo.valor === 'mes' ? '' : ` de ${periodo.actual}`}.
           </span>
         </p>
 
@@ -206,12 +215,15 @@ function Campos({ presupuesto }) {
           <button type="button" className="mes-flecha" aria-label="Año anterior" onClick={() => setAnioVista((a) => a - 1)}>
             <IconoAnterior />
           </button>
-          <span>{anioVista}</span>
+          {/* Al cambiar de año, el año y los meses entran desde ese lado, como en "Elegir mes". */}
+          <Deslizar as="span" posicion={anioVista} distancia={16} aria-live="polite">
+            {anioVista}
+          </Deslizar>
           <button type="button" className="mes-flecha" aria-label="Año siguiente" onClick={() => setAnioVista((a) => a + 1)}>
             <IconoSiguiente />
           </button>
         </div>
-        <div className="elegir-mes-rejilla">
+        <Deslizar posicion={anioVista} className="elegir-mes-rejilla">
           {CORTOS.map((corto, indice) => {
             const valor = textoMes(anioVista, indice);
             const elegido = valor === datos.desde;
@@ -228,7 +240,41 @@ function Campos({ presupuesto }) {
               </button>
             );
           })}
+        </Deslizar>
+      </PanelInferior>
+
+      <PanelInferior
+        abierto={panel === 'periodo'}
+        alCerrar={() => setPanel(null)}
+        titulo="Periodo"
+        accion={{ texto: 'Listo', alTocar: () => setPanel(null) }}
+      >
+        <div role="radiogroup" aria-label="Periodo">
+          {PERIODOS.map((p) => {
+            const marcado = p.valor === periodo.valor;
+            return (
+              <button
+                key={p.valor}
+                type="button"
+                role="radio"
+                aria-checked={marcado}
+                className="panel-opcion panel-lista-opcion"
+                onClick={() => cambiar({ periodo: p.valor })}
+              >
+                <span className="panel-opcion-textos">
+                  <span className="panel-opcion-titulo">{p.texto}</span>
+                </span>
+                <span className={'radio' + (marcado ? ' marcado' : '')}>{marcado && <IconoCheck tamano={14} />}</span>
+              </button>
+            );
+          })}
         </div>
+        <p className="rejilla-dias-nota">
+          {periodo.valor === 'semana' && 'Cuenta lo gastado de cada semana, desde el día que elegiste en Ajustes.'}
+          {periodo.valor === 'quincena' && 'Cuenta lo gastado del 1 al 15 y del 16 al final de cada mes.'}
+          {periodo.valor === 'mes' && 'Cuenta lo gastado en cada mes.'}
+          {periodo.valor === 'anio' && 'Cuenta lo gastado en 12 meses seguidos, desde el mes en que empieza.'}
+        </p>
       </PanelInferior>
 
       <PanelInferior
