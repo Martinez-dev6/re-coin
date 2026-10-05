@@ -615,7 +615,7 @@ function Campos({ clave, movimiento, programado, esProgramado = false, tipoInici
                 className="panel-opcion"
                 onClick={() => elegirTarjeta(t.id)}
               >
-                <span className="icono-circulo grande">
+                <span className="icono-circulo grande" style={estiloIconoCuenta(t.color)}>
                   <IconoPorNombre nombre={t.icono} tamano={20} />
                 </span>
                 <span className="panel-opcion-textos">

@@ -145,6 +145,8 @@ export async function guardarTarjeta(id, datos) {
     diaPago: dia(datos.diaPago),
     cuentaPagoId: datos.cuentaPagoId ?? null,
     icono: datos.icono,
+    // Color del ícono: uno de los 10 colores del tema o null (el del tema), como en las cuentas.
+    color: datos.color ?? null,
   };
   if (id) {
     await db.tarjetas.update(id, campos);

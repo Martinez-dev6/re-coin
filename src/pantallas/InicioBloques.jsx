@@ -24,6 +24,7 @@ import { porCategoria, textoMes, totalDelMes } from '../datos/graficos.js';
 import { presupuestosDelMes } from '../datos/presupuestos.js';
 import { proximaFactura, textoVence } from '../datos/tarjetas.js';
 import { useMes } from '../estado/MesContext.jsx';
+import { estiloIconoCuenta } from '../tema/colores.js';
 import { nombreMes } from '../utilidades/fechas.js';
 
 const MAXIMO = 3; // filas por bloque; el resto, en "Ver todos"
@@ -348,7 +349,7 @@ export function BloqueTarjetas({ pesos }) {
                 : `Vence ${{ Hoy: 'hoy', Mañana: 'mañana' }[vence] ?? `en ${vence}`}`;
             return (
               <span key={t.id} className="inicio-tarjeta">
-                <span className="icono-circulo grande">
+                <span className="icono-circulo grande" style={estiloIconoCuenta(t.color)}>
                   <IconoPorNombre nombre={t.icono} tamano={20} />
                 </span>
                 <span className="inicio-tarjeta-textos">

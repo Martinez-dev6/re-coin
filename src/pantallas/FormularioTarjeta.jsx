@@ -3,7 +3,14 @@
 import { useRef, useState } from 'react';
 import { Navigate, useLocation, useNavigate, useParams } from 'react-router-dom';
 import BotonExito from '../componentes/BotonExito.jsx';
-import { CabeceraFormulario, Campo, EntradaTexto, MontoEditable, PieFormulario } from '../componentes/Formulario.jsx';
+import {
+  CabeceraFormulario,
+  Campo,
+  EntradaTexto,
+  MontoEditable,
+  PieFormulario,
+  SelectorColorCuenta,
+} from '../componentes/Formulario.jsx';
 import { IconoBanco, IconoBasura, IconoCalendario, IconoCheck, IconoMas, IconoReloj, IconoTexto } from '../componentes/iconos.jsx';
 import { ICONOS_TARJETA, IconoPorNombre } from '../componentes/iconosPorNombre.jsx';
 import PanelInferior, { DURACION_PANEL_MS } from '../componentes/PanelInferior.jsx';
@@ -11,6 +18,7 @@ import SelectorIcono from '../componentes/SelectorIcono.jsx';
 import { useDatos } from '../datos/DatosContext.jsx';
 import { eliminarTarjeta, guardarTarjeta } from '../datos/tarjetas.js';
 import { estiloIconoCuenta } from '../tema/colores.js';
+import { useAcentoPantalla } from '../tema/TemaContext.jsx';
 import { formatearPesos } from '../utilidades/formato.js';
 import { volver } from '../utilidades/navegacion.js';
 import './FormularioMovimiento.css';
@@ -47,9 +55,12 @@ function Campos({ tarjeta }) {
           diaPago: tarjeta.diaPago,
           cuentaPagoId: tarjeta.cuentaPagoId,
           icono: tarjeta.icono,
+          color: tarjeta.color ?? null,
         }
-      : { nombre: '', cupo: 0, diaCierre: 15, diaPago: 25, cuentaPagoId: cuentas[0]?.id ?? null, icono: 'tarjeta' },
+      : { nombre: '', cupo: 0, diaCierre: 15, diaPago: 25, cuentaPagoId: cuentas[0]?.id ?? null, icono: 'tarjeta', color: null },
   );
+  // Como en Nueva cuenta: el formulario va con el color elegido, así se ve en vivo el del ícono.
+  useAcentoPantalla(datos.color);
   const [panel, setPanel] = useState(null); // 'diaCierre' | 'diaPago' | 'cuenta' | 'eliminar'
   const eliminando = useRef(false);
   const cambiar = (cambios) => setDatos((d) => ({ ...d, ...cambios }));
@@ -113,6 +124,9 @@ function Campos({ tarjeta }) {
 
         <h2 className="titulo-seccion">Ícono</h2>
         <SelectorIcono sugeridos={ICONOS_TARJETA} elegido={datos.icono} alElegir={(icono) => cambiar({ icono })} />
+
+        <h2 className="titulo-seccion">Color</h2>
+        <SelectorColorCuenta valor={datos.color} alCambiar={(color) => cambiar({ color })} etiqueta="Color de la tarjeta" />
 
         {tarjeta && (
           <button type="button" className="formulario-eliminar" onClick={() => setPanel('eliminar')}>

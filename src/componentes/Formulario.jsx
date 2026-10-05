@@ -258,11 +258,11 @@ export function RejillaColores({ colores, elegido, alElegir }) {
 // Color de una cuenta: Predeterminado (null: sigue el color del tema, aunque después cambie)
 // o uno de los 10 colores. Solo círculos: la interfaz no muestra nombres de colores (van como
 // aria-label). El círculo de Predeterminado muestra el color del tema elegido en Apariencia.
-export function SelectorColorCuenta({ valor, alCambiar }) {
+export function SelectorColorCuenta({ valor, alCambiar, etiqueta = 'Color de la cuenta' }) {
   const { acento } = useTema();
   const predeterminado = !valor;
   return (
-    <div className="tarjeta selector-color" role="radiogroup" aria-label="Color de la cuenta">
+    <div className="tarjeta selector-color" role="radiogroup" aria-label={etiqueta}>
       <button
         type="button"
         role="radio"

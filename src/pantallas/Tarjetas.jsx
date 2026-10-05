@@ -7,6 +7,7 @@ import { IconoMas } from '../componentes/iconos.jsx';
 import { IconoPorNombre } from '../componentes/iconosPorNombre.jsx';
 import { useDatos } from '../datos/DatosContext.jsx';
 import { proximaFactura, textoVence } from '../datos/tarjetas.js';
+import { estiloIconoCuenta } from '../tema/colores.js';
 import { formatearPesos } from '../utilidades/formato.js';
 import './Cuentas.css';
 import './Tarjetas.css';
@@ -23,7 +24,7 @@ export function ResumenTarjeta({ tarjeta: t, alTocar }) {
   return (
     <Caja {...(alTocar && { type: 'button', onClick: alTocar })} className="tarjeta tarjetas-credito">
       <span className="tarjetas-cabeza">
-        <span className="icono-circulo grande">
+        <span className="icono-circulo grande" style={estiloIconoCuenta(t.color)}>
           <IconoPorNombre nombre={t.icono} tamano={20} />
         </span>
         <span className="cuentas-textos">
