@@ -3,7 +3,7 @@
 // y crece al entrar (300 ms, curva "entrar") y se va bajando y desvaneciéndose (240 ms, "suave").
 // Se cierra tocando el fondo, con Escape o con la X. arriba: lo que va arriba, junto al título (p. ej.
 // el valor); children: el resto. tono ('gasto' | 'ingreso' | 'transferencia'): el color sutil de la
-// ventana (el valor y una línea arriba); sin franja del color del tema, que la cargaba demasiado
+// ventana (el valor); sin franja del color del tema, que la cargaba demasiado
 // (pedido del dueño, Sesión 9).
 import { useEffect, useId, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';

@@ -58,8 +58,8 @@
 }
 
 /* Arriba: título, X y el valor, sobre el mismo fondo de la ventana. El color va sutil (Sesión 9: la
-   franja del color del tema la cargaba demasiado): solo el valor y una línea fina arriba, del color
-   del tipo de movimiento (--ventana-tono). */
+   franja del color del tema la cargaba demasiado): solo el valor, del color del tipo de movimiento
+   (--ventana-tono). Sin línea arriba (también la quitó el dueño). */
 .ventana-flotante {
   --ventana-tono: var(--accent-text);
 }
@@ -75,7 +75,6 @@
 .ventana-arriba {
   flex: none;
   padding: 14px 16px 6px;
-  border-top: 3px solid var(--ventana-tono);
 }
 
 .ventana-cabecera {
