@@ -53,7 +53,7 @@ function Campos({ categoria, tipoInicial }) {
   // Al terminar la animación del botón (BotonExito) se vuelve.
   const guardar = () => guardarCategoria(categoria?.id, datos);
 
-  // Primero baja el panel; después se vuelve a la lista y se borra (ver FormularioCuenta).
+  // Primero baja el panel; después se vuelve a la lista y se borra.
   const eliminar = () => {
     if (eliminando.current) return;
     eliminando.current = true;

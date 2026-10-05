@@ -40,7 +40,7 @@ function Campos({ etiqueta }) {
     return guardarEtiqueta(etiqueta?.id, nombre);
   };
 
-  // Primero baja el panel; después se vuelve a la lista y se borra (ver FormularioCuenta).
+  // Primero baja el panel; después se vuelve a la lista y se borra.
   const eliminar = () => {
     if (eliminando.current) return;
     eliminando.current = true;

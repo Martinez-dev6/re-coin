@@ -65,11 +65,10 @@ export default function App() {
           <Route path="/mi-espacio/pantalla-inicio" element={<PantallaInicio />} />
         </Route>
 
-        {/* Sin barra inferior: detalles (movimiento, cuenta, tarjeta) y formularios */}
+        {/* Sin barra inferior: detalle de un movimiento y formularios */}
         <Route path="/movimientos/:id" element={<DetalleMovimiento />} />
         <Route path="/pendientes" element={<Pendientes />} />
         <Route path="/nuevo/:pantalla" element={<FormularioMovimiento />} />
-        <Route path="/movimientos/:id/editar" element={<FormularioMovimiento />} />
         <Route path="/cuentas/:id/reajustar" element={<ReajustarSaldo />} />
         <Route path="/categorias/:id" element={<FormularioCategoria />} />
         <Route path="/etiquetas/:id" element={<FormularioEtiqueta />} />

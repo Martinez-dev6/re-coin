@@ -1,6 +1,5 @@
 // Lista de cuentas con el saldo total (design/capturas/Cuentas.png).
 import { useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import CabeceraSubpagina from '../componentes/CabeceraSubpagina.jsx';
 import { IconoFlecha, IconoMas } from '../componentes/iconos.jsx';
 import { IconoPorNombre } from '../componentes/iconosPorNombre.jsx';
@@ -14,7 +13,6 @@ import './Cuentas.css';
 import { abrirVentana } from '../estado/ventanas.js';
 
 export default function Cuentas() {
-  const navegar = useNavigate();
   const { cuentas, cargando } = useDatos();
   const nueva = () => abrirVentana('cuenta');
   const lista = useRef(null);

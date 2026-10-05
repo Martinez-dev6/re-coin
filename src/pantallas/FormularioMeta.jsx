@@ -119,7 +119,7 @@ function Campos({ meta }) {
     return guardarMeta(meta?.id, datos);
   };
 
-  // Primero baja el panel; después se vuelve y se borra (ver FormularioCuenta).
+  // Primero baja el panel; después se vuelve y se borra.
   const eliminar = () => {
     if (eliminando.current) return;
     eliminando.current = true;

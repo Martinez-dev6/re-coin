@@ -96,65 +96,6 @@
   color: var(--expense);
 }
 
-/* ---- Facturas (en DetalleTarjeta) ---- */
-
-.tarjetas-facturas {
-  padding: 0 14px;
-}
-
-.tarjetas-factura {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  width: 100%;
-  height: 60px;
-  padding: 0;
-  border: 0;
-  border-bottom: 1px solid var(--divider);
-  background: transparent;
-  color: var(--text);
-  text-align: left;
-}
-
-.tarjetas-factura:last-child {
-  border-bottom: 0;
-}
-
-.tarjetas-factura-mes {
-  flex-grow: 1;
-  font-size: 15px;
-  font-weight: 600;
-}
-
-.tarjetas-factura-cifras {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-}
-
-.tarjetas-factura-valor {
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--expense);
-}
-
-.tarjetas-factura-estado {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  margin-top: 2px;
-  font-size: 11px;
-  font-weight: 600;
-}
-
-.tarjetas-factura-estado.pendiente {
-  color: var(--pending);
-}
-
-.tarjetas-factura-estado.pagada {
-  color: var(--income);
-}
-
 /* Movimientos | Editar dentro de cada tarjeta, abajo (Sesión 9): dos píldoras del mismo tamaño,
    la primera suave y la segunda rellena, ambas del color del tema. */
 .tarjetas-botones {

@@ -166,11 +166,6 @@
   color: var(--muted);
 }
 
-/* Programados */
-.planes-vistas {
-  margin-top: -2px;
-}
-
 /* Sin presupuestos (o metas, o programados): texto y botón para crear. */
 .planes-vacio p {
   margin: 0 0 4px;
@@ -190,11 +185,7 @@
   transition: width 0.75s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
-/* ---- Programados: calendario (design/html/Planes-Calendario.html) ---- */
-
-.planes-vistas {
-  align-items: center;
-}
+/* ---- Calendario (design/html/Planes-Calendario.html) ---- */
 
 .calendario-leyenda {
   display: flex;
@@ -306,11 +297,6 @@
 /* Sin el "+" en Programados: el mismo lugar, vacío, para que el mes siga centrado. */
 .planes-hueco {
   visibility: hidden;
-}
-
-.planes-vacio-nota {
-  font-size: 13px;
-  color: var(--muted);
 }
 
 /* El día elegido del calendario con su "+ Agregar" a la derecha (Sesión 9). */
