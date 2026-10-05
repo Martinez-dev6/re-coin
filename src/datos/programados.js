@@ -37,7 +37,8 @@ export function fechasEntre(p, desde, hasta) {
   const fechas = [];
   const agregar = (d) => {
     const texto = aTexto(d);
-    if (texto >= p.empieza && texto >= desde && texto <= fin) fechas.push(texto);
+    // omitidas: fechas que se quitaron una por una ("Eliminar solo este"); no se registran ni se ven.
+    if (texto >= p.empieza && texto >= desde && texto <= fin && !(p.omitidas ?? []).includes(texto)) fechas.push(texto);
   };
   if (p.frecuencia === 'dia' || p.frecuencia === 'semana') {
     const paso = p.frecuencia === 'dia' ? 1 : 7;
@@ -214,5 +215,35 @@ export function eliminarProgramado(id, modo = 'solo') {
       if (modo === 'realizados') await db.movimientos.where('programadoId').equals(id).filter(realizado).delete();
     }
     await db.programados.delete(id);
+  });
+}
+
+// Quitar una sola fecha de un programado (Sesión 9, pedido del dueño: "de un programado de 10 días
+// quiero eliminar solo uno"). Se borra su movimiento, si ya se había registrado, y la fecha queda en
+// "omitidas" para que no se vuelva a crear (p. ej. al editar el programado). Para un gasto con tarjeta
+// la fecha es la de la compra.
+export function eliminarFecha(id, fecha) {
+  return db.transaction('rw', db.programados, db.movimientos, async () => {
+    const p = await db.programados.get(id);
+    if (p) await db.programados.update(id, { omitidas: [...new Set([...(p.omitidas ?? []), fecha])] });
+    await db.movimientos.where('programadoId').equals(id).filter((m) => m.fecha === fecha).delete();
+  });
+}
+
+// Quitar una fecha y todas las que siguen: el programado termina el día anterior (si esa era la
+// primera, se borra entero) y se borran sus movimientos de esa fecha en adelante.
+export function eliminarDesde(id, fecha) {
+  return db.transaction('rw', db.programados, db.movimientos, async () => {
+    const p = await db.programados.get(id);
+    await db.movimientos.where('programadoId').equals(id).filter((m) => m.fecha >= fecha).delete();
+    if (!p) return;
+    if (fecha <= p.empieza) {
+      await db.programados.delete(id);
+      return;
+    }
+    const d = aFecha(fecha);
+    d.setDate(d.getDate() - 1);
+    const termina = aTexto(d);
+    await db.programados.update(id, { termina: p.termina && p.termina < termina ? p.termina : termina });
   });
 }

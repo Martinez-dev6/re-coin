@@ -48,6 +48,7 @@ import { guardarEtiqueta } from '../datos/etiquetas.js';
 import { favoritoDe, guardarFavorito, sugerirFavoritos, usarFavorito } from '../datos/favoritos.js';
 import { faltante, guardarMovimiento, horaDe, TIPOS_MOVIMIENTO } from '../datos/movimientos.js';
 import {
+  eliminarFecha,
   eliminarProgramado,
   FRECUENCIAS,
   guardarProgramado,
@@ -56,7 +57,7 @@ import {
 } from '../datos/programados.js';
 import { cuotasDe, facturaDeFecha, nombreFactura, sumarMeses } from '../datos/tarjetas.js';
 import { estiloIconoCuenta } from '../tema/colores.js';
-import { fechaCorta, horaActual, hoyTexto, textoHora } from '../utilidades/fechas.js';
+import { diaYMes, fechaCorta, horaActual, hoyTexto, textoHora } from '../utilidades/fechas.js';
 import { formatearPesos } from '../utilidades/formato.js';
 import { volver } from '../utilidades/navegacion.js';
 import { pasarTeclado } from '../utilidades/teclado.js';
@@ -239,7 +240,9 @@ function datosIniciales({ movimiento, programado, tipoInicial, cuentaPedida, fec
 
 // esProgramado: es el formulario de un programado (FormularioProgramado, más abajo): sin Pagado
 // y con Frecuencia, Empieza y Termina. programado: el que se edita.
-function Campos({ clave, movimiento, programado, esProgramado = false, tipoInicial, cuentaPedida, fechaPedida }) {
+// ocurrencia: en un programado abierto desde una fecha del calendario que aún no es movimiento, esa
+// fecha ('AAAA-MM-DD'): al eliminar se ofrece quitar solo esa.
+function Campos({ clave, movimiento, programado, esProgramado = false, tipoInicial, cuentaPedida, fechaPedida, ocurrencia }) {
   const navegar = useNavigate();
   const {
     cuentas,
@@ -273,7 +276,7 @@ function Campos({ clave, movimiento, programado, esProgramado = false, tipoInici
   // 'categoria' | 'cuentaId' | 'cuentaDestinoId' | 'tarjetaId' | 'cuotas' | 'factura' | 'etiquetas' | 'observacion'
   const [panel, setPanel] = useState(null);
   // Forma de eliminar un programado (ELIMINAR_PROGRAMADO).
-  const [modoEliminar, setModoEliminar] = useState('solo');
+  const [modoEliminar, setModoEliminar] = useState(ocurrencia ? 'fecha' : 'solo');
   const [aviso, setAviso] = useState(null);
   const monto = useRef(null);
 
@@ -980,7 +983,12 @@ function Campos({ clave, movimiento, programado, esProgramado = false, tipoInici
 
           <PanelInferior abierto={panel === 'eliminar'} alCerrar={() => setPanel(null)} titulo="¿Qué quieres eliminar?">
             <div role="radiogroup" aria-label="Qué eliminar" className="eliminar-programado">
-              {ELIMINAR_PROGRAMADO.map((o) => {
+              {[
+                ...(ocurrencia
+                  ? [{ valor: 'fecha', titulo: 'Solo el del ' + diaYMes(ocurrencia), detalle: 'Esa fecha no se registra. Las demás siguen.' }]
+                  : []),
+                ...ELIMINAR_PROGRAMADO,
+              ].map((o) => {
                 const marcada = o.valor === modoEliminar;
                 return (
                   <button
@@ -1007,7 +1015,8 @@ function Campos({ clave, movimiento, programado, esProgramado = false, tipoInici
                 setTimeout(() => {
                   borradores.delete(clave);
                   volver(navegar, volverA);
-                  eliminarProgramado(programado.id, modoEliminar);
+                  if (modoEliminar === 'fecha') eliminarFecha(programado.id, ocurrencia);
+                  else eliminarProgramado(programado.id, modoEliminar);
                 }, DURACION_PANEL_MS + 30);
               }}
             >
@@ -1028,12 +1037,14 @@ function Campos({ clave, movimiento, programado, esProgramado = false, tipoInici
 export function FormularioProgramado() {
   const { id } = useParams();
   const { key: clave } = useLocation();
+  const [parametros] = useSearchParams();
   const { programados, cargando } = useDatos();
   const editando = id !== 'nuevo';
+  const ocurrencia = /^\d{4}-\d{2}-\d{2}$/.test(parametros.get('fecha') ?? '') ? parametros.get('fecha') : null;
   const programado = editando ? programados.find((p) => p.id === id) : undefined;
   if (cargando) return <CabeceraFormulario titulo={TITULOS_PROGRAMADO[0]} volverA="/planes" />;
   if (editando && !programado) return <Navigate to="/planes" replace />;
-  return <Campos key={clave} clave={clave} esProgramado programado={programado} tipoInicial="gasto" />;
+  return <Campos key={clave} clave={clave} esProgramado programado={programado} tipoInicial="gasto" ocurrencia={ocurrencia} />;
 }
 
 // Lista de etiquetas para marcar, y un campo para crear una nueva (queda marcada).

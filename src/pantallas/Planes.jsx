@@ -12,6 +12,7 @@ import { Campo, EntradaPesos } from '../componentes/Formulario.jsx';
 import {
   IconoCalendario,
   IconoCheck,
+  IconoFlecha,
   IconoInicio,
   IconoMas,
   IconoRepetir,
@@ -292,6 +293,7 @@ function movimientosDelCalendario({ programados, movimientosPorMes, tarjeta }, a
         id: `${p.id}-${compra}`,
         programadoId: p.id,
         fecha: t ? fechaPagoFactura(t, facturaDeFecha(t, compra)) : compra,
+        compra, // la fecha propia del programado (en una tarjeta, la de la compra)
         futuro: true,
       }))
       .filter((item) => enRango(item.fecha));
@@ -333,7 +335,7 @@ function FilasProgramadas({ items, navegar, frecuenciaDe }) {
             )
           }
           estado={estadoProgramado(item)}
-          alTocar={() => navegar(item.futuro ? `/programados/${item.programadoId}` : rutaMovimiento(item))}
+          alTocar={() => navegar(item.futuro ? `/programados/${item.programadoId}?fecha=${item.compra}` : rutaMovimiento(item))}
         />
       ))}
     </div>
@@ -348,6 +350,7 @@ function Programados({ items, programados, anio, mes, navegar }) {
   const frecuenciaDe = (id) => programados.find((p) => p.id === id)?.frecuencia;
   const { semanaEmpieza } = useAjustes();
   const { tarjeta } = useDatos();
+  const [panelSeries, setPanelSeries] = useState(false);
   // Transferencias y pagos de tarjeta van en azul (solo mueven dinero entre lo propio).
   const esTransferencia = (it) => it.tipo === 'transferencia' || it.tipo === 'pagoTarjeta';
   const hayTransferencias = items.some(esTransferencia);
@@ -456,35 +459,51 @@ function Programados({ items, programados, anio, mes, navegar }) {
         )}
       </Deslizar>
 
-      {/* Todos, para editarlos o eliminarlos aunque este mes no tengan fechas. */}
-      <h2 className="titulo-seccion">Tus programados</h2>
-      {programados.length === 0 && (
-        <div className="tarjeta vacio planes-vacio">
-          <p>Aún no tienes programados, como el arriendo o el sueldo.</p>
-          <p className="planes-vacio-nota">
-            Al registrar un gasto o un ingreso, prende «Gasto recurrente» para que se repita.
-          </p>
+      {/* Las series que se repiten, aparte (Sesión 9: listadas justo bajo el día parecían un segundo
+          gasto). Un botón con cuántas hay; abre una ventana con todas para editarlas o eliminarlas. */}
+      <button type="button" className="tarjeta programados-lista-boton" onClick={() => setPanelSeries(true)}>
+        <span className="icono-circulo">
+          <IconoRepetir tamano={16} />
+        </span>
+        <span className="programados-lista-textos">
+          <strong>Tus programados</strong>
+          <span>
+            {programados.length === 0
+              ? 'Prende «Gasto recurrente» al registrar un gasto o un ingreso.'
+              : programados.length === 1
+                ? '1 que se repite'
+                : `${programados.length} que se repiten`}
+          </span>
+        </span>
+        {programados.length > 0 && <IconoFlecha />}
+      </button>
+
+      <PanelInferior abierto={panelSeries} alCerrar={() => setPanelSeries(false)} titulo="Tus programados">
+        <div className="panel-desplazable">
+          {programados.length === 0 ? (
+            <p className="panel-texto">Aún no tienes programados, como el arriendo o el sueldo.</p>
+          ) : (
+            programados.map((p) => (
+              <FilaMovimiento
+                key={p.id}
+                movimiento={p}
+                detalle={
+                  <>
+                    <IconoRepetir />
+                    {textoFrecuencia(p.frecuencia)}
+                    {p.tarjetaId ? ` · ${tarjeta(p.tarjetaId)?.nombre ?? 'Tarjeta'}` : ''}
+                    {p.termina ? ` · hasta ${fechaCorta(p.termina)}` : ''}
+                  </>
+                }
+                alTocar={() => {
+                  setPanelSeries(false);
+                  setTimeout(() => navegar('/programados/' + p.id), DURACION_PANEL_MS + 30);
+                }}
+              />
+            ))
+          )}
         </div>
-      )}
-      {programados.length > 0 && (
-        <div className="tarjeta-lista">
-          {programados.map((p) => (
-            <FilaMovimiento
-              key={p.id}
-              movimiento={p}
-              detalle={
-                <>
-                  <IconoRepetir />
-                  {textoFrecuencia(p.frecuencia)}
-                  {p.tarjetaId ? ` · ${tarjeta(p.tarjetaId)?.nombre ?? 'Tarjeta'}` : ''}
-                  {p.termina ? ` · hasta ${fechaCorta(p.termina)}` : ''}
-                </>
-              }
-              alTocar={() => navegar('/programados/' + p.id)}
-            />
-          ))}
-        </div>
-      )}
+      </PanelInferior>
     </>
   );
 }

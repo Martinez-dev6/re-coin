@@ -346,3 +346,37 @@
   justify-content: flex-end;
   margin: -4px 0 8px;
 }
+
+/* "Tus programados": un botón aparte que abre la lista de series (Sesión 9). */
+.programados-lista-boton {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  margin-top: 20px;
+  padding: 12px 14px;
+  border: 0;
+  color: var(--text);
+  text-align: left;
+}
+
+.programados-lista-textos {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.programados-lista-textos strong {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.programados-lista-textos span {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.programados-lista-boton > svg {
+  color: var(--muted);
+}

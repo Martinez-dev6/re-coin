@@ -15,6 +15,7 @@ import {
   IconoCalendario,
   IconoCapas,
   IconoCategorias,
+  IconoCheck,
   IconoCheckCirculo,
   IconoCuentas,
   IconoEtiqueta,
@@ -31,7 +32,8 @@ import PanelInferior, { DURACION_PANEL_MS } from '../componentes/PanelInferior.j
 import { useDatos } from '../datos/DatosContext.jsx';
 import { cambiarPagado, eliminarMovimiento, horaDe, tituloMovimiento } from '../datos/movimientos.js';
 import { nombreFactura } from '../datos/tarjetas.js';
-import { etiquetaDia, textoHora } from '../utilidades/fechas.js';
+import { eliminarDesde, eliminarFecha, eliminarProgramado } from '../datos/programados.js';
+import { diaYMes, etiquetaDia, textoHora } from '../utilidades/fechas.js';
 import { formatearPesos } from '../utilidades/formato.js';
 import { volver } from '../utilidades/navegacion.js';
 import './DetalleMovimiento.css';
@@ -62,8 +64,12 @@ export default function DetalleMovimiento() {
 
 function Contenido({ movimiento: m }) {
   const navegar = useNavigate();
-  const { cuenta, categoria: buscarCategoria, etiqueta, tarjeta } = useDatos();
+  const { cuenta, categoria: buscarCategoria, etiqueta, tarjeta, programados } = useDatos();
   const [panelEliminar, setPanelEliminar] = useState(false);
+  // Si viene de un programado que sigue existiendo, al eliminar se elige: solo este, este y los
+  // siguientes, o toda la serie (Sesión 9, pedido del dueño).
+  const programado = m.programadoId ? programados.find((p) => p.id === m.programadoId) : null;
+  const [modoEliminar, setModoEliminar] = useState('solo');
   // Ventana del estado: 'pagar' (elegir la cuenta, como en Pendientes), 'hecha' (transferencia
   // programada) o 'pendiente' (volver a dejarlo pendiente).
   const [panelEstado, setPanelEstado] = useState(null);
@@ -118,9 +124,17 @@ function Contenido({ movimiento: m }) {
     setPanelEliminar(false);
     setTimeout(() => {
       volver(navegar, LISTA);
-      eliminarMovimiento(m.id);
+      if (!programado) eliminarMovimiento(m.id);
+      else if (modoEliminar === 'solo') eliminarFecha(programado.id, m.fecha);
+      else if (modoEliminar === 'siguientes') eliminarDesde(programado.id, m.fecha);
+      else eliminarProgramado(programado.id, 'todo');
     }, DURACION_PANEL_MS + 30);
   };
+  const OPCIONES_ELIMINAR = [
+    { valor: 'solo', titulo: 'Solo este', detalle: `El del ${diaYMes(m.fecha)}. Los demás siguen.` },
+    { valor: 'siguientes', titulo: 'Este y los siguientes', detalle: 'Deja de repetirse desde esta fecha.' },
+    { valor: 'todo', titulo: 'Toda la serie', detalle: 'El programado y todos sus movimientos, también los pasados.' },
+  ];
 
   return (
     <div>
@@ -264,10 +278,38 @@ function Contenido({ movimiento: m }) {
         </button>
       </PanelInferior>
 
-      <PanelInferior abierto={panelEliminar} alCerrar={() => setPanelEliminar(false)} titulo="¿Eliminar el movimiento?">
-        <p className="panel-texto">
-          Se borra «{tituloMovimiento(m, buscarCategoria)}» de {formatearPesos(m.valor)}. No se puede deshacer.
-        </p>
+      <PanelInferior
+        abierto={panelEliminar}
+        alCerrar={() => setPanelEliminar(false)}
+        titulo={programado ? 'Se repite: ¿qué eliminar?' : '¿Eliminar el movimiento?'}
+      >
+        {programado ? (
+          <div role="radiogroup" aria-label="Qué eliminar" className="eliminar-programado">
+            {OPCIONES_ELIMINAR.map((o) => {
+              const marcada = o.valor === modoEliminar;
+              return (
+                <button
+                  key={o.valor}
+                  type="button"
+                  role="radio"
+                  aria-checked={marcada}
+                  className="panel-opcion eliminar-programado-opcion"
+                  onClick={() => setModoEliminar(o.valor)}
+                >
+                  <span className="panel-opcion-textos">
+                    <span className="panel-opcion-titulo">{o.titulo}</span>
+                    <span className="panel-opcion-detalle">{o.detalle}</span>
+                  </span>
+                  <span className={'radio' + (marcada ? ' marcado' : '')}>{marcada && <IconoCheck tamano={14} />}</span>
+                </button>
+              );
+            })}
+          </div>
+        ) : (
+          <p className="panel-texto">
+            Se borra «{tituloMovimiento(m, buscarCategoria)}» de {formatearPesos(m.valor)}. No se puede deshacer.
+          </p>
+        )}
         <BotonExito className="boton-peligro" alTerminar={eliminar}>
           Eliminar
         </BotonExito>

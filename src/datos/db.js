@@ -69,6 +69,7 @@ db.version(4)
 //                 cuentaDestinoId, etiquetaIds, observacion), frecuencia ('dia' | 'semana' |
 //                 'quincena' | 'mes' | 'anio'), empieza y termina ('AAAA-MM-DD'; termina null =
 //                 nunca), hasta (última fecha ya registrada como movimiento, o null), orden
+//                 omitidas (Sesión 9, opcional: fechas quitadas una por una, ver eliminarFecha)
 //   movimientos:  programadoId (el programado que lo creó, o null).
 // Sin índices nuevos (2026-10-04): movimientos.ajuste (true en un faltante o sobrante de
 // Reajustar saldo) y cuentas.ajuste (ver cuentas.js).
