@@ -14,6 +14,7 @@ import { Component, createRef } from 'react';
 import { flushSync } from 'react-dom';
 import { useLocation, useNavigationType } from 'react-router-dom';
 import { CURVA_ENTRAR, sinMovimiento } from '../utilidades/movimiento.js';
+import { marcarMovimiento } from '../utilidades/pantallaQuieta.js';
 import './TransicionPantallas.css';
 
 // El scroll al ir y volver lo maneja este componente, no el navegador.
@@ -185,6 +186,7 @@ class Pila extends Component {
 
     const transicion = { copia, scroll, animaciones };
     this.transicion = transicion;
+    marcarMovimiento(true);
     const alTerminar = () => this.transicion === transicion && this.terminar(true);
     Promise.all(animaciones.map((animacion) => animacion.finished)).then(alTerminar, () => {});
 
@@ -215,7 +217,10 @@ class Pila extends Component {
     transicion.animaciones.forEach((animacion) => animacion.cancel());
     transicion.copia.remove();
     const pantalla = this.pantalla.current;
-    if (!pantalla) return; // la app se estaba cerrando o recargando
+    if (!pantalla) {
+      marcarMovimiento(false);
+      return; // la app se estaba cerrando o recargando
+    }
     // La barra retenida se quita antes de que la pantalla sin barra deje su capa (por encima de
     // ella), en el mismo cuadro. Con setState normal se quitaba en el cuadro siguiente y durante
     // ese cuadro la barra se veía encima del formulario (video del iPhone, 2026-10-03).
@@ -223,6 +228,7 @@ class Pila extends Component {
     delete pantalla.dataset.transicion;
     delete pantalla.dataset.capa;
     window.scrollTo(0, transicion.scroll);
+    marcarMovimiento(false);
   }
 
   render() {

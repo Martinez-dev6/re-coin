@@ -134,8 +134,8 @@ function MenuNuevo({ abierto, alCerrar }) {
             style={{ color }}
             aria-label={texto}
             onClick={() => {
-              // El formulario abre con el teclado de números listo para el valor.
-              prepararTeclado({ numerico: true });
+              // El formulario abre con el teclado listo para el valor (sube al terminar de entrar).
+              prepararTeclado();
               setBajoFormulario(true);
               alCerrarRef.current();
               navegar(ruta);

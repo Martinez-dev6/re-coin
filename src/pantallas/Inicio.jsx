@@ -340,7 +340,7 @@ export default function Inicio() {
                           className="inicio-cuenta-mas"
                           aria-label={`Agregar movimiento a ${nombre}`}
                           onClick={() => {
-                            prepararTeclado({ numerico: true });
+                            prepararTeclado();
                             navegar('/nuevo/gasto?cuenta=' + id);
                           }}
                         >

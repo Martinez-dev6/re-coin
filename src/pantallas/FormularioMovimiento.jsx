@@ -227,10 +227,12 @@ function Campos({ clave, movimiento, programado, esProgramado = false, tipoInici
   const monto = useRef(null);
 
   // Un movimiento nuevo abre con el cursor en el valor y el teclado arriba (pedido del dueño,
-  // 2026-10-04; el menú del "+" prepara el teclado, ver teclado.js). No al editar, en programados
-  // ni al volver con algo ya escrito (borrador).
+  // 2026-10-04; el menú del "+" prepara el teclado, ver teclado.js). Cuando la pantalla termina de
+  // entrar: con el foco puesto a mitad del deslizamiento, el cursor daba saltos. No al editar, en
+  // programados ni al volver con algo ya escrito (borrador).
   useEffect(() => {
-    pasarTeclado(!movimiento && !esProgramado && !borrador?.datos.valor ? monto.current : null);
+    const conTeclado = !movimiento && !esProgramado && !borrador?.datos.valor;
+    return pasarTeclado(() => (conTeclado ? monto.current : null));
     // Solo al entrar.
   }, []);
 

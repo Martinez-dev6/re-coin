@@ -24,9 +24,10 @@ export default function Busqueda() {
   const [consulta, setConsulta] = useBusqueda();
   const campo = useRef(null);
 
-  // Al entrar sin nada escrito, el cursor va al campo (y el teclado sigue abierto si se preparó).
+  // Al entrar sin nada escrito, el cursor va al campo cuando la pantalla termina de entrar (y el
+  // teclado sube, si se preparó; ver teclado.js).
   useEffect(() => {
-    pasarTeclado(consulta ? null : campo.current);
+    return pasarTeclado(() => (consulta ? null : campo.current));
     // Solo al entrar.
   }, []);
 
