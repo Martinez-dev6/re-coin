@@ -8,7 +8,16 @@ import Deslizar from '../componentes/Deslizar.jsx';
 import FilaMovimiento from '../componentes/FilaMovimiento.jsx';
 import FilaPresupuesto from '../componentes/FilaPresupuesto.jsx';
 import { Campo, EntradaPesos } from '../componentes/Formulario.jsx';
-import { IconoCheck, IconoGasto, IconoIngreso, IconoInicio, IconoMas, IconoRepetir } from '../componentes/iconos.jsx';
+import {
+  IconoCalendario,
+  IconoCheck,
+  IconoGasto,
+  IconoIngreso,
+  IconoInicio,
+  IconoMas,
+  IconoRepetir,
+  IconoTarjeta,
+} from '../componentes/iconos.jsx';
 import { IconoPorNombre } from '../componentes/iconosPorNombre.jsx';
 import PanelInferior, { DURACION_PANEL_MS } from '../componentes/PanelInferior.jsx';
 import { MesConFlechas } from '../componentes/SelectorMes.jsx';
@@ -327,6 +336,9 @@ function Programados({ items, programados, anio, mes, navegar }) {
   const { tarjeta } = useDatos();
   const hayTransferencias = programados.some((p) => p.tipo === 'transferencia');
   const [panelNuevo, setPanelNuevo] = useState(false);
+  const { elegir } = useMes();
+  const ahora = new Date();
+  const enMesActual = anio === ahora.getFullYear() && mes === ahora.getMonth();
 
   // Calendario: semanas de lunes a domingo, o de domingo a sábado (Ajustes). Elegido: el día
   // tocado, o hoy si es de este mes.
@@ -341,6 +353,22 @@ function Programados({ items, programados, anio, mes, navegar }) {
 
   return (
     <>
+      {/* Viendo otro mes: volver al actual (y a hoy) de un toque (pedido del dueño, Sesión 9). */}
+      {!enMesActual && (
+        <div className="programados-mes-actual">
+          <button
+            type="button"
+            className="programados-dia-mas"
+            onClick={() => {
+              setDiaElegido(null);
+              elegir(ahora.getFullYear(), ahora.getMonth());
+            }}
+          >
+            <IconoCalendario tamano={16} />
+            Mes actual
+          </button>
+        </div>
+      )}
       <div className="tarjeta calendario">
         <div className="calendario-semana">
           {DIAS_SEMANA[semanaEmpieza].map((d) => (
@@ -412,13 +440,15 @@ function Programados({ items, programados, anio, mes, navegar }) {
         )}
       </Deslizar>
 
-      {/* "+" del día: ¿gasto o ingreso? Lleva al formulario de siempre con el día ya puesto y sin el
+      {/* "+" del día: ¿gasto, ingreso o gasto con tarjeta? Lleva al formulario de siempre con el día ya puesto y sin el
           selector de tipo (?fecha=, FormularioMovimiento). Sin "… recurrente" prendido. */}
       <PanelInferior abierto={panelNuevo} alCerrar={() => setPanelNuevo(false)} titulo={`Agregar el ${diaYMes(elegido)}`}>
         <div className="programados-nuevo">
           {[
             { tipo: 'gasto', texto: 'Gasto', Icono: IconoGasto },
             { tipo: 'ingreso', texto: 'Ingreso', Icono: IconoIngreso },
+            // También con tarjeta (suscripciones): se puede prender "Gasto recurrente" en el formulario.
+            { tipo: 'gasto-tarjeta', texto: 'Con tarjeta', Icono: IconoTarjeta },
           ].map(({ tipo, texto, Icono }) => (
             <button
               key={tipo}

@@ -343,7 +343,7 @@
 /* Ventana del "+": Gasto e Ingreso, dos botones grandes lado a lado con el color de cada uno. */
 .programados-nuevo {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
   gap: 12px;
   margin-top: 4px;
 }
@@ -369,6 +369,12 @@
   --relleno: var(--income-on-white);
 }
 
+/* Con tarjeta: el amarillo del menú del "+". */
+.programados-nuevo-opcion.gasto-tarjeta {
+  --tono: var(--menu-tarjeta);
+  --relleno: #bf8700;
+}
+
 .programados-nuevo-icono {
   width: 52px;
   height: 52px;
@@ -382,4 +388,11 @@
 
 .programados-nuevo-opcion:active {
   opacity: 0.75;
+}
+
+/* "Mes actual" sobre el calendario, a la derecha, solo viendo otro mes. */
+.programados-mes-actual {
+  display: flex;
+  justify-content: flex-end;
+  margin: -4px 0 8px;
 }
