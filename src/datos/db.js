@@ -100,6 +100,21 @@ db.version(7).stores({
   favoritos: 'id, tipo',
 });
 
+// Versión 8 (2026-10-04): los reajustes de saldo ya no llevan observación automática (pedido del
+// dueño). Se quita la que pusieron los de antes ("Reajuste de saldo…: la app tenía $ X y en la
+// cuenta había $ Y."), solo si sigue tal cual.
+const OBSERVACION_REAJUSTE = /^Reajuste de saldo( de .+)?: la app tenía .+ y en la cuenta había .+.$/;
+db.version(8)
+  .stores({})
+  .upgrade((tx) =>
+    tx
+      .table('movimientos')
+      .filter((m) => m.ajuste === true && OBSERVACION_REAJUSTE.test(m.observacion ?? ''))
+      .modify((m) => {
+        m.observacion = '';
+      }),
+  );
+
 // Solo la primera vez que se crea la base de datos. Las nuevas toman orden = Date.now()
 // (ordenAlFinal), así que "Otros" lleva un orden mayor para seguir de último.
 const ORDEN_ULTIMAS = 9e15;

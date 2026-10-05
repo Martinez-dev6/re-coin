@@ -526,16 +526,12 @@ function Campos({ clave, movimiento, programado, esProgramado = false, tipoInici
     <div>
       <CabeceraFormulario titulo={editando ? tituloEditar : tituloNuevo} volverA={volverA}>
         <MontoEditable ref={monto} etiqueta="Valor" valor={datos.valor} alCambiar={(valor) => cambiar({ valor })} />
-        {/* Al editar no se cambia el tipo: la categoría y las cuentas dependen de él. El gasto con
-            tarjeta tiene su propio formulario, sin estas opciones (design/capturas/GastoTarjeta.png). */}
-        {!conTarjeta && (
-          <Segmentado
-            opciones={TIPOS_MOVIMIENTO}
-            valor={tipo}
-            etiqueta="Tipo de movimiento"
-            bloqueado={Boolean(movimiento)}
-            alCambiar={cambiarTipo}
-          />
+        {/* Al editar no se cambia el tipo (la categoría y las cuentas dependen de él), así que el
+            selector no sale: antes salía bloqueado y parecía que no funcionaba (pedido del dueño,
+            2026-10-04). El gasto con tarjeta tiene su propio formulario, sin estas opciones
+            (design/capturas/GastoTarjeta.png). */}
+        {!conTarjeta && !movimiento && (
+          <Segmentado opciones={TIPOS_MOVIMIENTO} valor={tipo} etiqueta="Tipo de movimiento" alCambiar={cambiarTipo} />
         )}
       </CabeceraFormulario>
 
@@ -575,6 +571,8 @@ function Campos({ clave, movimiento, programado, esProgramado = false, tipoInici
           </div>
         ) : transferencia ? (
           <div className="tarjeta campos">
+            {/* La descripción arriba, como en gasto e ingreso (pedido del dueño, 2026-10-04). */}
+            {filaDescripcion}
             <Campo Icono={IconoDesde} etiqueta="Desde" alTocar={() => setPanel('cuentaId')}>
               {nombreCuenta(datos.cuentaId) ?? vacio('Elegir')}
             </Campo>
@@ -583,7 +581,6 @@ function Campos({ clave, movimiento, programado, esProgramado = false, tipoInici
             </Campo>
             {filaFecha}
             {filaHora}
-            {filaDescripcion}
             {filaObservacion}
           </div>
         ) : (

@@ -1,7 +1,6 @@
 // Cuentas: tipos, saldo, reajuste de saldo y guardado.
 import { esAcento } from '../tema/colores.js';
 import { horaActual, hoyTexto } from '../utilidades/fechas.js';
-import { formatearPesos } from '../utilidades/formato.js';
 import { db, nuevoId, ordenAlFinal } from './db.js';
 import { movimientosDeCuenta } from './movimientos.js';
 
@@ -54,7 +53,8 @@ export async function reajustarSaldo(cuenta, saldoReal, modo, otraCuentaId = nul
     hora: horaActual(),
     pagado: true,
     etiquetaIds: [],
-    observacion: `Reajuste de saldo${transferir ? ` de ${cuenta.nombre}` : ''}: la app tenía ${formatearPesos(cuenta.saldo)} y en la cuenta había ${formatearPesos(saldoReal)}.`,
+    // Sin observación automática (pedido del dueño, 2026-10-04): antes decía cuánto tenía la app.
+    observacion: '',
     tarjetaId: null,
     cuotas: null,
     factura: null,
