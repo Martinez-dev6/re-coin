@@ -71,8 +71,10 @@ swPos: dark ? '20px' : '2px',
 navBg: dark ? '#14141a' : '#ffffff',
 navInactive: dark ? '#a0a0ae' : '#5b5f70',
 accentText: hex(at),
-transferBg: dark ? hex(banner.map((v) => v + (255 - v) * 0.45)) : hex(tr),
-transferText: dark ? ((lum(banner.map((v) => v + (255 - v) * 0.45)) + 0.05) / 0.055 <= 1.05 / (lum(banner.map((v) => v + (255 - v) * 0.45)) + 0.05) ? "#ffffff" : "#0f1020") : "#ffffff",
+// Botón Guardar transferencia: el mismo tono en claro y en oscuro, con texto blanco (pedido del
+// dueño, 2026-10-04: en oscuro salía aclarado). tr ya tiene contraste 4,5:1 con el blanco.
+transferBg: hex(tr),
+transferText: "#ffffff",
 onExpense: dark ? "#1a0f0f" : "#ffffff",
 onIncome: dark ? "#0e1a13" : "#ffffff",
 accentLight: hex(banner.map((v) => v + (255 - v) * 0.45)),
