@@ -11,27 +11,38 @@ function mezclar(hex, encima, proporcion) {
   return '#' + base.map((v, i) => Math.round(v * (1 - proporcion) + encima[i] * proporcion).toString(16).padStart(2, '0')).join('');
 }
 
-// Colores de categoría que no están en design/tema.js (la segunda fila de la rejilla, 2026-10-04):
-// [claro, oscuro]. Mismo criterio que los de tema.js (tonos 700 y 400): contraste de 5 a 7,9 sobre
-// blanco en claro y de 6 a 11,8 sobre la superficie en oscuro, también sobre su fondo suave.
-const COLORES_EXTRA = {
-  h: ['#b91c1c', '#f87171'],
-  i: ['#8a4b26', '#d6a072'],
-  j: ['#4d7c0f', '#a3e635'],
-  k: ['#0f766e', '#2dd4bf'],
-  l: ['#4338ca', '#818cf8'],
-  m: ['#a21caf', '#e879f9'],
-  o: ['#475569', '#94a3b8'],
-  // Tercera fila (Sesión 9, pedido del dueño: más variedad, en tres filas). En claro, 3:1 o más sobre
-  // blanco; en oscuro, los tonos claros.
-  p: ['#a16207', '#facc15'], // mostaza
-  q: ['#0369a1', '#7dd3fc'], // celeste
-  r: ['#9f1239', '#fda4af'], // vino
-  s: ['#1e3a8a', '#93c5fd'], // azul marino
+// Colores de categoría [claro, oscuro], uno por letra (--cat-X y --cat-X-soft). Sesión 9 (pedido del
+// dueño: "que no se parezcan, muy variado"): 18 colores elegidos a mano por familia (rojo, naranja,
+// dorado, lima, esmeralda, cian, azul, índigo, violeta, fucsia, rosa, vino, marrón, arena, gris,
+// grafito, oliva, bosque) y medidos con CIEDE2000: el par más parecido queda en 10 o más, en claro y
+// en oscuro (antes había pares de 4,7). Reemplazan también los de a–g de design/tema.js (se aplican
+// después). En claro, 3:1 o más sobre blanco; en oscuro, 3,5:1 o más sobre la superficie.
+// k, q y s ya no se ofrecen: Dexie versión 9 pasa las categorías que los tenían a u, b y l (y
+// restaurarCopia, las copias viejas); siguen definidos por si algo quedara con ellos.
+export const COLORES_CATEGORIA_TEMA = {
+  h: ['#dc2626', '#f87171'], // rojo
+  a: ['#ea580c', '#fb923c'], // naranja
+  p: ['#a16207', '#facc15'], // dorado
+  j: ['#4d7c0f', '#bef264'], // lima
+  u: ['#047857', '#5eead4'], // esmeralda
+  b: ['#0e7490', '#38bdf8'], // cian
+  g: ['#2563eb', '#818cf8'], // azul
+  l: ['#312e81', '#c7d2fe'], // índigo
+  c: ['#7e22ce', '#c084fc'], // violeta
+  m: ['#c026d3', '#f0abfc'], // fucsia
+  e: ['#db2777', '#fda4af'], // rosa
+  r: ['#881337', '#e11d48'], // vino
+  i: ['#7c2d12', '#d6a072'], // marrón
+  d: ['#8a6d3b', '#e7d3a8'], // arena
+  o: ['#475569', '#94a3b8'], // gris
   t: ['#27272a', '#e4e4e7'], // grafito
-  u: ['#047857', '#34d399'], // esmeralda
-  v: ['#78716c', '#d6d3d1'], // piedra
+  v: ['#4d5d16', '#a3b35a'], // oliva
+  f: ['#14532d', '#22c55e'], // bosque
+  k: ['#047857', '#5eead4'], // (como u)
+  q: ['#0e7490', '#38bdf8'], // (como b)
+  s: ['#312e81', '#c7d2fe'], // (como l)
 };
+const COLORES_EXTRA = COLORES_CATEGORIA_TEMA;
 
 function coloresExtra(oscuro) {
   const variables = {};

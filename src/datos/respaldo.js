@@ -2,6 +2,7 @@
 // Las preferencias de color y modo no van (viven en localStorage y no son datos).
 import { cambiarAjustes } from '../estado/ajustes.js';
 import { acentoActual } from '../tema/colores.js';
+import { colorCategoriaActual } from './categorias.js';
 import { db } from './db.js';
 
 // Marca interna de las copias: se queda 'sendo' (nombre anterior de la app) para que las
@@ -155,6 +156,8 @@ export function restaurarCopia(copia) {
   const datos = {
     ...copia.datos,
     cuentas: (copia.datos.cuentas ?? []).map((c) => ({ ...c, color: acentoActual(c.color) ?? null })),
+    // Colores de categoría que ya no se ofrecen (Sesión 9) pasan al que los reemplaza.
+    categorias: (copia.datos.categorias ?? []).map((c) => ({ ...c, color: colorCategoriaActual(c.color) ?? null })),
   };
   // Lo restaurado ya está en una copia: cuenta como la última.
   return db

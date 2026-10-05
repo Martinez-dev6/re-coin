@@ -188,18 +188,18 @@
 /* Filas de 7 (las categorías tienen 14 colores). */
 .rejilla-colores {
   display: grid;
-  grid-template-columns: repeat(7, 36px);
+  grid-template-columns: repeat(6, 40px); /* 18 colores en tres filas de seis (Sesión 9) */
   justify-content: space-between;
   row-gap: 14px;
   padding: 16px;
 }
 
 .rejilla-colores > button {
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   padding: 0;
   border: 0;
-  border-radius: 18px;
+  border-radius: 20px;
   display: flex;
   align-items: center;
   justify-content: center;

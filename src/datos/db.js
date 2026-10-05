@@ -116,6 +116,20 @@ db.version(8)
       }),
   );
 
+// Versión 9 (Sesión 9): la paleta de categorías pasó a 18 colores muy distintos; las letras k, q y s
+// ya no se ofrecen y sus categorías pasan a u, b y l (los colores más parecidos de la paleta nueva).
+db.version(9)
+  .stores({})
+  .upgrade((tx) =>
+    tx
+      .table('categorias')
+      .toCollection()
+      .modify((c) => {
+        const nuevo = { k: 'u', q: 'b', s: 'l' }[c.color];
+        if (nuevo) c.color = nuevo;
+      }),
+  );
+
 // Solo la primera vez que se crea la base de datos. Las nuevas toman orden = Date.now()
 // (ordenAlFinal), así que "Otros" lleva un orden mayor para seguir de último.
 const ORDEN_ULTIMAS = 9e15;
