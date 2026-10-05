@@ -1032,21 +1032,6 @@ function Campos({ clave, movimiento, programado, esProgramado = false, tipoInici
   );
 }
 
-// Nuevo programado (/programados/nuevo) y editar programado (/programados/:id).
-// design/capturas/NuevoProgramado.png, sin "Registrar solo": siempre se registra como pendiente.
-export function FormularioProgramado() {
-  const { id } = useParams();
-  const { key: clave } = useLocation();
-  const [parametros] = useSearchParams();
-  const { programados, cargando } = useDatos();
-  const editando = id !== 'nuevo';
-  const ocurrencia = /^\d{4}-\d{2}-\d{2}$/.test(parametros.get('fecha') ?? '') ? parametros.get('fecha') : null;
-  const programado = editando ? programados.find((p) => p.id === id) : undefined;
-  if (cargando) return <CabeceraFormulario titulo={TITULOS_PROGRAMADO[0]} volverA="/planes" />;
-  if (editando && !programado) return <Navigate to="/planes" replace />;
-  return <Campos key={clave} clave={clave} esProgramado programado={programado} tipoInicial="gasto" ocurrencia={ocurrencia} />;
-}
-
 // Lista de etiquetas para marcar, y un campo para crear una nueva (queda marcada).
 export function PanelEtiquetas({ etiquetas, elegidas, alAlternar }) {
   const [nueva, setNueva] = useState('');

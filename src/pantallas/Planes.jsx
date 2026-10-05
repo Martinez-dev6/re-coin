@@ -19,6 +19,7 @@ import {
 } from '../componentes/iconos.jsx';
 import { IconoPorNombre } from '../componentes/iconosPorNombre.jsx';
 import PanelInferior, { DURACION_PANEL_MS } from '../componentes/PanelInferior.jsx';
+import PanelProgramado from '../componentes/PanelProgramado.jsx';
 import { MesConFlechas } from '../componentes/SelectorMes.jsx';
 import { useDatos } from '../datos/DatosContext.jsx';
 import { ahorroPorPeriodo, aportar, frecuenciaMeta } from '../datos/metas.js';
@@ -314,7 +315,7 @@ function estadoProgramado(item) {
 // Lo ya registrado abre lo mismo que en Transacciones (el movimiento, o la factura de una cuota);
 // lo programado que falta abre el programado para editarlo. Lo que se repite lleva el ícono de
 // repetir junto al título; lo que falta dice su frecuencia.
-function FilasProgramadas({ items, navegar, frecuenciaDe }) {
+function FilasProgramadas({ items, navegar, frecuenciaDe, alAbrirProgramado }) {
   const datos = useDatos();
   return (
     <div className="tarjeta-lista">
@@ -335,7 +336,7 @@ function FilasProgramadas({ items, navegar, frecuenciaDe }) {
             )
           }
           estado={estadoProgramado(item)}
-          alTocar={() => navegar(item.futuro ? `/programados/${item.programadoId}?fecha=${item.compra}` : rutaMovimiento(item))}
+          alTocar={() => (item.futuro ? alAbrirProgramado(item.programadoId, item.compra) : navegar(rutaMovimiento(item)))}
         />
       ))}
     </div>
@@ -351,6 +352,14 @@ function Programados({ items, programados, anio, mes, navegar }) {
   const { semanaEmpieza } = useAjustes();
   const { tarjeta } = useDatos();
   const [panelSeries, setPanelSeries] = useState(false);
+  // Ventana pequeña de un programado (PanelProgramado): cuál y, si se abrió desde una fecha futura
+  // del calendario, esa fecha.
+  const [abierto, setAbierto] = useState({ id: null, ocurrencia: null });
+  const [panelProgramado, setPanelProgramado] = useState(false);
+  const abrirProgramado = (id, ocurrencia = null) => {
+    setAbierto({ id, ocurrencia });
+    setPanelProgramado(true);
+  };
   // Transferencias y pagos de tarjeta van en azul (solo mueven dinero entre lo propio).
   const esTransferencia = (it) => it.tipo === 'transferencia' || it.tipo === 'pagoTarjeta';
   const hayTransferencias = items.some(esTransferencia);
@@ -455,7 +464,7 @@ function Programados({ items, programados, anio, mes, navegar }) {
         {delDia.length === 0 ? (
           <div className="tarjeta vacio">Sin movimientos este día.</div>
         ) : (
-          <FilasProgramadas items={delDia} navegar={navegar} frecuenciaDe={frecuenciaDe} />
+          <FilasProgramadas items={delDia} navegar={navegar} frecuenciaDe={frecuenciaDe} alAbrirProgramado={abrirProgramado} />
         )}
       </Deslizar>
 
@@ -493,13 +502,20 @@ function Programados({ items, programados, anio, mes, navegar }) {
                 }
                 alTocar={() => {
                   setPanelSeries(false);
-                  setTimeout(() => navegar('/programados/' + p.id), DURACION_PANEL_MS + 30);
+                  setTimeout(() => abrirProgramado(p.id), DURACION_PANEL_MS + 30);
                 }}
               />
             ))
           )}
         </div>
       </PanelInferior>
+
+      <PanelProgramado
+        programado={programados.find((p) => p.id === abierto.id)}
+        ocurrencia={abierto.ocurrencia}
+        abierto={panelProgramado}
+        alCerrar={() => setPanelProgramado(false)}
+      />
     </>
   );
 }

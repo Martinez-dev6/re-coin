@@ -1,0 +1,43 @@
+/* Ventana pequeña de un programado (PanelProgramado.jsx). */
+
+/* "Se repite": las cinco frecuencias como chips, en una fila. */
+.programado-frecuencias {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 6px 0 12px;
+}
+
+.programado-frecuencias .chip {
+  flex: 1 1 auto;
+}
+
+.programado-campos {
+  margin-bottom: 4px;
+}
+
+/* El interruptor de Termina queda por encima del campo de fecha invisible que cubre la fila. */
+.programado-campos .interruptor {
+  position: relative;
+  z-index: 1;
+  margin-left: 10px;
+}
+
+.programado-eliminar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  color: var(--expense);
+}
+
+.programado-frecuencias .chip > span {
+  justify-content: center;
+}
+
+.programado-frecuencias .chip[aria-checked='true'] > span {
+  background: var(--banner-bg);
+  border-color: var(--banner-bg);
+  color: var(--on-banner);
+  font-weight: 700;
+}
