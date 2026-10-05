@@ -1,82 +1,72 @@
-// Nueva tarjeta (/tarjetas/nueva) y editar tarjeta (/tarjetas/:id/editar, desde la pantalla de la
-// tarjeta). design/capturas/NuevaTarjeta.png
-import { useRef, useState } from 'react';
-import { Navigate, useLocation, useNavigate, useParams } from 'react-router-dom';
-import BotonExito from '../componentes/BotonExito.jsx';
-import {
-  CabeceraFormulario,
-  Campo,
-  EntradaTexto,
-  MontoEditable,
-  PieFormulario,
-  SelectorColorCuenta,
-} from '../componentes/Formulario.jsx';
-import { IconoBanco, IconoBasura, IconoCalendario, IconoCheck, IconoMas, IconoReloj, IconoTexto } from '../componentes/iconos.jsx';
-import { ICONOS_TARJETA, IconoPorNombre } from '../componentes/iconosPorNombre.jsx';
-import PanelInferior, { DURACION_PANEL_MS } from '../componentes/PanelInferior.jsx';
-import SelectorIcono from '../componentes/SelectorIcono.jsx';
+// Nueva tarjeta y Editar tarjeta en una ventana flotante (Sesión 9, pedido del dueño; antes era la
+// pantalla /tarjetas/nueva y /tarjetas/:id/editar). design/capturas/NuevaTarjeta.png
+// Se abre con abrirVentana('tarjeta' [, id]) (estado/ventanas.js). El color elegido va en el ícono
+// y en toda la ventana (como es pequeña, el dueño lo quiso así); el resto de la app no cambia.
+// tarjeta: la que se edita (undefined = nueva); se queda mientras la ventana se va.
+import { useEffect, useRef, useState } from 'react';
 import { useDatos } from '../datos/DatosContext.jsx';
 import { eliminarTarjeta, guardarTarjeta } from '../datos/tarjetas.js';
+import { abrirVentana } from '../estado/ventanas.js';
+import { variablesDeColor } from '../tema/aplicarTema.js';
 import { estiloIconoCuenta } from '../tema/colores.js';
+import { useTema } from '../tema/TemaContext.jsx';
 import { formatearPesos } from '../utilidades/formato.js';
-import { volver } from '../utilidades/navegacion.js';
-import './FormularioMovimiento.css';
+import BotonExito from './BotonExito.jsx';
+import { Campo, EntradaTexto, MontoEditable, SelectorColorCuenta } from './Formulario.jsx';
+import { IconoBanco, IconoBasura, IconoCalendario, IconoCheck, IconoMas, IconoReloj, IconoTexto } from './iconos.jsx';
+import { ICONOS_TARJETA, IconoPorNombre } from './iconosPorNombre.jsx';
+import PanelInferior, { DURACION_PANEL_MS } from './PanelInferior.jsx';
+import SelectorIcono from './SelectorIcono.jsx';
+import VentanaFlotante from './VentanaFlotante.jsx';
 
-const LISTA = '/mi-espacio/tarjetas';
 const DIAS = Array.from({ length: 31 }, (_, i) => i + 1);
-
 const IconoCierre = (p) => <IconoCalendario tamano={18} {...p} />;
 const IconoPago = (p) => <IconoReloj tamano={18} grosor={2} {...p} />;
 
-export default function FormularioTarjeta() {
-  const { id } = useParams();
-  const { tarjeta, cargando } = useDatos();
-  const editando = Boolean(id);
-  const existente = editando ? tarjeta(id) : undefined;
+const datosDe = (tarjeta, cuentas) =>
+  tarjeta
+    ? {
+        nombre: tarjeta.nombre,
+        cupo: tarjeta.cupo,
+        diaCierre: tarjeta.diaCierre,
+        diaPago: tarjeta.diaPago,
+        cuentaPagoId: tarjeta.cuentaPagoId,
+        icono: tarjeta.icono,
+        color: tarjeta.color ?? null,
+      }
+    : { nombre: '', cupo: 0, diaCierre: 15, diaPago: 25, cuentaPagoId: cuentas[0]?.id ?? null, icono: 'tarjeta', color: null };
 
-  if (editando && cargando) return <CabeceraFormulario titulo="Editar tarjeta" volverA={LISTA} />;
-  if (editando && !existente) return <Navigate to={LISTA} replace />;
-  return <Campos key={id} tarjeta={existente} />;
-}
-
-function Campos({ tarjeta }) {
-  const navegar = useNavigate();
-  const { state } = useLocation();
+export default function VentanaTarjeta({ tarjeta, abierto, alCerrar }) {
   const { cuentas, cuenta, movimientos } = useDatos();
-  // Al editar, Cerrar y Guardar vuelven a la pantalla de la tarjeta.
-  const volverA = tarjeta ? `/tarjetas/${tarjeta.id}` : LISTA;
-  const [datos, setDatos] = useState(() =>
-    tarjeta
-      ? {
-          nombre: tarjeta.nombre,
-          cupo: tarjeta.cupo,
-          diaCierre: tarjeta.diaCierre,
-          diaPago: tarjeta.diaPago,
-          cuentaPagoId: tarjeta.cuentaPagoId,
-          icono: tarjeta.icono,
-          color: tarjeta.color ?? null,
-        }
-      : { nombre: '', cupo: 0, diaCierre: 15, diaPago: 25, cuentaPagoId: cuentas[0]?.id ?? null, icono: 'tarjeta', color: null },
-  );
+  const { oscuro } = useTema();
+  const [datos, setDatos] = useState(() => datosDe(tarjeta, cuentas));
   const [panel, setPanel] = useState(null); // 'diaCierre' | 'diaPago' | 'cuenta' | 'eliminar'
   const eliminando = useRef(false);
   const cambiar = (cambios) => setDatos((d) => ({ ...d, ...cambios }));
   const usos = tarjeta ? movimientos.filter((m) => m.tarjetaId === tarjeta.id).length : 0;
 
-  // Al terminar la animación del botón (BotonExito) se vuelve.
-  const guardar = () => guardarTarjeta(tarjeta?.id, datos);
+  // Cada vez que se abre, parte de la tarjeta como está guardada (o vacía).
+  useEffect(() => {
+    if (!abierto) return;
+    setDatos(datosDe(tarjeta, cuentas));
+    setPanel(null);
+    eliminando.current = false;
+    // Solo al abrir.
+  }, [abierto]);
 
-  // Primero baja el panel; después se vuelve (saltando la pantalla de la tarjeta, que ya no
-  // existirá) y se borra (ver FormularioCuenta).
+  // Una cuenta recién creada desde aquí ("Crear una cuenta") queda como "Paga desde".
+  useEffect(() => {
+    if (abierto && !datos.cuentaPagoId && cuentas[0]) cambiar({ cuentaPagoId: cuentas[0].id });
+  }, [cuentas.length]);
+
+  // Primero baja el panel de confirmar y se va la ventana; después se borra (si se estaba en la
+  // pantalla de la tarjeta, esa pantalla vuelve sola a la lista).
   const eliminar = () => {
     if (eliminando.current) return;
     eliminando.current = true;
     setPanel(null);
-    setTimeout(() => {
-      if (state?.desdeDetalle && window.history.state?.idx > 1) navegar(-2);
-      else navegar(LISTA, { replace: true });
-      eliminarTarjeta(tarjeta.id);
-    }, DURACION_PANEL_MS + 30);
+    alCerrar();
+    setTimeout(() => eliminarTarjeta(tarjeta.id), DURACION_PANEL_MS + 30);
   };
 
   const panelDia = (campo, titulo) => (
@@ -98,12 +88,19 @@ function Campos({ tarjeta }) {
   );
 
   return (
-    <div>
-      <CabeceraFormulario titulo={tarjeta ? 'Editar tarjeta' : 'Nueva tarjeta'} volverA={volverA}>
-        <MontoEditable etiqueta="Cupo total" valor={datos.cupo} alCambiar={(cupo) => cambiar({ cupo })} />
-      </CabeceraFormulario>
-
-      <div className="formulario-contenido">
+    <>
+      <VentanaFlotante
+        abierto={abierto}
+        alCerrar={alCerrar}
+        titulo={tarjeta ? 'Editar tarjeta' : 'Nueva tarjeta'}
+        estilo={variablesDeColor(datos.color, oscuro)}
+        arriba={<MontoEditable etiqueta="Cupo total" valor={datos.cupo} alCambiar={(cupo) => cambiar({ cupo })} />}
+        pie={
+          <BotonExito className="boton-principal" alTocar={() => guardarTarjeta(tarjeta?.id, datos)} alTerminar={alCerrar}>
+            Guardar tarjeta
+          </BotonExito>
+        }
+      >
         <div className="tarjeta campos">
           <Campo Icono={IconoTexto} etiqueta="Nombre">
             <EntradaTexto valor={datos.nombre} alCambiar={(nombre) => cambiar({ nombre })} ejemplo="Ej. Tarjeta principal" />
@@ -120,13 +117,7 @@ function Campos({ tarjeta }) {
         </div>
 
         <h2 className="titulo-seccion">Ícono</h2>
-        {/* Solo el ícono lleva el color de la tarjeta; el formulario sigue con el del tema (pedido del dueño). */}
-        <SelectorIcono
-          sugeridos={ICONOS_TARJETA}
-          elegido={datos.icono}
-          alElegir={(icono) => cambiar({ icono })}
-          color={datos.color}
-        />
+        <SelectorIcono sugeridos={ICONOS_TARJETA} elegido={datos.icono} alElegir={(icono) => cambiar({ icono })} />
 
         <h2 className="titulo-seccion">Color</h2>
         <SelectorColorCuenta valor={datos.color} alCambiar={(color) => cambiar({ color })} etiqueta="Color de la tarjeta" />
@@ -137,13 +128,7 @@ function Campos({ tarjeta }) {
             Eliminar tarjeta
           </button>
         )}
-      </div>
-
-      <PieFormulario>
-        <BotonExito className="boton-principal" alTocar={guardar} alTerminar={() => volver(navegar, volverA)}>
-          Guardar tarjeta
-        </BotonExito>
-      </PieFormulario>
+      </VentanaFlotante>
 
       {panelDia('diaCierre', 'Día de cierre')}
       {panelDia('diaPago', 'Día de pago')}
@@ -180,7 +165,14 @@ function Campos({ tarjeta }) {
             );
           })}
           {cuentas.length === 0 && (
-            <button type="button" className="panel-opcion panel-opcion-nueva" onClick={() => navegar('/cuentas/nueva')}>
+            <button
+              type="button"
+              className="panel-opcion panel-opcion-nueva"
+              onClick={() => {
+                setPanel(null);
+                setTimeout(() => abrirVentana('cuenta'), DURACION_PANEL_MS);
+              }}
+            >
               <span className="icono-circulo grande">
                 <IconoMas />
               </span>
@@ -202,6 +194,6 @@ function Campos({ tarjeta }) {
           Cancelar
         </button>
       </PanelInferior>
-    </div>
+    </>
   );
 }

@@ -61,6 +61,7 @@ import { formatearPesos } from '../utilidades/formato.js';
 import { volver } from '../utilidades/navegacion.js';
 import { pasarTeclado } from '../utilidades/teclado.js';
 import './FormularioMovimiento.css';
+import { abrirVentana } from '../estado/ventanas.js';
 
 const TITULOS = {
   gasto: ['Nuevo gasto', 'Editar gasto', 'Guardar gasto'],
@@ -416,6 +417,11 @@ function Campos({ clave, movimiento, programado, esProgramado = false, tipoInici
     setPanel(null);
     setTimeout(() => navegar(ruta), DURACION_PANEL_MS + 30);
   };
+  // Nueva cuenta o tarjeta: ventana flotante encima del formulario (Sesión 9); lo escrito se queda.
+  const abrirEncima = (tipoVentana) => {
+    setPanel(null);
+    setTimeout(() => abrirVentana(tipoVentana), DURACION_PANEL_MS + 30);
+  };
 
   // Si falta algo, avisa y devuelve false (el botón no anima). Si no, guarda; al terminar la
   // animación del botón (BotonExito) se vuelve.
@@ -592,7 +598,7 @@ function Campos({ clave, movimiento, programado, esProgramado = false, tipoInici
             <button
               type="button"
               className="boton-principal"
-              onClick={() => navegar(conTarjeta ? '/tarjetas/nueva' : '/cuentas/nueva')}
+              onClick={() => abrirVentana(conTarjeta ? 'tarjeta' : 'cuenta')}
             >
               {conTarjeta ? 'Crear tarjeta' : 'Crear cuenta'}
             </button>
@@ -753,7 +759,7 @@ function Campos({ clave, movimiento, programado, esProgramado = false, tipoInici
                 </button>
               );
             })}
-            <button type="button" className="panel-opcion panel-opcion-nueva" onClick={() => irACrear('/cuentas/nueva')}>
+            <button type="button" className="panel-opcion panel-opcion-nueva" onClick={() => abrirEncima('cuenta')}>
               <span className="icono-circulo grande">
                 <IconoMas />
               </span>
@@ -792,7 +798,7 @@ function Campos({ clave, movimiento, programado, esProgramado = false, tipoInici
               </button>
             );
           })}
-          <button type="button" className="panel-opcion panel-opcion-nueva" onClick={() => irACrear('/tarjetas/nueva')}>
+          <button type="button" className="panel-opcion panel-opcion-nueva" onClick={() => abrirEncima('tarjeta')}>
             <span className="icono-circulo grande">
               <IconoMas />
             </span>

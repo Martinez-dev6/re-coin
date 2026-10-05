@@ -131,3 +131,23 @@
 .ventana-cuerpo .campos {
   margin-bottom: 14px;
 }
+
+/* Pie fijo (Guardar), siempre a la vista aunque el contenido se desplace. */
+.ventana-pie {
+  flex: none;
+  padding: 10px 16px 16px;
+  border-top: 1px solid var(--divider);
+}
+
+.ventana-pie .boton-principal {
+  margin-top: 0;
+}
+
+/* Lo de un formulario de pantalla completa dentro de la ventana: títulos de sección y Eliminar. */
+.ventana-cuerpo > .titulo-seccion:first-of-type {
+  margin-top: 4px;
+}
+
+.ventana-cuerpo .formulario-eliminar {
+  margin-bottom: 0;
+}

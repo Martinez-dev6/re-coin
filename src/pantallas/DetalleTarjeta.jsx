@@ -14,6 +14,7 @@ import { formatearPesos } from '../utilidades/formato.js';
 import { ResumenTarjeta } from './Tarjetas.jsx';
 import './Cuentas.css';
 import './Tarjetas.css';
+import { abrirVentana } from '../estado/ventanas.js';
 
 const LISTA = '/mi-espacio/tarjetas';
 
@@ -44,7 +45,7 @@ function Contenido({ tarjeta: t }) {
             type="button"
             className="boton-banner"
             aria-label="Editar tarjeta"
-            onClick={() => navegar(`/tarjetas/${t.id}/editar`, { state: { desdeDetalle: true } })}
+            onClick={() => abrirVentana('tarjeta', t.id)}
           >
             <IconoLapiz />
           </button>

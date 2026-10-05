@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import BarraNavegacion from './componentes/BarraNavegacion.jsx';
 import ConPestanas from './componentes/ConPestanas.jsx';
 import TransicionPantallas from './componentes/TransicionPantallas.jsx';
+import VentanasGlobales from './componentes/VentanasGlobales.jsx';
 import Ajustes from './pantallas/Ajustes.jsx';
 import Apariencia from './pantallas/Apariencia.jsx';
 import Ayuda from './pantallas/Ayuda.jsx';
@@ -13,12 +14,10 @@ import DetalleTarjeta from './pantallas/DetalleTarjeta.jsx';
 import Etiquetas from './pantallas/Etiquetas.jsx';
 import Factura from './pantallas/Factura.jsx';
 import FormularioCategoria from './pantallas/FormularioCategoria.jsx';
-import FormularioCuenta from './pantallas/FormularioCuenta.jsx';
 import FormularioEtiqueta from './pantallas/FormularioEtiqueta.jsx';
 import FormularioMeta from './pantallas/FormularioMeta.jsx';
 import FormularioMovimiento, { FormularioProgramado } from './pantallas/FormularioMovimiento.jsx';
 import FormularioPresupuesto from './pantallas/FormularioPresupuesto.jsx';
-import FormularioTarjeta from './pantallas/FormularioTarjeta.jsx';
 import Graficos from './pantallas/Graficos.jsx';
 import ImportarExportar from './pantallas/ImportarExportar.jsx';
 import Inicio from './pantallas/Inicio.jsx';
@@ -36,6 +35,7 @@ import Transacciones from './pantallas/Transacciones.jsx';
 // TransicionPantallas.jsx (deciden la animación y si se muestra la barra inferior).
 export default function App() {
   return (
+    <>
     <TransicionPantallas barra={<BarraNavegacion />}>
       <Routes>
         {/* Con barra inferior */}
@@ -65,14 +65,10 @@ export default function App() {
         <Route path="/pendientes" element={<Pendientes />} />
         <Route path="/nuevo/:pantalla" element={<FormularioMovimiento />} />
         <Route path="/movimientos/:id/editar" element={<FormularioMovimiento />} />
-        <Route path="/cuentas/nueva" element={<FormularioCuenta />} />
-        <Route path="/cuentas/:id/editar" element={<FormularioCuenta />} />
         <Route path="/cuentas/:id/reajustar" element={<ReajustarSaldo />} />
         <Route path="/categorias/:id" element={<FormularioCategoria />} />
         <Route path="/etiquetas/:id" element={<FormularioEtiqueta />} />
-        <Route path="/tarjetas/nueva" element={<FormularioTarjeta />} />
         <Route path="/tarjetas/:id" element={<DetalleTarjeta />} />
-        <Route path="/tarjetas/:id/editar" element={<FormularioTarjeta />} />
         <Route path="/facturas/:tarjetaId/:mes" element={<Factura />} />
         <Route path="/presupuestos/:id" element={<FormularioPresupuesto />} />
         <Route path="/metas/:id" element={<FormularioMeta />} />
@@ -81,5 +77,8 @@ export default function App() {
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </TransicionPantallas>
+    {/* Crear o editar una cuenta o una tarjeta: ventanas flotantes encima de cualquier pantalla. */}
+    <VentanasGlobales />
+    </>
   );
 }

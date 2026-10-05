@@ -11,11 +11,12 @@ import { estiloIconoCuenta } from '../tema/colores.js';
 import { formatearPesos } from '../utilidades/formato.js';
 import { useFilasAnimadas } from '../utilidades/movimiento.js';
 import './Cuentas.css';
+import { abrirVentana } from '../estado/ventanas.js';
 
 export default function Cuentas() {
   const navegar = useNavigate();
   const { cuentas, cargando } = useDatos();
-  const nueva = () => navegar('/cuentas/nueva');
+  const nueva = () => abrirVentana('cuenta');
   const lista = useRef(null);
   useFilasAnimadas(lista);
   // La cuenta tocada: su ventana (PanelCuenta).

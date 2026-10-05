@@ -27,6 +27,7 @@ import { proximaFactura, textoVence } from '../datos/tarjetas.js';
 import { useMes } from '../estado/MesContext.jsx';
 import { estiloIconoCuenta } from '../tema/colores.js';
 import { nombreMes } from '../utilidades/fechas.js';
+import { abrirVentana } from '../estado/ventanas.js';
 
 const MAXIMO = 3; // filas por bloque; el resto, en "Ver todos"
 const porcentaje = (parte, todo) => (todo > 0 ? Math.round((parte / todo) * 100) : 0);
@@ -386,7 +387,7 @@ export function BloqueTarjetas({ pesos }) {
     <>
       <Cabeza titulo="Tarjetas de crédito" enlace={tarjetas.length > 0 && 'Ver tarjetas'} alTocar={verTarjetas} />
       {tarjetas.length === 0 ? (
-        <Vacio texto="Aún no tienes tarjetas." boton="Crear" alTocar={() => navegar('/tarjetas/nueva')} />
+        <Vacio texto="Aún no tienes tarjetas." boton="Crear" alTocar={() => abrirVentana('tarjeta')} />
       ) : (
         <button type="button" className="tarjeta-lista inicio-bloque-cuerpo inicio-tarjetas" onClick={verTarjetas}>
           {tarjetas.map((t) => {

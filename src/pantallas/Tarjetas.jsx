@@ -11,6 +11,7 @@ import { estiloIconoCuenta } from '../tema/colores.js';
 import { formatearPesos } from '../utilidades/formato.js';
 import './Cuentas.css';
 import './Tarjetas.css';
+import { abrirVentana } from '../estado/ventanas.js';
 
 // La tarjeta con su cupo usado, cierre, pago y cuándo vence. Con alTocar es un botón (en la lista);
 // sin él, solo se ve (arriba de DetalleTarjeta).
@@ -63,7 +64,7 @@ export function ResumenTarjeta({ tarjeta: t, alTocar }) {
 export default function Tarjetas() {
   const navegar = useNavigate();
   const { tarjetas, cargando } = useDatos();
-  const nueva = () => navegar('/tarjetas/nueva');
+  const nueva = () => abrirVentana('tarjeta');
   const cupo = tarjetas.reduce((total, t) => total + t.cupo, 0);
   const disponible = tarjetas.reduce((total, t) => total + Math.max(0, t.cupo - t.usado), 0);
 

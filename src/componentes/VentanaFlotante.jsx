@@ -4,7 +4,8 @@
 // Se cierra tocando el fondo, con Escape o con la X. arriba: lo que va arriba, junto al título (p. ej.
 // el valor); children: el resto. tono ('gasto' | 'ingreso' | 'transferencia'): el color sutil de la
 // ventana (el valor); sin franja del color del tema, que la cargaba demasiado
-// (pedido del dueño, Sesión 9).
+// (pedido del dueño, Sesión 9). estilo: variables CSS propias (el color de una cuenta o tarjeta,
+// variablesDeColor). pie: lo que va fijo abajo, fuera de lo que se desplaza (p. ej. Guardar).
 import { useEffect, useId, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useOscurecido } from '../estado/useOscurecido.js';
@@ -12,7 +13,7 @@ import { IconoCerrar } from './iconos.jsx';
 import { DURACION_PANEL_MS } from './PanelInferior.jsx';
 import './VentanaFlotante.css';
 
-export default function VentanaFlotante({ abierto, alCerrar, titulo, tono, arriba, children }) {
+export default function VentanaFlotante({ abierto, alCerrar, titulo, tono, estilo, arriba, pie, children }) {
   const [montado, setMontado] = useState(abierto);
   const [visible, setVisible] = useState(false);
   const ventana = useRef(null);
@@ -61,6 +62,7 @@ export default function VentanaFlotante({ abierto, alCerrar, titulo, tono, arrib
       <div
         ref={ventana}
         className={'ventana-flotante' + (tono ? ' ' + tono : '')}
+        style={estilo}
         role="dialog"
         aria-modal="true"
         aria-labelledby={idTitulo}
@@ -78,6 +80,7 @@ export default function VentanaFlotante({ abierto, alCerrar, titulo, tono, arrib
           {arriba}
         </div>
         <div className="ventana-cuerpo">{children}</div>
+        {pie && <div className="ventana-pie">{pie}</div>}
       </div>
     </div>,
     document.body,

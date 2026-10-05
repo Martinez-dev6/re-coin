@@ -3,6 +3,9 @@
 // pantalla completa que había antes (DetalleCuenta). Muestra el saldo, los datos de la cuenta,
 // "Ver movimientos" (Transacciones con el filtro de esa cuenta) y los botones Reajustar saldo y
 // Editar. cuenta: la de DatosContext (con su saldo); se queda mientras el panel baja.
+// Sesión 9 (pedido del dueño): ventana flotante (VentanaFlotante) con el mismo contenido, y Reajustar
+// saldo y Editar lado a lado abajo, como Eliminar y Editar en el detalle de un movimiento. Editar abre
+// la ventana de la cuenta (estado/ventanas.js) cuando esta ya se fue.
 // ocultos: el ojo de Inicio (las cifras salen como "$ •••••").
 import { useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -10,9 +13,11 @@ import { fijarCuentaTransacciones } from '../datos/buscar.js';
 import { tipoCuenta } from '../datos/cuentas.js';
 import { estiloIconoCuenta } from '../tema/colores.js';
 import { formatearPesos } from '../utilidades/formato.js';
-import { IconoFlecha } from './iconos.jsx';
+import { IconoBalanza, IconoFlecha, IconoLapiz } from './iconos.jsx';
 import { IconoPorNombre } from './iconosPorNombre.jsx';
-import PanelInferior, { DURACION_PANEL_MS } from './PanelInferior.jsx';
+import { abrirVentana } from '../estado/ventanas.js';
+import { DURACION_PANEL_MS } from './PanelInferior.jsx';
+import VentanaFlotante from './VentanaFlotante.jsx';
 import './PanelConfirmarPago.css';
 import './PanelCuenta.css';
 
@@ -36,7 +41,30 @@ export default function PanelCuenta({ cuenta, abierto, alCerrar, ocultos = false
   };
 
   return (
-    <PanelInferior abierto={abierto} alCerrar={alCerrar} titulo={c.nombre}>
+    <VentanaFlotante
+      abierto={abierto}
+      alCerrar={alCerrar}
+      titulo={c.nombre}
+      pie={
+        <div className="panel-cuenta-botones">
+          <button type="button" className="panel-cuenta-reajustar" onClick={() => ir(`/cuentas/${c.id}/reajustar`)}>
+            <IconoBalanza tamano={18} />
+            Reajustar saldo
+          </button>
+          <button
+            type="button"
+            className="boton-principal"
+            onClick={() => {
+              alCerrar();
+              setTimeout(() => abrirVentana('cuenta', c.id), DURACION_PANEL_MS + 30);
+            }}
+          >
+            <IconoLapiz tamano={18} />
+            Editar
+          </button>
+        </div>
+      }
+    >
       <div className="confirmar-pago-resumen panel-cuenta-resumen">
         <span className="icono-circulo grande" style={estiloIconoCuenta(c.color)}>
           <IconoPorNombre nombre={c.icono} tamano={20} />
@@ -84,13 +112,6 @@ export default function PanelCuenta({ cuenta, abierto, alCerrar, ocultos = false
           <IconoFlecha />
         </button>
       </div>
-
-      <button type="button" className="boton-principal panel-cuenta-reajustar" onClick={() => ir(`/cuentas/${c.id}/reajustar`)}>
-        Reajustar saldo
-      </button>
-      <button type="button" className="boton-secundario" onClick={() => ir(`/cuentas/${c.id}/editar`)}>
-        Editar
-      </button>
-    </PanelInferior>
+    </VentanaFlotante>
   );
 }

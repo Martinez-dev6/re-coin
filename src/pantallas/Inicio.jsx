@@ -34,6 +34,7 @@ import { useFilasAnimadas } from '../utilidades/movimiento.js';
 import { prepararTeclado } from '../utilidades/teclado.js';
 import { BloqueBalance, BloqueGrafico, BloqueMetas, BloquePresupuestos, BloqueTarjetas } from './InicioBloques.jsx';
 import './Inicio.css';
+import { abrirVentana } from '../estado/ventanas.js';
 
 const OCULTO = '$ •••••';
 
@@ -226,7 +227,7 @@ export default function Inicio() {
             <p className="inicio-vacio-texto">
               Agrega dónde tienes tu dinero: banco, billetera o efectivo. Después podrás registrar ingresos y gastos.
             </p>
-            <button type="button" className="boton-principal inicio-vacio-boton" onClick={() => navegar('/cuentas/nueva')}>
+            <button type="button" className="boton-principal inicio-vacio-boton" onClick={() => abrirVentana('cuenta')}>
               Crear cuenta
             </button>
             <button
@@ -311,7 +312,7 @@ export default function Inicio() {
                 <>
                   <div className="inicio-cuentas-cabeza">
                     <h2 className="inicio-titulo">Cuentas</h2>
-                    <button type="button" className="boton-texto inicio-nueva-cuenta" onClick={() => navegar('/cuentas/nueva')}>
+                    <button type="button" className="boton-texto inicio-nueva-cuenta" onClick={() => abrirVentana('cuenta')}>
                       + Nueva cuenta
                     </button>
                   </div>
