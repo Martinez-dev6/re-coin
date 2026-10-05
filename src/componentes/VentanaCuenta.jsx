@@ -142,7 +142,7 @@ export default function VentanaCuenta({ cuenta, abierto, alCerrar }) {
 
       <PanelInferior abierto={panel === 'eliminar'} alCerrar={() => setPanel(null)} titulo="¿Eliminar la cuenta?">
         <p className="panel-texto">
-          Se borra «{cuenta?.nombre}» de este teléfono
+          Se borra <strong>{cuenta?.nombre}</strong> de este teléfono
           {usos > 0 && ` con ${usos === 1 ? 'su movimiento' : `sus ${usos} movimientos`}`}.
           {programadosDeLaCuenta > 0 && ' También se borran sus programados.'} No se puede deshacer.
         </p>

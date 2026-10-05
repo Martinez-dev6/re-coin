@@ -10,6 +10,7 @@ import { useDatos } from '../datos/DatosContext.jsx';
 import { eliminarEtiqueta, guardarEtiqueta } from '../datos/etiquetas.js';
 import { volver } from '../utilidades/navegacion.js';
 import './FormularioMovimiento.css';
+import { conNegritas } from '../utilidades/negritas.jsx';
 
 const LISTA = '/mi-espacio/etiquetas';
 
@@ -80,7 +81,7 @@ function Campos({ etiqueta }) {
       <PieFormulario>
         {error && (
           <p key={error} className="movimiento-aviso" role="status">
-            {error}
+            {conNegritas(error)}
           </p>
         )}
         <BotonExito
@@ -96,7 +97,7 @@ function Campos({ etiqueta }) {
 
       <PanelInferior abierto={panelEliminar} alCerrar={() => setPanelEliminar(false)} titulo="¿Eliminar la etiqueta?">
         <p className="panel-texto">
-          Se borra «{etiqueta?.nombre}».{' '}
+          Se borra <strong>{etiqueta?.nombre}</strong>.{' '}
           {usos > 0 && `Se quita de ${usos === 1 ? '1 movimiento' : `${usos} movimientos`}, que no se borran. `}
           No se puede deshacer.
         </p>

@@ -63,6 +63,7 @@ import { volver } from '../utilidades/navegacion.js';
 import { pasarTeclado } from '../utilidades/teclado.js';
 import './FormularioMovimiento.css';
 import { abrirVentana } from '../estado/ventanas.js';
+import { conNegritas } from '../utilidades/negritas.jsx';
 
 const TITULOS = {
   gasto: ['Nuevo gasto', 'Editar gasto', 'Guardar gasto'],
@@ -1096,7 +1097,7 @@ export function PanelEtiquetas({ etiquetas, elegidas, alAlternar }) {
           Agregar
         </button>
       </form>
-      {error && <p className="etiqueta-error">{error}</p>}
+      {error && <p className="etiqueta-error">{conNegritas(error)}</p>}
     </div>
   );
 }

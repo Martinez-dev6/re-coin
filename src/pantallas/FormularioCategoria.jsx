@@ -111,7 +111,7 @@ function Campos({ categoria, tipoInicial }) {
 
       <PanelInferior abierto={panelEliminar} alCerrar={() => setPanelEliminar(false)} titulo="¿Eliminar la categoría?">
         <p className="panel-texto">
-          Se borra «{categoria?.nombre}» de este teléfono.{' '}
+          Se borra <strong>{categoria?.nombre}</strong> de este teléfono.{' '}
           {usos > 0 && `${usos === 1 ? 'Su movimiento queda' : `Sus ${usos} movimientos quedan`} sin categoría. `}
           {conPresupuesto && 'También se borra su presupuesto. '}
           No se puede deshacer.

@@ -25,7 +25,7 @@ import { useDatos } from '../datos/DatosContext.jsx';
 import { ahorroPorPeriodo, aportar, frecuenciaMeta } from '../datos/metas.js';
 import { periodoActual, presupuestosDelMes } from '../datos/presupuestos.js';
 import { detalleMovimiento, esGasto, estadoMovimiento, rutaMovimiento } from '../datos/movimientos.js';
-import { fechasFuturas, textoFrecuencia } from '../datos/programados.js';
+import { fechasFuturas, terminado, textoFrecuencia } from '../datos/programados.js';
 import { facturaDeFecha, fechaPagoFactura } from '../datos/tarjetas.js';
 import { useAjustes } from '../estado/ajustes.js';
 import { useMes } from '../estado/MesContext.jsx';
@@ -485,7 +485,7 @@ function Programados({ items, programados, anio, mes, navegar }) {
           {programados.length === 0 ? (
             <p className="panel-texto">
               Aún no tienes programados, como el arriendo o el sueldo. Al registrar un gasto o un ingreso, prende
-              «Gasto recurrente» para que se repita.
+              <strong>Gasto recurrente</strong> para que se repita.
             </p>
           ) : (
             programados.map((p) => (
@@ -640,7 +640,13 @@ export default function Planes() {
           />
         )}
         {actual.valor === 'calendario' && (
-          <Programados items={programados} programados={datos.programados} anio={anio} mes={mes} navegar={navegar} />
+          <Programados
+            items={programados}
+            programados={datos.programados.filter((p) => !terminado(p))}
+            anio={anio}
+            mes={mes}
+            navegar={navegar}
+          />
         )}
       </Deslizar>
 

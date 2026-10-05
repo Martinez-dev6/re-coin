@@ -189,7 +189,7 @@ export default function VentanaTarjeta({ tarjeta, abierto, alCerrar }) {
 
       <PanelInferior abierto={panel === 'eliminar'} alCerrar={() => setPanel(null)} titulo="¿Eliminar la tarjeta?">
         <p className="panel-texto">
-          Se borra «{tarjeta?.nombre}» de este teléfono
+          Se borra <strong>{tarjeta?.nombre}</strong> de este teléfono
           {usos > 0 && ` con ${usos === 1 ? 'su compra o pago' : `sus ${usos} compras y pagos`}`}. No se puede deshacer.
         </p>
         <BotonExito className="boton-peligro" alTerminar={eliminar}>

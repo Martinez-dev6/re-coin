@@ -111,8 +111,8 @@ export default function PanelProgramado({ programado, ocurrencia, abierto, alCer
           </Campo>
         </div>
         <p className="rejilla-dias-nota">
-          Para cambiar el valor, la categoría o la nota, edita uno de sus movimientos en el calendario y elige «Este y los
-          siguientes».
+          Para cambiar el valor, la categoría o la nota, edita uno de sus movimientos en el calendario y elige <strong>Este y los
+          siguientes</strong>.
         </p>
 
         <BotonExito className="boton-principal" alTocar={guardar} alTerminar={alCerrar}>

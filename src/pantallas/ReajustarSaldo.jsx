@@ -30,6 +30,7 @@ import { volver } from '../utilidades/navegacion.js';
 import '../componentes/PanelConfirmarPago.css';
 import '../componentes/PanelInferior.css';
 import './FormularioMovimiento.css';
+import { conNegritas } from '../utilidades/negritas.jsx';
 
 const LISTA = '/mi-espacio/cuentas';
 const IconoSaldo = (p) => <IconoMoneda tamano={18} {...p} />;
@@ -163,7 +164,7 @@ function Campos({ cuenta: c }) {
                 </span>
                 <span className="panel-opcion-textos">
                   <span className="panel-opcion-titulo">{titulo}</span>
-                  <span className="panel-opcion-detalle">{detalle}</span>
+                  <span className="panel-opcion-detalle">{conNegritas(detalle)}</span>
                 </span>
                 <span className={'radio' + (marcada ? ' marcado' : '')}>{marcada && <IconoCheck tamano={14} />}</span>
               </button>

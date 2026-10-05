@@ -290,7 +290,7 @@ function Campos({ meta }) {
 
       <PanelInferior abierto={panel === 'eliminar'} alCerrar={() => setPanel(null)} titulo="¿Eliminar la meta?">
         <p className="panel-texto">
-          Se borra «{meta?.nombre}» con sus aportes. Tus cuentas no cambian. No se puede deshacer.
+          Se borra <strong>{meta?.nombre}</strong> con sus aportes. Tus cuentas no cambian. No se puede deshacer.
         </p>
         <BotonExito className="boton-peligro" alTerminar={eliminar}>
           Eliminar

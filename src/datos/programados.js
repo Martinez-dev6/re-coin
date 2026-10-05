@@ -243,10 +243,27 @@ export function eliminarDesde(id, fecha) {
     }
     const d = aFecha(fecha);
     d.setDate(d.getDate() - 1);
-    const termina = aTexto(d);
-    await db.programados.update(id, { termina: p.termina && p.termina < termina ? p.termina : termina });
+    let termina = aTexto(d);
+    if (p.termina && p.termina < termina) termina = p.termina;
+    // Si ya no le queda nada por delante (todo lo que falta ya se registró y no queda ninguno después
+    // de hoy), deja de ser un programado: se quita de "Tus programados" (pedido del dueño,
+    // Sesión 9: tras borrar "este y los siguientes" seguía saliendo con su fecha final). Lo pasado se
+    // queda en Transacciones.
+    const quedan = await db.movimientos
+      .where('programadoId')
+      .equals(id)
+      .filter((m) => m.fecha > hoyTexto())
+      .count();
+    if (quedan === 0 && (!p.hasta || termina <= p.hasta)) {
+      await db.programados.delete(id);
+      return;
+    }
+    await db.programados.update(id, { termina });
   });
 }
+
+// Un programado que ya terminó (su fecha final pasó): ya no se repite, no se muestra en la lista.
+export const terminado = (p) => Boolean(p.termina && p.termina < hoyTexto());
 
 // Lo que se copia de un movimiento a su serie al editarlo (no la fecha, la hora ni si se pagó).
 const CAMPOS_SERIE = ['valor', 'descripcion', 'categoriaId', 'cuentaId', 'cuentaDestinoId', 'etiquetaIds', 'observacion', 'tarjetaId', 'cuotas'];

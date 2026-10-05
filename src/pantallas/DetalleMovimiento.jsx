@@ -307,7 +307,7 @@ function Contenido({ movimiento: m }) {
           </div>
         ) : (
           <p className="panel-texto">
-            Se borra «{tituloMovimiento(m, buscarCategoria)}» de {formatearPesos(m.valor)}. No se puede deshacer.
+            Se borra <strong>{tituloMovimiento(m, buscarCategoria)}</strong> de {formatearPesos(m.valor)}. No se puede deshacer.
           </p>
         )}
         <BotonExito className="boton-peligro" alTerminar={eliminar}>

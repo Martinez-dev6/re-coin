@@ -5,6 +5,7 @@ import { useState } from 'react';
 import CabeceraSubpagina from '../componentes/CabeceraSubpagina.jsx';
 import { IconoAbajo, IconoInfo } from '../componentes/iconos.jsx';
 import './Ayuda.css';
+import { conNegritas } from '../utilidades/negritas.jsx';
 
 // Si cambia cómo funciona algo de esto, cambiar también la respuesta.
 const PREGUNTAS = [
@@ -60,7 +61,7 @@ function Pregunta({ pregunta, respuesta }) {
       </button>
       <div className="ayuda-respuesta">
         <div>
-          <p>{respuesta}</p>
+          <p>{conNegritas(respuesta)}</p>
         </div>
       </div>
     </div>
