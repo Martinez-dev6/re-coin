@@ -12,29 +12,11 @@ import { detalleMovimiento, estadoMovimiento, rutaMovimiento } from '../datos/mo
 import { etiquetaDia } from '../utilidades/fechas.js';
 import { formatearPesos } from '../utilidades/formato.js';
 import { volver } from '../utilidades/navegacion.js';
+import { pasarTeclado } from '../utilidades/teclado.js';
 import './Busqueda.css';
 
 // Más que esto no se dibuja de una vez (la lista se haría pesada en el teléfono).
 const MAXIMO = 200;
-
-// En el iPhone el teclado solo se abre si el campo recibe el foco dentro del toque. Quien abre
-// la búsqueda llama a esto en su onClick: un campo invisible toma el foco ya y, cuando la
-// pantalla existe, se lo pasa al de la búsqueda sin que el teclado se cierre.
-let campoPuente = null;
-export function prepararTeclado() {
-  campoPuente?.remove();
-  campoPuente = document.createElement('input');
-  campoPuente.setAttribute('aria-hidden', 'true');
-  campoPuente.tabIndex = -1;
-  campoPuente.style.cssText = 'position:fixed;top:0;left:0;width:1px;height:1px;opacity:0;font-size:16px;border:0;padding:0;';
-  document.body.appendChild(campoPuente);
-  campoPuente.focus({ preventScroll: true });
-  // Si la pantalla nunca llega a pedirlo, no queda un campo con el teclado abierto.
-  setTimeout(() => {
-    campoPuente?.remove();
-    campoPuente = null;
-  }, 1500);
-}
 
 export default function Busqueda() {
   const navegar = useNavigate();
@@ -44,9 +26,7 @@ export default function Busqueda() {
 
   // Al entrar sin nada escrito, el cursor va al campo (y el teclado sigue abierto si se preparó).
   useEffect(() => {
-    if (!consulta) campo.current?.focus({ preventScroll: true });
-    campoPuente?.remove();
-    campoPuente = null;
+    pasarTeclado(consulta ? null : campo.current);
     // Solo al entrar.
   }, []);
 

@@ -19,7 +19,7 @@ import { detalleMovimiento, estadoMovimiento, rutaMovimiento } from '../datos/mo
 import { useMes } from '../estado/MesContext.jsx';
 import { enMes, etiquetaDia } from '../utilidades/fechas.js';
 import { formatearPesos } from '../utilidades/formato.js';
-import { prepararTeclado } from './Busqueda.jsx';
+import { prepararTeclado } from '../utilidades/teclado.js';
 import './Transacciones.css';
 
 export default function Transacciones() {

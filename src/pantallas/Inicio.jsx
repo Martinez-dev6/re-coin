@@ -31,6 +31,7 @@ import { estiloIconoCuenta } from '../tema/colores.js';
 import { enMes, nombreMes } from '../utilidades/fechas.js';
 import { formatearPesos } from '../utilidades/formato.js';
 import { useFilasAnimadas } from '../utilidades/movimiento.js';
+import { prepararTeclado } from '../utilidades/teclado.js';
 import { BloqueBalance, BloqueGrafico, BloqueMetas, BloquePresupuestos, BloqueTarjetas } from './InicioBloques.jsx';
 import './Inicio.css';
 
@@ -338,7 +339,10 @@ export default function Inicio() {
                           type="button"
                           className="inicio-cuenta-mas"
                           aria-label={`Agregar movimiento a ${nombre}`}
-                          onClick={() => navegar('/nuevo/gasto?cuenta=' + id)}
+                          onClick={() => {
+                            prepararTeclado({ numerico: true });
+                            navegar('/nuevo/gasto?cuenta=' + id);
+                          }}
                         >
                           <IconoMas />
                         </button>

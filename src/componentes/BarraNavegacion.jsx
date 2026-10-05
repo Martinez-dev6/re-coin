@@ -15,6 +15,7 @@ import {
   IconoTransferencia,
 } from './iconos.jsx';
 import { useOscurecido } from '../estado/useOscurecido.js';
+import { prepararTeclado } from '../utilidades/teclado.js';
 import ToqueHaptico from './ToqueHaptico.jsx';
 import './BarraNavegacion.css';
 
@@ -133,6 +134,8 @@ function MenuNuevo({ abierto, alCerrar }) {
             style={{ color }}
             aria-label={texto}
             onClick={() => {
+              // El formulario abre con el teclado de números listo para el valor.
+              prepararTeclado({ numerico: true });
               setBajoFormulario(true);
               alCerrarRef.current();
               navegar(ruta);
