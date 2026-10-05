@@ -14,8 +14,9 @@ import './Cuentas.css';
 import './Tarjetas.css';
 import { abrirVentana } from '../estado/ventanas.js';
 
-// La tarjeta con su cupo usado, cierre, pago y cuándo vence. Con alTocar es un botón.
-export function ResumenTarjeta({ tarjeta: t, alTocar }) {
+// La tarjeta con su cupo usado, cierre, pago y cuándo vence. Con alTocar es un botón. children: lo
+// que va al final, dentro de la tarjeta (los botones Movimientos y Editar).
+export function ResumenTarjeta({ tarjeta: t, alTocar, children }) {
   const { cuenta } = useDatos();
   const porcentaje = t.cupo > 0 ? Math.min(100, Math.round((t.usado / t.cupo) * 100)) : 0;
   const proxima = proximaFactura(t);
@@ -54,9 +55,12 @@ export function ResumenTarjeta({ tarjeta: t, alTocar }) {
         </span>
         <span className="derecha">
           <span className="tarjetas-fecha-etiqueta">Vence en</span>
-          <strong className={vence === 'Vencida' ? 'vencida' : vence ? 'pendiente' : undefined}>{vence ?? 'Al día'}</strong>
+          <strong className={vence === 'Vencida' ? 'vencida' : vence ? 'pendiente' : undefined}>
+            {vence ?? 'Al día'}
+          </strong>
         </span>
       </span>
+      {children}
     </Caja>
   );
 }
@@ -89,24 +93,26 @@ export default function Tarjetas() {
       <div className="contenido cuentas-contenido">
         {tarjetas.map((t) => (
           <section key={t.id} className="tarjetas-grupo">
-            <ResumenTarjeta tarjeta={t} />
-            <div className="botones-lado tarjetas-botones">
-              <button
-                type="button"
-                className="boton-borde"
-                onClick={() => {
-                  fijarCuentaTransacciones(t.id);
-                  navegar('/transacciones');
-                }}
-              >
-                <IconoLista tamano={18} />
-                Ver movimientos
-              </button>
-              <button type="button" className="boton-principal" onClick={() => abrirVentana('tarjeta', t.id)}>
-                <IconoLapiz tamano={18} />
-                Editar
-              </button>
-            </div>
+            {/* Dentro de la tarjeta, del mismo tamaño (pedido del dueño). */}
+            <ResumenTarjeta tarjeta={t}>
+              <div className="tarjetas-botones">
+                <button
+                  type="button"
+                  className="tarjetas-boton suave"
+                  onClick={() => {
+                    fijarCuentaTransacciones(t.id);
+                    navegar('/transacciones');
+                  }}
+                >
+                  <IconoLista tamano={16} />
+                  Movimientos
+                </button>
+                <button type="button" className="tarjetas-boton" onClick={() => abrirVentana('tarjeta', t.id)}>
+                  <IconoLapiz tamano={16} />
+                  Editar
+                </button>
+              </div>
+            </ResumenTarjeta>
           </section>
         ))}
 

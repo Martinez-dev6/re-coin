@@ -155,12 +155,38 @@
   color: var(--income);
 }
 
-/* Ver movimientos | Editar debajo de cada tarjeta (Sesión 9). */
+/* Movimientos | Editar dentro de cada tarjeta, abajo (Sesión 9): dos píldoras del mismo tamaño,
+   la primera suave y la segunda rellena, ambas del color del tema. */
 .tarjetas-botones {
-  margin-top: 10px;
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--divider);
 }
 
-.tarjetas-botones > button {
-  height: 46px;
-  font-size: 15px;
+.tarjetas-boton {
+  flex: 1 1 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 40px;
+  border: 0;
+  border-radius: 20px;
+  background: var(--banner-bg);
+  box-shadow: 0 0 0 1px var(--banner-ring);
+  color: var(--on-banner);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.tarjetas-boton.suave {
+  background: var(--accent-soft);
+  box-shadow: none;
+  color: var(--accent-text);
+}
+
+.tarjetas-boton:active {
+  opacity: 0.75;
 }
