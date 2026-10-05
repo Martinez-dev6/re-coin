@@ -230,6 +230,9 @@ function Campos({ clave, movimiento, programado, esProgramado = false, tipoInici
   const [corazonAMano, setCorazonAMano] = useState(borrador?.corazonAMano ?? null);
   // Sube cada vez que se marca: vuelve a dibujar el corazón para repetir su latido.
   const [latidos, setLatidos] = useState(0);
+  // Escribiendo en la descripción: solo entonces sale el desplegable de favoritos.
+  const [escribiendo, setEscribiendo] = useState(false);
+  const salida = useRef(null);
   // 'categoria' | 'cuentaId' | 'cuentaDestinoId' | 'tarjetaId' | 'cuotas' | 'factura' | 'etiquetas' | 'observacion'
   const [panel, setPanel] = useState(null);
   const [aviso, setAviso] = useState(null);
@@ -304,7 +307,17 @@ function Campos({ clave, movimiento, programado, esProgramado = false, tipoInici
   // Favoritos (favoritos.js): el corazón junto a la descripción y, debajo, los que coinciden con lo
   // escrito. No van en los programados.
   const corazon = corazonAMano ?? Boolean(favoritoDe(favoritos, tipo, datos.descripcion));
-  const sugerencias = esProgramado ? [] : sugerirFavoritos(favoritos, tipo, datos.descripcion);
+  const sugerencias = esProgramado || !escribiendo ? [] : sugerirFavoritos(favoritos, tipo, datos.descripcion, 10);
+  // Al salir de la descripción el desplegable se va un momento después: si se tocó una opción,
+  // su toque llega antes.
+  const alSalirDescripcion = () => {
+    salida.current = setTimeout(() => setEscribiendo(false), 200);
+  };
+  const alEnfocarDescripcion = () => {
+    clearTimeout(salida.current);
+    setEscribiendo(true);
+  };
+  useEffect(() => () => clearTimeout(salida.current), []);
   const alternarCorazon = (evento) => {
     evento.preventDefault(); // dentro de la fila (un <label>): que no enfoque la descripción
     if (!corazon && !datos.descripcion.trim()) {
@@ -318,6 +331,8 @@ function Campos({ clave, movimiento, programado, esProgramado = false, tipoInici
   // ya no existe (una cuenta o categoría borrada) se queda como estaba.
   const elegirFavorito = (favorito) => {
     usarFavorito(favorito.id);
+    clearTimeout(salida.current);
+    setEscribiendo(false);
     document.activeElement?.blur(); // baja el teclado para ver el formulario lleno
     setDatos((d) => {
       const categoria = buscarCategoria(favorito.categoriaId);
@@ -408,9 +423,15 @@ function Campos({ clave, movimiento, programado, esProgramado = false, tipoInici
     </Campo>
   );
   const filaDescripcion = (
-    <>
+    <div className="descripcion-con-favoritos">
       <Campo Icono={IconoTexto} etiqueta="Descripción">
-        <EntradaTexto valor={datos.descripcion} alCambiar={(descripcion) => cambiar({ descripcion })} ejemplo={EJEMPLOS[tipo]} />
+        <EntradaTexto
+          valor={datos.descripcion}
+          alCambiar={(descripcion) => cambiar({ descripcion })}
+          ejemplo={EJEMPLOS[tipo]}
+          alEnfocar={alEnfocarDescripcion}
+          alSalir={alSalirDescripcion}
+        />
         {!esProgramado && (
           <button
             type="button"
@@ -427,6 +448,7 @@ function Campos({ clave, movimiento, programado, esProgramado = false, tipoInici
           </button>
         )}
       </Campo>
+      {/* Desplegable encima de las filas de abajo; con más de dos se desplaza por dentro. */}
       {sugerencias.length > 0 && (
         <div className="favoritos-sugeridos" aria-label="Favoritos">
           {sugerencias.map((f) => (
@@ -450,7 +472,7 @@ function Campos({ clave, movimiento, programado, esProgramado = false, tipoInici
           ))}
         </div>
       )}
-    </>
+    </div>
   );
   // En un programado, la fecha es cuándo empieza, y van también Frecuencia y Termina.
   const filaFecha = esProgramado ? (

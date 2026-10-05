@@ -425,19 +425,40 @@
   }
 }
 
-/* Favoritos que coinciden con lo escrito, debajo de la descripción. */
-.favoritos-sugeridos {
-  display: flex;
-  flex-direction: column;
-  padding: 4px 0;
+/* Favoritos que coinciden con lo escrito: desplegable que sale de la descripción, encima de las
+   filas de abajo (no las empuja). Se ven dos y media: con más, se desplaza por dentro. */
+.descripcion-con-favoritos {
+  position: relative;
   border-bottom: 1px solid var(--divider);
+}
+
+.descripcion-con-favoritos > .campo {
+  border-bottom: 0;
+}
+
+.favoritos-sugeridos {
+  position: absolute;
+  top: calc(100% - 4px);
+  left: -8px;
+  right: -8px;
+  z-index: 5;
+  max-height: 142px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  padding: 4px 10px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.16);
+  transform-origin: top center;
   animation: favoritos-entran 220ms var(--curva-entrar);
 }
 
 @keyframes favoritos-entran {
   from {
     opacity: 0;
-    transform: translateY(-4px);
+    transform: translateY(-6px) scale(0.98);
   }
 }
 
@@ -446,12 +467,17 @@
   align-items: center;
   gap: 12px;
   width: 100%;
-  min-height: 50px;
+  min-height: 54px;
   padding: 6px 0;
   border: 0;
+  border-bottom: 1px solid var(--divider);
   background: transparent;
   color: var(--text);
   text-align: left;
+}
+
+.favorito-sugerido:last-child {
+  border-bottom: 0;
 }
 
 .favorito-sugerido-icono {

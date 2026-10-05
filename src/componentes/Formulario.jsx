@@ -127,9 +127,11 @@ export function EntradaPesos({ valor, alCambiar, etiqueta, ref }) {
 }
 
 // Texto dentro de un Campo. 16 px: con menos, el iPhone hace zoom al escribir.
-export function EntradaTexto({ valor, alCambiar, ejemplo, maximo = 40 }) {
+export function EntradaTexto({ valor, alCambiar, ejemplo, maximo = 40, alEnfocar, alSalir }) {
   return (
     <input
+      onFocus={alEnfocar}
+      onBlur={alSalir}
       className="campo-entrada"
       type="text"
       enterKeyHint="done"

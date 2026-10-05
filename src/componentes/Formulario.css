@@ -24,8 +24,11 @@
 }
 
 .formulario-contenido {
-  /* Espacio para que lo último no quede bajo el botón Guardar fijo. */
-  padding: 14px 16px calc(110px + var(--safe-bottom));
+  /* Espacio para que lo último no quede bajo el botón Guardar fijo: el alto del pie (18 + 54 + 16)
+     menos la parte transparente de su degradado, así lo último queda a 6 px del botón. Antes eran
+     110 px y gasto e ingreso (dos filas más que transferencia) se podían desplazar en el iPhone
+     sin necesidad (2026-10-04). */
+  padding: 14px 16px calc(76px + var(--safe-bottom));
 }
 
 /* ---- Filas de campos ---- */
