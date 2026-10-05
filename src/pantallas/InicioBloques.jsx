@@ -57,10 +57,11 @@ function Vacio({ texto, boton, alTocar }) {
 
 // Balance del mes. Sesión 9 (pedido del dueño, con una imagen de referencia: "opción 2" apilada):
 // una sola tarjeta con dos balances, para verlo con pendientes y sin ellos a la vez.
-// - Arriba, "Balance proyectado": todo lo del mes, pagado y pendiente (también lo programado que ya
+// - Arriba, en un recuadro de su color, "Balance actual · En vivo": solo lo ya pagado o recibido
+//   (primero, pedido del dueño).
+// - Abajo, "Balance proyectado": todo lo del mes, pagado y pendiente (también lo programado que ya
 //   quedó registrado como pendiente), como los totales del banner. Con ingresos, gastos y un aviso
 //   de cuánto se ahorra o cuánto se pasa frente a lo que entra.
-// - Abajo, en un recuadro de su color, "Balance actual · En vivo": solo lo ya pagado o recibido.
 // Cada uno con su tono: verde a favor, rojo en contra y ámbar parejo. Sin transferencias. Toda la
 // tarjeta lleva a Rendimiento. ocultos: el ojo de Inicio.
 const TONOS = { positivo: 'Balance positivo', negativo: 'Balance negativo', parejo: 'Balance parejo' };
@@ -109,6 +110,27 @@ export function BloqueBalance({ pesos, ocultos, posicion }) {
         className={`tarjeta inicio-balance inicio-bloque-cuerpo ${tono}` + (cifraLarga ? ' cifra-larga' : '')}
         onClick={verRendimiento}
       >
+        <span className={`inicio-balance-vivo ${actual.tono}` + (vivoLargo ? ' largo' : '')}>
+          <span className="inicio-balance-vivo-textos">
+            <span className="inicio-balance-vivo-cabeza">
+              <span className="inicio-balance-vivo-punto" />
+              En vivo
+            </span>
+            <span className="inicio-balance-vivo-titulo">Balance actual</span>
+            <strong className="inicio-balance-vivo-cifra">{conSigno(actual)}</strong>
+            <span className="inicio-balance-vivo-nota">Sin pendientes</span>
+          </span>
+          <span className="inicio-balance-vivo-datos">
+            <span>
+              <IconoFlechaArriba tamano={14} className="ingreso" />
+              {pesos(actual.ingresos)}
+            </span>
+            <span>
+              <IconoFlechaAbajo tamano={14} className="gasto" />
+              {pesos(actual.gastos)}
+            </span>
+          </span>
+        </span>
         <span className="inicio-balance-cabeza">
           <IconoCalendarioMes className="inicio-balance-calendario" />
           <span className="inicio-balance-titulos">
@@ -153,27 +175,6 @@ export function BloqueBalance({ pesos, ocultos, posicion }) {
           </span>
         )}
 
-        <span className={`inicio-balance-vivo ${actual.tono}` + (vivoLargo ? ' largo' : '')}>
-          <span className="inicio-balance-vivo-textos">
-            <span className="inicio-balance-vivo-cabeza">
-              <span className="inicio-balance-vivo-punto" />
-              En vivo
-            </span>
-            <span className="inicio-balance-vivo-titulo">Balance actual</span>
-            <strong className="inicio-balance-vivo-cifra">{conSigno(actual)}</strong>
-            <span className="inicio-balance-vivo-nota">Solo lo ya pagado y recibido</span>
-          </span>
-          <span className="inicio-balance-vivo-datos">
-            <span>
-              <IconoFlechaArriba tamano={14} className="ingreso" />
-              {pesos(actual.ingresos)}
-            </span>
-            <span>
-              <IconoFlechaAbajo tamano={14} className="gasto" />
-              {pesos(actual.gastos)}
-            </span>
-          </span>
-        </span>
       </Deslizar>
     </>
   );

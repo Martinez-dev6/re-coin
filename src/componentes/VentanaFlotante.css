@@ -57,12 +57,25 @@
   }
 }
 
-/* Franja de arriba del color del tema, como el banner de los formularios: título, X y el valor. */
+/* Arriba: título, X y el valor, sobre el mismo fondo de la ventana. El color va sutil (Sesión 9: la
+   franja del color del tema la cargaba demasiado): solo el valor y una línea fina arriba, del color
+   del tipo de movimiento (--ventana-tono). */
+.ventana-flotante {
+  --ventana-tono: var(--accent-text);
+}
+
+.ventana-flotante.gasto {
+  --ventana-tono: var(--expense);
+}
+
+.ventana-flotante.ingreso {
+  --ventana-tono: var(--income);
+}
+
 .ventana-arriba {
   flex: none;
-  padding: 14px 16px 18px;
-  background: var(--banner-bg);
-  color: var(--on-banner);
+  padding: 14px 16px 6px;
+  border-top: 3px solid var(--ventana-tono);
 }
 
 .ventana-cabecera {
@@ -79,27 +92,36 @@
 }
 
 .ventana-cerrar {
-  width: 36px;
-  height: 36px;
+  width: 34px;
+  height: 34px;
   flex: none;
   padding: 0;
   border: 0;
-  border-radius: 18px;
-  background: var(--chip-bg);
-  color: var(--on-banner);
+  border-radius: 17px;
+  background: var(--track);
+  color: var(--muted);
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .ventana-arriba .cabecera-cifra {
-  margin-top: 4px;
+  margin-top: 2px;
+}
+
+.ventana-arriba .cabecera-cifra-etiqueta {
+  color: var(--muted);
+}
+
+.ventana-arriba .cabecera-cifra-valor {
+  font-size: 30px;
+  color: var(--ventana-tono);
 }
 
 .ventana-cuerpo {
   overflow-y: auto;
   overscroll-behavior: contain;
-  padding: 12px 10px 14px;
+  padding: 6px 10px 14px;
 }
 
 /* Valores de una línea ("Hoy · 5 de octubre" no se parte en dos). */

@@ -312,3 +312,74 @@
   font-size: 13px;
   color: var(--muted);
 }
+
+/* El día elegido del calendario con su "+ Agregar" a la derecha (Sesión 9). */
+.programados-dia {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.programados-dia-mas {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 32px;
+  margin: 4px 0;
+  padding: 0 12px 0 9px;
+  border: 0;
+  border-radius: 16px;
+  background: var(--accent-soft);
+  color: var(--accent-text);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.programados-dia-mas:active {
+  opacity: 0.7;
+}
+
+/* Ventana del "+": Gasto e Ingreso, dos botones grandes lado a lado con el color de cada uno. */
+.programados-nuevo {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.programados-nuevo-opcion {
+  --tono: var(--expense);
+  --relleno: var(--expense-on-white); /* el rojo normal también en oscuro, con el ícono blanco */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 18px 8px 16px;
+  border: 0;
+  border-radius: 20px;
+  background: color-mix(in srgb, var(--tono) 12%, transparent);
+  color: var(--text);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.programados-nuevo-opcion.ingreso {
+  --tono: var(--income);
+  --relleno: var(--income-on-white);
+}
+
+.programados-nuevo-icono {
+  width: 52px;
+  height: 52px;
+  border-radius: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--relleno);
+  color: #ffffff;
+}
+
+.programados-nuevo-opcion:active {
+  opacity: 0.75;
+}

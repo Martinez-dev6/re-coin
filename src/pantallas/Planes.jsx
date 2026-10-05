@@ -8,7 +8,7 @@ import Deslizar from '../componentes/Deslizar.jsx';
 import FilaMovimiento from '../componentes/FilaMovimiento.jsx';
 import FilaPresupuesto from '../componentes/FilaPresupuesto.jsx';
 import { Campo, EntradaPesos } from '../componentes/Formulario.jsx';
-import { IconoCheck, IconoInicio, IconoMas, IconoRepetir } from '../componentes/iconos.jsx';
+import { IconoCheck, IconoGasto, IconoIngreso, IconoInicio, IconoMas, IconoRepetir } from '../componentes/iconos.jsx';
 import { IconoPorNombre } from '../componentes/iconosPorNombre.jsx';
 import PanelInferior, { DURACION_PANEL_MS } from '../componentes/PanelInferior.jsx';
 import { MesConFlechas } from '../componentes/SelectorMes.jsx';
@@ -18,7 +18,8 @@ import { presupuestosDelMes } from '../datos/presupuestos.js';
 import { fechasFuturas, textoFrecuencia } from '../datos/programados.js';
 import { useAjustes } from '../estado/ajustes.js';
 import { useMes } from '../estado/MesContext.jsx';
-import { diasHasta, enMes, etiquetaDia, fechaCorta, hoyTexto } from '../utilidades/fechas.js';
+import { diasHasta, diaYMes, enMes, etiquetaDia, fechaCorta, hoyTexto } from '../utilidades/fechas.js';
+import { prepararTeclado } from '../utilidades/teclado.js';
 import { formatearPesos } from '../utilidades/formato.js';
 import './Planes.css';
 import './Transacciones.css';
@@ -315,6 +316,7 @@ function Programados({ items, programados, anio, mes, navegar }) {
   const frecuenciaDe = (id) => programados.find((p) => p.id === id)?.frecuencia;
   const { semanaEmpieza } = useAjustes();
   const hayTransferencias = programados.some((p) => p.tipo === 'transferencia');
+  const [panelNuevo, setPanelNuevo] = useState(false);
 
   // Calendario: semanas de lunes a domingo, o de domingo a sábado (Ajustes). Elegido: el día
   // tocado, o hoy si es de este mes.
@@ -379,7 +381,19 @@ function Programados({ items, programados, anio, mes, navegar }) {
           )}
         </div>
       </div>
-      <h2 className="titulo-dia">{etiquetaDia(elegido)}</h2>
+      {/* El día elegido y, a su lado, "+" para registrar un gasto o un ingreso en ese día (Sesión 9). */}
+      <div className="programados-dia">
+        <h2 className="titulo-dia">{etiquetaDia(elegido)}</h2>
+        <button
+          type="button"
+          className="programados-dia-mas"
+          aria-label={`Agregar un movimiento el ${etiquetaDia(elegido)}`}
+          onClick={() => setPanelNuevo(true)}
+        >
+          <IconoMas tamano={16} />
+          Agregar
+        </button>
+      </div>
       <Deslizar posicion={Number(elegido.replaceAll('-', ''))} distancia={16}>
         {delDia.length === 0 ? (
           <div className="tarjeta vacio">Nada programado este día.</div>
@@ -387,6 +401,33 @@ function Programados({ items, programados, anio, mes, navegar }) {
           <FilasProgramadas items={delDia} navegar={navegar} frecuenciaDe={frecuenciaDe} />
         )}
       </Deslizar>
+
+      {/* "+" del día: ¿gasto o ingreso? Lleva al formulario de siempre con el día ya puesto y sin el
+          selector de tipo (?fecha=, FormularioMovimiento). Sin "… recurrente" prendido. */}
+      <PanelInferior abierto={panelNuevo} alCerrar={() => setPanelNuevo(false)} titulo={`Agregar el ${diaYMes(elegido)}`}>
+        <div className="programados-nuevo">
+          {[
+            { tipo: 'gasto', texto: 'Gasto', Icono: IconoGasto },
+            { tipo: 'ingreso', texto: 'Ingreso', Icono: IconoIngreso },
+          ].map(({ tipo, texto, Icono }) => (
+            <button
+              key={tipo}
+              type="button"
+              className={'programados-nuevo-opcion ' + tipo}
+              onClick={() => {
+                prepararTeclado();
+                setPanelNuevo(false);
+                navegar(`/nuevo/${tipo}?fecha=${elegido}`);
+              }}
+            >
+              <span className="programados-nuevo-icono">
+                <Icono tamano={24} />
+              </span>
+              {texto}
+            </button>
+          ))}
+        </div>
+      </PanelInferior>
 
       {/* Todos, para editarlos o eliminarlos aunque este mes no tengan fechas. */}
       <h2 className="titulo-seccion">Tus programados</h2>

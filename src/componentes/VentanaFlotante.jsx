@@ -1,8 +1,10 @@
 // Ventana flotante sobre un fondo oscurecido, como el menú del "+" (pedido del dueño, Sesión 9, para
-// editar una transferencia sin salir del detalle). Una tarjeta separada de los bordes que sube un poco
+// editar un movimiento sin salir del detalle). Una tarjeta separada de los bordes que sube un poco
 // y crece al entrar (300 ms, curva "entrar") y se va bajando y desvaneciéndose (240 ms, "suave").
-// Se cierra tocando el fondo, con Escape o con la X. arriba: lo que va en la franja de color de
-// arriba (p. ej. el valor); children: el resto.
+// Se cierra tocando el fondo, con Escape o con la X. arriba: lo que va arriba, junto al título (p. ej.
+// el valor); children: el resto. tono ('gasto' | 'ingreso' | 'transferencia'): el color sutil de la
+// ventana (el valor y una línea arriba); sin franja del color del tema, que la cargaba demasiado
+// (pedido del dueño, Sesión 9).
 import { useEffect, useId, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useOscurecido } from '../estado/useOscurecido.js';
@@ -10,7 +12,7 @@ import { IconoCerrar } from './iconos.jsx';
 import { DURACION_PANEL_MS } from './PanelInferior.jsx';
 import './VentanaFlotante.css';
 
-export default function VentanaFlotante({ abierto, alCerrar, titulo, arriba, children }) {
+export default function VentanaFlotante({ abierto, alCerrar, titulo, tono, arriba, children }) {
   const [montado, setMontado] = useState(abierto);
   const [visible, setVisible] = useState(false);
   const ventana = useRef(null);
@@ -58,7 +60,7 @@ export default function VentanaFlotante({ abierto, alCerrar, titulo, arriba, chi
       <div className="ventana-fondo" onClick={() => alCerrarRef.current()} />
       <div
         ref={ventana}
-        className="ventana-flotante"
+        className={'ventana-flotante' + (tono ? ' ' + tono : '')}
         role="dialog"
         aria-modal="true"
         aria-labelledby={idTitulo}

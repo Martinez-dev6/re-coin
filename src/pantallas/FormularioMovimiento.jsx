@@ -89,7 +89,7 @@ const ELIMINAR_PROGRAMADO = [
 const TIPO_POR_RUTA = { gasto: 'gasto', ingreso: 'ingreso', transferencia: 'transferencia', 'gasto-tarjeta': 'gastoTarjeta' };
 
 // Hasta cuántas cuotas se puede diferir una compra.
-const CUOTAS = Array.from({ length: 36 }, (_, i) => i + 1);
+export const CUOTAS = Array.from({ length: 36 }, (_, i) => i + 1);
 
 // Íconos de las filas con su tamaño de fila (18 px).
 const IconoFecha = (p) => <IconoCalendario tamano={18} {...p} />;
@@ -129,14 +129,14 @@ function recordar(clave, id) {
 }
 
 // "3 de $ 100.000" (la primera cuota lleva lo que no da exacto) o "Sin cuotas".
-function textoCuotas(cuotas, valor) {
+export function textoCuotas(cuotas, valor) {
   if (!(cuotas > 1)) return 'Sin cuotas';
   if (!(valor > 0)) return `${cuotas} cuotas`;
   return `${cuotas} de ${formatearPesos(cuotasDe({ valor, cuotas, factura: '2000-01' }).at(-1).valor)}`;
 }
 
 // Facturas que se pueden elegir: la anterior a la que toca por la fecha y las tres siguientes.
-function opcionesFactura(tarjeta, fecha) {
+export function opcionesFactura(tarjeta, fecha) {
   if (!tarjeta) return [];
   const propia = facturaDeFecha(tarjeta, fecha);
   return [-1, 0, 1, 2, 3].map((n) => sumarMeses(propia, n));
@@ -160,7 +160,18 @@ export default function FormularioMovimiento() {
   }
   const tipo = TIPO_POR_RUTA[pantalla] ?? 'gasto';
   if (cargando) return <CabeceraFormulario titulo={TITULOS[tipo][0]} volverA="/" />;
-  return <Campos key={clave} clave={clave} tipoInicial={tipo} cuentaPedida={parametros.get('cuenta')} />;
+  // ?fecha=AAAA-MM-DD: desde el "+" de un día del calendario de Programados, con ese día ya puesto y
+  // sin el selector Ingreso | Gasto | Transferencia (se eligió en la ventana de ese "+").
+  const fechaPedida = /^\d{4}-\d{2}-\d{2}$/.test(parametros.get('fecha') ?? '') ? parametros.get('fecha') : null;
+  return (
+    <Campos
+      key={clave}
+      clave={clave}
+      tipoInicial={tipo}
+      cuentaPedida={parametros.get('cuenta')}
+      fechaPedida={fechaPedida}
+    />
+  );
 }
 
 // Campos que el formulario copia de un movimiento al editarlo.
@@ -182,7 +193,7 @@ const CAMPOS = [
   'ajuste', // faltante o sobrante de Reajustar saldo: se puede guardar sin categoría
 ];
 
-function datosIniciales({ movimiento, programado, tipoInicial, cuentaPedida, cuentas, tarjetas }) {
+function datosIniciales({ movimiento, programado, tipoInicial, cuentaPedida, fechaPedida, cuentas, tarjetas }) {
   if (movimiento) return { ...Object.fromEntries(CAMPOS.map((campo) => [campo, movimiento[campo] ?? null])), hora: horaDe(movimiento) };
   // Un programado guarda la plantilla del movimiento; su "fecha" en el formulario es Empieza.
   if (programado) {
@@ -200,7 +211,7 @@ function datosIniciales({ movimiento, programado, tipoInicial, cuentaPedida, cue
   const cuentaId = [cuentaPedida, leer(CLAVE_ULTIMA_CUENTA), cuentas[0]?.id].find(existe(cuentas)) ?? null;
   const tarjetaId = [leer(CLAVE_ULTIMA_TARJETA), tarjetas[0]?.id].find(existe(tarjetas)) ?? null;
   const tarjeta = tarjetas.find((t) => t.id === tarjetaId);
-  const fecha = hoyTexto();
+  const fecha = fechaPedida ?? hoyTexto();
   return {
     tipo: tipoInicial,
     valor: 0,
@@ -209,8 +220,8 @@ function datosIniciales({ movimiento, programado, tipoInicial, cuentaPedida, cue
     cuentaId,
     cuentaDestinoId: cuentas.find((c) => c.id !== cuentaId)?.id ?? null,
     fecha,
-    hora: 'ahora',
-    pagado: true,
+    hora: fecha === hoyTexto() ? 'ahora' : null,
+    pagado: fecha <= hoyTexto(),
     etiquetaIds: [],
     observacion: '',
     tarjetaId,
@@ -224,7 +235,7 @@ function datosIniciales({ movimiento, programado, tipoInicial, cuentaPedida, cue
 
 // esProgramado: es el formulario de un programado (FormularioProgramado, más abajo): sin Pagado
 // y con Frecuencia, Empieza y Termina. programado: el que se edita.
-function Campos({ clave, movimiento, programado, esProgramado = false, tipoInicial, cuentaPedida }) {
+function Campos({ clave, movimiento, programado, esProgramado = false, tipoInicial, cuentaPedida, fechaPedida }) {
   const navegar = useNavigate();
   const {
     cuentas,
@@ -239,7 +250,9 @@ function Campos({ clave, movimiento, programado, esProgramado = false, tipoInici
   } = useDatos();
   const borrador = borradores.get(clave);
   const [datos, setDatos] = useState(
-    () => borrador?.datos ?? datosIniciales({ movimiento, programado, tipoInicial, cuentaPedida, cuentas, tarjetas }),
+    () =>
+      borrador?.datos ??
+      datosIniciales({ movimiento, programado, tipoInicial, cuentaPedida, fechaPedida, cuentas, tarjetas }),
   );
   // Mientras no se toque "Pagado" a mano, una fecha futura lo apaga y una de hoy o antes lo prende.
   const [pagadoAMano, setPagadoAMano] = useState(borrador?.pagadoAMano ?? Boolean(movimiento));
@@ -526,9 +539,9 @@ function Campos({ clave, movimiento, programado, esProgramado = false, tipoInici
       <EntradaFecha valor={datos.fecha} alCambiar={cambiarFecha} />
     </Campo>
   );
-  // Hora: solo si el movimiento es del momento (fecha de hoy); tocarla abre el reloj. Sin fila en
-  // otra fecha ni en un programado (se registra solo, sin hora).
-  const filaHora = !esProgramado && datos.hora && (
+  // Hora: al crear no hay fila (pedido del dueño, Sesión 9: así el formulario no se desplaza); se
+  // pone sola si la fecha es hoy. Solo al editar, si el movimiento la tiene; tocarla abre el reloj.
+  const filaHora = movimiento && datos.hora && (
     <Campo Icono={IconoHora} etiqueta="Hora">
       <EntradaHora
         valor={datos.hora === 'ahora' ? horaActual() : datos.hora}
@@ -563,7 +576,7 @@ function Campos({ clave, movimiento, programado, esProgramado = false, tipoInici
             selector no sale: antes salía bloqueado y parecía que no funcionaba (pedido del dueño,
             2026-10-04). El gasto con tarjeta tiene su propio formulario, sin estas opciones
             (design/capturas/GastoTarjeta.png). */}
-        {!conTarjeta && !movimiento && (
+        {!conTarjeta && !movimiento && !fechaPedida && (
           <Segmentado opciones={TIPOS_MOVIMIENTO} valor={tipo} etiqueta="Tipo de movimiento" alCambiar={cambiarTipo} />
         )}
       </CabeceraFormulario>
@@ -1011,7 +1024,7 @@ export function FormularioProgramado() {
 }
 
 // Lista de etiquetas para marcar, y un campo para crear una nueva (queda marcada).
-function PanelEtiquetas({ etiquetas, elegidas, alAlternar }) {
+export function PanelEtiquetas({ etiquetas, elegidas, alAlternar }) {
   const [nueva, setNueva] = useState('');
   const [error, setError] = useState(null);
 

@@ -8,7 +8,7 @@ import { Navigate, useNavigate, useParams } from 'react-router-dom';
 import BotonExito from '../componentes/BotonExito.jsx';
 import CabeceraSubpagina from '../componentes/CabeceraSubpagina.jsx';
 import CirculoCategoria from '../componentes/CirculoCategoria.jsx';
-import EditarTransferencia from '../componentes/EditarTransferencia.jsx';
+import EditarMovimiento from '../componentes/EditarMovimiento.jsx';
 import { Campo, PieFormulario } from '../componentes/Formulario.jsx';
 import {
   IconoBasura,
@@ -68,8 +68,8 @@ function Contenido({ movimiento: m }) {
   // programada) o 'pendiente' (volver a dejarlo pendiente).
   const [panelEstado, setPanelEstado] = useState(null);
   const cerrarEstado = () => setPanelEstado(null);
-  // Una transferencia se edita en una ventana flotante encima del detalle (Sesión 9).
-  const [editarTransferencia, setEditarTransferencia] = useState(false);
+  // Se edita en una ventana flotante encima del detalle (Sesión 9), no en otra pantalla.
+  const [editando, setEditando] = useState(false);
   const eliminando = useRef(false);
   // Los gastos e ingresos tienen Pagado / Pendiente; una transferencia, solo si es programada
   // (se registra pendiente).
@@ -221,9 +221,7 @@ function Contenido({ movimiento: m }) {
             <button
               type="button"
               className="boton-principal"
-              onClick={() =>
-                m.tipo === 'transferencia' ? setEditarTransferencia(true) : navegar(`/movimientos/${m.id}/editar`)
-              }
+              onClick={() => setEditando(true)}
             >
               <IconoLapiz tamano={18} />
               Editar
@@ -232,9 +230,7 @@ function Contenido({ movimiento: m }) {
         </div>
       </PieFormulario>
 
-      {m.tipo === 'transferencia' && (
-        <EditarTransferencia movimiento={m} abierto={editarTransferencia} alCerrar={() => setEditarTransferencia(false)} />
-      )}
+      {editable && <EditarMovimiento movimiento={m} abierto={editando} alCerrar={() => setEditando(false)} />}
 
       <PanelConfirmarPago movimiento={m} abierto={panelEstado === 'pagar'} alCerrar={cerrarEstado} />
 
