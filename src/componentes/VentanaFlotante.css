@@ -151,3 +151,11 @@
 .ventana-cuerpo .formulario-eliminar {
   margin-bottom: 0;
 }
+
+/* Ventana con el color de una cuenta o tarjeta: los íconos de los campos siguen "Color de los
+   íconos" de Apariencia (con "Color del tema", el de la app, no el de la cuenta). En
+   "Predeterminado" manda la regla de cada tono (comunes.css), que pesa más que esta. */
+.ventana-flotante .campo-icono {
+  background: var(--icono-app-suave, var(--accent-soft));
+  color: var(--icono-app-texto, var(--accent-text));
+}

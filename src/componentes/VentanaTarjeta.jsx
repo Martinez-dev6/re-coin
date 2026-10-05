@@ -38,7 +38,7 @@ const datosDe = (tarjeta, cuentas) =>
 
 export default function VentanaTarjeta({ tarjeta, abierto, alCerrar }) {
   const { cuentas, cuenta, movimientos } = useDatos();
-  const { oscuro } = useTema();
+  const { oscuro, acento } = useTema();
   const [datos, setDatos] = useState(() => datosDe(tarjeta, cuentas));
   const [panel, setPanel] = useState(null); // 'diaCierre' | 'diaPago' | 'cuenta' | 'eliminar'
   const eliminando = useRef(false);
@@ -93,7 +93,7 @@ export default function VentanaTarjeta({ tarjeta, abierto, alCerrar }) {
         abierto={abierto}
         alCerrar={alCerrar}
         titulo={tarjeta ? 'Editar tarjeta' : 'Nueva tarjeta'}
-        estilo={variablesDeColor(datos.color, oscuro)}
+        estilo={variablesDeColor(datos.color, oscuro, acento)}
         arriba={<MontoEditable etiqueta="Cupo total" valor={datos.cupo} alCambiar={(cupo) => cambiar({ cupo })} />}
         pie={
           <BotonExito className="boton-principal" alTocar={() => guardarTarjeta(tarjeta?.id, datos)} alTerminar={alCerrar}>
@@ -102,22 +102,27 @@ export default function VentanaTarjeta({ tarjeta, abierto, alCerrar }) {
         }
       >
         <div className="tarjeta campos">
-          <Campo Icono={IconoTexto} etiqueta="Nombre">
+          <Campo Icono={IconoTexto} etiqueta="Nombre" tono="g">
             <EntradaTexto valor={datos.nombre} alCambiar={(nombre) => cambiar({ nombre })} ejemplo="Ej. Tarjeta principal" />
           </Campo>
-          <Campo Icono={IconoCierre} etiqueta="Día de cierre" alTocar={() => setPanel('diaCierre')}>
+          <Campo Icono={IconoCierre} etiqueta="Día de cierre" tono="a" alTocar={() => setPanel('diaCierre')}>
             {datos.diaCierre}
           </Campo>
-          <Campo Icono={IconoPago} etiqueta="Día de pago" alTocar={() => setPanel('diaPago')}>
+          <Campo Icono={IconoPago} etiqueta="Día de pago" tono="e" alTocar={() => setPanel('diaPago')}>
             {datos.diaPago}
           </Campo>
-          <Campo Icono={IconoBanco} etiqueta="Paga desde" alTocar={() => setPanel('cuenta')}>
+          <Campo Icono={IconoBanco} etiqueta="Paga desde" tono="c" alTocar={() => setPanel('cuenta')}>
             {cuenta(datos.cuentaPagoId)?.nombre ?? <span className="campo-vacio">Elegir</span>}
           </Campo>
         </div>
 
         <h2 className="titulo-seccion">Ícono</h2>
-        <SelectorIcono sugeridos={ICONOS_TARJETA} elegido={datos.icono} alElegir={(icono) => cambiar({ icono })} />
+        <SelectorIcono
+          sugeridos={ICONOS_TARJETA}
+          elegido={datos.icono}
+          alElegir={(icono) => cambiar({ icono })}
+          color={datos.color}
+        />
 
         <h2 className="titulo-seccion">Color</h2>
         <SelectorColorCuenta valor={datos.color} alCambiar={(color) => cambiar({ color })} etiqueta="Color de la tarjeta" />

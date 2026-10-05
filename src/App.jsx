@@ -10,7 +10,6 @@ import Busqueda from './pantallas/Busqueda.jsx';
 import Categorias from './pantallas/Categorias.jsx';
 import Cuentas from './pantallas/Cuentas.jsx';
 import DetalleMovimiento from './pantallas/DetalleMovimiento.jsx';
-import DetalleTarjeta from './pantallas/DetalleTarjeta.jsx';
 import Etiquetas from './pantallas/Etiquetas.jsx';
 import Factura from './pantallas/Factura.jsx';
 import FormularioCategoria from './pantallas/FormularioCategoria.jsx';
@@ -68,7 +67,6 @@ export default function App() {
         <Route path="/cuentas/:id/reajustar" element={<ReajustarSaldo />} />
         <Route path="/categorias/:id" element={<FormularioCategoria />} />
         <Route path="/etiquetas/:id" element={<FormularioEtiqueta />} />
-        <Route path="/tarjetas/:id" element={<DetalleTarjeta />} />
         <Route path="/facturas/:tarjetaId/:mes" element={<Factura />} />
         <Route path="/presupuestos/:id" element={<FormularioPresupuesto />} />
         <Route path="/metas/:id" element={<FormularioMeta />} />

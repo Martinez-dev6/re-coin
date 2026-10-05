@@ -20,7 +20,7 @@ const nueva = () => ({ nombre: '', tipo: 'banco', saldoInicial: 0, icono: tipoCu
 
 export default function VentanaCuenta({ cuenta, abierto, alCerrar }) {
   const { movimientos, programados } = useDatos();
-  const { oscuro } = useTema();
+  const { oscuro, acento } = useTema();
   const [datos, setDatos] = useState(() => cuenta ?? nueva());
   // Mientras no se elija un ícono a mano, sigue al tipo (Efectivo → billete…).
   const [iconoAMano, setIconoAMano] = useState(Boolean(cuenta));
@@ -60,7 +60,7 @@ export default function VentanaCuenta({ cuenta, abierto, alCerrar }) {
         abierto={abierto}
         alCerrar={alCerrar}
         titulo={cuenta ? 'Editar cuenta' : 'Nueva cuenta'}
-        estilo={variablesDeColor(datos.color, oscuro)}
+        estilo={variablesDeColor(datos.color, oscuro, acento)}
         arriba={
           <MontoEditable etiqueta="Saldo inicial" valor={datos.saldoInicial} alCambiar={(saldoInicial) => cambiar({ saldoInicial })} />
         }
@@ -71,13 +71,13 @@ export default function VentanaCuenta({ cuenta, abierto, alCerrar }) {
         }
       >
         <div className="tarjeta campos">
-          <Campo Icono={IconoTexto} etiqueta="Nombre">
+          <Campo Icono={IconoTexto} etiqueta="Nombre" tono="g">
             <EntradaTexto valor={datos.nombre} alCambiar={(nombre) => cambiar({ nombre })} ejemplo="Ej. Cuenta de ahorros" />
           </Campo>
-          <Campo Icono={IconoBanco} etiqueta="Tipo" alTocar={() => setPanel('tipo')}>
+          <Campo Icono={IconoBanco} etiqueta="Tipo" tono="c" alTocar={() => setPanel('tipo')}>
             {tipoCuenta(datos.tipo).texto}
           </Campo>
-          <Campo Icono={IconoOjo} etiqueta="En el saldo">
+          <Campo Icono={IconoOjo} etiqueta="En el saldo" tono="f">
             <Interruptor
               activo={datos.incluirEnSaldo}
               alCambiar={(incluirEnSaldo) => cambiar({ incluirEnSaldo })}
@@ -90,6 +90,7 @@ export default function VentanaCuenta({ cuenta, abierto, alCerrar }) {
         <SelectorIcono
           sugeridos={ICONOS_CUENTA}
           elegido={datos.icono}
+          color={datos.color}
           alElegir={(icono) => {
             setIconoAMano(true);
             cambiar({ icono });

@@ -4,6 +4,7 @@
 // tamaño y el grosor que tenía; tamano y grosor los cambian. Los de cuentas y categorías
 // (que se eligen y se guardan por nombre) están en iconosPorNombre.jsx.
 import {
+  SlidersHorizontal,
   ArrowDown,
   ArrowDownLeft,
   ArrowDownUp,
@@ -87,6 +88,8 @@ export const IconoCerrar = crear(X, 28, 2.6);
 export const IconoMas = crear(Plus, 22, 2.2);
 export const IconoCheck = crear(Check, 24, 3);
 export const IconoLapiz = crear(Pencil, 20);
+// Reajustar saldo (Sesión 9): controles deslizantes, "ajustar".
+export const IconoReajustar = crear(SlidersHorizontal, 18);
 export const IconoBuscar = crear(Search, 20);
 export const IconoFiltros = crear(ListFilter, 20);
 export const IconoPerfil = crear(User, 20);

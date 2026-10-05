@@ -151,9 +151,17 @@ export function aplicarTema(acento, oscuro, { animar = false } = {}) {
 // Los colores del tema para un color de cuenta o tarjeta, como variables CSS para un solo elemento
 // (Sesión 9: la ventana flotante de una cuenta o tarjeta va toda con su color, sin cambiar el de la
 // app). Sin color (o uno que no es de los 10), undefined: la ventana sigue con el del tema.
+// acentoApp: el color del tema de la app; con él van los íconos de los campos (--icono-app-…), que
+// siguen "Color de los íconos" de Apariencia y no el color de la cuenta (pedido del dueño).
 const VARIABLES_DE_COLOR = ['bannerBg', 'onBanner', 'onBannerMuted', 'bannerRing', 'accentText', 'accentSoft', 'chipBg'];
-export function variablesDeColor(color, oscuro) {
+export function variablesDeColor(color, oscuro, acentoApp) {
   if (!ACENTOS.some((a) => a.valor === color)) return undefined;
-  const colores = tema(color, oscuro ? 'dark' : 'light');
-  return Object.fromEntries(VARIABLES_DE_COLOR.map((clave) => [aVariable(clave), colores[clave]]));
+  const modo = oscuro ? 'dark' : 'light';
+  const colores = tema(color, modo);
+  const app = tema(acentoApp, modo);
+  return {
+    ...Object.fromEntries(VARIABLES_DE_COLOR.map((clave) => [aVariable(clave), colores[clave]])),
+    '--icono-app-suave': app.accentSoft,
+    '--icono-app-texto': app.accentText,
+  };
 }

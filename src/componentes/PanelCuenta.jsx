@@ -13,7 +13,7 @@ import { fijarCuentaTransacciones } from '../datos/buscar.js';
 import { tipoCuenta } from '../datos/cuentas.js';
 import { estiloIconoCuenta } from '../tema/colores.js';
 import { formatearPesos } from '../utilidades/formato.js';
-import { IconoBalanza, IconoFlecha, IconoLapiz } from './iconos.jsx';
+import { IconoFlecha, IconoLapiz, IconoReajustar } from './iconos.jsx';
 import { IconoPorNombre } from './iconosPorNombre.jsx';
 import { abrirVentana } from '../estado/ventanas.js';
 import { DURACION_PANEL_MS } from './PanelInferior.jsx';
@@ -46,10 +46,10 @@ export default function PanelCuenta({ cuenta, abierto, alCerrar, ocultos = false
       alCerrar={alCerrar}
       titulo={c.nombre}
       pie={
-        <div className="panel-cuenta-botones">
-          <button type="button" className="panel-cuenta-reajustar" onClick={() => ir(`/cuentas/${c.id}/reajustar`)}>
-            <IconoBalanza tamano={18} />
-            Reajustar saldo
+        <div className="botones-lado">
+          <button type="button" className="boton-borde" onClick={() => ir(`/cuentas/${c.id}/reajustar`)}>
+            <IconoReajustar />
+            Reajustar
           </button>
           <button
             type="button"

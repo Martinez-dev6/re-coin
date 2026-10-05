@@ -35,7 +35,6 @@ const SIN_BARRA = [
   /^\/cuentas\//,
   /^\/categorias\//,
   /^\/etiquetas\//,
-  /^\/tarjetas\//,
   /^\/movimientos\//,
   /^\/pendientes$/,
   /^\/facturas\//,

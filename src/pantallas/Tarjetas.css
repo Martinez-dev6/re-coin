@@ -154,3 +154,13 @@
 .tarjetas-factura-estado.pagada {
   color: var(--income);
 }
+
+/* Ver movimientos | Editar debajo de cada tarjeta (Sesión 9). */
+.tarjetas-botones {
+  margin-top: 10px;
+}
+
+.tarjetas-botones > button {
+  height: 46px;
+  font-size: 15px;
+}

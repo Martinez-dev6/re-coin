@@ -1,9 +1,10 @@
-// Tarjetas de crédito con su cupo (design/capturas/Tarjetas.png). Tocar una abre su pantalla
-// (DetalleTarjeta: facturas y movimientos, y Editar arriba). Pedido del dueño (2026-10-04): las
-// facturas ya no van aquí debajo de cada tarjeta y tocar la tarjeta ya no abre Editar.
+// Tarjetas de crédito con su cupo (design/capturas/Tarjetas.png). Debajo de cada una, Ver movimientos
+// (Transacciones con el filtro de esa tarjeta) y Editar (ventana flotante). Sesión 9, pedido del dueño:
+// se quitó la pantalla de cada tarjeta (DetalleTarjeta), que era casi esta misma con los movimientos.
 import { useNavigate } from 'react-router-dom';
 import CabeceraSubpagina from '../componentes/CabeceraSubpagina.jsx';
-import { IconoMas } from '../componentes/iconos.jsx';
+import { IconoLapiz, IconoLista, IconoMas } from '../componentes/iconos.jsx';
+import { fijarCuentaTransacciones } from '../datos/buscar.js';
 import { IconoPorNombre } from '../componentes/iconosPorNombre.jsx';
 import { useDatos } from '../datos/DatosContext.jsx';
 import { proximaFactura, textoVence } from '../datos/tarjetas.js';
@@ -13,8 +14,7 @@ import './Cuentas.css';
 import './Tarjetas.css';
 import { abrirVentana } from '../estado/ventanas.js';
 
-// La tarjeta con su cupo usado, cierre, pago y cuándo vence. Con alTocar es un botón (en la lista);
-// sin él, solo se ve (arriba de DetalleTarjeta).
+// La tarjeta con su cupo usado, cierre, pago y cuándo vence. Con alTocar es un botón.
 export function ResumenTarjeta({ tarjeta: t, alTocar }) {
   const { cuenta } = useDatos();
   const porcentaje = t.cupo > 0 ? Math.min(100, Math.round((t.usado / t.cupo) * 100)) : 0;
@@ -89,7 +89,24 @@ export default function Tarjetas() {
       <div className="contenido cuentas-contenido">
         {tarjetas.map((t) => (
           <section key={t.id} className="tarjetas-grupo">
-            <ResumenTarjeta tarjeta={t} alTocar={() => navegar('/tarjetas/' + t.id)} />
+            <ResumenTarjeta tarjeta={t} />
+            <div className="botones-lado tarjetas-botones">
+              <button
+                type="button"
+                className="boton-borde"
+                onClick={() => {
+                  fijarCuentaTransacciones(t.id);
+                  navegar('/transacciones');
+                }}
+              >
+                <IconoLista tamano={18} />
+                Ver movimientos
+              </button>
+              <button type="button" className="boton-principal" onClick={() => abrirVentana('tarjeta', t.id)}>
+                <IconoLapiz tamano={18} />
+                Editar
+              </button>
+            </div>
           </section>
         ))}
 

@@ -68,33 +68,6 @@
   color: var(--accent-text);
 }
 
-/* Reajustar saldo | Editar, lado a lado (Sesión 9), como Eliminar | Editar en el detalle de un
-   movimiento: el primero con borde del color del tema, el segundo relleno. */
-.panel-cuenta-botones {
-  display: flex;
-  gap: 12px;
-}
-
-.panel-cuenta-botones > button {
-  flex: 1 1 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  margin-top: 0;
-}
-
-.panel-cuenta-reajustar {
-  height: 54px;
-  border: 1.5px solid var(--accent-text);
-  border-radius: 27px;
-  background: var(--surface);
-  color: var(--accent-text);
-  font-size: 16px;
-  font-weight: 700;
-  white-space: nowrap;
-}
-
 /* Dentro de la ventana flotante, con el margen de los paneles (la ventana trae menos, para sus
    tarjetas de campos). */
 .ventana-cuerpo:has(.panel-cuenta-filas) {

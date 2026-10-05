@@ -417,3 +417,31 @@
   white-space: nowrap;
   border: 0;
 }
+
+/* Dos botones lado a lado (Sesión 9): uno con borde del color del tema y otro relleno, como
+   Eliminar | Editar en el detalle de un movimiento. Ventana de una cuenta (Reajustar | Editar) y
+   cada tarjeta de crédito (Ver movimientos | Editar). */
+.botones-lado {
+  display: flex;
+  gap: 12px;
+}
+
+.botones-lado > button {
+  flex: 1 1 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 0;
+  white-space: nowrap;
+}
+
+.boton-borde {
+  height: 54px;
+  border: 1.5px solid var(--accent-text);
+  border-radius: 27px;
+  background: var(--surface);
+  color: var(--accent-text);
+  font-size: 16px;
+  font-weight: 700;
+}
