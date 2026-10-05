@@ -159,8 +159,10 @@ export async function guardarTarjeta(id, datos) {
 
 // Se borran también sus compras y pagos, en una sola operación. El panel avisa cuántos son.
 export function eliminarTarjeta(id) {
-  return db.transaction('rw', db.tarjetas, db.movimientos, async () => {
+  return db.transaction('rw', db.tarjetas, db.movimientos, db.programados, async () => {
     await db.movimientos.where('tarjetaId').equals(id).delete();
+    // Y sus gastos programados (suscripciones), que ya no tendrían a qué factura ir.
+    await db.programados.filter((p) => p.tarjetaId === id).delete();
     await db.tarjetas.delete(id);
   });
 }

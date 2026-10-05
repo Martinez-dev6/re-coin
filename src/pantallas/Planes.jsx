@@ -262,10 +262,15 @@ const dos = (n) => String(n).padStart(2, '0');
 
 // Lo programado de un mes: lo que ya se registró (movimientos con programadoId; Pendiente o
 // Pagado) y las fechas que faltan (aún no son movimientos). Más próximo primero.
-function programadosDelMes({ programados, movimientosPorMes }, anio, mes) {
+function programadosDelMes({ programados, movimientos, movimientosPorMes }, anio, mes) {
   const desde = `${anio}-${dos(mes + 1)}-01`;
   const hasta = `${anio}-${dos(mes + 1)}-${new Date(anio, mes + 1, 0).getDate()}`;
-  const registrados = movimientosPorMes.filter((m) => m.programadoId && m.fecha >= desde && m.fecha <= hasta);
+  const delMes = (m) => m.programadoId && m.fecha >= desde && m.fecha <= hasta;
+  // Un gasto con tarjeta programado (suscripción) va el día del cobro, no el de pago de cada cuota.
+  const registrados = [
+    ...movimientosPorMes.filter((m) => delMes(m) && !m.movimientoId),
+    ...movimientos.filter((m) => delMes(m) && m.tipo === 'gastoTarjeta'),
+  ];
   const futuros = programados.flatMap((p) =>
     fechasFuturas(p, desde, hasta).map((fecha) => ({
       ...p,
@@ -280,6 +285,8 @@ function programadosDelMes({ programados, movimientosPorMes }, anio, mes) {
 
 // "Hoy", "Mañana", "En 13 días" para lo que falta; Pendiente o Pagado para lo ya registrado.
 function estadoProgramado(item) {
+  // Un gasto con tarjeta ya registrado no se paga solo: va en su factura.
+  if (!item.futuro && item.tipo === 'gastoTarjeta') return 'En factura';
   if (!item.futuro) return item.pagado ? 'pagado' : 'pendiente';
   const dias = diasHasta(item.fecha);
   if (dias <= 0) return 'Hoy';
@@ -289,6 +296,7 @@ function estadoProgramado(item) {
 
 // Lo ya registrado abre el movimiento; lo que falta abre el programado para editarlo.
 function FilasProgramadas({ items, navegar, frecuenciaDe }) {
+  const { tarjeta } = useDatos();
   return (
     <div className="tarjeta-lista">
       {items.map((item) => (
@@ -299,6 +307,7 @@ function FilasProgramadas({ items, navegar, frecuenciaDe }) {
             <>
               <IconoRepetir />
               {textoFrecuencia(frecuenciaDe(item.programadoId))}
+              {item.tarjetaId ? ` · ${tarjeta(item.tarjetaId)?.nombre ?? 'Tarjeta'}` : ''}
             </>
           }
           estado={estadoProgramado(item)}
@@ -315,6 +324,7 @@ function Programados({ items, programados, anio, mes, navegar }) {
   const [diaElegido, setDiaElegido] = useState(null);
   const frecuenciaDe = (id) => programados.find((p) => p.id === id)?.frecuencia;
   const { semanaEmpieza } = useAjustes();
+  const { tarjeta } = useDatos();
   const hayTransferencias = programados.some((p) => p.tipo === 'transferencia');
   const [panelNuevo, setPanelNuevo] = useState(false);
 
@@ -344,7 +354,7 @@ function Programados({ items, programados, anio, mes, navegar }) {
           {Array.from({ length: diasDelMes }, (_, i) => {
             const fecha = textoDia(i + 1);
             const delMismoDia = items.filter((it) => it.fecha === fecha);
-            const hayGasto = delMismoDia.some((it) => it.tipo === 'gasto');
+            const hayGasto = delMismoDia.some((it) => it.tipo === 'gasto' || it.tipo === 'gastoTarjeta');
             const hayIngreso = delMismoDia.some((it) => it.tipo === 'ingreso');
             const hayTransferencia = delMismoDia.some((it) => it.tipo === 'transferencia');
             return (
@@ -449,6 +459,7 @@ function Programados({ items, programados, anio, mes, navegar }) {
                 <>
                   <IconoRepetir />
                   {textoFrecuencia(p.frecuencia)}
+                  {p.tarjetaId ? ` · ${tarjeta(p.tarjetaId)?.nombre ?? 'Tarjeta'}` : ''}
                   {p.termina ? ` · hasta ${fechaCorta(p.termina)}` : ''}
                 </>
               }
@@ -508,7 +519,9 @@ export default function Planes() {
       </div>
     );
   } else {
-    const suma = (tipo) => programados.filter((p) => p.tipo === tipo).reduce((t, p) => t + p.valor, 0);
+    // Los gastos con tarjeta programados cuentan como gastos.
+    const suma = (tipo) =>
+      programados.filter((p) => (p.tipo === 'gastoTarjeta' ? 'gasto' : p.tipo) === tipo).reduce((t, p) => t + p.valor, 0);
     resumen = (
       <div className="totales-banner">
         <div>

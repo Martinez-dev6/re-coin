@@ -77,6 +77,9 @@ const TEXTO_RECURRENTE = {
   gasto: 'Gasto recurrente',
   ingreso: 'Ingreso recurrente',
   transferencia: 'Transferencia recurrente',
+  // Gasto con tarjeta (suscripciones; pedido del dueño, Sesión 9): cada repetición va a la factura que
+  // le toca por su fecha.
+  gastoTarjeta: 'Gasto recurrente',
 };
 
 // Formas de eliminar un programado (eliminarProgramado en programados.js).
@@ -303,8 +306,8 @@ function Campos({ clave, movimiento, programado, esProgramado = false, tipoInici
   const tipoCategoria = tipo === 'ingreso' ? 'ingreso' : 'gasto';
   const [tituloNuevo, tituloEditar, textoGuardar] = esProgramado ? TITULOS_PROGRAMADO : TITULOS[tipo];
   const editando = Boolean(movimiento || programado);
-  // "Gasto recurrente": solo al crear un gasto, ingreso o transferencia.
-  const puedeRepetir = !editando && !esProgramado && !conTarjeta;
+  // "Gasto recurrente": solo al crear (gasto, ingreso, transferencia o gasto con tarjeta).
+  const puedeRepetir = !editando && !esProgramado;
   const recurrente = puedeRepetir && Boolean(datos.recurrente);
   let volverA = '/';
   if (movimiento) volverA = `/movimientos/${movimiento.id}`;
@@ -613,11 +616,15 @@ function Campos({ clave, movimiento, programado, esProgramado = false, tipoInici
             <Campo Icono={IconoCuotas} etiqueta="Cuotas" alTocar={() => setPanel('cuotas')}>
               {textoCuotas(datos.cuotas, datos.valor)}
             </Campo>
-            <Campo Icono={IconoFactura} etiqueta="Factura" alTocar={() => setPanel('factura')}>
-              {datos.factura ? nombreFactura(datos.factura) : vacio('Elegir')}
-            </Campo>
+            {/* En un programado la factura sale de cada fecha: no se elige. */}
+            {!esProgramado && (
+              <Campo Icono={IconoFactura} etiqueta="Factura" alTocar={() => setPanel('factura')}>
+                {datos.factura ? nombreFactura(datos.factura) : vacio('Elegir')}
+              </Campo>
+            )}
             {filaFecha}
             {filaHora}
+            {filaRecurrente}
             {filaEtiquetas}
             {filaObservacion}
           </div>

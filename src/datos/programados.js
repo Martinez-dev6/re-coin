@@ -11,6 +11,7 @@
 import { aFecha, hoyTexto } from '../utilidades/fechas.js';
 import { db, nuevoId, ordenAlFinal } from './db.js';
 import { guardarMovimiento } from './movimientos.js';
+import { facturaDeFecha } from './tarjetas.js';
 
 export const FRECUENCIAS = [
   { valor: 'dia', texto: 'Cada día' },
@@ -87,9 +88,14 @@ let registrando = null;
 export function registrarVencidos() {
   if (registrando) return registrando;
   registrando = db
-    .transaction('rw', db.programados, db.movimientos, async () => {
+    .transaction('rw', db.programados, db.movimientos, db.tarjetas, async () => {
       const limite = finDeMes();
+      const tarjetas = new Map((await db.tarjetas.toArray()).map((t) => [t.id, t]));
       for (const p of await db.programados.toArray()) {
+        // Un gasto con tarjeta programado (Sesión 9: suscripciones) va a la factura que le toca por
+        // su fecha; sin la tarjeta (se borró), ya no se registra.
+        const tarjeta = p.tipo === 'gastoTarjeta' ? tarjetas.get(p.tarjetaId) : null;
+        if (p.tipo === 'gastoTarjeta' && !tarjeta) continue;
         const fechas = fechasFuturas(p, '0000-01-01', limite);
         if (fechas.length === 0) continue;
         await db.movimientos.bulkAdd(
@@ -99,16 +105,17 @@ export function registrarVencidos() {
             valor: p.valor,
             descripcion: p.descripcion,
             categoriaId: p.categoriaId,
-            cuentaId: p.cuentaId,
+            cuentaId: tarjeta ? null : p.cuentaId,
             cuentaDestinoId: p.cuentaDestinoId,
             fecha,
             hora: null, // se registra solo al abrir la app: no es la hora en que se hizo
-            pagado: false,
+            // Un gasto con tarjeta queda pagado (lo pendiente es su factura); lo demás, pendiente.
+            pagado: Boolean(tarjeta),
             etiquetaIds: p.etiquetaIds ?? [],
             observacion: p.observacion ?? '',
-            tarjetaId: null,
-            cuotas: null,
-            factura: null,
+            tarjetaId: tarjeta ? p.tarjetaId : null,
+            cuotas: tarjeta ? Math.max(1, p.cuotas || 1) : null,
+            factura: tarjeta ? facturaDeFecha(tarjeta, fecha) : null,
             programadoId: p.id,
             creado: Date.now() + i,
           })),
@@ -126,13 +133,17 @@ export function registrarVencidos() {
 // frecuencia y termina; su fecha es cuándo empieza).
 function camposProgramado(datos) {
   const transferencia = datos.tipo === 'transferencia';
+  const conTarjeta = datos.tipo === 'gastoTarjeta';
   return {
     tipo: datos.tipo,
     valor: Math.round(datos.valor),
     descripcion: datos.descripcion.trim(),
     categoriaId: transferencia ? null : datos.categoriaId,
-    cuentaId: datos.cuentaId,
+    cuentaId: conTarjeta ? null : datos.cuentaId,
     cuentaDestinoId: transferencia ? datos.cuentaDestinoId : null,
+    // Gasto con tarjeta: la tarjeta y en cuántas cuotas (la factura sale de cada fecha).
+    tarjetaId: conTarjeta ? datos.tarjetaId : null,
+    cuotas: conTarjeta ? Math.max(1, datos.cuotas || 1) : null,
     etiquetaIds: transferencia ? [] : [...new Set(datos.etiquetaIds)],
     observacion: datos.observacion.trim(),
     frecuencia: datos.frecuencia,
@@ -147,7 +158,11 @@ const adelantados = (id) =>
   db.movimientos
     .where('programadoId')
     .equals(id)
-    .filter((m) => !m.pagado && m.fecha > hoyTexto());
+    // Un gasto con tarjeta siempre está "pagado" (lo pendiente es su factura): cuenta por la fecha.
+    .filter((m) => m.fecha > hoyTexto() && (m.tipo === 'gastoTarjeta' || !m.pagado));
+
+// Ya realizado: pagado, o un gasto con tarjeta cuya fecha ya llegó.
+const realizado = (m) => (m.tipo === 'gastoTarjeta' ? m.fecha <= hoyTexto() : m.pagado);
 
 // datos: los del formulario. Sin id = programado nuevo. Al editar, lo registrado hasta hoy no
 // cambia; lo registrado por adelantado se vuelve a crear con los datos nuevos.
@@ -196,7 +211,7 @@ export function eliminarProgramado(id, modo = 'solo') {
     if (modo === 'todo') await db.movimientos.where('programadoId').equals(id).delete();
     else {
       await adelantados(id).delete();
-      if (modo === 'realizados') await db.movimientos.where('programadoId').equals(id).filter((m) => m.pagado).delete();
+      if (modo === 'realizados') await db.movimientos.where('programadoId').equals(id).filter(realizado).delete();
     }
     await db.programados.delete(id);
   });
