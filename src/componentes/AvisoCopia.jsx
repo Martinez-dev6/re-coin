@@ -4,7 +4,7 @@
 import { useLiveQuery } from 'dexie-react-hooks';
 import { useRef, useState } from 'react';
 import { useDatos } from '../datos/DatosContext.jsx';
-import { avisoDeCopia, exportarCopia, leerDatos, posponerAvisoCopia } from '../datos/respaldo.js';
+import { avisoDeCopia, cuandoFue, exportarCopia, leerDatos, posponerAvisoCopia } from '../datos/respaldo.js';
 import { useAjustes } from '../estado/ajustes.js';
 import { IconoEscudoCheck } from './iconos.jsx';
 import './AvisoCopia.css';
@@ -58,7 +58,7 @@ function Tarjeta({ aviso, saliendo, setSaliendo }) {
   const texto =
     aviso.dias === null
       ? 'Aún no tienes ninguna copia. Si borras la app o cambias de iPhone, tus datos se pierden.'
-      : `Tu última copia fue hace ${plural(aviso.dias, 'día', 'días')} y desde entonces registraste ${plural(aviso.nuevos, 'movimiento', 'movimientos')}.`;
+      : `Tu última copia fue ${cuandoFue(aviso.dias)} y desde entonces registraste ${plural(aviso.nuevos, 'movimiento', 'movimientos')}.`;
 
   return (
     <div className={'aviso-copia' + (saliendo ? ' saliendo' : '')} inert={saliendo || undefined}>

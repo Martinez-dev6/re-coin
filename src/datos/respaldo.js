@@ -95,25 +95,37 @@ const DIA_MS = 24 * 60 * 60 * 1000;
 // Aviso de copia en Inicio (pedido del dueño el 2026-10-04, después de perder sus datos al
 // borrar la app del iPhone para cambiarle el ícono): sale si nunca se hizo una copia y ya hay
 // algunos movimientos, o si la última tiene una semana o más y desde entonces hay movimientos
-// nuevos. "Ahora no" lo aplaza tres días.
+// nuevos. "Ahora no" lo aplaza tres días. Desde la Sesión 10 (pedido del dueño: después de la
+// primera copia el aviso no volvía a salir) también sale con 5 movimientos nuevos desde la última
+// copia, aunque no haya pasado la semana; sin ninguna copia, con 5 (antes 3).
 const DIAS_ENTRE_COPIAS = 7;
 const DIAS_AL_POSPONER = 3;
-const MINIMO_SIN_COPIA = 3;
+const MOVIMIENTOS_PARA_AVISAR = 5;
 
 const marcarCopia = () => cambiarAjustes({ ultimaCopia: Date.now(), avisoCopiaPospuesto: null });
 export const posponerAvisoCopia = () => cambiarAjustes({ avisoCopiaPospuesto: Date.now() + DIAS_AL_POSPONER * DIA_MS });
 
-// Días completos desde la última copia, o null si nunca se hizo.
-export const diasDesdeCopia = ({ ultimaCopia }, ahora = Date.now()) =>
-  ultimaCopia ? Math.floor((ahora - ultimaCopia) / DIA_MS) : null;
+// Días de calendario desde la última copia (0 = hoy, 1 = ayer…), o null si nunca se hizo. Antes
+// contaba bloques de 24 horas: una copia de anoche salía como "hoy" a la mañana siguiente.
+export function diasDesdeCopia({ ultimaCopia }, ahora = Date.now()) {
+  if (!ultimaCopia) return null;
+  const dia = (ms) => {
+    const d = new Date(ms);
+    return new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+  };
+  return Math.round((dia(ahora) - dia(ultimaCopia)) / DIA_MS);
+}
+
+// "hoy", "ayer" o "hace 3 días".
+export const cuandoFue = (dias) => (dias === 0 ? 'hoy' : dias === 1 ? 'ayer' : `hace ${dias} días`);
 
 // Devuelve { dias, nuevos } si toca avisar (dias: null si nunca hubo copia), o null.
 export function avisoDeCopia(movimientos, ajustes, ahora = Date.now()) {
   if (ajustes.avisoCopiaPospuesto && ahora < ajustes.avisoCopiaPospuesto) return null;
   const dias = diasDesdeCopia(ajustes, ahora);
   const nuevos = movimientos.filter((m) => !ajustes.ultimaCopia || (m.creado ?? 0) > ajustes.ultimaCopia).length;
-  if (dias === null) return nuevos >= MINIMO_SIN_COPIA ? { dias, nuevos } : null;
-  return dias >= DIAS_ENTRE_COPIAS && nuevos > 0 ? { dias, nuevos } : null;
+  if (nuevos >= MOVIMIENTOS_PARA_AVISAR) return { dias, nuevos };
+  return dias !== null && dias >= DIAS_ENTRE_COPIAS && nuevos > 0 ? { dias, nuevos } : null;
 }
 
 // Lee y comprueba un archivo de copia. Devuelve { copia, resumen } o lanza un Error con un
