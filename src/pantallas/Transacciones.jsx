@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import BarraEstado from '../componentes/BarraEstado.jsx';
 import Deslizar from '../componentes/Deslizar.jsx';
 import FilaMovimiento from '../componentes/FilaMovimiento.jsx';
-import { IconoBuscar, IconoFiltros, IconoInicio } from '../componentes/iconos.jsx';
+import { IconoBuscar, IconoFiltros, IconoInicio, IconoRepetir } from '../componentes/iconos.jsx';
+import PanelProgramado from '../componentes/PanelProgramado.jsx';
 import PanelFiltros, { TIPOS_FILTRO } from '../componentes/PanelFiltros.jsx';
 import { MesConFlechas } from '../componentes/SelectorMes.jsx';
 import {
@@ -15,6 +16,7 @@ import {
   useFiltrosTransacciones,
 } from '../datos/buscar.js';
 import { useDatos } from '../datos/DatosContext.jsx';
+import { programadosDelMes, textoFrecuencia } from '../datos/programados.js';
 import { detalleMovimiento, estadoMovimiento, rutaMovimiento } from '../datos/movimientos.js';
 import { useMes } from '../estado/MesContext.jsx';
 import { enMes, etiquetaDia } from '../utilidades/fechas.js';
@@ -32,8 +34,16 @@ export default function Transacciones() {
   const extra = filtrosExtra(filtros);
 
   // Ya viene ordenado (más recientes primero) y con cada compra con tarjeta en sus cuotas, cada
-  // una en el mes en que se paga.
-  const visibles = datos.movimientosPorMes.filter((m) => enMes(m.fecha, anio, mes) && cumpleFiltros(m, filtros));
+  // una en el mes en que se paga. En los meses siguientes se suman, como pendientes, las fechas de
+  // los programados que aún no son movimientos (Sesión 10, pedido del dueño; como en Planes).
+  const futuros = programadosDelMes(datos.programados, datos.tarjeta, anio, mes);
+  const visibles = [...datos.movimientosPorMes.filter((m) => enMes(m.fecha, anio, mes)), ...futuros]
+    .sort((a, b) => b.fecha.localeCompare(a.fecha))
+    .filter((m) => cumpleFiltros(m, filtros));
+  // Ventana pequeña de un programado (PanelProgramado), al tocar una fecha que aún no es movimiento.
+  const [abierto, setAbierto] = useState({ id: null, ocurrencia: null });
+  const [panelProgramado, setPanelProgramado] = useState(false);
+  const frecuenciaDe = (id) => datos.programados.find((p) => p.id === id)?.frecuencia;
   const porDia = agruparPorDia(visibles);
 
   // En "Todo" el banner muestra el neto (ingresos − gastos); en los demás, la suma del tipo.
@@ -126,11 +136,25 @@ export default function Transacciones() {
                 <FilaMovimiento
                   key={m.id}
                   movimiento={m}
-                  detalle={detalleMovimiento(m, datos)}
+                  detalle={
+                    m.futuro ? (
+                      <>
+                        <IconoRepetir />
+                        {textoFrecuencia(frecuenciaDe(m.programadoId))}
+                        {m.tarjetaId ? ` · ${datos.tarjeta(m.tarjetaId)?.nombre ?? 'Tarjeta'}` : ''}
+                      </>
+                    ) : (
+                      detalleMovimiento(m, datos)
+                    )
+                  }
                   estado={estadoMovimiento(m)}
-                  mostrarRepetir
+                  mostrarRepetir={!m.futuro}
                   conObservacion
-                  alTocar={() => navegar(rutaMovimiento(m))}
+                  alTocar={() => {
+                    if (!m.futuro) return navegar(rutaMovimiento(m));
+                    setAbierto({ id: m.programadoId, ocurrencia: m.compra });
+                    setPanelProgramado(true);
+                  }}
                 />
               ))}
             </div>
@@ -144,6 +168,13 @@ export default function Transacciones() {
         filtros={filtros}
         alCambiar={setFiltros}
         cantidad={visibles.length}
+      />
+
+      <PanelProgramado
+        programado={datos.programados.find((p) => p.id === abierto.id)}
+        ocurrencia={abierto.ocurrencia}
+        abierto={panelProgramado}
+        alCerrar={() => setPanelProgramado(false)}
       />
     </div>
   );

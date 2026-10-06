@@ -3,15 +3,15 @@
 // movimiento **pendiente** (que luego se marca como pagado). Desde la Sesión 9 (2026-10-05, pedido
 // del dueño) se registran todas las fechas **hasta el fin del mes en curso**, no solo las que ya
 // llegaron: así lo programado de este mes sale en Pendientes aunque aún no sea el día. Las de los
-// meses siguientes solo se ven en Planes. Una PWA en el iPhone no corre en segundo plano: por eso
-// se hace al abrir, no a la hora exacta.
+// meses siguientes se muestran sin registrarlas (programadosDelMes). Una PWA en el iPhone no corre
+// en segundo plano: por eso se hace al abrir, no a la hora exacta.
 // Desde la Sesión 9 los programados se crean desde el formulario de un gasto, ingreso o
 // transferencia (interruptor "… recurrente", guardarRecurrente); en Planes solo se ven, se editan
 // y se eliminan.
-import { aFecha, hoyTexto } from '../utilidades/fechas.js';
+import { aFecha, hoyTexto, sumarMeses } from '../utilidades/fechas.js';
 import { db, nuevoId, ordenAlFinal } from './db.js';
 import { guardarMovimiento } from './movimientos.js';
-import { facturaDeFecha } from './tarjetas.js';
+import { facturaDeFecha, fechaPagoFactura } from './tarjetas.js';
 
 export const FRECUENCIAS = [
   { valor: 'dia', texto: 'Cada día' },
@@ -75,6 +75,32 @@ function diaSiguiente(texto) {
 export function fechasFuturas(p, desde, hasta) {
   const despuesDe = p.hasta ? diaSiguiente(p.hasta) : p.empieza;
   return fechasEntre(p, desde > despuesDe ? desde : despuesDe, hasta);
+}
+
+// Las fechas de un mes que aún no son movimientos (meses siguientes), como filas pendientes para
+// Planes y Transacciones (Sesión 10, pedido del dueño: en Transacciones no salían). Un gasto con
+// tarjeta programado va, como sus cuotas, el día en que se paga su factura. tarjeta: buscar por id.
+export function programadosDelMes(programados, tarjeta, anio, mes) {
+  const dos = (n) => String(n).padStart(2, '0');
+  const desde = `${anio}-${dos(mes + 1)}-01`;
+  const hasta = `${anio}-${dos(mes + 1)}-${new Date(anio, mes + 1, 0).getDate()}`;
+  return programados.flatMap((p) => {
+    const t = p.tipo === 'gastoTarjeta' ? tarjeta(p.tarjetaId) : null;
+    if (p.tipo === 'gastoTarjeta' && !t) return [];
+    // Para una tarjeta, se buscan las compras desde un mes antes: su factura puede pagarse este mes.
+    const desdeCompra = t ? `${sumarMeses(desde.slice(0, 7), -1)}-01` : desde;
+    return fechasFuturas(p, desdeCompra, hasta)
+      .map((compra) => ({
+        ...p,
+        id: `${p.id}-${compra}`,
+        programadoId: p.id,
+        fecha: t ? fechaPagoFactura(t, facturaDeFecha(t, compra)) : compra,
+        compra, // la fecha propia del programado (en una tarjeta, la de la compra)
+        pagado: false,
+        futuro: true,
+      }))
+      .filter((item) => item.fecha >= desde && item.fecha <= hasta);
+  });
 }
 
 // Último día del mes en curso ('AAAA-MM-DD'): hasta ahí se registra.

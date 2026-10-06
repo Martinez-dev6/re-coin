@@ -25,11 +25,10 @@ import { useDatos } from '../datos/DatosContext.jsx';
 import { ahorroPorPeriodo, aportar, frecuenciaMeta } from '../datos/metas.js';
 import { periodoActual, presupuestosDelMes } from '../datos/presupuestos.js';
 import { detalleMovimiento, esGasto, estadoMovimiento, rutaMovimiento } from '../datos/movimientos.js';
-import { fechasFuturas, terminado, textoFrecuencia } from '../datos/programados.js';
-import { facturaDeFecha, fechaPagoFactura } from '../datos/tarjetas.js';
+import { programadosDelMes, terminado, textoFrecuencia } from '../datos/programados.js';
 import { useAjustes } from '../estado/ajustes.js';
 import { useMes } from '../estado/MesContext.jsx';
-import { diasHasta, enMes, etiquetaDia, fechaCorta, hoyTexto, sumarMeses } from '../utilidades/fechas.js';
+import { diasHasta, enMes, etiquetaDia, fechaCorta, hoyTexto } from '../utilidades/fechas.js';
 import { formatearPesos } from '../utilidades/formato.js';
 import './Planes.css';
 import './Transacciones.css';
@@ -276,29 +275,10 @@ const dos = (n) => String(n).padStart(2, '0');
 // Transacciones, pero en calendario"): los movimientos del mes como en Transacciones
 // (movimientosPorMes: cada cuota de tarjeta el día en que se paga su factura, pagos de factura,
 // transferencias, pendientes y pagados) y las fechas de los programados que aún no son movimientos
-// (meses siguientes). Un gasto con tarjeta programado que falta va, como sus cuotas, el día en que
-// se paga su factura. Más próximo primero.
+// (meses siguientes, programadosDelMes). Más próximo primero.
 function movimientosDelCalendario({ programados, movimientosPorMes, tarjeta }, anio, mes) {
-  const desde = `${anio}-${dos(mes + 1)}-01`;
-  const hasta = `${anio}-${dos(mes + 1)}-${new Date(anio, mes + 1, 0).getDate()}`;
-  const enRango = (fecha) => fecha >= desde && fecha <= hasta;
-  const registrados = movimientosPorMes.filter((m) => enRango(m.fecha));
-  const futuros = programados.flatMap((p) => {
-    const t = p.tipo === 'gastoTarjeta' ? tarjeta(p.tarjetaId) : null;
-    if (p.tipo === 'gastoTarjeta' && !t) return [];
-    // Para una tarjeta, se buscan las compras desde un mes antes: su factura puede pagarse este mes.
-    const desdeCompra = t ? `${sumarMeses(desde.slice(0, 7), -1)}-01` : desde;
-    return fechasFuturas(p, desdeCompra, hasta)
-      .map((compra) => ({
-        ...p,
-        id: `${p.id}-${compra}`,
-        programadoId: p.id,
-        fecha: t ? fechaPagoFactura(t, facturaDeFecha(t, compra)) : compra,
-        compra, // la fecha propia del programado (en una tarjeta, la de la compra)
-        futuro: true,
-      }))
-      .filter((item) => enRango(item.fecha));
-  });
+  const registrados = movimientosPorMes.filter((m) => enMes(m.fecha, anio, mes));
+  const futuros = programadosDelMes(programados, tarjeta, anio, mes);
   return [...registrados, ...futuros].sort((a, b) => a.fecha.localeCompare(b.fecha));
 }
 
