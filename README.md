@@ -4,6 +4,19 @@ App de finanzas personales para el iPhone, hecha como **Progressive Web App (PWA
 
 Demo: <https://sendo-rho.vercel.app> (cada visitante empieza con la app vacía; lo que registre se queda en su propio navegador).
 
+<p align="center">
+  <img src="docs/capturas/inicio.jpg" width="200" alt="Inicio con el saldo disponible, pendientes y balance del mes">
+  <img src="docs/capturas/transacciones.jpg" width="200" alt="Transacciones del mes con pendientes y pagados">
+  <img src="docs/capturas/planes.jpg" width="200" alt="Calendario de Planes con los movimientos del mes">
+</p>
+<p align="center">
+  <img src="docs/capturas/graficos.jpg" width="200" alt="Gráfico de gastos por categoría">
+  <img src="docs/capturas/nuevo-gasto.jpg" width="200" alt="Nuevo gasto con el panel de categorías">
+  <img src="docs/capturas/inicio-oscuro.jpg" width="200" alt="Inicio en modo oscuro con otro color principal">
+</p>
+
+<p align="center"><sub>Capturas con datos de ejemplo inventados.</sub></p>
+
 ## Qué hace
 
 - **Cuentas** (banco, billetera, efectivo…) con saldo calculado a partir de los movimientos, y **reajuste de saldo** cuando el real no coincide.
@@ -81,4 +94,4 @@ Nada sale del teléfono: no hay servidor, analítica ni servicios de terceros. S
 
 ## Licencia
 
-© 2026 José Francisco Martínez Aguilar. Todos los derechos reservados.
+[MIT](LICENSE) © 2026 José Francisco Martínez Aguilar.
