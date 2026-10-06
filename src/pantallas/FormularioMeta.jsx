@@ -36,7 +36,7 @@ import {
 } from '../datos/metas.js';
 import { useAjustes } from '../estado/ajustes.js';
 import { estiloIconoCuenta } from '../tema/colores.js';
-import { diaYMes, fechaCorta, hoyTexto } from '../utilidades/fechas.js';
+import { diaYMes, fechaCorta, textoDeFecha } from '../utilidades/fechas.js';
 import { formatearPesos } from '../utilidades/formato.js';
 import { volver } from '../utilidades/navegacion.js';
 import './FormularioMovimiento.css';
@@ -47,10 +47,11 @@ const IconoFechaLimite = (p) => <IconoCalendario tamano={18} {...p} />;
 const IconoYaTengo = (p) => <IconoPorNombre nombre="signo-pesos" tamano={18} {...p} />;
 const IconoAhorrar = (p) => <IconoRepetir tamano={18} grosor={2} {...p} />;
 
-// Un año desde hoy.
+// Un año desde hoy. Con fechas reales y no sumando 1 al texto: el 29 de febrero daría una fecha que
+// no existe al año siguiente (pasa al 1 de marzo).
 function enUnAnio() {
-  const hoy = hoyTexto();
-  return `${Number(hoy.slice(0, 4)) + 1}${hoy.slice(4)}`;
+  const hoy = new Date();
+  return textoDeFecha(new Date(hoy.getFullYear() + 1, hoy.getMonth(), hoy.getDate()));
 }
 
 export default function FormularioMeta() {

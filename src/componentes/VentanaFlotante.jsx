@@ -9,6 +9,7 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useOscurecido } from '../estado/useOscurecido.js';
+import { bloquearScroll } from '../utilidades/bloquearScroll.js';
 import { IconoCerrar } from './iconos.jsx';
 import { DURACION_PANEL_MS } from './PanelInferior.jsx';
 import './VentanaFlotante.css';
@@ -39,11 +40,11 @@ export default function VentanaFlotante({ abierto, alCerrar, titulo, tono, estil
 
   useEffect(() => {
     if (!abierto) return;
-    document.body.style.overflow = 'hidden';
+    const soltarScroll = bloquearScroll();
     const alPulsar = (evento) => evento.key === 'Escape' && alCerrarRef.current();
     window.addEventListener('keydown', alPulsar);
     return () => {
-      document.body.style.overflow = '';
+      soltarScroll();
       window.removeEventListener('keydown', alPulsar);
     };
   }, [abierto]);

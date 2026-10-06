@@ -57,11 +57,17 @@ function filas({ movimientos = [], cuentas = [], categorias = [], tarjetas = [],
 
 // ---------- CSV ----------
 
+// Un texto que empieza por =, +, -, @, tabulación o retorno lo abre Excel como fórmula ("inyección
+// de CSV", OWASP). Se le antepone un apóstrofo para que quede como texto. Los valores son números
+// y no pasan por aquí.
+const pareceFormula = (texto) => /^[=+\-@\t\r]/.test(texto);
+
 // Con punto y coma: en Colombia Excel usa la coma para decimales y abre así el CSV por columnas.
-// Empieza con la marca UTF-8 para que las tildes salgan bien.
+// Empieza con la marca UTF-8 (BOM) para que las tildes salgan bien.
 export function textoCsv(datos) {
   const celda = (valor) => {
-    const texto = String(valor ?? '');
+    let texto = String(valor ?? '');
+    if (typeof valor === 'string' && pareceFormula(texto)) texto = `'${texto}`;
     return /[";\n\r]/.test(texto) ? `"${texto.replace(/"/g, '""')}"` : texto;
   };
   const lineas = [COLUMNAS, ...filas(datos)].map((fila) => fila.map(celda).join(';'));

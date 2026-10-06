@@ -464,7 +464,7 @@ function Programados({ items, programados, anio, mes, navegar }) {
         <div className="panel-desplazable">
           {programados.length === 0 ? (
             <p className="panel-texto">
-              Aún no tienes programados, como el arriendo o el sueldo. Al registrar un gasto o un ingreso, prende
+              Aún no tienes programados, como el arriendo o el sueldo. Al registrar un gasto o un ingreso, prende{' '}
               <strong>Gasto recurrente</strong> para que se repita.
             </p>
           ) : (

@@ -28,7 +28,10 @@ export function DatosProvider({ children }) {
   // Programados: al abrir la app y al volver a ella (puede ser otro día), lo que ya llegó se
   // registra como pendiente (programados.js).
   useEffect(() => {
-    const registrar = () => document.visibilityState === 'visible' && registrarVencidos().catch(() => {});
+    // Si falla, se vuelve a intentar la próxima vez que se abra la app; el error queda en la consola.
+    const registrar = () =>
+      document.visibilityState === 'visible' &&
+      registrarVencidos().catch((error) => console.error('No se pudieron registrar los programados', error));
     registrar();
     document.addEventListener('visibilitychange', registrar);
     return () => document.removeEventListener('visibilitychange', registrar);

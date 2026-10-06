@@ -4,6 +4,7 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useOscurecido } from '../estado/useOscurecido.js';
+import { bloquearScroll } from '../utilidades/bloquearScroll.js';
 import './PanelInferior.css';
 
 // Lo que tarda en bajar al cerrarse. Quien navega después de cerrar un panel espera esto,
@@ -38,11 +39,11 @@ export default function PanelInferior({ abierto, alCerrar, titulo, accion, child
 
   useEffect(() => {
     if (!abierto) return;
-    document.body.style.overflow = 'hidden';
+    const soltarScroll = bloquearScroll();
     const alPulsar = (evento) => evento.key === 'Escape' && alCerrarRef.current();
     window.addEventListener('keydown', alPulsar);
     return () => {
-      document.body.style.overflow = '';
+      soltarScroll();
       window.removeEventListener('keydown', alPulsar);
     };
   }, [abierto]);
