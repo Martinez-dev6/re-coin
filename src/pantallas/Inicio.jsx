@@ -22,6 +22,7 @@ import { PanelElegirMes } from '../componentes/SelectorMes.jsx';
 import { fijarTipoTransacciones } from '../datos/buscar.js';
 import { saldoTotal } from '../datos/cuentas.js';
 import { esGasto } from '../datos/movimientos.js';
+import { programadosDelMes, saldoEstimado } from '../datos/programados.js';
 import { presupuestosDelMes } from '../datos/presupuestos.js';
 import { useDatos } from '../datos/DatosContext.jsx';
 import { bloquesDeInicio, useAjustes } from '../estado/ajustes.js';
@@ -43,7 +44,8 @@ const sumar = (lista) => lista.reduce((total, m) => total + m.valor, 0);
 export default function Inicio() {
   const navegar = useNavigate();
   const { anio, mes } = useMes();
-  const { cuentas, movimientosPorMes, presupuestos, categoria, cargando } = useDatos();
+  const datos = useDatos();
+  const { cuentas, movimientosPorMes, presupuestos, categoria, cargando } = datos;
   const sinCuentas = !cargando && cuentas.length === 0;
   const [ocultos, alternarOcultos] = useSaldosOcultos();
   const [panelMes, setPanelMes] = useState(false);
@@ -118,8 +120,13 @@ export default function Inicio() {
   }, []);
 
   // Las transferencias no son ingresos ni gastos (decisión del dueño, 2026-10-03).
-  // Las cuotas de tarjeta cuentan en el mes en que se pagan (movimientosPorMes, DatosContext).
-  const delMes = movimientosPorMes.filter((m) => enMes(m.fecha, anio, mes));
+  // Las cuotas de tarjeta cuentan en el mes en que se pagan (movimientosPorMes, DatosContext). En
+  // los meses siguientes, también las fechas de los recurrentes que aún no son movimientos
+  // (Sesión 10, pedido del dueño: en un mes futuro Ingresos y Gastos salían en $ 0).
+  const delMes = [
+    ...movimientosPorMes.filter((m) => enMes(m.fecha, anio, mes)),
+    ...programadosDelMes(datos.programados, datos.tarjeta, anio, mes),
+  ];
   const ingresos = delMes.filter((m) => m.tipo === 'ingreso');
   const gastos = delMes.filter(esGasto);
   const gastosPendientes = gastos.filter((m) => !m.pagado);
@@ -129,7 +136,12 @@ export default function Inicio() {
   // "Pendientes y alertas" solo sale si en el mes hay algo que atender (pedido del dueño,
   // 2026-10-04): sin pendientes ni alertas, el bloque no se pinta ni ocupa lugar.
   const bloques = elegidos.filter((b) => b.id !== 'pendientes' || hayPendientes || alertas.length > 0);
-  const saldo = saldoTotal(cuentas);
+  // En un mes futuro, el saldo estimado al final de ese mes (Sesión 10, pedido del dueño); en el
+  // actual o uno pasado, el de hoy.
+  const hoy = new Date();
+  const futuro = anio * 12 + mes > hoy.getFullYear() * 12 + hoy.getMonth();
+  const saldo = futuro ? saldoEstimado(datos, anio, mes) : saldoTotal(cuentas);
+  const etiquetaDelSaldo = futuro ? 'Saldo estimado' : 'Saldo disponible';
   // Total de todas las cuentas, también las que no suman al saldo actual ("En el saldo" apagado).
   const totalCuentas = cuentas.reduce((total, c) => total + c.saldo, 0);
   const tituloMes = nombreMes(mes) + (anio !== new Date().getFullYear() ? ` ${anio}` : '');
@@ -151,7 +163,10 @@ export default function Inicio() {
           {/* Lugar de la fila de arriba, que va fija aparte (m\u00e1s abajo). */}
           <div className="inicio-fila" />
           <div ref={etiquetaSaldo} className="inicio-saldo-etiqueta">
-            Saldo disponible
+            {/* Cambia a "Saldo estimado" en un mes futuro; el texto entra deslizándose. */}
+            <Deslizar as="span" posicion={futuro ? 1 : 0} distancia={16}>
+              {etiquetaDelSaldo}
+            </Deslizar>
           </div>
           <div ref={montoSaldo} className="inicio-saldo">
             {cargando ? '\u00a0' : ocultos ? OCULTO : <ConteoSaldo valor={saldo} />}
@@ -202,7 +217,7 @@ export default function Inicio() {
             <IconoAbajo />
           </button>
           <div ref={compacto} className="inicio-compacto" aria-hidden="true">
-            <span>Saldo disponible</span>
+            <span>{etiquetaDelSaldo}</span>
             <strong>{pesos(saldo)}</strong>
           </div>
         </div>

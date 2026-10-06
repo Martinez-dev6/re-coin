@@ -1,9 +1,11 @@
 // Saldo grande de Inicio: al abrir la app sube rápido desde cero hasta el valor, como los números
 // de un surtidor de gasolina (pedido del dueño, 2026-10-04). Solo la primera vez que se ve Inicio
-// después de abrir la app; volver a Inicio no lo repite. Quieto con "Reducir movimiento". Con los
-// saldos ocultos Inicio no lo usa.
+// después de abrir la app; volver a Inicio no lo repite. Después, al cambiar el valor (otro mes:
+// el saldo estimado, Sesión 10), cuenta desde el de antes hasta el nuevo (CifraAnimada). Quieto con
+// "Reducir movimiento". Con los saldos ocultos Inicio no lo usa.
 import { useEffect, useState } from 'react';
 import { alTerminarBienvenida } from '../estado/bienvenida.js';
+import CifraAnimada from './CifraAnimada.jsx';
 import { formatearPesos } from '../utilidades/formato.js';
 
 const DURACION_MS = 750;
@@ -54,5 +56,5 @@ export default function ConteoSaldo({ valor }) {
     };
   }, [valor]);
 
-  return formatearPesos(conteo ?? valor);
+  return conteo === null ? <CifraAnimada valor={valor} /> : formatearPesos(conteo);
 }

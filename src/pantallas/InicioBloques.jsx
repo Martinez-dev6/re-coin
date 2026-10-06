@@ -21,6 +21,7 @@ import {
 import { Dona } from '../componentes/Graficos.jsx';
 import { IconoPorNombre } from '../componentes/iconosPorNombre.jsx';
 import { useDatos } from '../datos/DatosContext.jsx';
+import { programadosDelMes } from '../datos/programados.js';
 import { porCategoria, textoMes, totalDelMes } from '../datos/graficos.js';
 import { periodoActual, presupuestosDelMes } from '../datos/presupuestos.js';
 import { proximaFactura, textoVence } from '../datos/tarjetas.js';
@@ -78,9 +79,11 @@ function resumenBalance(movimientos, mesTexto) {
 export function BloqueBalance({ pesos, ocultos, posicion }) {
   const navegar = useNavigate();
   const { anio, mes } = useMes();
-  const { movimientosPorMes } = useDatos();
+  const { movimientosPorMes, programados, tarjeta } = useDatos();
   const mesTexto = textoMes(anio, mes);
-  const proyectado = resumenBalance(movimientosPorMes, mesTexto);
+  // El proyectado suma, en los meses siguientes, las fechas de los recurrentes que aún no son
+  // movimientos (Sesión 10, como el saldo estimado del banner).
+  const proyectado = resumenBalance([...movimientosPorMes, ...programadosDelMes(programados, tarjeta, anio, mes)], mesTexto);
   const actual = resumenBalance(
     movimientosPorMes.filter((m) => m.pagado),
     mesTexto,

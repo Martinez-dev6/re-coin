@@ -77,6 +77,34 @@ export function fechasFuturas(p, desde, hasta) {
   return fechasEntre(p, desde > despuesDe ? desde : despuesDe, hasta);
 }
 
+// Saldo estimado al final de un mes futuro (Sesión 10, pedido del dueño): el saldo de hoy de las
+// cuentas que suman (el mismo de "Saldo disponible") más lo que falta hasta el último día de ese
+// mes: los movimientos sin pagar (también los atrasados) y las fechas de los recurrentes que aún
+// no son movimientos. Ingresos suman y gastos restan si su cuenta suma al saldo; las cuotas de
+// tarjeta restan (se pagan desde una cuenta); una transferencia solo cambia algo si una de sus dos
+// cuentas no suma al saldo.
+export function saldoEstimado({ cuentas, movimientosPorMes, programados, tarjeta }, anio, mes) {
+  const suma = new Set(cuentas.filter((c) => c.incluirEnSaldo).map((c) => c.id));
+  const efecto = (m) => {
+    if (m.tipo === 'ingreso') return suma.has(m.cuentaId) ? m.valor : 0;
+    if (m.tipo === 'gasto') return suma.has(m.cuentaId) ? -m.valor : 0;
+    if (m.tipo === 'gastoTarjeta') return -m.valor;
+    if (m.tipo === 'transferencia') return (suma.has(m.cuentaDestinoId) ? m.valor : 0) - (suma.has(m.cuentaId) ? m.valor : 0);
+    return 0;
+  };
+  const dos = (n) => String(n).padStart(2, '0');
+  const fin = `${anio}-${dos(mes + 1)}-${new Date(anio, mes + 1, 0).getDate()}`;
+  const hoy = new Date();
+  // Lo registrado sin pagar hasta ese día, y lo que falta de los recurrentes en cada mes desde el
+  // siguiente al actual (el actual ya está registrado entero, ver registrarVencidos).
+  const faltan = movimientosPorMes.filter((m) => !m.pagado && m.fecha <= fin);
+  for (let total = hoy.getFullYear() * 12 + hoy.getMonth() + 1; total <= anio * 12 + mes; total++) {
+    faltan.push(...programadosDelMes(programados, tarjeta, Math.floor(total / 12), total % 12));
+  }
+  const saldo = cuentas.reduce((t, c) => t + (c.incluirEnSaldo ? c.saldo : 0), 0);
+  return faltan.reduce((t, m) => t + efecto(m), saldo);
+}
+
 // Las fechas de un mes que aún no son movimientos (meses siguientes), como filas pendientes para
 // Planes y Transacciones (Sesión 10, pedido del dueño: en Transacciones no salían). Un gasto con
 // tarjeta programado va, como sus cuotas, el día en que se paga su factura. tarjeta: buscar por id.
