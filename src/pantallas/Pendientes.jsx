@@ -4,17 +4,22 @@
 // formulario y se cierra con la X. No está en los diseños. Tocar una fila (o su flecha) abre el panel
 // para marcarlo como pagado (PanelConfirmarPago); desde la Sesión 9 ya no abre el detalle (pedido del
 // dueño: aquí un pendiente solo se marca). Antes la flecha era un chulito; el chulo queda para la
-// animación de "listo" al confirmar.
+// animación de "listo" al confirmar. Desde la Sesión 10 (pedido del dueño) en los meses siguientes
+// salen también las fechas de los recurrentes que aún no son movimientos (programadosDelMes, como
+// en Transacciones y Planes): tocarlas abre el programado (PanelProgramado), porque aún no hay nada
+// que marcar como pagado.
 import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import Deslizar from '../componentes/Deslizar.jsx';
 import FilaMovimiento from '../componentes/FilaMovimiento.jsx';
 import { CabeceraFormulario, Segmentado } from '../componentes/Formulario.jsx';
-import { IconoFlecha } from '../componentes/iconos.jsx';
+import { IconoFlecha, IconoRepetir } from '../componentes/iconos.jsx';
 import PanelConfirmarPago from '../componentes/PanelConfirmarPago.jsx';
+import PanelProgramado from '../componentes/PanelProgramado.jsx';
 import { MesConFlechas } from '../componentes/SelectorMes.jsx';
 import { useDatos } from '../datos/DatosContext.jsx';
 import { detalleMovimiento, esGasto } from '../datos/movimientos.js';
+import { programadosDelMes, textoFrecuencia } from '../datos/programados.js';
 import { useMes } from '../estado/MesContext.jsx';
 import { enMes, etiquetaDia, nombreMes } from '../utilidades/fechas.js';
 import { formatearPesos } from '../utilidades/formato.js';
@@ -33,12 +38,29 @@ export default function Pendientes() {
   // El pendiente que se va a confirmar; se queda mientras el panel baja.
   const [porConfirmar, setPorConfirmar] = useState(null);
   const [panel, setPanel] = useState(false);
+  // Ventana de un programado, al tocar una fecha que aún no es movimiento.
+  const [abierto, setAbierto] = useState({ id: null, ocurrencia: null });
+  const [panelProgramado, setPanelProgramado] = useState(false);
+  const frecuenciaDe = (id) => datos.programados.find((p) => p.id === id)?.frecuencia;
+  const abrir = (m) => {
+    if (m.futuro) {
+      setAbierto({ id: m.programadoId, ocurrencia: m.compra });
+      setPanelProgramado(true);
+    } else {
+      setPorConfirmar(m);
+      setPanel(true);
+    }
+  };
 
-  // Del mes, sin pagar; los gastos incluyen las cuotas de tarjeta que vencen en él.
-  const pendientes = datos.movimientosPorMes
-    .filter((m) => enMes(m.fecha, anio, mes) && !m.pagado && (tipo === 'ingreso' ? m.tipo === 'ingreso' : esGasto(m)))
+  // Del mes, sin pagar; los gastos incluyen las cuotas de tarjeta que vencen en él, y en los meses
+  // siguientes, las fechas de los recurrentes.
+  const delTipo = (m) => (tipo === 'ingreso' ? m.tipo === 'ingreso' : esGasto(m));
+  const pendientes = [
+    ...datos.movimientosPorMes.filter((m) => enMes(m.fecha, anio, mes) && !m.pagado && delTipo(m)).reverse(),
+    ...programadosDelMes(datos.programados, datos.tarjeta, anio, mes).filter(delTipo),
+  ]
     // Lo más próximo primero.
-    .reverse();
+    .sort((a, b) => a.fecha.localeCompare(b.fecha));
   const total = pendientes.reduce((suma, m) => suma + m.valor, 0);
 
   const porDia = [];
@@ -75,22 +97,27 @@ export default function Pendientes() {
                 <div key={m.id} className="pendientes-fila">
                   <FilaMovimiento
                     movimiento={m}
-                    detalle={detalleMovimiento(m, datos)}
+                    detalle={
+                      m.futuro ? (
+                        <>
+                          <IconoRepetir />
+                          {textoFrecuencia(frecuenciaDe(m.programadoId))}
+                          {m.tarjetaId ? ` · ${datos.tarjeta(m.tarjetaId)?.nombre ?? 'Tarjeta'}` : ''}
+                        </>
+                      ) : (
+                        detalleMovimiento(m, datos)
+                      )
+                    }
                     estado="pendiente"
-                    alTocar={() => {
-                      setPorConfirmar(m);
-                      setPanel(true);
-                    }}
+                    alTocar={() => abrir(m)}
                   />
-                  {/* La flecha: marcar como pagado (o recibido), con confirmación. */}
+                  {/* La flecha: marcar como pagado (o recibido), con confirmación; en una fecha de un
+                      recurrente que aún no es movimiento, abre el programado. */}
                   <button
                     type="button"
                     className={'pendientes-marcar ' + (tipo === 'ingreso' ? 'ingreso' : 'gasto')}
-                    aria-label={tipo === 'ingreso' ? 'Marcar como recibido' : 'Marcar como pagado'}
-                    onClick={() => {
-                      setPorConfirmar(m);
-                      setPanel(true);
-                    }}
+                    aria-label={m.futuro ? 'Ver programado' : tipo === 'ingreso' ? 'Marcar como recibido' : 'Marcar como pagado'}
+                    onClick={() => abrir(m)}
                   >
                     <IconoFlecha tamano={18} grosor={2.4} />
                   </button>
@@ -102,6 +129,12 @@ export default function Pendientes() {
       </Deslizar>
 
       <PanelConfirmarPago movimiento={porConfirmar} abierto={panel} alCerrar={() => setPanel(false)} />
+      <PanelProgramado
+        programado={datos.programados.find((p) => p.id === abierto.id)}
+        ocurrencia={abierto.ocurrencia}
+        abierto={panelProgramado}
+        alCerrar={() => setPanelProgramado(false)}
+      />
     </div>
   );
 }
