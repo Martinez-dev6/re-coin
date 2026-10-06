@@ -1,5 +1,5 @@
 import { useLayoutEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import Avatar from '../componentes/Avatar.jsx';
 import AvisoCopia from '../componentes/AvisoCopia.jsx';
 import ConteoSaldo from '../componentes/ConteoSaldo.jsx';

@@ -4,7 +4,7 @@
 // "listo" (pedido del dueño, 2026-10-04: antes cambiaba al instante y se prestaba a confusión).
 // La hora solo sale si el movimiento la tiene (horaDe en movimientos.js).
 import { useRef, useState } from 'react';
-import { Navigate, useNavigate, useParams } from 'react-router-dom';
+import { Navigate, useNavigate, useParams } from 'react-router';
 import BotonExito from '../componentes/BotonExito.jsx';
 import CabeceraSubpagina from '../componentes/CabeceraSubpagina.jsx';
 import CirculoCategoria from '../componentes/CirculoCategoria.jsx';

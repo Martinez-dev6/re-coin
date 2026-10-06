@@ -2,7 +2,7 @@
 // y el menú en arco que abre el "+": Gasto con tarjeta, Ingreso, Transferencia, Gasto.
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { createPortal } from 'react-dom';
-import { NavLink, useLocation, useNavigate } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate } from 'react-router';
 import {
   IconoCategorias,
   IconoGasto,

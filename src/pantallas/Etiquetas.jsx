@@ -1,6 +1,6 @@
 // Lista de etiquetas con cuántos movimientos tiene cada una (design/capturas/Etiquetas.png).
 import { useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import CabeceraSubpagina from '../componentes/CabeceraSubpagina.jsx';
 import { IconoEtiqueta, IconoFlecha, IconoInfo, IconoMas } from '../componentes/iconos.jsx';
 import { useDatos } from '../datos/DatosContext.jsx';

@@ -1,7 +1,7 @@
 // Categorías de gastos e ingresos (design/capturas/Categorias.png y CategoriasIngresos.png).
 // La pestaña va en la dirección (?tipo=ingreso) para volver a ella al cerrar un formulario.
 import { useRef } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router';
 import CabeceraSubpagina from '../componentes/CabeceraSubpagina.jsx';
 import CirculoCategoria from '../componentes/CirculoCategoria.jsx';
 import Deslizar from '../componentes/Deslizar.jsx';

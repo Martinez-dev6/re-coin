@@ -2,7 +2,7 @@
 // categoría, cuenta, tarjeta, etiqueta, observación o valor. Lo buscado se conserva al abrir un
 // movimiento y volver (buscar.js).
 import { useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import BarraEstado from '../componentes/BarraEstado.jsx';
 import FilaMovimiento from '../componentes/FilaMovimiento.jsx';
 import { IconoBuscar, IconoCerrar, IconoVolver } from '../componentes/iconos.jsx';
@@ -28,7 +28,7 @@ export default function Busqueda() {
   // teclado sube, si se preparó; ver teclado.js).
   useEffect(() => {
     return pasarTeclado(() => (consulta ? null : campo.current));
-    // Solo al entrar.
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- Solo al entrar.
   }, []);
 
   const resultados = buscarMovimientos(datos.movimientosPorMes, consulta, datos);

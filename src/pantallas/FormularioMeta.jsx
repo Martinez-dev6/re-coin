@@ -2,7 +2,7 @@
 // Al editar se ven también sus aportes, y tocar uno permite borrarlo. "Ahorrar" elige si la cifra
 // sugerida es al día, a la semana, a la quincena o al mes; el panel muestra las cuatro.
 import { useRef, useState } from 'react';
-import { Navigate, useNavigate, useParams } from 'react-router-dom';
+import { Navigate, useNavigate, useParams } from 'react-router';
 import BotonExito from '../componentes/BotonExito.jsx';
 import {
   CabeceraFormulario,

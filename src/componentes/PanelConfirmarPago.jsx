@@ -28,7 +28,7 @@ export default function PanelConfirmarPago({ movimiento: m, abierto, alCerrar })
     if (!abierto || !m) return;
     const sugerida = esCuota ? tarjeta?.cuentaPagoId : m.cuentaId;
     setCuentaId(cuentas.some((c) => c.id === sugerida) ? sugerida : (cuentas[0]?.id ?? null));
-    // Solo al abrir (y al cambiar de pendiente): después manda lo que se elija.
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- Solo al abrir (y al cambiar de pendiente): después manda lo que se elija.
   }, [abierto, m?.id]);
 
   if (!m) return null;

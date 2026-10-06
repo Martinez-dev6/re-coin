@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router';
 import BarraEstado from '../componentes/BarraEstado.jsx';
 import BotonExito from '../componentes/BotonExito.jsx';
 import { abrirMenuNuevo } from '../componentes/BarraNavegacion.jsx';

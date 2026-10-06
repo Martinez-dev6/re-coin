@@ -1,7 +1,7 @@
 // Nueva categoría (/categorias/nueva?tipo=…) y editar categoría (/categorias/:id).
 // design/capturas/NuevaCategoria.png
 import { useRef, useState } from 'react';
-import { Navigate, useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { Navigate, useNavigate, useParams, useSearchParams } from 'react-router';
 import BotonExito from '../componentes/BotonExito.jsx';
 import {
   CabeceraFormulario,

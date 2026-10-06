@@ -2,7 +2,7 @@
 // TransicionPantallas, fuera de la pantalla, para que no se mueva al cambiar de pantalla;
 // también es quien lleva cada pantalla al principio (o a donde se dejó, al volver).
 // Los formularios (con botón Guardar) van fuera de este contenedor y no muestran la barra.
-import { Outlet } from 'react-router-dom';
+import { Outlet } from 'react-router';
 
 export default function ConPestanas() {
   return (

@@ -9,7 +9,7 @@
 // en Transacciones y Planes): tocarlas abre el programado (PanelProgramado), porque aún no hay nada
 // que marcar como pagado.
 import { useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router';
 import Deslizar from '../componentes/Deslizar.jsx';
 import FilaMovimiento from '../componentes/FilaMovimiento.jsx';
 import { CabeceraFormulario, Segmentado } from '../componentes/Formulario.jsx';

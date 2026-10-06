@@ -4,7 +4,7 @@
 // ir allá. pesos: formato de las
 // cifras (respeta el ojo de Inicio).
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import CirculoCategoria from '../componentes/CirculoCategoria.jsx';
 import Deslizar from '../componentes/Deslizar.jsx';
 import FilaPresupuesto from '../componentes/FilaPresupuesto.jsx';

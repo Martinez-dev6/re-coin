@@ -1,6 +1,6 @@
 // Piezas de los formularios (pantallas con botón Guardar y sin barra inferior).
 // Medidas de design/html/NuevaCuenta.html y NuevaCategoria.html.
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import { ACENTOS } from '../tema/colores.js';
 import { useTema } from '../tema/TemaContext.jsx';
 import { etiquetaDia } from '../utilidades/fechas.js';

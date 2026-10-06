@@ -1,6 +1,6 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter } from 'react-router';
 import { registerSW } from 'virtual:pwa-register';
 
 // Plus Jakarta Sans servida desde la propia app (funciona sin conexión).

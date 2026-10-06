@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import Avatar from '../componentes/Avatar.jsx';
 import BarraEstado from '../componentes/BarraEstado.jsx';
 import PanelInferior from '../componentes/PanelInferior.jsx';

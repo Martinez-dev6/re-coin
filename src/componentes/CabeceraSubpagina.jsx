@@ -1,6 +1,6 @@
 // Banner de las subpantallas: botón Volver a la izquierda, el título centrado y, opcional,
 // un botón a la derecha (derecha) y contenido debajo (children: saldo, pestañas…).
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import { volver } from '../utilidades/navegacion.js';
 import BarraEstado from './BarraEstado.jsx';
 import { IconoVolver } from './iconos.jsx';

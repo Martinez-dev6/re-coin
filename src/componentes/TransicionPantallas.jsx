@@ -12,7 +12,7 @@
 // La barra inferior va fuera de las pantallas para que no se mueva con ellas.
 import { Component, createRef } from 'react';
 import { flushSync } from 'react-dom';
-import { useLocation, useNavigationType } from 'react-router-dom';
+import { useLocation, useNavigationType } from 'react-router';
 import { CURVA_ENTRAR, sinMovimiento } from '../utilidades/movimiento.js';
 import { marcarMovimiento } from '../utilidades/pantallaQuieta.js';
 import './TransicionPantallas.css';

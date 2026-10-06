@@ -1,7 +1,7 @@
 // Tarjetas de crédito con su cupo (design/capturas/Tarjetas.png). Debajo de cada una, Ver movimientos
 // (Transacciones con el filtro de esa tarjeta) y Editar (ventana flotante). Sesión 9, pedido del dueño:
 // se quitó la pantalla de cada tarjeta (DetalleTarjeta), que era casi esta misma con los movimientos.
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import CabeceraSubpagina from '../componentes/CabeceraSubpagina.jsx';
 import { IconoLapiz, IconoLista, IconoMas } from '../componentes/iconos.jsx';
 import { fijarCuentaTransacciones } from '../datos/buscar.js';

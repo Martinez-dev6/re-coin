@@ -4,7 +4,7 @@
 // como una hoja (con la X), se pasa de una factura a otra con las flechas del mes y Pagar va en
 // rojo abajo, como los botones de guardar un gasto (sale dinero).
 import { useState } from 'react';
-import { Navigate, useNavigate, useParams } from 'react-router-dom';
+import { Navigate, useNavigate, useParams } from 'react-router';
 import BotonExito from '../componentes/BotonExito.jsx';
 import Deslizar from '../componentes/Deslizar.jsx';
 import FilaMovimiento from '../componentes/FilaMovimiento.jsx';

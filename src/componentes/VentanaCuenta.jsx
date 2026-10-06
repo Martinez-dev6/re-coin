@@ -35,7 +35,7 @@ export default function VentanaCuenta({ cuenta, abierto, alCerrar }) {
     setIconoAMano(Boolean(cuenta));
     setPanel(null);
     eliminando.current = false;
-    // Solo al abrir.
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- Solo al abrir.
   }, [abierto]);
 
   const usos = cuenta ? movimientos.filter((m) => m.cuentaId === cuenta.id || m.cuentaDestinoId === cuenta.id).length : 0;

@@ -7,7 +7,7 @@
 // transferencia: azul), con un cambio suave. Los íconos siguen Mi espacio → Apariencia → Color de
 // los íconos.
 import { useState } from 'react';
-import { Navigate, useNavigate, useParams } from 'react-router-dom';
+import { Navigate, useNavigate, useParams } from 'react-router';
 import BotonExito from '../componentes/BotonExito.jsx';
 import { CabeceraFormulario, Campo, MontoEditable, PieFormulario } from '../componentes/Formulario.jsx';
 import {

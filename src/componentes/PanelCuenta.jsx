@@ -8,7 +8,7 @@
 // la ventana de la cuenta (estado/ventanas.js) cuando esta ya se fue.
 // ocultos: el ojo de Inicio (las cifras salen como "$ •••••").
 import { useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import { fijarCuentaTransacciones } from '../datos/buscar.js';
 import { tipoCuenta } from '../datos/cuentas.js';
 import { estiloIconoCuenta } from '../tema/colores.js';

@@ -1,7 +1,7 @@
 // Ajustes (design/html/Ajustes.html). Moneda e idioma tienen una sola opción por ahora (peso
 // colombiano y español): se muestran sin flecha porque no hay nada que elegir.
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import BotonExito from '../componentes/BotonExito.jsx';
 import CabeceraSubpagina from '../componentes/CabeceraSubpagina.jsx';
 import {

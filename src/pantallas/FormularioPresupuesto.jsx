@@ -3,7 +3,7 @@
 // del dueño; antes solo mensual). "Empieza" es un mes, con el mismo panel y la misma animación al
 // cambiar de año que "Elegir mes" de Inicio.
 import { useRef, useState } from 'react';
-import { Navigate, useNavigate, useParams } from 'react-router-dom';
+import { Navigate, useNavigate, useParams } from 'react-router';
 import CirculoCategoria from '../componentes/CirculoCategoria.jsx';
 import BotonExito from '../componentes/BotonExito.jsx';
 import { CabeceraFormulario, Campo, Interruptor, MontoEditable, PieFormulario } from '../componentes/Formulario.jsx';

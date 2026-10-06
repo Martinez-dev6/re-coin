@@ -107,7 +107,7 @@ export default function EditarMovimiento({ movimiento: m, abierto, alCerrar }) {
     setDatos(desde(m));
     setAviso(null);
     setModoSerie('solo');
-    // Solo al abrir.
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- Solo al abrir.
   }, [abierto]);
 
   const cambiarFecha = (fecha) =>

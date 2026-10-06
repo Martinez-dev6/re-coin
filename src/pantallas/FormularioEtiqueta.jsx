@@ -1,7 +1,7 @@
 // Nueva etiqueta (/etiquetas/nueva) y editar etiqueta (/etiquetas/:id). No está en los diseños:
 // sigue el estilo de Nueva categoría, solo con el nombre.
 import { useRef, useState } from 'react';
-import { Navigate, useNavigate, useParams } from 'react-router-dom';
+import { Navigate, useNavigate, useParams } from 'react-router';
 import BotonExito from '../componentes/BotonExito.jsx';
 import { CabeceraFormulario, Campo, EntradaTexto, PieFormulario } from '../componentes/Formulario.jsx';
 import { IconoBasura, IconoTexto } from '../componentes/iconos.jsx';

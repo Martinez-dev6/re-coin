@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
+import { Navigate, Route, Routes, useLocation } from 'react-router';
 import BarraNavegacion from './componentes/BarraNavegacion.jsx';
 import ConPestanas from './componentes/ConPestanas.jsx';
 import TransicionPantallas from './componentes/TransicionPantallas.jsx';

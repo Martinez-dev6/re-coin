@@ -81,7 +81,8 @@ const escaparXml = (texto) =>
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
-    // Caracteres de control que el XML no admite.
+    // Caracteres de control que el XML no admite (se buscan a propósito).
+    // eslint-disable-next-line no-control-regex
     .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, '');
 
 // Letra de la columna: 0 → A, 25 → Z, 26 → AA.

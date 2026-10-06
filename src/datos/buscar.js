@@ -48,7 +48,7 @@ export function seguirZonaTransacciones(ruta) {
 
 // Como useState, pero lo elegido sobrevive a salir de la pantalla y volver. antes: se corre antes de
 // leer lo guardado (en el primer dibujo).
-function usarGuardado(clave, antes) {
+function useGuardado(clave, antes) {
   const [valor, setValor] = useState(() => {
     antes?.();
     return guardado[clave];
@@ -62,7 +62,7 @@ function usarGuardado(clave, antes) {
   return [valor, cambiar];
 }
 
-export const useFiltrosTransacciones = () => usarGuardado('filtros', revisarFiltros);
+export const useFiltrosTransacciones = () => useGuardado('filtros', revisarFiltros);
 
 // Deja elegido un tipo en Transacciones antes de ir allá (Ingresos y Gastos del banner de Inicio).
 // Quita los demás filtros, para que la lista sume lo mismo que se tocó en Inicio.
@@ -75,7 +75,7 @@ export function fijarCuentaTransacciones(cuentaId) {
   guardado.filtros = { ...FILTROS_VACIOS, cuentas: [cuentaId] };
   salida = null; // recién puestos: no caducan
 }
-export const useBusqueda = () => usarGuardado('busqueda');
+export const useBusqueda = () => useGuardado('busqueda');
 
 // Cuántos filtros hay aparte del tipo (el tipo ya se ve en los chips de la pantalla).
 export const filtrosExtra = (f) =>
@@ -93,7 +93,8 @@ export function cumpleFiltros(m, f) {
   return true;
 }
 
-// Minúsculas y sin tildes: "Café" se encuentra con "cafe".
+// Minúsculas y sin tildes: "Café" se encuentra con "cafe" (NFD separa la tilde de la letra y luego
+// se quitan las marcas diacríticas combinables, U+0300 a U+036F).
 export const normalizar = (texto) =>
   texto
     .toLowerCase()

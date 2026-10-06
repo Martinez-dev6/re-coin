@@ -42,7 +42,7 @@ export default function PanelProgramado({ programado, ocurrencia, abierto, alCer
     if (!abierto || !p) return;
     setDatos({ frecuencia: p.frecuencia, empieza: p.empieza, termina: p.termina ?? null });
     setModo(ocurrencia ? 'fecha' : 'solo');
-    // Solo al abrir.
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- Solo al abrir.
   }, [abierto]);
 
   if (!p) return null;

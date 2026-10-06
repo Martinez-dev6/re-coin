@@ -6,7 +6,7 @@
 // recurrente" (o ingreso, o transferencia) muestra Frecuencia y Termina, y al guardar se crea el
 // movimiento y el programado que lo repite (guardarRecurrente en programados.js).
 import { useEffect, useRef, useState } from 'react';
-import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router';
 import BotonExito from '../componentes/BotonExito.jsx';
 import CirculoCategoria from '../componentes/CirculoCategoria.jsx';
 import {
@@ -226,7 +226,7 @@ function Campos({ clave, tipoInicial, cuentaPedida, fechaPedida }) {
   useEffect(() => {
     const conTeclado = !borrador?.datos.valor;
     return pasarTeclado(() => (conTeclado ? monto.current : null));
-    // Solo al entrar.
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- Solo al entrar.
   }, []);
 
   useEffect(() => {

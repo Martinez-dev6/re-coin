@@ -23,7 +23,7 @@ export default defineConfig({
       // El registro se hace en src/main.jsx para que la página se recargue sola
       // cuando llega una versión nueva (el script inyectado por defecto no lo hace).
       injectRegister: false,
-      includeAssets: ['favicon.ico', 'icono.svg', 'apple-touch-icon-180x180.png'],
+      // Los íconos de public/ ya entran al precache por globPatterns (más abajo).
       manifest: {
         id: '/',
         name: NOMBRE,

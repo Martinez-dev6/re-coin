@@ -51,12 +51,13 @@ export default function VentanaTarjeta({ tarjeta, abierto, alCerrar }) {
     setDatos(datosDe(tarjeta, cuentas));
     setPanel(null);
     eliminando.current = false;
-    // Solo al abrir.
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- Solo al abrir.
   }, [abierto]);
 
   // Una cuenta recién creada desde aquí ("Crear una cuenta") queda como "Paga desde".
   useEffect(() => {
     if (abierto && !datos.cuentaPagoId && cuentas[0]) cambiar({ cuentaPagoId: cuentas[0].id });
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- Solo cuando aparece una cuenta nueva.
   }, [cuentas.length]);
 
   // Primero baja el panel de confirmar y se va la ventana; después se borra (si se estaba en la
