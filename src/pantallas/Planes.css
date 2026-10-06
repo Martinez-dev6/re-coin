@@ -366,3 +366,10 @@
 .programados-lista-boton > svg {
   color: var(--muted);
 }
+
+/* En Metas, en lugar del mes con flechas (las metas no son de un mes; Sesión 10). Mismo tamaño
+   que el texto del mes. */
+.planes-titulo {
+  font-size: 17px;
+  font-weight: 600;
+}

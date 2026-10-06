@@ -22,8 +22,8 @@ import { PanelElegirMes } from '../componentes/SelectorMes.jsx';
 import { fijarTipoTransacciones } from '../datos/buscar.js';
 import { saldoTotal } from '../datos/cuentas.js';
 import { esGasto, saldoAlCierre } from '../datos/movimientos.js';
-import { programadosDelMes, saldoEstimado } from '../datos/programados.js';
-import { presupuestosDelMes } from '../datos/presupuestos.js';
+import { conProgramados, programadosDelMes, saldoEstimado } from '../datos/programados.js';
+import { presupuestosDelMes, textoMes } from '../datos/presupuestos.js';
 import { useDatos } from '../datos/DatosContext.jsx';
 import { bloquesDeInicio, useAjustes } from '../estado/ajustes.js';
 import { useMes } from '../estado/MesContext.jsx';
@@ -131,7 +131,7 @@ export default function Inicio() {
   const gastos = delMes.filter(esGasto);
   const gastosPendientes = gastos.filter((m) => !m.pagado);
   const ingresosPendientes = ingresos.filter((m) => !m.pagado);
-  const alertas = presupuestosDelMes(presupuestos, movimientosPorMes, anio, mes).filter((p) => p.alerta);
+  const alertas = presupuestosDelMes(presupuestos, conProgramados(datos, [textoMes(anio, mes)]), anio, mes).filter((p) => p.alerta);
   const hayPendientes = gastosPendientes.length + ingresosPendientes.length > 0;
   // "Pendientes y alertas" solo sale si en el mes hay algo que atender (pedido del dueño,
   // 2026-10-04): sin pendientes ni alertas, el bloque no se pinta ni ocupa lugar.

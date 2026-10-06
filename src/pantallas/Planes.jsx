@@ -23,9 +23,9 @@ import PanelProgramado from '../componentes/PanelProgramado.jsx';
 import { MesConFlechas } from '../componentes/SelectorMes.jsx';
 import { useDatos } from '../datos/DatosContext.jsx';
 import { ahorroPorPeriodo, aportar, frecuenciaMeta } from '../datos/metas.js';
-import { periodoActual, presupuestosDelMes } from '../datos/presupuestos.js';
+import { periodoActual, presupuestosDelMes, textoMes } from '../datos/presupuestos.js';
 import { detalleMovimiento, esGasto, estadoMovimiento, rutaMovimiento } from '../datos/movimientos.js';
-import { programadosDelMes, terminado, textoFrecuencia } from '../datos/programados.js';
+import { conProgramados, programadosDelMes, terminado, textoFrecuencia } from '../datos/programados.js';
 import { useAjustes } from '../estado/ajustes.js';
 import { useMes } from '../estado/MesContext.jsx';
 import { diasHasta, enMes, etiquetaDia, fechaCorta, hoyTexto } from '../utilidades/fechas.js';
@@ -516,7 +516,11 @@ export default function Planes() {
   // Las metas no son de un mes: al cambiar el mes no se mueven.
   const posicion = actual.valor === 'metas' ? [indice] : [indice, anio * 12 + mes];
 
-  const presupuestos = presupuestosDelMes(datos.presupuestos, datos.movimientosPorMes, anio, mes);
+  // En los meses siguientes, lo gastado suma las fechas de los recurrentes (Sesión 10, pedido del
+  // dueño) y el porcentaje pasa de "usado" a "previsto".
+  const presupuestos = presupuestosDelMes(datos.presupuestos, conProgramados(datos, [textoMes(anio, mes)]), anio, mes);
+  const hoy = new Date();
+  const mesFuturo = anio * 12 + mes > hoy.getFullYear() * 12 + hoy.getMonth();
   const programados = movimientosDelCalendario(datos, anio, mes);
 
   let resumen;
@@ -528,7 +532,7 @@ export default function Planes() {
         <div className="planes-resumen-etiqueta">Disponible para gastar</div>
         <div className="planes-resumen-valor">{formatearPesos(Math.max(0, limite - gastado))}</div>
         <div className="planes-resumen-etiqueta">
-          de {formatearPesos(limite)} presupuestados · {porcentaje(gastado, limite)} % usado
+          de {formatearPesos(limite)} presupuestados · {porcentaje(gastado, limite)} % {mesFuturo ? 'previsto' : 'usado'}
         </div>
       </div>
     );
@@ -576,7 +580,8 @@ export default function Planes() {
             <button type="button" className="boton-banner" aria-label="Ir a Inicio" onClick={() => navegar('/')}>
               <IconoInicio tamano={20} />
             </button>
-            <MesConFlechas />
+            {/* Las metas no son de un mes: sin flechas (pedido del dueño, Sesión 10). */}
+            {actual.valor === 'metas' ? <span className="planes-titulo">Metas</span> : <MesConFlechas />}
             {actual.nuevo ? (
               <button type="button" className="boton-banner" aria-label="Nuevo" onClick={() => navegar(actual.nuevo)}>
                 <IconoMas />

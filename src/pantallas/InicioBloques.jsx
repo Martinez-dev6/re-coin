@@ -188,8 +188,10 @@ export function BloqueBalance({ pesos, ocultos, posicion }) {
 export function BloquePresupuestos({ pesos, posicion }) {
   const navegar = useNavigate();
   const { anio, mes } = useMes();
-  const { presupuestos, movimientosPorMes, categoria } = useDatos();
-  const lista = presupuestosDelMes(presupuestos, movimientosPorMes, anio, mes);
+  const datos = useDatos();
+  const { presupuestos, categoria } = datos;
+  // En los meses siguientes, también las fechas de los recurrentes (Sesión 10).
+  const lista = presupuestosDelMes(presupuestos, conProgramados(datos, [textoMes(anio, mes)]), anio, mes);
   const masUsados = [...lista].sort((a, b) => b.usado - a.usado).slice(0, MAXIMO);
   const gastado = lista.reduce((t, p) => t + p.gastado, 0);
   const limite = lista.reduce((t, p) => t + p.limite, 0);
