@@ -38,6 +38,15 @@ export function saldosPorCuenta(cuentas, movimientos) {
   return saldos;
 }
 
+// Saldo de las cuentas que suman al saldo al cerrar un mes pasado (Sesión 10, pedido del dueño):
+// como el de hoy, pero solo con los movimientos pagados hasta el último día de ese mes. Lo
+// corregido con Reajustar saldo ("Solo corregir") no tiene fecha: cuenta siempre.
+export function saldoAlCierre(cuentas, movimientos, anio, mes) {
+  const fin = `${anio}-${String(mes + 1).padStart(2, '0')}-${new Date(anio, mes + 1, 0).getDate()}`;
+  const saldos = saldosPorCuenta(cuentas, movimientos.filter((m) => m.fecha <= fin));
+  return cuentas.reduce((total, c) => total + (c.incluirEnSaldo ? saldos.get(c.id) : 0), 0);
+}
+
 // Más recientes primero; los del mismo día, el último registrado primero.
 export const ordenarMovimientos = (lista) =>
   [...lista].sort((a, b) => b.fecha.localeCompare(a.fecha) || (b.creado ?? 0) - (a.creado ?? 0));

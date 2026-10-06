@@ -21,7 +21,7 @@ import {
 import { Dona } from '../componentes/Graficos.jsx';
 import { IconoPorNombre } from '../componentes/iconosPorNombre.jsx';
 import { useDatos } from '../datos/DatosContext.jsx';
-import { programadosDelMes } from '../datos/programados.js';
+import { conProgramados, programadosDelMes } from '../datos/programados.js';
 import { porCategoria, textoMes, totalDelMes } from '../datos/graficos.js';
 import { periodoActual, presupuestosDelMes } from '../datos/presupuestos.js';
 import { proximaFactura, textoVence } from '../datos/tarjetas.js';
@@ -286,8 +286,10 @@ const MAXIMO_CATEGORIAS = 5;
 export function BloqueGrafico({ pesos, posicion }) {
   const navegar = useNavigate();
   const { anio, mes } = useMes();
-  const { movimientosPorMes, categoria } = useDatos();
-  const { total, todas } = porCategoria(movimientosPorMes, categoria, 'gasto', textoMes(anio, mes));
+  const datos = useDatos();
+  const { categoria } = datos;
+  // En los meses siguientes, también las fechas de los recurrentes (Sesión 10, pedido del dueño).
+  const { total, todas } = porCategoria(conProgramados(datos, [textoMes(anio, mes)]), categoria, 'gasto', textoMes(anio, mes));
 
   return (
     <>

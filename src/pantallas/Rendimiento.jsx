@@ -6,6 +6,7 @@ import Deslizar from '../componentes/Deslizar.jsx';
 import { Barras } from '../componentes/Graficos.jsx';
 import { IconoGastoDiagonal, IconoIngresoDiagonal } from '../componentes/iconos.jsx';
 import { useDatos } from '../datos/DatosContext.jsx';
+import { conProgramados } from '../datos/programados.js';
 import { mesCorto, textoMes, totalDelMes, ventanaDeMeses } from '../datos/graficos.js';
 import { useMes } from '../estado/MesContext.jsx';
 import { nombreMes } from '../utilidades/fechas.js';
@@ -17,15 +18,17 @@ const conSigno = (valor) => (valor === 0 ? '' : valor < 0 ? '- ' : '+ ') + forma
 
 export default function Rendimiento() {
   const { anio, mes, elegir } = useMes();
-  const { movimientosPorMes } = useDatos();
+  const datos = useDatos();
   const elegido = textoMes(anio, mes);
+  const meses = ventanaDeMeses(elegido);
+  // En los meses siguientes, también las fechas de los recurrentes (Sesión 10, pedido del dueño).
+  const movimientosPorMes = conProgramados(datos, [...meses, elegido]);
   const totales = (m) => {
     const ingresos = totalDelMes(movimientosPorMes, 'ingreso', m);
     const gastos = totalDelMes(movimientosPorMes, 'gasto', m);
     return { ingresos, gastos, balance: ingresos - gastos };
   };
   const delMes = totales(elegido);
-  const meses = ventanaDeMeses(elegido);
   // La tabla: el mes elegido y los dos anteriores.
   const tabla = meses.slice(0, meses.indexOf(elegido) + 1).slice(-3);
   const ahorro = delMes.ingresos > 0 ? Math.round((delMes.balance / delMes.ingresos) * 100) : 0;

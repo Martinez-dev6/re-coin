@@ -8,6 +8,7 @@ import Deslizar from '../componentes/Deslizar.jsx';
 import { Segmentado } from '../componentes/Formulario.jsx';
 import { Barras, Dona } from '../componentes/Graficos.jsx';
 import { useDatos } from '../datos/DatosContext.jsx';
+import { conProgramados } from '../datos/programados.js';
 import { mesCorto, porCategoria, textoMes, totalDelMes, ventanaDeMeses } from '../datos/graficos.js';
 import { useMes } from '../estado/MesContext.jsx';
 import { nombreMes } from '../utilidades/fechas.js';
@@ -21,15 +22,18 @@ const TIPOS = [
 
 export default function Graficos() {
   const { anio, mes, elegir } = useMes();
-  const { movimientosPorMes, categoria } = useDatos();
+  const datos = useDatos();
+  const { categoria } = datos;
   const [tipo, setTipo] = useState('gasto');
   const [parte, setParte] = useState(null);
   const elegido = textoMes(anio, mes);
+  const meses = ventanaDeMeses(elegido);
+  // En los meses siguientes, también las fechas de los recurrentes (Sesión 10, pedido del dueño).
+  const movimientosPorMes = conProgramados(datos, [...meses, elegido]);
   // Todas las categorías, cada una con su color, sin juntar las pequeñas en "Otros" (pedido del
   // dueño, Sesión 9: aquí se ven completas; "Otros" de Inicio trae a esta pantalla).
   const { total, cantidad, todas: partes } = porCategoria(movimientosPorMes, categoria, tipo, elegido);
   const tocada = partes.find((p) => p.clave === parte);
-  const meses = ventanaDeMeses(elegido);
   const porcentaje = (valor) => (total > 0 ? Math.round((valor / total) * 100) : 0);
   const posicion = [TIPOS.findIndex((t) => t.valor === tipo), anio * 12 + mes];
 

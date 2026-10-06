@@ -105,6 +105,15 @@ export function saldoEstimado({ cuentas, movimientosPorMes, programados, tarjeta
   return faltan.reduce((t, m) => t + efecto(m), saldo);
 }
 
+// movimientosPorMes más las fechas de los recurrentes que aún no son movimientos en esos meses
+// ('AAAA-MM'), para los gráficos (Sesión 10, pedido del dueño).
+export function conProgramados({ movimientosPorMes, programados, tarjeta }, meses) {
+  const futuros = [...new Set(meses)].flatMap((m) =>
+    programadosDelMes(programados, tarjeta, Number(m.slice(0, 4)), Number(m.slice(5, 7)) - 1),
+  );
+  return [...movimientosPorMes, ...futuros];
+}
+
 // Las fechas de un mes que aún no son movimientos (meses siguientes), como filas pendientes para
 // Planes y Transacciones (Sesión 10, pedido del dueño: en Transacciones no salían). Un gasto con
 // tarjeta programado va, como sus cuotas, el día en que se paga su factura. tarjeta: buscar por id.
