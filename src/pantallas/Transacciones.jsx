@@ -127,7 +127,8 @@ export default function Transacciones() {
                   key={m.id}
                   movimiento={m}
                   detalle={detalleMovimiento(m, datos)}
-                  estado={estadoMovimiento(m)}
+                  // Solo "Pendiente": lo pagado o recibido va sin estado (pedido del dueño, Sesión 10).
+                  estado={estadoMovimiento(m) === 'pendiente' ? 'pendiente' : undefined}
                   mostrarRepetir
                   conObservacion
                   alTocar={() => navegar(rutaMovimiento(m))}
