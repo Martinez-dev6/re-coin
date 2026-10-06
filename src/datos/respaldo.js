@@ -93,17 +93,17 @@ export async function exportarCopia(datos) {
 
 const DIA_MS = 24 * 60 * 60 * 1000;
 // Aviso de copia en Inicio (pedido del dueño el 2026-10-04, después de perder sus datos al
-// borrar la app del iPhone para cambiarle el ícono): sale si nunca se hizo una copia y ya hay
-// algunos movimientos, o si la última tiene una semana o más y desde entonces hay movimientos
-// nuevos. "Ahora no" lo aplaza tres días. Desde la Sesión 10 (pedido del dueño: después de la
-// primera copia el aviso no volvía a salir) también sale con 5 movimientos nuevos desde la última
-// copia, aunque no haya pasado la semana; sin ninguna copia, con 5 (antes 3).
-const DIAS_ENTRE_COPIAS = 7;
-const DIAS_AL_POSPONER = 3;
-const MOVIMIENTOS_PARA_AVISAR = 5;
+// borrar la app del iPhone para cambiarle el ícono). Desde la Sesión 10 (pedido del dueño) sale si
+// desde la última copia (o sin ninguna) hay 10 movimientos nuevos, o una vez al día si hay alguno
+// nuevo y la última copia no es de hoy. "Ahora no" lo aplaza hasta mañana.
+const MOVIMIENTOS_PARA_AVISAR = 10;
 
 const marcarCopia = () => cambiarAjustes({ ultimaCopia: Date.now(), avisoCopiaPospuesto: null });
-export const posponerAvisoCopia = () => cambiarAjustes({ avisoCopiaPospuesto: Date.now() + DIAS_AL_POSPONER * DIA_MS });
+export function posponerAvisoCopia() {
+  const manana = new Date();
+  manana.setHours(24, 0, 0, 0);
+  cambiarAjustes({ avisoCopiaPospuesto: manana.getTime() });
+}
 
 // Días de calendario desde la última copia (0 = hoy, 1 = ayer…), o null si nunca se hizo. Antes
 // contaba bloques de 24 horas: una copia de anoche salía como "hoy" a la mañana siguiente.
@@ -124,8 +124,8 @@ export function avisoDeCopia(movimientos, ajustes, ahora = Date.now()) {
   if (ajustes.avisoCopiaPospuesto && ahora < ajustes.avisoCopiaPospuesto) return null;
   const dias = diasDesdeCopia(ajustes, ahora);
   const nuevos = movimientos.filter((m) => !ajustes.ultimaCopia || (m.creado ?? 0) > ajustes.ultimaCopia).length;
-  if (nuevos >= MOVIMIENTOS_PARA_AVISAR) return { dias, nuevos };
-  return dias !== null && dias >= DIAS_ENTRE_COPIAS && nuevos > 0 ? { dias, nuevos } : null;
+  const otroDia = dias === null || dias >= 1;
+  return nuevos >= MOVIMIENTOS_PARA_AVISAR || (otroDia && nuevos > 0) ? { dias, nuevos } : null;
 }
 
 // Lee y comprueba un archivo de copia. Devuelve { copia, resumen } o lanza un Error con un
