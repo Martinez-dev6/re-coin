@@ -122,6 +122,3 @@ button.fila-movimiento {
   color: var(--pendiente-texto);
 }
 
-.fila-movimiento-estado.pagado {
-  color: var(--income);
-}

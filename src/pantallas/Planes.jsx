@@ -302,8 +302,8 @@ function movimientosDelCalendario({ programados, movimientosPorMes, tarjeta }, a
   return [...registrados, ...futuros].sort((a, b) => a.fecha.localeCompare(b.fecha));
 }
 
-// "Hoy", "Mañana", "En 13 días" para lo programado que falta; Pendiente o Pagado (o nada, en las
-// transferencias y pagos de tarjeta) para lo ya registrado, como en Transacciones.
+// "Hoy", "Mañana", "En 13 días" para lo programado que falta; para lo ya registrado, Pendiente si
+// falta pagarlo y nada si ya se pagó, como en Transacciones.
 function estadoProgramado(item) {
   if (!item.futuro) return estadoMovimiento(item);
   const dias = diasHasta(item.fecha);

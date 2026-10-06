@@ -66,13 +66,12 @@ export function detalleMovimiento(m, { cuenta, categoria, tarjeta }) {
   return `${nombreCategoria} · ${nombreCuenta(m.cuentaId)}`;
 }
 
-// Pagado o Pendiente en las listas: los gastos, los ingresos y las cuotas de tarjeta (pagadas
-// cuando se paga su factura). Las transferencias y los pagos de tarjeta no llevan, salvo una
-// transferencia programada que aún está pendiente.
+// Estado en las listas: solo "Pendiente" (gastos, ingresos, cuotas de tarjeta sin pagar su
+// factura y transferencias programadas sin hacer). Lo pagado o recibido va sin estado (pedido del
+// dueño, Sesión 10). Los pagos de tarjeta nunca llevan.
 export function estadoMovimiento(m) {
-  if (m.tipo === 'pagoTarjeta') return undefined;
-  if (m.tipo === 'transferencia') return m.pagado ? undefined : 'pendiente';
-  return m.pagado ? 'pagado' : 'pendiente';
+  if (m.tipo === 'pagoTarjeta' || m.pagado) return undefined;
+  return 'pendiente';
 }
 
 // Adónde lleva tocar una fila: una cuota de tarjeta abre su factura (donde se paga); lo demás,

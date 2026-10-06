@@ -4,7 +4,7 @@ import { useDatos } from '../datos/DatosContext.jsx';
 import { tituloMovimiento } from '../datos/movimientos.js';
 import { formatearPesos } from '../utilidades/formato.js';
 import CirculoCategoria from './CirculoCategoria.jsx';
-import { IconoCheckCirculo, IconoReloj, IconoRepetir, IconoTarjeta, IconoTransferencia } from './iconos.jsx';
+import { IconoReloj, IconoRepetir, IconoTarjeta, IconoTransferencia } from './iconos.jsx';
 import './FilaMovimiento.css';
 
 const SIGNO = { gasto: '- ', gastoTarjeta: '- ', ingreso: '+ ', transferencia: '', pagoTarjeta: '' };
@@ -18,7 +18,7 @@ const CLASE = {
 };
 
 // detalle: texto pequeño bajo la descripción (o un nodo, p. ej. "Cada semana" con ícono).
-// estado: 'pendiente' | 'pagado' | texto libre (p. ej. "En 13 días").
+// estado: 'pendiente' | texto libre (p. ej. "En 13 días").
 // alTocar: la fila es un botón (abre el detalle).
 // conObservacion: si el movimiento tiene observación, va pequeña debajo de la fila (pedido del
 // dueño, 2026-10-04); sin observación, la fila queda igual.
@@ -70,13 +70,7 @@ export default function FilaMovimiento({ movimiento, detalle, estado, mostrarRep
             Pendiente
           </div>
         )}
-        {estado === 'pagado' && (
-          <div className="fila-movimiento-estado pagado">
-            <IconoCheckCirculo />
-            {tipo === 'ingreso' ? 'Recibido' : 'Pagado'}
-          </div>
-        )}
-        {estado && estado !== 'pendiente' && estado !== 'pagado' && (
+        {estado && estado !== 'pendiente' && (
           <div className="fila-movimiento-estado">{estado}</div>
         )}
       </div>
