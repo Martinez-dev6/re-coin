@@ -79,7 +79,8 @@ export function FilasMovimiento({ datos, setDatos, setPanel, cambiarFecha, cambi
   const cambiar = (cambios) => setDatos((d) => ({ ...d, ...cambios }));
   const categoria = buscarCategoria(datos.categoriaId);
   const nombresEtiquetas = datos.etiquetaIds.map((id) => etiqueta(id)?.nombre).filter(Boolean);
-  const nombreCuenta = (id) => cuenta(id)?.nombre ?? vacio('Elegir');
+  // Una cuenta eliminada deja sus movimientos (Sesión 11, decisión del dueño).
+  const nombreCuenta = (id) => cuenta(id)?.nombre ?? vacio(id ? 'Cuenta eliminada' : 'Elegir');
   const textoPagado = tipo === 'ingreso' ? 'Recibido' : 'Pagado';
 
   const filaCategoria = (

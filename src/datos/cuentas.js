@@ -2,7 +2,7 @@
 import { esAcento } from '../tema/colores.js';
 import { horaActual, hoyTexto } from '../utilidades/fechas.js';
 import { db, nuevoId, ordenAlFinal } from './db.js';
-import { movimientosDeCuenta } from './movimientos.js';
+import { eliminarProgramado } from './programados.js';
 
 // corto: lo que se ve bajo el nombre en las listas (design/capturas/Cuentas.png).
 export const TIPOS_CUENTA = [
@@ -87,17 +87,19 @@ export async function guardarCuenta(id, datos) {
   return nueva.id;
 }
 
-// Se borran también sus movimientos (los que salen de ella o llegan a ella), en una sola
-// operación. El panel de confirmación avisa cuántos son.
-// Las tarjetas que se pagaban desde ella quedan sin "Paga desde" y las metas que se guardaban
-// en ella, sin "Se guarda en". Los programados que la usan se borran (ya no tendrían de dónde
-// salir).
+// Sus movimientos se quedan (decisión del dueño, Sesión 11): borrarlos cambiaría el saldo de las
+// otras cuentas (transferencias), dejaría sin pagar las facturas que se pagaron desde ella y borraría
+// gastos e ingresos de meses pasados. En las listas salen con "Cuenta eliminada" y no suman a
+// ningún saldo.
+// Las tarjetas que se pagaban desde ella quedan sin "Paga desde" y las metas que se guardaban en
+// ella, sin "Se guarda en". Los programados que la usan se borran como con "Solo el programado"
+// (ya no tendrían de dónde salir): lo registrado se queda, menos lo adelantado.
 export function eliminarCuenta(id) {
   return db.transaction('rw', [db.cuentas, db.movimientos, db.tarjetas, db.metas, db.programados], async () => {
-    await db.movimientos.bulkDelete(await movimientosDeCuenta(id));
     await db.tarjetas.filter((t) => t.cuentaPagoId === id).modify({ cuentaPagoId: null });
     await db.metas.filter((m) => m.cuentaId === id).modify({ cuentaId: null });
-    await db.programados.filter((p) => p.cuentaId === id || p.cuentaDestinoId === id).delete();
+    const programados = await db.programados.filter((p) => p.cuentaId === id || p.cuentaDestinoId === id).primaryKeys();
+    for (const programadoId of programados) await eliminarProgramado(programadoId, 'solo');
     await db.cuentas.delete(id);
   });
 }

@@ -217,13 +217,10 @@ function camposProgramado(datos) {
 }
 
 // Los pendientes de un programado registrados por adelantado (fecha después de hoy): al editarlo
-// o eliminarlo se quitan, porque aún no han llegado.
-const adelantados = (id) =>
-  db.movimientos
-    .where('programadoId')
-    .equals(id)
-    // Un gasto con tarjeta siempre está "pagado" (lo pendiente es su factura): cuenta por la fecha.
-    .filter((m) => m.fecha > hoyTexto() && (m.tipo === 'gastoTarjeta' || !m.pagado));
+// o eliminarlo se quitan, porque aún no han llegado. Un gasto con tarjeta siempre está "pagado" (lo
+// pendiente es su factura): cuenta por la fecha.
+export const esAdelantado = (m) => m.fecha > hoyTexto() && (m.tipo === 'gastoTarjeta' || !m.pagado);
+const adelantados = (id) => db.movimientos.where('programadoId').equals(id).filter(esAdelantado);
 
 // Ya realizado: pagado, o un gasto con tarjeta cuya fecha ya llegó.
 const realizado = (m) => (m.tipo === 'gastoTarjeta' ? m.fecha <= hoyTexto() : m.pagado);

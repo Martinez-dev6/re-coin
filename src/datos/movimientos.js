@@ -164,11 +164,3 @@ export const marcarPagado = (id, cuentaId) => db.movimientos.update(id, { pagado
 
 export const eliminarMovimiento = (id) => db.movimientos.delete(id);
 
-// Movimientos que tocan una cuenta (como origen o como destino).
-export async function movimientosDeCuenta(cuentaId) {
-  const [origen, destino] = await Promise.all([
-    db.movimientos.where('cuentaId').equals(cuentaId).primaryKeys(),
-    db.movimientos.where('cuentaDestinoId').equals(cuentaId).primaryKeys(),
-  ]);
-  return [...new Set([...origen, ...destino])];
-}

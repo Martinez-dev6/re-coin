@@ -6,6 +6,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { eliminarCuenta, guardarCuenta, TIPOS_CUENTA, tipoCuenta } from '../datos/cuentas.js';
 import { useDatos } from '../datos/DatosContext.jsx';
+import { esAdelantado } from '../datos/programados.js';
 import { variablesDeColor } from '../tema/aplicarTema.js';
 import { useTema } from '../tema/TemaContext.jsx';
 import BotonExito from './BotonExito.jsx';
@@ -38,9 +39,17 @@ export default function VentanaCuenta({ cuenta, abierto, alCerrar }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- Solo al abrir.
   }, [abierto]);
 
-  const usos = cuenta ? movimientos.filter((m) => m.cuentaId === cuenta.id || m.cuentaDestinoId === cuenta.id).length : 0;
-  const programadosDeLaCuenta = cuenta
-    ? programados.filter((p) => p.cuentaId === cuenta.id || p.cuentaDestinoId === cuenta.id).length
+  const programadosDeLaCuenta = new Set(
+    cuenta ? programados.filter((p) => p.cuentaId === cuenta.id || p.cuentaDestinoId === cuenta.id).map((p) => p.id) : [],
+  );
+  // Los movimientos que se quedan al eliminarla: todos menos los pendientes de sus programados
+  // registrados por adelantado, que se borran con ellos (eliminarCuenta).
+  const usos = cuenta
+    ? movimientos.filter(
+        (m) =>
+          (m.cuentaId === cuenta.id || m.cuentaDestinoId === cuenta.id) &&
+          !(programadosDeLaCuenta.has(m.programadoId) && esAdelantado(m)),
+      ).length
     : 0;
 
   const elegirTipo = (tipo) => cambiar(iconoAMano ? { tipo } : { tipo, icono: tipoCuenta(tipo).icono });
@@ -142,9 +151,14 @@ export default function VentanaCuenta({ cuenta, abierto, alCerrar }) {
 
       <PanelInferior abierto={panel === 'eliminar'} alCerrar={() => setPanel(null)} titulo="¿Eliminar la cuenta?">
         <p className="panel-texto">
-          Se borra <strong>{cuenta?.nombre}</strong> de este teléfono
-          {usos > 0 && ` con ${usos === 1 ? 'su movimiento' : `sus ${usos} movimientos`}`}.
-          {programadosDeLaCuenta > 0 && ' También se borran sus programados.'} No se puede deshacer.
+          Se borra <strong>{cuenta?.nombre}</strong> de este teléfono.
+          {usos > 0 && (
+            <>
+              {usos === 1 ? ' Su movimiento se queda' : ` Sus ${usos} movimientos se quedan`}, con{' '}
+              <strong>Cuenta eliminada</strong>, y los saldos de las otras cuentas no cambian.
+            </>
+          )}
+          {programadosDeLaCuenta.size > 0 && ' Sus programados sí se borran, con sus pendientes de después de hoy.'} No se puede deshacer.
         </p>
         <BotonExito className="boton-peligro" alTerminar={eliminar}>
           Eliminar

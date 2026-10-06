@@ -33,7 +33,9 @@ function filas({ movimientos = [], cuentas = [], categorias = [], tarjetas = [],
     const porId = new Map(lista.map((x) => [x.id, x.nombre]));
     return (id) => (id ? (porId.get(id) ?? '') : '');
   };
-  const cuenta = nombre(cuentas);
+  const nombreCuenta = nombre(cuentas);
+  // Una cuenta eliminada deja sus movimientos (cuentas.js).
+  const cuenta = (id) => nombreCuenta(id) || (id ? 'Cuenta eliminada' : '');
   const categoria = nombre(categorias);
   const tarjeta = nombre(tarjetas);
   const etiqueta = nombre(etiquetas);
