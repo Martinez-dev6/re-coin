@@ -31,7 +31,6 @@
 
 .filtros-chips .chip[aria-pressed='true'] > span {
   background: var(--banner-bg);
-  background-image: var(--brillo-tema);
 }
 
 .filtros-ver {

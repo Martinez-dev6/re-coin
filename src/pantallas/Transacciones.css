@@ -59,9 +59,10 @@
 
 /* Chip de filtros: solo el ícono; con filtros activos aparte del tipo, en el color del tema suave
    y con cuántos son. */
+/* El ícono de filtros con el color de las letras de los chips, no el del tema (pedido del dueño). */
 .transacciones-chip-filtros > span {
   padding: 0 11px;
-  color: var(--accent-text);
+  color: var(--text);
 }
 
 .transacciones-chip-filtros.activos > span {

@@ -37,7 +37,6 @@
 
 .programado-frecuencias .chip[aria-checked='true'] > span {
   background: var(--banner-bg);
-  background-image: var(--brillo-tema);
   border-color: var(--banner-bg);
   color: var(--on-banner);
   font-weight: 700;
