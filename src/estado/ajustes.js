@@ -11,7 +11,8 @@ const CLAVE = 'sendo.ajustes';
 // colorIconos: 'predeterminado' (cada opción con su color) | 'tema' (todos con el color del tema).
 // Mi espacio → Apariencia (pedido del dueño, 2026-10-04).
 // estiloIconos: 'realista' (cuadro de color con brillo y dibujo blanco, como iOS 27) | 'plano' (sin
-// el brillo). formaIconos: 'cuadrada' | 'redonda'. Sesión 13 (lo guardado de una prueba anterior,
+// el brillo). formaIconos: 'cuadrada' | 'redonda'. De entrada (decidido por el dueño): tema plano,
+// íconos planos, redondos y de color variado. Sesión 13 (lo guardado de una prueba anterior,
 // 'solido' o 'suave', vale como 'realista'). estiloTema: 'plano' | 'realista' (el color del tema con
 // brillo, prueba de la Sesión 13).
 // ultimaCopia: cuándo se hizo o restauró la última copia de seguridad (ms), o null.
@@ -23,8 +24,8 @@ const PREDETERMINADOS = {
   semanaEmpieza: 'lunes',
   bloquesInicio: [],
   colorIconos: 'predeterminado',
-  estiloIconos: 'realista',
-  formaIconos: 'cuadrada',
+  estiloIconos: 'plano',
+  formaIconos: 'redonda',
   estiloTema: 'plano',
   ultimaCopia: null,
   avisoCopiaPospuesto: null,
@@ -73,11 +74,14 @@ function leer() {
 // Color, estilo y forma de los íconos: los aplica el CSS según data-iconos, data-estilo-iconos y
 // data-forma-iconos en <html> (comunes.css): así cambian en todas las pantallas a la vez, y desde
 // antes de pintar la primera.
+// 'solido' y 'suave' quedaron de una prueba anterior y valen como 'realista'; lo demás, 'plano'.
+export const estiloIconosDe = (valor) => (['realista', 'solido', 'suave'].includes(valor) ? 'realista' : 'plano');
+
 const aplicarColorIconos = ({ colorIconos, estiloIconos, formaIconos, estiloTema }) => {
   const raiz = document.documentElement.dataset;
   raiz.iconos = colorIconos === 'tema' ? 'tema' : 'predeterminado';
-  raiz.estiloIconos = estiloIconos === 'plano' ? 'plano' : 'realista';
-  raiz.formaIconos = formaIconos === 'redonda' ? 'redonda' : 'cuadrada';
+  raiz.estiloIconos = estiloIconosDe(estiloIconos);
+  raiz.formaIconos = formaIconos === 'cuadrada' ? 'cuadrada' : 'redonda';
   raiz.estiloTema = estiloTema === 'realista' ? 'realista' : 'plano';
 };
 

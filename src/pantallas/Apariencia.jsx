@@ -9,6 +9,7 @@ import BotonExito from '../componentes/BotonExito.jsx';
 import CabeceraSubpagina from '../componentes/CabeceraSubpagina.jsx';
 import CirculoCategoria from '../componentes/CirculoCategoria.jsx';
 import { PieFormulario } from '../componentes/Formulario.jsx';
+import PanelInferior from '../componentes/PanelInferior.jsx';
 import {
   IconoBanco,
   IconoCheck,
@@ -18,7 +19,7 @@ import {
   IconoPaleta,
   IconoTarjeta,
 } from '../componentes/iconos.jsx';
-import { cambiarAjustes, useAjustes } from '../estado/ajustes.js';
+import { cambiarAjustes, estiloIconosDe, useAjustes } from '../estado/ajustes.js';
 import { ACENTO_PREDETERMINADO, ACENTOS, estiloIconoTono } from '../tema/colores.js';
 import { tema } from '../tema/tema.js';
 import { useTema } from '../tema/TemaContext.jsx';
@@ -27,7 +28,9 @@ import { volver } from '../utilidades/navegacion.js';
 import '../componentes/Formulario.css';
 import './Apariencia.css';
 
-const PREDETERMINADA = { acento: ACENTO_PREDETERMINADO, tema: 'plano', estilo: 'realista', forma: 'cuadrada', color: 'predeterminado' };
+// Lo de entrada (decidido por el dueño, Sesión 13): azul eléctrico plano, íconos planos, redondos y
+// de color variado. Igual que PREDETERMINADOS en estado/ajustes.js.
+const PREDETERMINADA = { acento: ACENTO_PREDETERMINADO, tema: 'plano', estilo: 'plano', forma: 'redonda', color: 'predeterminado' };
 
 // Dos filas con los mismos colores: el tema liso o con brillo (prueba del dueño, Sesión 13).
 const FILAS_DE_COLOR = [
@@ -104,11 +107,12 @@ export default function Apariencia() {
   const aplicada = {
     acento,
     tema: ajustes.estiloTema === 'realista' ? 'realista' : 'plano',
-    estilo: ajustes.estiloIconos === 'plano' ? 'plano' : 'realista',
-    forma: ajustes.formaIconos === 'redonda' ? 'redonda' : 'cuadrada',
+    estilo: estiloIconosDe(ajustes.estiloIconos),
+    forma: ajustes.formaIconos === 'cuadrada' ? 'cuadrada' : 'redonda',
     color: ajustes.colorIconos === 'tema' ? 'tema' : 'predeterminado',
   };
   const [borrador, setBorrador] = useState(aplicada);
+  const [confirmar, setConfirmar] = useState(false);
   const elegir = (cambio) => setBorrador((b) => ({ ...b, ...cambio }));
   const igual = (a, b) =>
     a.acento === b.acento && a.tema === b.tema && a.estilo === b.estilo && a.forma === b.forma && a.color === b.color;
@@ -262,11 +266,33 @@ export default function Apariencia() {
         </div>
 
         {!igual(borrador, PREDETERMINADA) && (
-          <button type="button" className="boton-texto apariencia-restablecer" onClick={() => setBorrador(PREDETERMINADA)}>
+          <button type="button" className="boton-texto apariencia-restablecer" onClick={() => setConfirmar(true)}>
             Restablecer apariencia
           </button>
         )}
       </div>
+
+      {/* Restablecer pide confirmación (pedido del dueño). Cambia el borrador; la app, al Aplicar. */}
+      <PanelInferior abierto={confirmar} alCerrar={() => setConfirmar(false)} titulo="¿Restablecer la apariencia?">
+        <p className="panel-texto">
+          Vuelve a lo de entrada: <strong>azul eléctrico plano</strong>, íconos <strong>planos</strong> y{' '}
+          <strong>redondos</strong>, de color <strong>variado</strong>. Lo verás en la vista previa; para que cambie la app, toca{' '}
+          <strong>Aplicar</strong>.
+        </p>
+        <button
+          type="button"
+          className="boton-principal"
+          onClick={() => {
+            setBorrador(PREDETERMINADA);
+            setConfirmar(false);
+          }}
+        >
+          Restablecer
+        </button>
+        <button type="button" className="boton-secundario" onClick={() => setConfirmar(false)}>
+          Cancelar
+        </button>
+      </PanelInferior>
 
       <PieFormulario>
         <BotonExito
