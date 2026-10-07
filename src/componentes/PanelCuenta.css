@@ -59,13 +59,14 @@
 }
 
 /* "Ver movimientos": la fila es un botón, con el texto en el color del tema y la flecha. */
+/* Del color del texto en los dos modos (pedido del dueño). */
 .panel-cuenta-ver > span {
-  color: var(--accent-text);
+  color: var(--text);
   font-weight: 600;
 }
 
 .panel-cuenta-ver > svg {
-  color: var(--accent-text);
+  color: var(--text);
 }
 
 /* Dentro de la ventana flotante, con el margen de los paneles (la ventana trae menos, para sus

@@ -121,10 +121,11 @@
   font-weight: 700;
 }
 
+/* "Movimientos": con marco y del color del texto en los dos modos, como Reajustar (pedido del dueño). */
 .tarjetas-boton.suave {
-  background: var(--accent-soft);
-  box-shadow: none;
-  color: var(--accent-text);
+  background: transparent;
+  box-shadow: inset 0 0 0 1.5px var(--text);
+  color: var(--text);
 }
 
 .tarjetas-boton:active {

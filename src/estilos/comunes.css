@@ -207,6 +207,20 @@
   --ic-dibujo: #ffffff;
 }
 
+/* En modo oscuro, del color del texto en vez del color del tema (pedido del dueño, Sesión 13: con los
+   colores oscuros del tema se veían apagados): la cifra de arriba de las ventanas de cuenta y tarjeta
+   (.cifra-neutra), "+ Nueva cuenta" (también tarjeta y etiqueta) y Reajustar. En claro, como siempre. */
+:root[data-modo='oscuro'] .cifra-neutra .cabecera-cifra-valor,
+:root[data-modo='oscuro'] .cuentas-nueva,
+:root[data-modo='oscuro'] .inicio-nueva-cuenta {
+  color: var(--text);
+}
+
+:root[data-modo='oscuro'] .boton-borde {
+  border-color: var(--text);
+  color: var(--text);
+}
+
 /* Botón de texto con el color del tema ("Restablecer", "+ Nueva"…). */
 .boton-texto {
   border: 0;

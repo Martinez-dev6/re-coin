@@ -96,7 +96,11 @@ export default function VentanaTarjeta({ tarjeta, abierto, alCerrar }) {
         alCerrar={alCerrar}
         titulo={tarjeta ? 'Editar tarjeta' : 'Nueva tarjeta'}
         estilo={variablesDeColor(datos.color, oscuro, acento)}
-        arriba={<MontoEditable etiqueta="Cupo total" valor={datos.cupo} alCambiar={(cupo) => cambiar({ cupo })} />}
+        arriba={
+          <div className="cifra-neutra">
+            <MontoEditable etiqueta="Cupo total" valor={datos.cupo} alCambiar={(cupo) => cambiar({ cupo })} />
+          </div>
+        }
         pie={
           <BotonExito
             className="boton-principal"

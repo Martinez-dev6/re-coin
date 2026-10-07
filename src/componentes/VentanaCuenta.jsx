@@ -75,14 +75,16 @@ export default function VentanaCuenta({ cuenta, abierto, alCerrar }) {
         // Al editar, arriba va el saldo que tiene la cuenta, sin poder cambiarlo aquí (pedido del dueño,
         // Sesión 13): el saldo inicial solo se pone al crearla; después se corrige con Reajustar.
         arriba={
-          cuenta ? (
-            <div className="cabecera-cifra">
-              <span className="cabecera-cifra-etiqueta">Saldo actual</span>
-              <span className="cabecera-cifra-valor">{formatearPesos(cuenta.saldo ?? 0)}</span>
-            </div>
-          ) : (
-            <MontoEditable etiqueta="Saldo inicial" valor={datos.saldoInicial} alCambiar={(saldoInicial) => cambiar({ saldoInicial })} />
-          )
+          <div className="cifra-neutra">
+            {cuenta ? (
+              <div className="cabecera-cifra">
+                <span className="cabecera-cifra-etiqueta">Saldo actual</span>
+                <span className="cabecera-cifra-valor">{formatearPesos(cuenta.saldo ?? 0)}</span>
+              </div>
+            ) : (
+              <MontoEditable etiqueta="Saldo inicial" valor={datos.saldoInicial} alCambiar={(saldoInicial) => cambiar({ saldoInicial })} />
+            )}
+          </div>
         }
         pie={
           <BotonExito
