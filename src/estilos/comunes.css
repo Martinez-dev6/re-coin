@@ -74,7 +74,7 @@
    tema/colores.js las arma). El nombre "circulo" de las clases quedó de antes. */
 /* Color del tema realista (Sesión 13, prueba pedida por el dueño): con el mismo brillo de los íconos
    en lo elegido, interruptores y barras (--brillo-tema). Los botones, los chulos de elegir (radio,
-   casilla) y los chips elegidos van siempre planos (pedido del dueño: con brillo se veían muy cargados). En los banners el efecto va abajo, como un borde
+   casilla), los chips y los días o meses elegidos van siempre planos (pedido del dueño: con brillo se veían muy cargados). En los banners el efecto va abajo, como un borde
    con volumen (--brillo-banner): arriba siguen del color liso de la franja de la barra de estado, que
    así no se separa. Se elige en Apariencia con la fila Realista de los colores; ajustes.js pone
    data-estilo-tema en <html> (la vista previa de Apariencia pone el suyo). */

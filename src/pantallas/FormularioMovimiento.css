@@ -263,7 +263,6 @@
 
 .rejilla-dias > button[aria-checked='true'] {
   background: var(--banner-bg);
-  background-image: var(--brillo-tema);
   color: var(--on-banner);
 }
 
