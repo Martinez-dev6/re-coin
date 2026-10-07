@@ -91,6 +91,10 @@ function extras(oscuro, colores) {
     // El mismo oscurecido ya aplicado sobre el banner y sobre el fondo, como color opaco:
     // lo usa la franja de la barra de estado con un panel abierto (ver BarraEstado.css).
     bannerDim: mezclar(colores.bannerBg, scrimRgb, scrimAlfa),
+    // Arriba del banner con el color del tema realista (el brillo de --brillo-banner, 16 % de
+    // blanco): la franja de la barra de estado lleva este tono para no separarse del banner.
+    bannerTope: mezclar(colores.bannerBg, [255, 255, 255], 0.16),
+    bannerTopeDim: mezclar(mezclar(colores.bannerBg, [255, 255, 255], 0.16), scrimRgb, scrimAlfa),
     pageDim: mezclar(colores.pageBg, scrimRgb, scrimAlfa),
     // Sombra de las tarjetas: en oscuro tema() da 'none', que no se puede animar. Se deja la
     // misma sombra y se anima solo su color (transparente en oscuro), que sí es un color.

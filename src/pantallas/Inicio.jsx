@@ -96,6 +96,12 @@ export default function Inicio() {
         elemento.style.opacity = valor;
         elemento.style.visibility = valor === 0 ? 'hidden' : 'visible';
       }
+      // Con el color del tema realista, el brillo del banner se queda arriba de la pantalla (junto a la
+      // franja de la barra de estado) aunque el banner se encoja (--banner-oculto en comunes.css).
+      if (banner.current) {
+        const oculto = Math.max(0, -banner.current.getBoundingClientRect().top);
+        banner.current.style.setProperty('--banner-oculto', oculto + 'px');
+      }
       // El saldo pequeño sube un poco al aparecer.
       if (compacto.current) compacto.current.style.transform = `translateY(${(1 - verCompacto) * 6}px)`;
     };

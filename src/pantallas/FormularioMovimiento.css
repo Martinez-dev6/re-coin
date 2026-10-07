@@ -20,19 +20,19 @@
    rojo), con texto blanco: en oscuro --expense es un rojo claro y el dueño quiere el rojo normal
    (2026-10-04). */
 .boton-principal.guardar-gasto {
-  background: var(--expense-on-white);
+  background-color: var(--expense-on-white);
   box-shadow: none;
   color: #ffffff;
 }
 
 .boton-principal.guardar-ingreso {
-  background: var(--income);
+  background-color: var(--income);
   box-shadow: none;
   color: var(--on-income);
 }
 
 .boton-principal.guardar-transferencia {
-  background: var(--transfer-bg);
+  background-color: var(--transfer-bg);
   box-shadow: none;
   color: var(--transfer-text);
 }
@@ -40,7 +40,7 @@
 /* Azul fijo, no el del tema (transferencia en Reajustar saldo, como el ícono del menú del "+").
    Texto blanco: contraste 5,2. */
 .boton-principal.guardar-azul {
-  background: #2563eb;
+  background-color: #2563eb;
   box-shadow: none;
   color: #ffffff;
 }

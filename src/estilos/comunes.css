@@ -4,6 +4,13 @@
 .banner {
   background: var(--banner-bg);
   background-image: var(--brillo-banner);
+  background-repeat: no-repeat;
+  background-size:
+    100% 180px,
+    100% 100%;
+  background-position:
+    0 var(--banner-oculto, 0px),
+    0 0;
   color: var(--on-banner);
   border-radius: 0 0 32px 32px;
   box-shadow: 0 0 0 1px var(--banner-ring);
@@ -78,8 +85,14 @@
 }
 
 [data-estilo-tema='realista'] {
-  --brillo-tema: linear-gradient(to bottom, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0) 70%);
-  --brillo-banner: linear-gradient(to top, rgba(0, 0, 0, 0.16), rgba(0, 0, 0, 0) 44px);
+  /* Como los círculos de Apariencia: luz arriba y sombra abajo (más marcado desde la segunda prueba:
+     en los colores oscuros apenas se notaba). */
+  --brillo-tema: linear-gradient(to bottom, rgba(255, 255, 255, 0.24), rgba(255, 255, 255, 0) 60%, rgba(0, 0, 0, 0.12));
+  /* Banner: luz en los primeros 180 px (arriba es del mismo tono que la franja de la barra de
+     estado, --banner-tope; en Inicio se queda arriba aunque el banner se encoja: --banner-oculto)
+     y sombra en los últimos 56. Aclarar se nota también en los colores oscuros; oscurecer no. */
+  --brillo-banner: linear-gradient(to bottom, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0)),
+    linear-gradient(to top, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0) 56px);
   /* Círculos para elegir un color (cuentas, tarjetas, el del Menú): con volumen. */
   --brillo-circulo: linear-gradient(to bottom, rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0) 60%, rgba(0, 0, 0, 0.14));
 }
@@ -369,7 +382,7 @@
 /* Botón "Marcar como pendiente": amarillo de pendiente con texto oscuro (Sesión 9; los botones de
    estado van del color de lo que hacen). Texto sobre el fondo: más de 10:1. */
 .boton-principal.guardar-pendiente {
-  background: #facc15;
+  background-color: #facc15;
   box-shadow: none;
   color: #422006;
 }
@@ -386,7 +399,8 @@
   display: block;
   height: 100%;
   border-radius: 4px;
-  background: var(--accent-text);
+  background-color: var(--accent-text);
+  background-image: var(--brillo-tema);
 }
 
 /* Botón grande de ancho completo ("Ver octubre 2026", "Guardar"…). */

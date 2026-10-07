@@ -17,6 +17,12 @@
   --franja-dim: var(--banner-dim);
 }
 
+/* Color del tema realista: el banner es más claro arriba (--brillo-banner) y la franja también. */
+:root[data-estilo-tema='realista'] .barra-estado[data-tono='banner'] {
+  --franja: var(--banner-tope);
+  --franja-dim: var(--banner-tope-dim);
+}
+
 .barra-estado[data-tono='pagina'] {
   --franja: var(--page-bg);
   --franja-dim: var(--page-dim);

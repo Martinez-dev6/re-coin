@@ -807,7 +807,8 @@
 }
 
 .inicio-meta-barra > span {
-  background: var(--accent-text);
+  background-color: var(--accent-text);
+  background-image: var(--brillo-tema);
 }
 
 .inicio-meta-cifras {

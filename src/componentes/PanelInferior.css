@@ -137,7 +137,8 @@
   height: 54px;
   border: 0;
   border-radius: 27px;
-  background: var(--expense-on-white);
+  background-color: var(--expense-on-white);
+  background-image: var(--brillo-tema);
   color: #ffffff;
   font-size: 16px;
   font-weight: 700;
