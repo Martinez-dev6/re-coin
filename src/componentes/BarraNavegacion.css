@@ -80,9 +80,19 @@
   width: 66px;
 }
 
+/* Pestaña activa: del color del tema en claro; en oscuro, blanca (pedido del dueño: con los colores
+   oscuros del tema se veía apagada). El punto va igual. */
+.barra-nav {
+  --nav-activa: var(--accent-text);
+}
+
+:root[data-modo='oscuro'] .barra-nav {
+  --nav-activa: var(--text);
+}
+
 .barra-nav-pestana.active {
   font-weight: 700;
-  color: var(--accent-text);
+  color: var(--nav-activa);
 }
 
 /* Punto del color del tema encima de la pestaña activa. */
@@ -94,7 +104,7 @@
   height: 6px;
   margin-left: -3px;
   border-radius: 3px;
-  background: var(--accent-text);
+  background: var(--nav-activa);
   opacity: 0;
   transform: scale(0.4);
   transition:
