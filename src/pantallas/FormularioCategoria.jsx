@@ -15,9 +15,11 @@ import { IconoBasura, IconoTexto } from '../componentes/iconos.jsx';
 import { ICONOS_CATEGORIA } from '../componentes/iconosPorNombre.jsx';
 import PanelInferior, { DURACION_PANEL_MS } from '../componentes/PanelInferior.jsx';
 import SelectorIcono from '../componentes/SelectorIcono.jsx';
+import { estiloIconoTono } from '../tema/colores.js';
 import { COLORES_CATEGORIA, eliminarCategoria, guardarCategoria } from '../datos/categorias.js';
 import { useDatos } from '../datos/DatosContext.jsx';
 import { volver } from '../utilidades/navegacion.js';
+import { mismosDatos } from '../utilidades/sinCambios.js';
 
 const TIPOS = [
   { valor: 'gasto', texto: 'Gasto' },
@@ -88,7 +90,13 @@ function Campos({ categoria, tipoInicial }) {
         <RejillaColores colores={COLORES_CATEGORIA} elegido={datos.color} alElegir={(color) => cambiar({ color })} />
 
         <h2 className="titulo-seccion">Ícono</h2>
-        <SelectorIcono sugeridos={ICONOS_CATEGORIA} elegido={datos.icono} alElegir={(icono) => cambiar({ icono })} />
+        {/* El ícono elegido va del color elegido arriba: se ve el cambio al tocar otro color. */}
+        <SelectorIcono
+          sugeridos={ICONOS_CATEGORIA}
+          elegido={datos.icono}
+          estilo={estiloIconoTono(datos.color)}
+          alElegir={(icono) => cambiar({ icono })}
+        />
 
         {categoria && (
           <button type="button" className="formulario-eliminar" onClick={() => setPanelEliminar(true)}>
@@ -101,7 +109,7 @@ function Campos({ categoria, tipoInicial }) {
       <PieFormulario>
         <BotonExito
           className="boton-principal"
-          disabled={!datos.nombre.trim()}
+          disabled={!datos.nombre.trim() || (Boolean(categoria) && mismosDatos(datos, categoria))}
           alTocar={guardar}
           alTerminar={() => volver(navegar, volverA)}
         >

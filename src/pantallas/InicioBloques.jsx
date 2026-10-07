@@ -11,7 +11,9 @@ import FilaPresupuesto from '../componentes/FilaPresupuesto.jsx';
 import {
   IconoBajada,
   IconoBalanza,
-  IconoBilletera,
+  IconoCaraFeliz,
+  IconoCaraNormal,
+  IconoCaraTriste,
   IconoCalendarioMes,
   IconoFlechaAbajo,
   IconoFlecha,
@@ -98,6 +100,7 @@ export function BloqueBalance({ pesos, ocultos, posicion }) {
   let notaAviso = tono === 'negativo' ? 'más gastos que ingresos' : 'de tus ingresos ahorrado';
   if (ingresos === 0 && !sinMovimientos) [aviso, notaAviso] = ['', 'Sin ingresos este mes'];
   const IconoAviso = tono === 'negativo' ? IconoBajada : tono === 'positivo' ? IconoHoja : IconoBalanza;
+  const IconoCara = tono === 'negativo' ? IconoCaraTriste : tono === 'positivo' ? IconoCaraFeliz : IconoCaraNormal;
 
   // Con cifras largas (millones) se achican un poco para que quepan en un iPhone.
   const cifraLarga = conSigno(proyectado).length > 10;
@@ -146,7 +149,7 @@ export function BloqueBalance({ pesos, ocultos, posicion }) {
 
         <span className="inicio-balance-centro">
           <span className="inicio-balance-icono">
-            <IconoBilletera tamano={26} />
+            <IconoCara tamano={28} />
           </span>
           <span className="inicio-balance-cifra">
             <strong>{conSigno(proyectado)}</strong>

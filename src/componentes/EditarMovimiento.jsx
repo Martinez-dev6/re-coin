@@ -8,6 +8,7 @@
 // movimiento: el que se edita; se queda mientras la ventana se va.
 import { useEffect, useState } from 'react';
 import { useDatos } from '../datos/DatosContext.jsx';
+import { mismosDatos } from '../utilidades/sinCambios.js';
 import { faltante, guardarMovimiento, horaDe } from '../datos/movimientos.js';
 import { cambiaLaSerie, editarEnSerie } from '../datos/programados.js';
 import { diaYMes, horaActual, hoyTexto, textoHora } from '../utilidades/fechas.js';
@@ -134,6 +135,7 @@ export default function EditarMovimiento({ movimiento: m, abierto, alCerrar }) {
         )}
         <BotonExito
           className={'boton-principal guardar-' + (conTarjeta ? 'gasto' : tipo)}
+          disabled={mismosDatos(datos, desde(m))}
           alTocar={guardar}
           alTerminar={alCerrar}
         >

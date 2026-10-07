@@ -27,6 +27,7 @@ import { eliminarPresupuesto, guardarPresupuesto, PERIODOS, periodoDe, textoMes 
 import { useMes } from '../estado/MesContext.jsx';
 import { MESES, nombreMes } from '../utilidades/fechas.js';
 import { volver } from '../utilidades/navegacion.js';
+import { mismosDatos } from '../utilidades/sinCambios.js';
 import './FormularioMovimiento.css';
 import '../componentes/SelectorMes.css';
 
@@ -59,6 +60,7 @@ function Campos({ presupuesto }) {
     () =>
       presupuesto ?? { categoriaId: null, limite: 0, periodo: 'mes', desde: textoMes(anio, mes), repetir: true, avisarAl: 80 },
   );
+  const [inicial] = useState(datos);
   const [panel, setPanel] = useState(null); // 'categoria' | 'periodo' | 'desde' | 'aviso' | 'eliminar'
   const periodo = periodoDe(datos);
   const [anioVista, setAnioVista] = useState(Number(datos.desde.slice(0, 4)));
@@ -161,6 +163,7 @@ function Campos({ presupuesto }) {
         )}
         <BotonExito
           className="boton-principal"
+          disabled={Boolean(presupuesto) && mismosDatos(datos, inicial)}
           alTocar={guardar}
           alTerminar={() => volver(navegar, LISTA)}
           alFallar={(e) => setAviso(e.message)}

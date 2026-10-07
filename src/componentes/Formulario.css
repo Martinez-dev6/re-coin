@@ -298,9 +298,7 @@
   margin-top: 0;
 }
 
-.formulario-pie .boton-principal:disabled {
-  opacity: 0.45;
-}
+
 
 /* ---- Fecha (EntradaFecha): campo de fecha invisible encima de toda la fila ---- */
 

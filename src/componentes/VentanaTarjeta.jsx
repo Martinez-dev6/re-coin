@@ -5,6 +5,7 @@
 // tarjeta: la que se edita (undefined = nueva); se queda mientras la ventana se va.
 import { useEffect, useRef, useState } from 'react';
 import { useDatos } from '../datos/DatosContext.jsx';
+import { mismosDatos } from '../utilidades/sinCambios.js';
 import { eliminarTarjeta, guardarTarjeta } from '../datos/tarjetas.js';
 import { abrirVentana } from '../estado/ventanas.js';
 import { variablesDeColor } from '../tema/aplicarTema.js';
@@ -97,7 +98,12 @@ export default function VentanaTarjeta({ tarjeta, abierto, alCerrar }) {
         estilo={variablesDeColor(datos.color, oscuro, acento)}
         arriba={<MontoEditable etiqueta="Cupo total" valor={datos.cupo} alCambiar={(cupo) => cambiar({ cupo })} />}
         pie={
-          <BotonExito className="boton-principal" alTocar={() => guardarTarjeta(tarjeta?.id, datos)} alTerminar={alCerrar}>
+          <BotonExito
+            className="boton-principal"
+            disabled={Boolean(tarjeta) && mismosDatos(datos, datosDe(tarjeta, cuentas))}
+            alTocar={() => guardarTarjeta(tarjeta?.id, datos)}
+            alTerminar={alCerrar}
+          >
             Guardar tarjeta
           </BotonExito>
         }

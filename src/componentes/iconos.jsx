@@ -69,6 +69,9 @@ import {
   TriangleAlert,
   User,
   Wallet,
+  Smile,
+  Frown,
+  Meh,
   X,
 } from 'lucide-react';
 
@@ -155,6 +158,10 @@ export const IconoCandado = crear(Lock, 18);
 export const IconoBanco = crear(Landmark, 20);
 export const IconoBalanza = crear(Scale, 18);
 export const IconoBilletera = crear(Wallet, 20);
+// Balance del mes (Sesión 13, pedido del dueño): feliz a favor, triste en contra, normal parejo.
+export const IconoCaraFeliz = crear(Smile, 20);
+export const IconoCaraTriste = crear(Frown, 20);
+export const IconoCaraNormal = crear(Meh, 20);
 export const IconoHoja = crear(Leaf, 20);
 export const IconoBajada = crear(TrendingDown, 20);
 export const IconoCalendarioMes = crear(CalendarDays, 24, 1.8);

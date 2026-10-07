@@ -7,6 +7,7 @@
 // programado: se queda mientras el panel baja.
 import { useEffect, useRef, useState } from 'react';
 import { useDatos } from '../datos/DatosContext.jsx';
+import { mismosDatos } from '../utilidades/sinCambios.js';
 import { tituloMovimiento } from '../datos/movimientos.js';
 import { eliminarFecha, eliminarProgramado, FRECUENCIAS, guardarProgramado } from '../datos/programados.js';
 import { diaYMes, fechaCorta } from '../utilidades/fechas.js';
@@ -115,7 +116,12 @@ export default function PanelProgramado({ programado, ocurrencia, abierto, alCer
           siguientes</strong>.
         </p>
 
-        <BotonExito className="boton-principal" alTocar={guardar} alTerminar={alCerrar}>
+        <BotonExito
+          className="boton-principal"
+          disabled={mismosDatos(datos, { frecuencia: p.frecuencia, empieza: p.empieza, termina: p.termina ?? null })}
+          alTocar={guardar}
+          alTerminar={alCerrar}
+        >
           Guardar
         </BotonExito>
         <button type="button" className="boton-secundario programado-eliminar" onClick={() => setEliminar(true)}>

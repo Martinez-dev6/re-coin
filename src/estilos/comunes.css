@@ -404,6 +404,24 @@
   font-weight: 700;
 }
 
+/* Botón apagado (falta algo o, al editar, no se cambió nada): gris, sin el color del tema ni del tipo
+   (Sesión 13, pedido del dueño). button.… le gana a las variantes de color (.guardar-gasto…). El
+   cambio entre apagado y encendido es suave. */
+.boton-principal.boton-exito {
+  transition:
+    clip-path 0.28s cubic-bezier(0.3, 0, 0.15, 1),
+    background-color 0.25s ease,
+    color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+button.boton-principal:disabled {
+  background-color: var(--track);
+  background-image: none;
+  box-shadow: none;
+  color: var(--muted);
+}
+
 /* Píldora blanca que se desliza bajo la opción elegida de un selector dentro del banner
    (Gasto | Ingreso, Presupuestos | Metas | Programados). El selector tiene 4 px de relleno y
    4 px entre opciones; --n es el número de opciones y --i la elegida (desde 0). Las opciones

@@ -9,7 +9,8 @@ import { variablesAcento } from '../tema/colores.js';
 import './SelectorIcono.css';
 
 // color: el del ícono elegido (tarjetas: solo el ícono lleva el color, no el formulario).
-function BotonIcono({ nombre, elegido, alElegir, color }) {
+// estilo: variables del ícono elegido (estiloIconoTono: el color de una categoría); gana a color.
+function BotonIcono({ nombre, elegido, alElegir, color, estilo }) {
   return (
     <button
       type="button"
@@ -17,7 +18,7 @@ function BotonIcono({ nombre, elegido, alElegir, color }) {
       aria-checked={nombre === elegido}
       aria-label={ETIQUETAS_ICONO[nombre] ?? nombre}
       className="selector-icono-boton"
-      style={nombre === elegido ? variablesAcento(color) : undefined}
+      style={nombre === elegido ? (estilo ?? variablesAcento(color)) : undefined}
       onClick={() => alElegir(nombre)}
     >
       <IconoPorNombre nombre={nombre} tamano={24} />
@@ -25,7 +26,7 @@ function BotonIcono({ nombre, elegido, alElegir, color }) {
   );
 }
 
-export default function SelectorIcono({ sugeridos, elegido, alElegir, etiqueta = 'Ícono', color = null }) {
+export default function SelectorIcono({ sugeridos, elegido, alElegir, etiqueta = 'Ícono', color = null, estilo }) {
   const [panel, setPanel] = useState(false);
 
   // Si el elegido no está entre los sugeridos (se eligió en el panel), se ve de primero.
@@ -42,7 +43,7 @@ export default function SelectorIcono({ sugeridos, elegido, alElegir, etiqueta =
     <>
       <div className="tarjeta selector-icono" role="radiogroup" aria-label={etiqueta}>
         {visibles.map((nombre) => (
-          <BotonIcono key={nombre} nombre={nombre} elegido={elegido} alElegir={alElegir} color={color} />
+          <BotonIcono key={nombre} nombre={nombre} elegido={elegido} alElegir={alElegir} color={color} estilo={estilo} />
         ))}
         <button type="button" className="selector-icono-mas" aria-label="Más íconos" onClick={() => setPanel(true)}>
           <IconoMasOpciones />
@@ -62,7 +63,7 @@ export default function SelectorIcono({ sugeridos, elegido, alElegir, etiqueta =
               <h3 className="selector-icono-grupo">{titulo}</h3>
               <div className="selector-icono-catalogo" role="radiogroup" aria-label={titulo}>
                 {iconos.map(([nombre]) => (
-                  <BotonIcono key={nombre} nombre={nombre} elegido={elegido} alElegir={alElegir} color={color} />
+                  <BotonIcono key={nombre} nombre={nombre} elegido={elegido} alElegir={alElegir} color={color} estilo={estilo} />
                 ))}
               </div>
             </section>

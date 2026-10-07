@@ -6,6 +6,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { eliminarCuenta, guardarCuenta, TIPOS_CUENTA, tipoCuenta } from '../datos/cuentas.js';
 import { useDatos } from '../datos/DatosContext.jsx';
+import { mismosDatos } from '../utilidades/sinCambios.js';
 import { esAdelantado } from '../datos/programados.js';
 import { variablesDeColor } from '../tema/aplicarTema.js';
 import { useTema } from '../tema/TemaContext.jsx';
@@ -74,7 +75,12 @@ export default function VentanaCuenta({ cuenta, abierto, alCerrar }) {
           <MontoEditable etiqueta="Saldo inicial" valor={datos.saldoInicial} alCambiar={(saldoInicial) => cambiar({ saldoInicial })} />
         }
         pie={
-          <BotonExito className="boton-principal" alTocar={() => guardarCuenta(cuenta?.id, datos)} alTerminar={alCerrar}>
+          <BotonExito
+            className="boton-principal"
+            disabled={Boolean(cuenta) && mismosDatos(datos, cuenta)}
+            alTocar={() => guardarCuenta(cuenta?.id, datos)}
+            alTerminar={alCerrar}
+          >
             Guardar cuenta
           </BotonExito>
         }

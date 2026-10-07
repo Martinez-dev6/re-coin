@@ -9,6 +9,7 @@ import PanelInferior, { DURACION_PANEL_MS } from '../componentes/PanelInferior.j
 import { useDatos } from '../datos/DatosContext.jsx';
 import { eliminarEtiqueta, guardarEtiqueta } from '../datos/etiquetas.js';
 import { volver } from '../utilidades/navegacion.js';
+import { mismosDatos } from '../utilidades/sinCambios.js';
 import './FormularioMovimiento.css';
 import { conNegritas } from '../utilidades/negritas.jsx';
 
@@ -86,7 +87,7 @@ function Campos({ etiqueta }) {
         )}
         <BotonExito
           className="boton-principal"
-          disabled={!nombre.trim()}
+          disabled={!nombre.trim() || (Boolean(etiqueta) && mismosDatos(nombre, etiqueta.nombre))}
           alTocar={guardar}
           alTerminar={() => volver(navegar, LISTA)}
           alFallar={(e) => setError(e.message)}

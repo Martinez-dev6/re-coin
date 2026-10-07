@@ -275,6 +275,13 @@
     color 0.32s ease;
 }
 
+/* Apagado (sin cambios): gris como los demás botones (comunes.css). */
+.formulario-pie .boton-principal.apariencia-aplicar:disabled {
+  background-color: var(--track);
+  background-image: none;
+  color: var(--muted);
+}
+
 .formulario-pie .boton-principal.apariencia-aplicar.exito {
   background-color: var(--color-elegido);
   color: var(--texto-elegido);

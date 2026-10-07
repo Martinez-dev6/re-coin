@@ -39,6 +39,7 @@ import { estiloIconoCuenta } from '../tema/colores.js';
 import { diaYMes, fechaCorta, textoDeFecha } from '../utilidades/fechas.js';
 import { formatearPesos } from '../utilidades/formato.js';
 import { volver } from '../utilidades/navegacion.js';
+import { mismosDatos } from '../utilidades/sinCambios.js';
 import './FormularioMovimiento.css';
 
 const LISTA = '/planes/metas';
@@ -90,6 +91,7 @@ function Campos({ meta }) {
           icono: 'alcancia',
         },
   );
+  const [inicial] = useState(datos);
   const [panel, setPanel] = useState(null); // 'cuenta' | 'frecuencia' | 'eliminar' | 'aporte'
   // El aporte que se va a borrar; se queda mientras el panel baja.
   const [aporte, setAporte] = useState(null);
@@ -216,6 +218,7 @@ function Campos({ meta }) {
         )}
         <BotonExito
           className="boton-principal"
+          disabled={Boolean(meta) && mismosDatos(datos, inicial)}
           alTocar={guardar}
           alTerminar={() => volver(navegar, LISTA)}
           alFallar={(e) => setAviso(e.message)}
