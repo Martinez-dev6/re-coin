@@ -122,6 +122,10 @@ export default function Apariencia() {
 
   // Al terminar la animación del botón: se vuelve al Menú y se aplica a la vez (el color cambia con
   // su fundido mientras la pantalla se va).
+  // Aplicar va en verde, como Guardar ingreso; al tocarlo, el círculo del chulo pasa al color elegido
+  // (pedido del dueño). Apariencia.css anima el cambio a la vez que el botón se encoge.
+  const colorElegido = tema(borrador.acento, oscuro ? 'dark' : 'light');
+
   const aplicar = () => {
     volver(navegar, '/mi-espacio');
     if (borrador.acento !== acento) cambiarAcento(borrador.acento);
@@ -246,7 +250,12 @@ export default function Apariencia() {
       </div>
 
       <PieFormulario>
-        <BotonExito className="boton-principal" disabled={!hayCambios} alTerminar={aplicar}>
+        <BotonExito
+          className="boton-principal apariencia-aplicar"
+          style={{ '--color-elegido': colorElegido.bannerBg, '--texto-elegido': colorElegido.onBanner }}
+          disabled={!hayCambios}
+          alTerminar={aplicar}
+        >
           Aplicar
         </BotonExito>
       </PieFormulario>

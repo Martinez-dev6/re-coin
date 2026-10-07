@@ -245,6 +245,23 @@
   height: 18px;
 }
 
+/* Aplicar: verde como Guardar ingreso. Al tocarlo (BotonExito pone .exito) el botón se encoge hasta
+   el círculo y a la vez pasa al color principal elegido; el chulo (currentColor) toma su texto. */
+.formulario-pie .boton-principal.apariencia-aplicar {
+  background-color: var(--income);
+  box-shadow: none;
+  color: var(--on-income);
+  transition:
+    clip-path 0.28s cubic-bezier(0.3, 0, 0.15, 1),
+    background-color 0.32s ease,
+    color 0.32s ease;
+}
+
+.formulario-pie .boton-principal.apariencia-aplicar.exito {
+  background-color: var(--color-elegido);
+  color: var(--texto-elegido);
+}
+
 .apariencia-restablecer {
   width: 100%;
   height: 48px;
