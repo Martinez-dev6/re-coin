@@ -257,7 +257,7 @@ function Contenido({ movimiento: m }) {
           alTocar={() => cambiarPagado(m.id, true)}
           alTerminar={cerrarEstado}
         >
-          Marcar como hecha
+          Transferir
         </BotonExito>
         <button type="button" className="boton-secundario" onClick={cerrarEstado}>
           Cancelar

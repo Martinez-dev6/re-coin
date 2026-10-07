@@ -104,7 +104,7 @@ export default function VentanaTarjeta({ tarjeta, abierto, alCerrar }) {
             alTocar={() => guardarTarjeta(tarjeta?.id, datos)}
             alTerminar={alCerrar}
           >
-            Guardar tarjeta
+            {tarjeta ? 'Guardar' : 'Guardar tarjeta'}
           </BotonExito>
         }
       >

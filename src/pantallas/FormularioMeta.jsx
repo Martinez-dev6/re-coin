@@ -229,7 +229,7 @@ function Campos({ meta }) {
           alTerminar={() => volver(navegar, LISTA)}
           alFallar={(e) => setAviso(e.message)}
         >
-          Guardar meta
+          {meta ? 'Guardar' : 'Guardar meta'}
         </BotonExito>
       </PieFormulario>
 

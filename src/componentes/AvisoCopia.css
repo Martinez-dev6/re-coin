@@ -87,7 +87,6 @@
 
 .aviso-copia-hacer {
   background: var(--banner-bg);
-  background-image: var(--brillo-tema);
   box-shadow: 0 0 0 1px var(--banner-ring);
   color: var(--on-banner);
 }

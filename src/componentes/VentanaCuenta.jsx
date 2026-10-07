@@ -81,7 +81,7 @@ export default function VentanaCuenta({ cuenta, abierto, alCerrar }) {
             alTocar={() => guardarCuenta(cuenta?.id, datos)}
             alTerminar={alCerrar}
           >
-            Guardar cuenta
+            {cuenta ? 'Guardar' : 'Guardar cuenta'}
           </BotonExito>
         }
       >

@@ -106,7 +106,7 @@ export default function PanelConfirmarPago({ movimiento: m, abierto, alCerrar })
         alTocar={confirmar}
         alTerminar={alCerrar}
       >
-        {ingreso ? 'Marcar como recibido' : 'Marcar como pagado'}
+        {ingreso ? 'Ingresar' : 'Pagar'}
       </BotonExito>
     </PanelInferior>
   );

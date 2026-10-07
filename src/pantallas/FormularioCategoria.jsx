@@ -113,7 +113,7 @@ function Campos({ categoria, tipoInicial }) {
           alTocar={guardar}
           alTerminar={() => volver(navegar, volverA)}
         >
-          Guardar categoría
+          {categoria ? 'Guardar' : 'Guardar categoría'}
         </BotonExito>
       </PieFormulario>
 

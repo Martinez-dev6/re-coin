@@ -92,7 +92,7 @@ function Campos({ etiqueta }) {
           alTerminar={() => volver(navegar, LISTA)}
           alFallar={(e) => setError(e.message)}
         >
-          Guardar etiqueta
+          {etiqueta ? 'Guardar' : 'Guardar etiqueta'}
         </BotonExito>
       </PieFormulario>
 

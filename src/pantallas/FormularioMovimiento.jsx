@@ -37,7 +37,7 @@ const TITULOS = {
   gasto: ['Nuevo gasto', 'Guardar gasto'],
   ingreso: ['Nuevo ingreso', 'Guardar ingreso'],
   transferencia: ['Nueva transferencia', 'Guardar transferencia'],
-  gastoTarjeta: ['Gasto con tarjeta', 'Guardar gasto de tarjeta'],
+  gastoTarjeta: ['Gasto con tarjeta', 'Guardar gasto'],
 };
 
 // Interruptor para repetir el movimiento (Sesión 9).
@@ -189,6 +189,22 @@ function Campos({ clave, tipoInicial, cuentaPedida, fechaPedida }) {
   // Las categorías son de gasto o de ingreso; el gasto con tarjeta usa las de gasto.
   const tipoCategoria = tipo === 'ingreso' ? 'ingreso' : 'gasto';
   const [titulo, textoGuardar] = TITULOS[tipo];
+  // Botón corto (pedido del dueño, Sesión 13): si se hace hoy y ya está pagado o recibido, "Pagar",
+  // "Ingresar" o "Transferir"; con otra fecha (o sin pagar), "Guardar gasto"… como siempre. La
+  // transferencia no tiene Pagado: depende solo de la fecha. El botón ocupa todo el ancho, así que no
+  // cambia de tamaño con el texto.
+  const deHoy = datos.fecha === hoyTexto();
+  const textoBoton = !deHoy
+    ? textoGuardar
+    : tipo === 'transferencia'
+      ? 'Transferir'
+      : tipo === 'gastoTarjeta'
+        ? 'Pagar'
+        : !datos.pagado
+          ? textoGuardar
+          : tipo === 'ingreso'
+            ? 'Ingresar'
+            : 'Pagar';
   // "Gasto recurrente" (o ingreso, transferencia o gasto con tarjeta).
   const recurrente = Boolean(datos.recurrente);
   const volverA = '/';
@@ -428,7 +444,7 @@ function Campos({ clave, tipoInicial, cuentaPedida, fechaPedida }) {
           alTocar={guardar}
           alTerminar={() => volver(navegar, volverA)}
         >
-          {textoGuardar}
+          {textoBoton}
         </BotonExito>
       </PieFormulario>
 

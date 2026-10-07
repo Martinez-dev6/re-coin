@@ -64,7 +64,7 @@ export default function EditarMovimiento({ movimiento: m, abierto, alCerrar }) {
   const cambiar = (cambios) => setDatos((d) => ({ ...d, ...cambios }));
   const { tipo } = datos;
   const conTarjeta = tipo === 'gastoTarjeta';
-  const [titulo, textoGuardar] = TITULOS[tipo] ?? TITULOS.gasto;
+  const [titulo] = TITULOS[tipo] ?? TITULOS.gasto;
 
   // Cada vez que se abre, parte del movimiento como está guardado.
   useEffect(() => {
@@ -139,7 +139,7 @@ export default function EditarMovimiento({ movimiento: m, abierto, alCerrar }) {
           alTocar={guardar}
           alTerminar={alCerrar}
         >
-          {textoGuardar}
+          Guardar
         </BotonExito>
       </VentanaFlotante>
 

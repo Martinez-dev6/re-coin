@@ -168,7 +168,7 @@ function Campos({ presupuesto }) {
           alTerminar={() => volver(navegar, LISTA)}
           alFallar={(e) => setAviso(e.message)}
         >
-          Guardar presupuesto
+          {presupuesto ? 'Guardar' : 'Guardar presupuesto'}
         </BotonExito>
       </PieFormulario>
 
