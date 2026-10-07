@@ -33,7 +33,16 @@
           document.documentElement.style.colorScheme = 'dark';
         }
         // Color de la pantalla de bienvenida mientras carga la app (después usa --banner-bg).
-        if (/^#[0-9a-f]{6}$/i.test(p.acento || '')) document.documentElement.style.setProperty('--bienvenida', p.acento);
+        var acento = /^#[0-9a-f]{6}$/i.test(p.acento || '') ? p.acento : '#203fe3';
+        // Color del tema realista: arriba el banner es más claro (16 % de blanco, como --banner-tope) y
+        // la bienvenida va de ese tono: así la zona de la hora no cambia de color cuando se va.
+        var ajustes = JSON.parse(localStorage.getItem('sendo.ajustes') || '{}');
+        if (ajustes.estiloTema === 'realista') {
+          document.documentElement.dataset.estiloTema = 'realista';
+          var n = parseInt(acento.slice(1), 16);
+          acento = 'rgb(' + [n >> 16, (n >> 8) & 255, n & 255].map(function (v) { return Math.round(v + (255 - v) * 0.16); }).join(',') + ')';
+        }
+        document.documentElement.style.setProperty('--bienvenida', acento);
       } catch (e) {}
     </script>
 
@@ -57,6 +66,10 @@
         height: auto;
         animation: bienvenida-entra 520ms cubic-bezier(0.27, 0.34, 0.08, 1) both;
         transition: transform 420ms cubic-bezier(0.35, 0.1, 0.15, 1);
+      }
+      /* Realista: el tono de arriba del banner (lo pone aplicarTema; antes, --bienvenida ya aclarado). */
+      :root[data-estilo-tema='realista'] #bienvenida {
+        background: var(--banner-tope, var(--bienvenida, #203fe3));
       }
       #bienvenida.bienvenida-saliendo {
         opacity: 0;

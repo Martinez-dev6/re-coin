@@ -301,11 +301,17 @@
 }
 
 /* El día elegido del calendario con su "+ Agregar" a la derecha (Sesión 9). */
+/* Con aire arriba y abajo (pedido del dueño, Sesión 13: el botón quedaba muy pegado). */
 .programados-dia {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+  margin: 14px 0 10px;
+}
+
+.programados-dia .titulo-dia {
+  margin: 0 0 0 4px;
 }
 
 .programados-dia-mas {
@@ -313,7 +319,7 @@
   align-items: center;
   gap: 4px;
   height: 32px;
-  margin: 4px 0;
+  margin: 0;
   padding: 0 12px 0 9px;
   border: 0;
   border-radius: 16px;
