@@ -60,7 +60,7 @@ function coloresExtra(oscuro) {
 // los demás de los HTML del diseño (paneles inferiores y menú del "+").
 function extras(oscuro, colores) {
   const esRojo = colores.expenseOnWhite === '#a3195b';
-  const scrimRgb = oscuro ? [4, 4, 8] : [16, 18, 30];
+  const scrimRgb = oscuro ? [4, 4, 4] : [16, 18, 30];
   const scrimAlfa = oscuro ? 0.74 : 0.62;
   return {
     // Flechas blancas del banner de Inicio (mismo color en claro y oscuro).
@@ -71,7 +71,7 @@ function extras(oscuro, colores) {
     badgeGreenBg: oscuro ? '#5fd39a' : '#0b7a43',
     badgeGreenText: oscuro ? '#0e1a13' : '#ffffff',
     // Círculos del menú del "+".
-    menuBg: oscuro ? '#2b2c38' : '#ffffff',
+    menuBg: oscuro ? '#2c2c2c' : '#ffffff',
     // Íconos de Transferencia (azul) y Gasto con tarjeta (amarillo) en ese menú: fijos, no siguen
     // el color del tema, como los de Ingreso y Gasto (pedido del dueño, 2026-10-04). Contraste
     // sobre el círculo: azul 5,2 y 5,4; amarillo 3,1 (el amarillo más claro que aún se distingue

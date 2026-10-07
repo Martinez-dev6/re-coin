@@ -3,6 +3,8 @@
 // Cambio propio (2026-10-04), no está en design/tema.js: "blackish" pide además poca saturación.
 // Con los colores nuevos del dueño, el vinotinto #5c031a es tan oscuro como el negro (luminancia
 // 0,024) y en modo oscuro su banner pasaba a gris grafito como si fuera el negro.
+// Cambio propio (2026-10-07, pedido del dueño): el modo oscuro va en grises neutros, sin el tinte
+// azulado del diseño (fondo #151515, superficie #212121, como la app de escritorio de Claude).
 // En la app real conviene volcar estos valores a variables CSS (--page-bg, --surface, ...).
 // Tokens extra que solo usa Inicio:
 //   expenseOnWhite: isRed ? '#a3195b' : '#c62828',
@@ -27,16 +29,16 @@ if (mx !== mn) { const d = mx - mn; hue = mx === rgb[0] ? ((rgb[1] - rgb[2]) / d
 const isRed = mx !== mn && (mx - mn) / mx > 0.4 && (hue >= 350 || hue <= 10);
 const blackish = lum(rgb) < 0.03 && (mx === 0 || (mx - mn) / mx < 0.5);
 let banner = rgb;
-if (dark && blackish) banner = [43, 45, 55];
+if (dark && blackish) banner = [46, 46, 46];
 const bl = lum(banner);
 const lightText = (bl + 0.05) / 0.055 <= 1.05 / (bl + 0.05);
 let at = rgb;
 if (dark) {
 if (blackish) {
-at = [244, 244, 247];
+at = [244, 244, 244];
 } else {
 let t = 0;
-while ((lum(at) + 0.05) / 0.0589 < 4.5 && t < 1) {
+while ((lum(at) + 0.05) / (lum([33, 33, 33]) + 0.05) < 4.5 && t < 1) {
 t += 0.05;
 at = [rgb[0] + (255 - rgb[0]) * t, rgb[1] + (255 - rgb[1]) * t, rgb[2] + (255 - rgb[2]) * t];
 }
@@ -51,27 +53,27 @@ let tl = 0.7, tr = hsl2rgb(bh - 12, ts, tl);
 while (1.05 / (lum(tr) + 0.05) < 4.5 && tl > 0.2) { tl -= 0.02; tr = hsl2rgb(bh - 12, ts, tl); }
 const cats = dark ? ['#fb923c', '#22d3ee', '#a78bfa', '#fbbf24'] : ['#c2410c', '#0e7490', '#6d28d9', '#b45309'];
 return {
-pageBg: dark ? '#0e0e13' : '#f3f4f8',
-pageBg0: dark ? 'rgba(14,14,19,0)' : 'rgba(243,244,248,0)',
-surface: dark ? '#17171e' : '#ffffff',
-line: dark ? '#24242d' : '#e7e9f0',
-divider: dark ? '#25252e' : '#eceef4',
+pageBg: dark ? '#151515' : '#f3f4f8',
+pageBg0: dark ? 'rgba(21,21,21,0)' : 'rgba(243,244,248,0)',
+surface: dark ? '#212121' : '#ffffff',
+line: dark ? '#2e2e2e' : '#e7e9f0',
+divider: dark ? '#303030' : '#eceef4',
 shadow: dark ? 'none' : '0 1px 2px rgba(20,21,28,0.06)',
-text: dark ? '#f4f4f7' : '#14151c',
-muted: dark ? '#a0a0ae' : '#5b5f70',
+text: dark ? '#f4f4f4' : '#14151c',
+muted: dark ? '#a3a3a3' : '#5b5f70',
 income: dark ? '#5fd39a' : '#0b7a43',
 expense: dark ? (isRed ? '#f9a8d4' : '#ff8a80') : (isRed ? '#a3195b' : '#c62828'),
 expenseOnWhite: isRed ? '#a3195b' : '#c62828',
 // Amarillo más vivo desde la Sesión 9 (pedido del dueño: el ámbar de antes, #b45309, se confundía
 // con el rojo de los gastos). En claro #a16207 (4,9:1 sobre blanco); en oscuro #facc15.
 pending: dark ? '#facc15' : '#a16207',
-track: dark ? '#2a2a34' : '#e7e9f0',
+track: dark ? '#363636' : '#e7e9f0',
 swRing: dark ? 'rgba(255,255,255,0.22)' : 'rgba(0,0,0,0.10)',
 swBg: dark ? hex(at) : '#9a9eb0',
-swKnob: dark ? '#0e0e13' : '#ffffff',
+swKnob: dark ? '#151515' : '#ffffff',
 swPos: dark ? '20px' : '2px',
-navBg: dark ? '#14141a' : '#ffffff',
-navInactive: dark ? '#a0a0ae' : '#5b5f70',
+navBg: dark ? '#1b1b1b' : '#ffffff',
+navInactive: dark ? '#a3a3a3' : '#5b5f70',
 accentText: hex(at),
 // Botón Guardar transferencia: el mismo tono en claro y en oscuro, con texto blanco (pedido del
 // dueño, 2026-10-04: en oscuro salía aclarado). tr ya tiene contraste 4,5:1 con el blanco.
@@ -81,7 +83,7 @@ onExpense: dark ? "#1a0f0f" : "#ffffff",
 onIncome: dark ? "#0e1a13" : "#ffffff",
 accentLight: hex(banner.map((v) => v + (255 - v) * 0.45)),
 onAccentLight: (lum(banner.map((v) => v + (255 - v) * 0.45)) + 0.05) / 0.055 <= 1.05 / (lum(banner.map((v) => v + (255 - v) * 0.45)) + 0.05) ? "#ffffff" : "#0f1020",
-swOff: dark ? "#3a3b47" : "#c5c8d6",
+swOff: dark ? "#424242" : "#c5c8d6",
 catE: dark ? "#f472b6" : "#be185d",
 catESoft: dark ? "rgba(244,114,182,0.14)" : "rgba(190,24,93,0.14)",
 catF: dark ? "#4ade80" : "#15803d",
@@ -92,8 +94,8 @@ ch1: dark ? "#199e70" : "#1baf7a",
 ch2: dark ? "#d95926" : "#eb6834",
 ch3: dark ? "#9085e9" : "#4a3aa7",
 ch4: dark ? "#c98500" : "#eda100",
-chOther: dark ? "#6b6f80" : "#8a8fa3",
-grid: dark ? "#2a2a34" : "#e7e9f0",
+chOther: dark ? "#737373" : "#8a8fa3",
+grid: dark ? "#363636" : "#e7e9f0",
 expenseSoft: rgba(fromHex(dark ? (isRed ? "#f9a8d4" : "#ff8a80") : (isRed ? "#a3195b" : "#c62828")), 0.14),
 accentSoft: rgba(at, dark ? 0.16 : 0.12),
 bannerBg: hex(banner),

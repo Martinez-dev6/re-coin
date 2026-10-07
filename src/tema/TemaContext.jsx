@@ -9,7 +9,10 @@ export function TemaProvider({ children }) {
   const [preferencias, setPreferencias] = useState(leerPreferencias);
   const [sistemaOscuro, setSistemaOscuro] = useState(() => window.matchMedia(CONSULTA_OSCURO).matches);
 
-  // En modo Automático, seguir los cambios del iPhone mientras la app está abierta.
+  // En modo Automático, seguir los cambios del iPhone mientras la app está abierta. Sin fundido:
+  // al mandar la app al fondo, iOS cambia la apariencia un momento para sacar la foto del otro
+  // modo (la que muestra al volver a la app); con el fundido de 350 ms la foto salía a medio
+  // cambiar y al abrir la app se veía un instante con el modo contrario (video del dueño, 2026-10-07).
   useEffect(() => {
     const consulta = window.matchMedia(CONSULTA_OSCURO);
     const alCambiar = (evento) => setSistemaOscuro(evento.matches);
@@ -24,14 +27,18 @@ export function TemaProvider({ children }) {
   const acentoAplicado = acentoPantalla ?? preferencias.acento;
 
   // main.jsx ya aplicó el tema al arrancar: aquí solo se aplican (con fundido) los cambios.
+  // Si lo que cambió fue el modo del iPhone, va sin fundido (ver arriba).
   const primeraVez = useRef(true);
+  const sistemaPrevio = useRef(sistemaOscuro);
   useLayoutEffect(() => {
+    const delSistema = sistemaPrevio.current !== sistemaOscuro;
+    sistemaPrevio.current = sistemaOscuro;
     if (primeraVez.current) {
       primeraVez.current = false;
       return;
     }
-    aplicarTema(acentoAplicado, oscuro, { animar: true });
-  }, [acentoAplicado, oscuro]);
+    aplicarTema(acentoAplicado, oscuro, { animar: !delSistema });
+  }, [acentoAplicado, oscuro, sistemaOscuro]);
 
   useEffect(() => {
     guardarPreferencias(preferencias);

@@ -29,7 +29,7 @@
       try {
         var p = JSON.parse(localStorage.getItem('sendo.tema') || '{}');
         if (p.modo === 'oscuro' || (p.modo === 'auto' && matchMedia('(prefers-color-scheme: dark)').matches)) {
-          document.documentElement.style.setProperty('--page-bg', '#0e0e13');
+          document.documentElement.style.setProperty('--page-bg', '#151515');
           document.documentElement.style.colorScheme = 'dark';
         }
         // Color de la pantalla de bienvenida mientras carga la app (después usa --banner-bg).
