@@ -43,7 +43,7 @@ export default function Etiquetas() {
                   className="cuentas-fila etiquetas-fila"
                   onClick={() => navegar('/etiquetas/' + e.id)}
                 >
-                  <span className="icono-circulo grande">
+                  <span className="icono-circulo grande" data-tono="g">
                     <IconoEtiqueta tamano={18} />
                   </span>
                   <span className="cuentas-textos">

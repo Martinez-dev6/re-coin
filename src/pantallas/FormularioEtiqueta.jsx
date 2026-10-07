@@ -58,7 +58,7 @@ function Campos({ etiqueta }) {
 
       <div className="formulario-contenido">
         <div className="tarjeta campos">
-          <Campo Icono={IconoTexto} etiqueta="Nombre">
+          <Campo Icono={IconoTexto} tono="g" etiqueta="Nombre">
             <EntradaTexto
               valor={nombre}
               maximo={30}

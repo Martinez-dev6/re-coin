@@ -112,7 +112,7 @@ function Campos({ presupuesto }) {
 
       <div className="formulario-contenido">
         <div className="tarjeta campos">
-          <Campo Icono={IconoCategorias} etiqueta="Categoría" alTocar={() => setPanel('categoria')}>
+          <Campo Icono={IconoCategorias} tono="e" etiqueta="Categoría" alTocar={() => setPanel('categoria')}>
             {categoria ? (
               <>
                 <CirculoCategoria icono={categoria.icono} color={categoria.color} talla="chico" />
@@ -122,20 +122,20 @@ function Campos({ presupuesto }) {
               <span className="campo-vacio">Elegir</span>
             )}
           </Campo>
-          <Campo Icono={IconoPeriodo} etiqueta="Periodo" alTocar={() => setPanel('periodo')}>
+          <Campo Icono={IconoPeriodo} tono="b" etiqueta="Periodo" alTocar={() => setPanel('periodo')}>
             {periodo.texto}
           </Campo>
-          <Campo Icono={IconoEmpieza} etiqueta="Empieza" alTocar={() => setPanel('desde')}>
+          <Campo Icono={IconoEmpieza} tono="b" etiqueta="Empieza" alTocar={() => setPanel('desde')}>
             {textoDesde(datos.desde)}
           </Campo>
-          <Campo Icono={IconoRepetirFila} etiqueta={`Repetir ${periodo.cada}`}>
+          <Campo Icono={IconoRepetirFila} tono="c" etiqueta={`Repetir ${periodo.cada}`}>
             <Interruptor
               activo={datos.repetir}
               etiqueta={`Repetir ${periodo.cada}`}
               alCambiar={(repetir) => cambiar({ repetir })}
             />
           </Campo>
-          <Campo Icono={IconoCampana} etiqueta="Avisarme al" alTocar={() => setPanel('aviso')}>
+          <Campo Icono={IconoCampana} tono="d" etiqueta="Avisarme al" alTocar={() => setPanel('aviso')}>
             {datos.avisarAl} %
           </Campo>
         </div>

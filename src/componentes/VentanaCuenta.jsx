@@ -142,7 +142,7 @@ export default function VentanaCuenta({ cuenta, abierto, alCerrar }) {
                 className="panel-opcion"
                 onClick={() => elegirTipo(tipo.valor)}
               >
-                <span className="icono-circulo grande">
+                <span className="icono-circulo grande" data-tono="c">
                   <IconoPorNombre nombre={tipo.icono} tamano={20} />
                 </span>
                 <span className="panel-opcion-textos">

@@ -81,7 +81,7 @@ function Campos({ categoria, tipoInicial }) {
 
       <div className="formulario-contenido">
         <div className="tarjeta campos">
-          <Campo Icono={IconoTexto} etiqueta="Nombre">
+          <Campo Icono={IconoTexto} tono="g" etiqueta="Nombre">
             <EntradaTexto valor={datos.nombre} alCambiar={(nombre) => cambiar({ nombre })} ejemplo="Ej. Mascotas" maximo={30} />
           </Campo>
         </div>

@@ -161,47 +161,47 @@
    categorías (el tono de claro, igual en oscuro) o n, gris. Con "Color del tema" se quedan con el del
    tema. También los íconos de los campos que llevan tono, como en Reajustar saldo (pedido del dueño,
    2026-10-04). */
-:root[data-iconos='predeterminado'] :is(.icono-circulo, .campo-icono)[data-tono='a'] {
+:root[data-iconos='predeterminado'] :is(.icono-circulo, .campo-icono, .circulo-categoria)[data-tono='a'] {
   --ic-fondo: var(--cat-a-solido);
   --ic-dibujo: #ffffff;
 }
 
-:root[data-iconos='predeterminado'] :is(.icono-circulo, .campo-icono)[data-tono='b'] {
+:root[data-iconos='predeterminado'] :is(.icono-circulo, .campo-icono, .circulo-categoria)[data-tono='b'] {
   --ic-fondo: var(--cat-b-solido);
   --ic-dibujo: #ffffff;
 }
 
-:root[data-iconos='predeterminado'] :is(.icono-circulo, .campo-icono)[data-tono='c'] {
+:root[data-iconos='predeterminado'] :is(.icono-circulo, .campo-icono, .circulo-categoria)[data-tono='c'] {
   --ic-fondo: var(--cat-c-solido);
   --ic-dibujo: #ffffff;
 }
 
-:root[data-iconos='predeterminado'] :is(.icono-circulo, .campo-icono)[data-tono='d'] {
+:root[data-iconos='predeterminado'] :is(.icono-circulo, .campo-icono, .circulo-categoria)[data-tono='d'] {
   --ic-fondo: var(--cat-d-solido);
   --ic-dibujo: #ffffff;
 }
 
-:root[data-iconos='predeterminado'] :is(.icono-circulo, .campo-icono)[data-tono='e'] {
+:root[data-iconos='predeterminado'] :is(.icono-circulo, .campo-icono, .circulo-categoria)[data-tono='e'] {
   --ic-fondo: var(--cat-e-solido);
   --ic-dibujo: #ffffff;
 }
 
-:root[data-iconos='predeterminado'] :is(.icono-circulo, .campo-icono)[data-tono='f'] {
+:root[data-iconos='predeterminado'] :is(.icono-circulo, .campo-icono, .circulo-categoria)[data-tono='f'] {
   --ic-fondo: var(--cat-f-solido);
   --ic-dibujo: #ffffff;
 }
 
-:root[data-iconos='predeterminado'] :is(.icono-circulo, .campo-icono)[data-tono='g'] {
+:root[data-iconos='predeterminado'] :is(.icono-circulo, .campo-icono, .circulo-categoria)[data-tono='g'] {
   --ic-fondo: var(--cat-g-solido);
   --ic-dibujo: #ffffff;
 }
 
-:root[data-iconos='predeterminado'] :is(.icono-circulo, .campo-icono)[data-tono='h'] {
+:root[data-iconos='predeterminado'] :is(.icono-circulo, .campo-icono, .circulo-categoria)[data-tono='h'] {
   --ic-fondo: var(--cat-h-solido);
   --ic-dibujo: #ffffff;
 }
 
-:root[data-iconos='predeterminado'] :is(.icono-circulo, .campo-icono)[data-tono='n'] {
+:root[data-iconos='predeterminado'] :is(.icono-circulo, .campo-icono, .circulo-categoria)[data-tono='n'] {
   --ic-fondo: var(--icono-gris);
   --ic-dibujo: #ffffff;
 }

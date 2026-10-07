@@ -35,7 +35,7 @@ import {
   guardarMeta,
 } from '../datos/metas.js';
 import { useAjustes } from '../estado/ajustes.js';
-import { estiloIconoCuenta } from '../tema/colores.js';
+import { estiloIconoCuenta, estiloIconoTono } from '../tema/colores.js';
 import { diaYMes, fechaCorta, textoDeFecha } from '../utilidades/fechas.js';
 import { formatearPesos } from '../utilidades/formato.js';
 import { volver } from '../utilidades/navegacion.js';
@@ -69,7 +69,7 @@ export default function FormularioMeta() {
 function Campos({ meta }) {
   const navegar = useNavigate();
   const { cuentas, cuenta } = useDatos();
-  const { semanaEmpieza } = useAjustes();
+  const { semanaEmpieza, colorIconos } = useAjustes();
   const [datos, setDatos] = useState(() =>
     meta
       ? {
@@ -146,23 +146,23 @@ function Campos({ meta }) {
 
       <div className="formulario-contenido">
         <div className="tarjeta campos">
-          <Campo Icono={IconoTexto} etiqueta="Nombre">
+          <Campo Icono={IconoTexto} tono="g" etiqueta="Nombre">
             <EntradaTexto valor={datos.nombre} alCambiar={(nombre) => cambiar({ nombre })} ejemplo="Ej. Laptop nueva" />
           </Campo>
-          <Campo Icono={IconoFechaLimite} etiqueta="Fecha límite" conFlecha>
+          <Campo Icono={IconoFechaLimite} tono="b" etiqueta="Fecha límite" conFlecha>
             <EntradaFecha valor={datos.fechaLimite} alCambiar={(fechaLimite) => cambiar({ fechaLimite })} formato={fechaCorta} />
           </Campo>
-          <Campo Icono={IconoAhorrar} etiqueta="Ahorrar" alTocar={() => setPanel('frecuencia')}>
+          <Campo Icono={IconoAhorrar} tono="c" etiqueta="Ahorrar" alTocar={() => setPanel('frecuencia')}>
             {frecuencia.texto}
           </Campo>
-          <Campo Icono={IconoYaTengo} etiqueta="Ya tengo">
+          <Campo Icono={IconoYaTengo} tono="f" etiqueta="Ya tengo">
             <EntradaPesos
               valor={datos.ahorradoInicial}
               etiqueta="Ya tengo"
               alCambiar={(ahorradoInicial) => cambiar({ ahorradoInicial })}
             />
           </Campo>
-          <Campo Icono={IconoBanco} etiqueta="Se guarda en" alTocar={() => setPanel('cuenta')}>
+          <Campo Icono={IconoBanco} tono="c" etiqueta="Se guarda en" alTocar={() => setPanel('cuenta')}>
             {cuenta(datos.cuentaId)?.nombre ?? <span className="campo-vacio">Elegir</span>}
           </Campo>
         </div>
@@ -178,7 +178,13 @@ function Campos({ meta }) {
         )}
 
         <h2 className="titulo-seccion">Ícono</h2>
-        <SelectorIcono sugeridos={ICONOS_META} elegido={datos.icono} alElegir={(icono) => cambiar({ icono })} />
+        {/* Como las metas en Planes: verde con el color de los íconos Variado, si no el del tema. */}
+        <SelectorIcono
+          sugeridos={ICONOS_META}
+          elegido={datos.icono}
+          estilo={colorIconos === 'tema' ? undefined : estiloIconoTono('f')}
+          alElegir={(icono) => cambiar({ icono })}
+        />
 
         {meta?.aportes.length > 0 && (
           <>

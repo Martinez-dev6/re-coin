@@ -258,7 +258,7 @@ export function BloqueMetas({ pesos }) {
             const avance = porcentaje(m.ahorrado, m.objetivo);
             return (
               <button key={m.id} type="button" className="inicio-meta" onClick={() => navegar('/metas/' + m.id)}>
-                <CirculoCategoria icono={m.icono} color="acento" />
+                <CirculoCategoria icono={m.icono} color="acento" tonoOpcion="f" />
                 <span className="inicio-meta-cuerpo">
                   <span className="inicio-meta-linea">
                     <span className="inicio-meta-nombre">{m.nombre}</span>

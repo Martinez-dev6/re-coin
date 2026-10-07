@@ -303,7 +303,7 @@ function Campos({ clave, tipoInicial, cuentaPedida, fechaPedida }) {
 
   const filaDescripcion = (
     <div className="descripcion-con-favoritos">
-      <Campo Icono={IconoTexto} etiqueta="Descripción">
+      <Campo Icono={IconoTexto} tono="g" etiqueta="Descripción">
         <EntradaTexto
           valor={datos.descripcion}
           alCambiar={(descripcion) => cambiar({ descripcion })}
@@ -354,7 +354,7 @@ function Campos({ clave, tipoInicial, cuentaPedida, fechaPedida }) {
   // "Gasto recurrente"; prendido, Frecuencia y Termina.
   const filasRecurrente = (
     <>
-      <Campo Icono={IconoRepetirFila} etiqueta={TEXTO_RECURRENTE[tipo]}>
+      <Campo Icono={IconoRepetirFila} tono="c" etiqueta={TEXTO_RECURRENTE[tipo]}>
         <Interruptor
           activo={recurrente}
           etiqueta={TEXTO_RECURRENTE[tipo]}
@@ -363,10 +363,10 @@ function Campos({ clave, tipoInicial, cuentaPedida, fechaPedida }) {
       </Campo>
       {recurrente && (
         <>
-          <Campo Icono={IconoRepetirFila} etiqueta="Frecuencia" alTocar={() => setPanel('frecuencia')}>
+          <Campo Icono={IconoRepetirFila} tono="c" etiqueta="Frecuencia" alTocar={() => setPanel('frecuencia')}>
             {textoFrecuencia(datos.frecuencia)}
           </Campo>
-          <Campo Icono={IconoTermina} etiqueta="Termina" alTocar={() => setPanel('termina')}>
+          <Campo Icono={IconoTermina} tono="h" etiqueta="Termina" alTocar={() => setPanel('termina')}>
             {datos.termina ? fechaCorta(datos.termina) : 'Nunca'}
           </Campo>
         </>

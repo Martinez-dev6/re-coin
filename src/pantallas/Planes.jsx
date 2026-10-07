@@ -111,7 +111,7 @@ function Metas({ metas, navegar, alAportar }) {
     <>
       <div className="tarjeta-meta">
         <div className="meta-cabeza">
-          <CirculoCategoria icono="diana" color="acento" />
+          <CirculoCategoria icono="diana" color="acento" tonoOpcion="c" />
           <div className="meta-textos">
             <div className="meta-nombre">General</div>
             <div className="meta-detalle">{metas.length === 1 ? '1 meta activa' : `${metas.length} metas activas`}</div>
@@ -143,7 +143,7 @@ function Metas({ metas, navegar, alAportar }) {
             onClick={() => navegar('/metas/' + m.id)}
           />
           <div className="meta-cabeza">
-            <CirculoCategoria icono={m.icono} color="acento" />
+            <CirculoCategoria icono={m.icono} color="acento" tonoOpcion="f" />
             <div className="meta-textos">
               <div className="meta-nombre">{m.nombre}</div>
               <div className="meta-detalle">Meta: {fechaCorta(m.fechaLimite)}</div>
@@ -238,7 +238,7 @@ function PanelAportar({ meta, abierto, alCerrar }) {
       )}
       {(!conSugerido || opcion === 'otro') && (
         <div className="tarjeta campos aportar-campo">
-          <Campo Icono={IconoAhorro} etiqueta="Valor">
+          <Campo Icono={IconoAhorro} tono="f" etiqueta="Valor">
             <EntradaPesos valor={otro} etiqueta="Valor del aporte" alCambiar={setOtro} />
           </Campo>
         </div>
@@ -451,7 +451,7 @@ function Programados({ items, programados, anio, mes, navegar }) {
       {/* Las series que se repiten, aparte (Sesión 9: listadas justo bajo el día parecían un segundo
           gasto). Solo el título (pedido del dueño); abre una ventana con todas para editarlas o eliminarlas. */}
       <button type="button" className="tarjeta programados-lista-boton" onClick={() => setPanelSeries(true)}>
-        <span className="icono-circulo">
+        <span className="icono-circulo" data-tono="c">
           <IconoRepetir tamano={16} />
         </span>
         <span className="programados-lista-textos">

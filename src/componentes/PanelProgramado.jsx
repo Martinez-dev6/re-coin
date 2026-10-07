@@ -92,10 +92,10 @@ export default function PanelProgramado({ programado, ocurrencia, abierto, alCer
         </div>
 
         <div className="tarjeta campos programado-campos">
-          <Campo Icono={IconoEmpieza} etiqueta="Empieza" conFlecha>
+          <Campo Icono={IconoEmpieza} tono="b" etiqueta="Empieza" conFlecha>
             {datos.empieza && <EntradaFecha valor={datos.empieza} alCambiar={(empieza) => cambiar({ empieza })} />}
           </Campo>
-          <Campo Icono={IconoTermina} etiqueta="Termina">
+          <Campo Icono={IconoTermina} tono="h" etiqueta="Termina">
             {datos.termina && (
               <EntradaFecha
                 valor={datos.termina}

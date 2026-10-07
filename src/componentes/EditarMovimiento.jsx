@@ -118,7 +118,7 @@ export default function EditarMovimiento({ movimiento: m, abierto, alCerrar }) {
           cambiarFecha={cambiarFecha}
           despuesDeFecha={
             datos.hora && (
-              <Campo Icono={IconoHora} etiqueta="Hora">
+              <Campo Icono={IconoHora} tono="b" etiqueta="Hora">
                 <EntradaHora
                   valor={datos.hora === 'ahora' ? horaActual() : datos.hora}
                   texto={datos.hora === 'ahora' ? 'Ahora' : textoHora(datos.hora)}

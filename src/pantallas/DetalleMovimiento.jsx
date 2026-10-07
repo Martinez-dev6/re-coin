@@ -87,7 +87,7 @@ function Contenido({ movimiento: m }) {
   const nombreCuenta = (id) => cuenta(id)?.nombre ?? 'Cuenta eliminada';
   const nombreTarjeta = tarjeta(m.tarjetaId)?.nombre ?? 'Tarjeta eliminada';
   const filaCategoria = (
-    <Campo Icono={IconoCategorias} etiqueta="Categoría">
+    <Campo Icono={IconoCategorias} tono="e" etiqueta="Categoría">
       {categoria ? (
         <>
           <CirculoCategoria icono={categoria.icono} color={categoria.color} talla="chico" />
@@ -99,12 +99,12 @@ function Contenido({ movimiento: m }) {
     </Campo>
   );
   const filaTarjeta = (
-    <Campo Icono={IconoTarjeta} etiqueta="Tarjeta">
+    <Campo Icono={IconoTarjeta} tono="a" etiqueta="Tarjeta">
       {nombreTarjeta}
     </Campo>
   );
   const filaFactura = m.factura && (
-    <Campo Icono={IconoFactura} etiqueta="Factura">
+    <Campo Icono={IconoFactura} tono="h" etiqueta="Factura">
       {nombreFactura(m.factura)}
     </Campo>
   );
@@ -164,17 +164,17 @@ function Contenido({ movimiento: m }) {
         <div className="tarjeta campos">
           {m.tipo === 'transferencia' && (
             <>
-              <Campo Icono={IconoDesde} etiqueta="Desde">
+              <Campo Icono={IconoDesde} tono="f" etiqueta="Desde">
                 {nombreCuenta(m.cuentaId)}
               </Campo>
-              <Campo Icono={IconoHacia} etiqueta="Hacia">
+              <Campo Icono={IconoHacia} tono="f" etiqueta="Hacia">
                 {nombreCuenta(m.cuentaDestinoId)}
               </Campo>
             </>
           )}
           {m.tipo === 'pagoTarjeta' && (
             <>
-              <Campo Icono={IconoDesde} etiqueta="Desde">
+              <Campo Icono={IconoDesde} tono="f" etiqueta="Desde">
                 {nombreCuenta(m.cuentaId)}
               </Campo>
               {filaTarjeta}
@@ -185,7 +185,7 @@ function Contenido({ movimiento: m }) {
             <>
               {filaCategoria}
               {filaTarjeta}
-              <Campo Icono={IconoCuotas} etiqueta="Cuotas">
+              <Campo Icono={IconoCuotas} tono="d" etiqueta="Cuotas">
                 {m.cuotas > 1 ? `${m.cuotas} cuotas` : 'Sin cuotas'}
               </Campo>
               {filaFactura}
@@ -194,21 +194,21 @@ function Contenido({ movimiento: m }) {
           {conEstado && (
             <>
               {filaCategoria}
-              <Campo Icono={IconoCuentas} etiqueta="Cuenta">
+              <Campo Icono={IconoCuentas} tono="f" etiqueta="Cuenta">
                 {nombreCuenta(m.cuentaId)}
               </Campo>
             </>
           )}
-          <Campo Icono={IconoFecha} etiqueta="Fecha">
+          <Campo Icono={IconoFecha} tono="b" etiqueta="Fecha">
             {fecha}
           </Campo>
           {hora && (
-            <Campo Icono={IconoHora} etiqueta="Hora">
+            <Campo Icono={IconoHora} tono="b" etiqueta="Hora">
               {textoHora(hora)}
             </Campo>
           )}
           {etiquetas.length > 0 && (
-            <Campo Icono={IconoEtiqueta} etiqueta="Etiquetas">
+            <Campo Icono={IconoEtiqueta} tono="g" etiqueta="Etiquetas">
               <span className="campo-recortado">{etiquetas.join(', ')}</span>
             </Campo>
           )}

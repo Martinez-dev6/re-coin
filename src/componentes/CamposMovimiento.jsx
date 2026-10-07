@@ -84,7 +84,7 @@ export function FilasMovimiento({ datos, setDatos, setPanel, cambiarFecha, cambi
   const textoPagado = tipo === 'ingreso' ? 'Recibido' : 'Pagado';
 
   const filaCategoria = (
-    <Campo Icono={IconoCategorias} etiqueta="Categoría" alTocar={() => setPanel('categoria')}>
+    <Campo Icono={IconoCategorias} tono="e" etiqueta="Categoría" alTocar={() => setPanel('categoria')}>
       {categoria ? (
         <>
           <CirculoCategoria icono={categoria.icono} color={categoria.color} talla="chico" />
@@ -99,51 +99,51 @@ export function FilasMovimiento({ datos, setDatos, setPanel, cambiarFecha, cambi
   return (
     <div className="tarjeta campos">
       {descripcion ?? (
-        <Campo Icono={IconoTexto} etiqueta="Descripción">
+        <Campo Icono={IconoTexto} tono="g" etiqueta="Descripción">
           <EntradaTexto valor={datos.descripcion} alCambiar={(descripcion) => cambiar({ descripcion })} ejemplo={EJEMPLOS[tipo]} />
         </Campo>
       )}
       {tipo === 'transferencia' ? (
         <>
-          <Campo Icono={IconoDesde} etiqueta="Desde" alTocar={() => setPanel('cuentaId')}>
+          <Campo Icono={IconoDesde} tono="f" etiqueta="Desde" alTocar={() => setPanel('cuentaId')}>
             {nombreCuenta(datos.cuentaId)}
           </Campo>
-          <Campo Icono={IconoHacia} etiqueta="Hacia" alTocar={() => setPanel('cuentaDestinoId')}>
+          <Campo Icono={IconoHacia} tono="f" etiqueta="Hacia" alTocar={() => setPanel('cuentaDestinoId')}>
             {nombreCuenta(datos.cuentaDestinoId)}
           </Campo>
         </>
       ) : tipo === 'gastoTarjeta' ? (
         <>
           {filaCategoria}
-          <Campo Icono={IconoTarjeta} etiqueta="Tarjeta" alTocar={() => setPanel('tarjetaId')}>
+          <Campo Icono={IconoTarjeta} tono="a" etiqueta="Tarjeta" alTocar={() => setPanel('tarjetaId')}>
             {tarjeta(datos.tarjetaId)?.nombre ?? vacio('Elegir')}
           </Campo>
-          <Campo Icono={IconoCuotas} etiqueta="Cuotas" alTocar={() => setPanel('cuotas')}>
+          <Campo Icono={IconoCuotas} tono="d" etiqueta="Cuotas" alTocar={() => setPanel('cuotas')}>
             {textoCuotas(datos.cuotas, datos.valor)}
           </Campo>
-          <Campo Icono={IconoFactura} etiqueta="Factura" alTocar={() => setPanel('factura')}>
+          <Campo Icono={IconoFactura} tono="h" etiqueta="Factura" alTocar={() => setPanel('factura')}>
             {datos.factura ? nombreFactura(datos.factura) : vacio('Elegir')}
           </Campo>
         </>
       ) : (
         <>
           {filaCategoria}
-          <Campo Icono={IconoCuentas} etiqueta="Cuenta" alTocar={() => setPanel('cuentaId')}>
+          <Campo Icono={IconoCuentas} tono="f" etiqueta="Cuenta" alTocar={() => setPanel('cuentaId')}>
             {nombreCuenta(datos.cuentaId)}
           </Campo>
         </>
       )}
-      <Campo Icono={IconoFecha} etiqueta="Fecha" conFlecha>
+      <Campo Icono={IconoFecha} tono="b" etiqueta="Fecha" conFlecha>
         <EntradaFecha valor={datos.fecha} alCambiar={cambiarFecha} />
       </Campo>
       {despuesDeFecha}
       {tipo !== 'transferencia' && (
-        <Campo Icono={IconoEtiqueta} etiqueta="Etiquetas" alTocar={() => setPanel('etiquetas')}>
+        <Campo Icono={IconoEtiqueta} tono="g" etiqueta="Etiquetas" alTocar={() => setPanel('etiquetas')}>
           {nombresEtiquetas.length > 0 ? <span className="campo-recortado">{nombresEtiquetas.join(', ')}</span> : vacio('Agregar')}
         </Campo>
       )}
       {tipo !== 'transferencia' && tipo !== 'gastoTarjeta' && (
-        <Campo Icono={IconoPagado} etiqueta={textoPagado}>
+        <Campo Icono={IconoPagado} tono="f" etiqueta={textoPagado}>
           <Interruptor
             activo={Boolean(datos.pagado)}
             etiqueta={textoPagado}
@@ -151,7 +151,7 @@ export function FilasMovimiento({ datos, setDatos, setPanel, cambiarFecha, cambi
           />
         </Campo>
       )}
-      <Campo Icono={IconoNota} etiqueta="Observación" alTocar={() => setPanel('observacion')}>
+      <Campo Icono={IconoNota} tono="d" etiqueta="Observación" alTocar={() => setPanel('observacion')}>
         {datos.observacion ? <span className="campo-recortado">{datos.observacion}</span> : vacio('Agregar nota')}
       </Campo>
     </div>
@@ -346,7 +346,7 @@ export function PanelesMovimiento({ datos, setDatos, panel, setPanel, elegirTarj
                 className="panel-opcion panel-lista-opcion"
                 onClick={() => (elegirFactura ? elegirFactura(mes) : cambiar({ factura: mes }))}
               >
-                <span className="icono-circulo">
+                <span className="icono-circulo" data-tono="h">
                   <IconoFactura tamano={16} />
                 </span>
                 <span className="panel-opcion-textos">
@@ -410,7 +410,7 @@ function PanelEtiquetas({ etiquetas, elegidas, alAlternar }) {
             className="panel-opcion etiqueta-opcion"
             onClick={() => alAlternar(e.id)}
           >
-            <span className="icono-circulo">
+            <span className="icono-circulo" data-tono="g">
               <IconoEtiqueta tamano={16} />
             </span>
             <span className="panel-opcion-textos">
