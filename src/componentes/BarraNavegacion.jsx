@@ -24,7 +24,7 @@ const PESTANAS = [
   { ruta: '/', texto: 'Inicio', Icono: IconoInicio, clase: 'inicio', exacta: true },
   { ruta: '/transacciones', texto: 'Transacciones', Icono: IconoLista, clase: 'transacciones' },
   { ruta: '/planes', texto: 'Planes', Icono: IconoPlanes, clase: 'planes' },
-  { ruta: '/mi-espacio', texto: 'Mi espacio', Icono: (p) => <IconoCategorias tamano={22} {...p} />, clase: 'mi-espacio' },
+  { ruta: '/mi-espacio', texto: 'Menú', Icono: (p) => <IconoCategorias tamano={22} {...p} />, clase: 'mi-espacio' },
 ];
 
 // Posición de cada círculo respecto al centro del "+" (medidas de design/html/MenuMas.html).

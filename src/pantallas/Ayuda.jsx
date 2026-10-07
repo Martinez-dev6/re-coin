@@ -12,7 +12,7 @@ const PREGUNTAS = [
   {
     pregunta: '¿Dónde se guardan mis datos?',
     respuesta:
-      'Solo en este teléfono, dentro de la app. No se envían a ningún servidor. Si borras la app de la pantalla de inicio, se borran con ella: haz copias de seguridad desde Mi espacio → Importar y exportar.',
+      'Solo en este teléfono, dentro de la app. No se envían a ningún servidor. Si borras la app de la pantalla de inicio, se borran con ella: haz copias de seguridad desde Menú → Importar y exportar.',
   },
   {
     pregunta: '¿Cómo se calcula el saldo de una cuenta?',
@@ -42,7 +42,7 @@ const PREGUNTAS = [
   {
     pregunta: '¿Cómo paso mis datos a otro teléfono?',
     respuesta:
-      'En Mi espacio → Importar y exportar toca Copia de seguridad y guarda el archivo (en Archivos, por correo o por WhatsApp). En el otro teléfono, instala la app y usa Restaurar copia con ese archivo.',
+      'En Menú → Importar y exportar toca Copia de seguridad y guarda el archivo (en Archivos, por correo o por WhatsApp). En el otro teléfono, instala la app y usa Restaurar copia con ese archivo.',
   },
   {
     pregunta: '¿Cómo instalo la app en el iPhone?',

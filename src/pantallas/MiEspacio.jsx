@@ -80,7 +80,7 @@ export default function MiEspacio() {
           <div className="mi-espacio-perfil">
             <Avatar tamano={46} />
             <div className="mi-espacio-nombre">
-              <h1>{nombre.trim() || 'Mi espacio'}</h1>
+              <h1>{nombre.trim() || 'Menú'}</h1>
               <p>
                 {cuentas.length === 1 ? '1 cuenta' : `${cuentas.length} cuentas`} ·{' '}
                 {tarjetas.length === 1 ? '1 tarjeta' : `${tarjetas.length} tarjetas`}
