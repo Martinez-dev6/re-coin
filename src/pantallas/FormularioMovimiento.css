@@ -165,7 +165,6 @@
 .casilla.marcada {
   border: 0;
   background: var(--banner-bg);
-  background-image: var(--brillo-tema);
   color: var(--on-banner);
   display: flex;
   align-items: center;
