@@ -275,8 +275,7 @@ export default function Apariencia() {
       {/* Restablecer pide confirmación (pedido del dueño). Cambia el borrador; la app, al Aplicar. */}
       <PanelInferior abierto={confirmar} alCerrar={() => setConfirmar(false)} titulo="¿Restablecer la apariencia?">
         <p className="panel-texto">
-          Vuelve a lo de entrada: <strong>azul eléctrico plano</strong>, íconos <strong>planos</strong> y{' '}
-          <strong>redondos</strong>, de color <strong>variado</strong>. Lo verás en la vista previa; para que cambie la app, toca{' '}
+          La apariencia vuelve a como viene de entrada. Lo verás en la vista previa; para que cambie la app, toca{' '}
           <strong>Aplicar</strong>.
         </p>
         <button
