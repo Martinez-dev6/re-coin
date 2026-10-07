@@ -294,11 +294,19 @@
   background: linear-gradient(to bottom, var(--page-bg0) 0%, var(--page-bg) 30%);
 }
 
-.formulario-pie .boton-principal {
-  margin-top: 0;
+/* Guardar (y Pagar, Aplicar…) fijo abajo: angosto y centrado, de ancho fijo para que no cambie de tamaño
+   con el texto (pedido del dueño, Sesión 13: a todo lo ancho se veía muy largo). 240 px caben
+   "Guardar transferencia", el más largo, con aire a los lados. También en las ventanas (VentanaFlotante.css). */
+:root {
+  --ancho-boton-pie: 240px;
 }
 
-
+.formulario-pie .boton-principal {
+  display: block;
+  width: var(--ancho-boton-pie);
+  max-width: 100%;
+  margin: 0 auto;
+}
 
 /* ---- Fecha (EntradaFecha): campo de fecha invisible encima de toda la fila ---- */
 
