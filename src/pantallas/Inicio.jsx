@@ -181,7 +181,7 @@ export default function Inicio() {
             </Deslizar>
           </div>
           <div ref={montoSaldo} className="inicio-saldo">
-            {cargando ? '\u00a0' : ocultos ? OCULTO : <ConteoSaldo valor={saldo} />}
+            {cargando ? '\u00a0' : ocultos ? OCULTO : <ConteoSaldo valor={saldo} clave={anio + '-' + mes} />}
           </div>
           {!sinCuentas && (
             <div ref={resumen}>
