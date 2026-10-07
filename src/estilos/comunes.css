@@ -74,11 +74,18 @@
 [data-estilo-tema='plano'] {
   --brillo-tema: none;
   --brillo-banner: none;
+  --brillo-circulo: none;
 }
 
 [data-estilo-tema='realista'] {
   --brillo-tema: linear-gradient(to bottom, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0) 70%);
   --brillo-banner: linear-gradient(to top, rgba(0, 0, 0, 0.16), rgba(0, 0, 0, 0) 44px);
+  /* Círculos para elegir un color (cuentas, tarjetas, el del Menú): con volumen. */
+  --brillo-circulo: linear-gradient(to bottom, rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0) 60%, rgba(0, 0, 0, 0.14));
+}
+
+:is(.selector-color-circulo, .selector-color-tema, .fila-menu-color) {
+  background-image: var(--brillo-circulo);
 }
 
 :root,

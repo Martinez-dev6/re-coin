@@ -272,7 +272,7 @@ export function SelectorColorCuenta({ valor, alCambiar, etiqueta = 'Color de la 
         className="selector-color-predeterminado"
         onClick={() => alCambiar(null)}
       >
-        <span className="selector-color-tema" style={{ background: acento }} aria-hidden="true" />
+        <span className="selector-color-tema" style={{ backgroundColor: acento }} aria-hidden="true" />
         <span className="panel-opcion-textos">
           <span className="panel-opcion-titulo">Predeterminado</span>
           <span className="panel-opcion-detalle">Usa el color del tema</span>
@@ -288,7 +288,7 @@ export function SelectorColorCuenta({ valor, alCambiar, etiqueta = 'Color de la 
             aria-checked={color === valor}
             aria-label={nombre}
             className="selector-color-circulo"
-            style={{ background: color }}
+            style={{ backgroundColor: color }}
             onClick={() => alCambiar(color)}
           >
             {color === valor && <IconoCheck tamano={20} />}

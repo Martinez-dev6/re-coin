@@ -96,7 +96,7 @@ export default function MiEspacio() {
       <div className="mi-espacio-contenido">
         <Grupo titulo="Personalizar">
           <Fila Icono={IconoPaleta} tono="c" texto="Apariencia" onClick={() => navegar('/mi-espacio/apariencia')}>
-            <span className="fila-menu-color" style={{ background: acento }} aria-hidden="true" />
+            <span className="fila-menu-color" style={{ backgroundColor: acento }} aria-hidden="true" />
           </Fila>
           <Fila Icono={IconoLuna} tono="g" texto="Modo oscuro" onClick={() => setPanelModo(true)}>
             <span className="fila-menu-valor">{modoActual.titulo}</span>
