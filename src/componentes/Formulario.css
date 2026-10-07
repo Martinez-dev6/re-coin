@@ -295,10 +295,10 @@
 }
 
 /* Guardar (y Pagar, Aplicar…) fijo abajo: angosto y centrado, de ancho fijo para que no cambie de tamaño
-   con el texto (pedido del dueño, Sesión 13: a todo lo ancho se veía muy largo). 240 px caben
+   con el texto (pedido del dueño, Sesión 13: a todo lo ancho se veía muy largo). Caben
    "Guardar transferencia", el más largo, con aire a los lados. También en las ventanas (VentanaFlotante.css). */
 :root {
-  --ancho-boton-pie: 240px;
+  --ancho-boton-pie: 290px; /* 240 al principio; el dueño lo pidió un poco más ancho */
 }
 
 .formulario-pie .boton-principal {
