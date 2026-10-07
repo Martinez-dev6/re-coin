@@ -12,6 +12,7 @@ import {
   EntradaTexto,
   MontoEditable,
   PieFormulario,
+  RejillaColores,
 } from '../componentes/Formulario.jsx';
 import {
   IconoBanco,
@@ -25,6 +26,7 @@ import {
 import { ICONOS_META, IconoPorNombre } from '../componentes/iconosPorNombre.jsx';
 import PanelInferior, { DURACION_PANEL_MS } from '../componentes/PanelInferior.jsx';
 import SelectorIcono from '../componentes/SelectorIcono.jsx';
+import { COLORES_CATEGORIA } from '../datos/categorias.js';
 import { useDatos } from '../datos/DatosContext.jsx';
 import {
   ahorroPorPeriodo,
@@ -80,6 +82,7 @@ function Campos({ meta }) {
           ahorradoInicial: meta.ahorradoInicial ?? 0,
           cuentaId: meta.cuentaId,
           icono: meta.icono,
+          color: meta.color ?? null,
         }
       : {
           nombre: '',
@@ -89,6 +92,7 @@ function Campos({ meta }) {
           ahorradoInicial: 0,
           cuentaId: cuentas[0]?.id ?? null,
           icono: 'alcancia',
+          color: 'f',
         },
   );
   const [inicial] = useState(datos);
@@ -177,12 +181,16 @@ function Campos({ meta }) {
           </p>
         )}
 
+        <h2 className="titulo-seccion">Color</h2>
+        <RejillaColores colores={COLORES_CATEGORIA} elegido={datos.color} alElegir={(color) => cambiar({ color })} />
+
         <h2 className="titulo-seccion">Ícono</h2>
-        {/* Como las metas en Planes: verde con el color de los íconos Variado, si no el del tema. */}
+        {/* Del color elegido arriba. Una meta de antes sin color: verde con el color de los íconos Variado,
+            si no el del tema, como en Planes. */}
         <SelectorIcono
           sugeridos={ICONOS_META}
           elegido={datos.icono}
-          estilo={colorIconos === 'tema' ? undefined : estiloIconoTono('f')}
+          estilo={datos.color ? estiloIconoTono(datos.color) : colorIconos === 'tema' ? undefined : estiloIconoTono('f')}
           alElegir={(icono) => cambiar({ icono })}
         />
 

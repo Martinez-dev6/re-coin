@@ -143,7 +143,7 @@ function Metas({ metas, navegar, alAportar }) {
             onClick={() => navegar('/metas/' + m.id)}
           />
           <div className="meta-cabeza">
-            <CirculoCategoria icono={m.icono} color="acento" tonoOpcion="f" />
+            <CirculoCategoria icono={m.icono} color={m.color ?? 'acento'} tonoOpcion={m.color ? undefined : 'f'} />
             <div className="meta-textos">
               <div className="meta-nombre">{m.nombre}</div>
               <div className="meta-detalle">Meta: {fechaCorta(m.fechaLimite)}</div>

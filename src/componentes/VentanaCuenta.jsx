@@ -6,6 +6,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { eliminarCuenta, guardarCuenta, TIPOS_CUENTA, tipoCuenta } from '../datos/cuentas.js';
 import { useDatos } from '../datos/DatosContext.jsx';
+import { formatearPesos } from '../utilidades/formato.js';
 import { mismosDatos } from '../utilidades/sinCambios.js';
 import { esAdelantado } from '../datos/programados.js';
 import { variablesDeColor } from '../tema/aplicarTema.js';
@@ -71,8 +72,17 @@ export default function VentanaCuenta({ cuenta, abierto, alCerrar }) {
         alCerrar={alCerrar}
         titulo={cuenta ? 'Editar cuenta' : 'Nueva cuenta'}
         estilo={variablesDeColor(datos.color, oscuro, acento)}
+        // Al editar, arriba va el saldo que tiene la cuenta, sin poder cambiarlo aquí (pedido del dueño,
+        // Sesión 13): el saldo inicial solo se pone al crearla; después se corrige con Reajustar.
         arriba={
-          <MontoEditable etiqueta="Saldo inicial" valor={datos.saldoInicial} alCambiar={(saldoInicial) => cambiar({ saldoInicial })} />
+          cuenta ? (
+            <div className="cabecera-cifra">
+              <span className="cabecera-cifra-etiqueta">Saldo actual</span>
+              <span className="cabecera-cifra-valor">{formatearPesos(cuenta.saldo ?? 0)}</span>
+            </div>
+          ) : (
+            <MontoEditable etiqueta="Saldo inicial" valor={datos.saldoInicial} alCambiar={(saldoInicial) => cambiar({ saldoInicial })} />
+          )
         }
         pie={
           <BotonExito

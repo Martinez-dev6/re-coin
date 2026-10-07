@@ -27,11 +27,13 @@
 }
 
 .cabecera-cifra-etiqueta {
+  display: block;
   font-size: 13px;
   color: var(--on-banner-muted);
 }
 
 .cabecera-cifra-valor {
+  display: block;
   margin-top: 2px;
   font-size: 36px;
   font-weight: 700;

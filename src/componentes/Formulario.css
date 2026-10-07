@@ -302,6 +302,11 @@
 }
 
 .formulario-pie .boton-principal {
+  margin-top: 0;
+}
+
+/* Solo el botón suelto del pie: los pares (Eliminar | Editar) siguen con su reparto. */
+.formulario-pie > .boton-principal {
   display: block;
   width: var(--ancho-boton-pie);
   max-width: 100%;

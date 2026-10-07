@@ -140,6 +140,10 @@
 }
 
 .ventana-pie .boton-principal {
+  margin-top: 0;
+}
+
+.ventana-pie > .boton-principal {
   display: block;
   width: var(--ancho-boton-pie);
   max-width: 100%;

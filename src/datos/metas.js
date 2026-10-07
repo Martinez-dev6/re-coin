@@ -65,6 +65,9 @@ export async function guardarMeta(id, datos) {
     ahorradoInicial: Math.max(0, Math.round(datos.ahorradoInicial) || 0),
     cuentaId: datos.cuentaId ?? null,
     icono: datos.icono,
+    // Color del ícono (Sesión 13, pedido del dueño): una letra de la paleta de las categorías, o null
+    // (las metas de antes: verde con el color de los íconos Variado, el del tema con Del tema).
+    color: typeof datos.color === 'string' ? datos.color : null,
   };
   if (id) {
     await db.metas.update(id, campos);
