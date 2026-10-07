@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { aplicarTema } from './aplicarTema.js';
+import { useAjustes } from '../estado/ajustes.js';
+import { aplicarTema, variablesMas } from './aplicarTema.js';
 import { ACENTO_PREDETERMINADO, ACENTOS } from './colores.js';
 import { CONSULTA_OSCURO, guardarPreferencias, leerPreferencias } from './preferencias.js';
 
@@ -39,6 +40,17 @@ export function TemaProvider({ children }) {
     }
     aplicarTema(acentoAplicado, oscuro, { animar: !delSistema });
   }, [acentoAplicado, oscuro, sistemaOscuro]);
+
+  // Color propio del botón "+" (Apariencia): sus variables en <html>, con el modo de ahora.
+  const { colorMas, estiloMas } = useAjustes();
+  useLayoutEffect(() => {
+    const raiz = document.documentElement.style;
+    const variables = variablesMas(colorMas, estiloMas, oscuro);
+    for (const nombre of ['--mas-fondo', '--mas-dibujo', '--mas-anillo', '--mas-resplandor', '--mas-brillo']) {
+      if (variables[nombre]) raiz.setProperty(nombre, variables[nombre]);
+      else raiz.removeProperty(nombre);
+    }
+  }, [colorMas, estiloMas, oscuro]);
 
   useEffect(() => {
     guardarPreferencias(preferencias);

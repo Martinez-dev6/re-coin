@@ -21,6 +21,7 @@ import {
 } from '../componentes/iconos.jsx';
 import { cambiarAjustes, estiloIconosDe, useAjustes } from '../estado/ajustes.js';
 import { ACENTO_PREDETERMINADO, ACENTOS, estiloIconoTono } from '../tema/colores.js';
+import { variablesMas } from '../tema/aplicarTema.js';
 import { tema } from '../tema/tema.js';
 import { useTema } from '../tema/TemaContext.jsx';
 import { formatearPesos } from '../utilidades/formato.js';
@@ -30,7 +31,15 @@ import './Apariencia.css';
 
 // Lo de entrada (decidido por el dueño, Sesión 13): azul eléctrico plano, íconos planos, redondos y
 // de color variado. Igual que PREDETERMINADOS en estado/ajustes.js.
-const PREDETERMINADA = { acento: ACENTO_PREDETERMINADO, tema: 'plano', estilo: 'plano', forma: 'redonda', color: 'predeterminado' };
+const PREDETERMINADA = {
+  acento: ACENTO_PREDETERMINADO,
+  tema: 'plano',
+  estilo: 'plano',
+  forma: 'redonda',
+  color: 'predeterminado',
+  mas: null,
+  masEstilo: 'plano',
+};
 
 // Dos filas con los mismos colores: el tema liso o con brillo (prueba del dueño, Sesión 13).
 const FILAS_DE_COLOR = [
@@ -75,6 +84,19 @@ function variablesDelBorrador(acento, oscuro) {
   };
 }
 
+// Variables del "+" del borrador. Con "Igual al tema" se ponen igual (del color del borrador), para no
+// heredar en la vista previa el color propio que la app ya tenga aplicado.
+const masDelBorrador = (b, oscuro) =>
+  b.mas
+    ? variablesMas(b.mas, b.masEstilo, oscuro)
+    : {
+        '--mas-fondo': 'var(--banner-bg)',
+        '--mas-dibujo': 'var(--on-banner)',
+        '--mas-anillo': 'var(--banner-ring)',
+        '--mas-resplandor': 'transparent',
+        '--mas-brillo': 'none',
+      };
+
 // Control de opciones sobre la tarjeta, con la píldora que se desliza hasta la elegida.
 function Segmentado({ etiqueta, opciones, valor, alElegir, children }) {
   const indice = Math.max(
@@ -110,12 +132,20 @@ export default function Apariencia() {
     estilo: estiloIconosDe(ajustes.estiloIconos),
     forma: ajustes.formaIconos === 'cuadrada' ? 'cuadrada' : 'redonda',
     color: ajustes.colorIconos === 'tema' ? 'tema' : 'predeterminado',
+    mas: ACENTOS.some((a) => a.valor === ajustes.colorMas) ? ajustes.colorMas : null,
+    masEstilo: ajustes.estiloMas === 'realista' ? 'realista' : 'plano',
   };
   const [borrador, setBorrador] = useState(aplicada);
   const [confirmar, setConfirmar] = useState(false);
   const elegir = (cambio) => setBorrador((b) => ({ ...b, ...cambio }));
   const igual = (a, b) =>
-    a.acento === b.acento && a.tema === b.tema && a.estilo === b.estilo && a.forma === b.forma && a.color === b.color;
+    a.acento === b.acento &&
+    a.tema === b.tema &&
+    a.estilo === b.estilo &&
+    a.forma === b.forma &&
+    a.color === b.color &&
+    a.mas === b.mas &&
+    (a.mas === null || a.masEstilo === b.masEstilo);
   const hayCambios = !igual(borrador, aplicada);
 
   // La vista previa queda pegada bajo la cabecera mientras se baja a las opciones, así se ve cada
@@ -146,6 +176,8 @@ export default function Apariencia() {
       estiloIconos: borrador.estilo,
       formaIconos: borrador.forma,
       colorIconos: borrador.color,
+      colorMas: borrador.mas,
+      estiloMas: borrador.masEstilo,
     });
   };
 
@@ -158,7 +190,7 @@ export default function Apariencia() {
         data-estilo-tema={borrador.tema}
         data-estilo-iconos={borrador.estilo}
         data-forma-iconos={borrador.forma}
-        style={variablesDelBorrador(borrador.acento, oscuro)}
+        style={{ ...variablesDelBorrador(borrador.acento, oscuro), ...masDelBorrador(borrador, oscuro) }}
       >
         <div ref={pegada} className="apariencia-pegada" style={{ top: altoCabecera }}>
           <h2 className="titulo-seccion">Vista previa</h2>
@@ -166,6 +198,10 @@ export default function Apariencia() {
             <div className="apariencia-vista-banner">
               <div className="apariencia-vista-etiqueta">Saldo disponible</div>
               <div className="apariencia-vista-saldo">{formatearPesos(1284300)}</div>
+              {/* El "+" de la barra, con su color (sección Botón +). */}
+              <span className="boton-mas apariencia-vista-mas">
+                <IconoMas tamano={22} grosor={2.6} />
+              </span>
             </div>
             <div className="apariencia-vista-fila">
               <span className="icono-circulo grande">
@@ -219,6 +255,50 @@ export default function Apariencia() {
                   className={'apariencia-color' + (fila.tema === 'realista' ? ' realista' : '') + (elegido ? ' elegido' : '')}
                   style={{ backgroundColor: valor }}
                   onClick={() => elegir({ acento: valor, tema: fila.tema })}
+                >
+                  {elegido && <IconoCheck />}
+                </button>
+              );
+            }),
+          ])}
+        </div>
+
+        {/* Color propio del "+" de la barra (pedido del dueño): igual al tema o uno de los 10, plano o
+            realista. Solo el "+". */}
+        <h2 className="titulo-seccion">Botón +</h2>
+        <div className="tarjeta apariencia-colores" role="radiogroup" aria-label="Color del botón +">
+          <button
+            type="button"
+            role="radio"
+            aria-checked={borrador.mas === null}
+            className="selector-color-predeterminado apariencia-mas-tema"
+            onClick={() => elegir({ mas: null, masEstilo: 'plano' })}
+          >
+            <span className="selector-color-tema" style={{ backgroundColor: borrador.acento }} aria-hidden="true" />
+            <span className="panel-opcion-textos">
+              <span className="panel-opcion-titulo">Igual al tema</span>
+              <span className="panel-opcion-detalle">Del color principal</span>
+            </span>
+            <span className={'radio' + (borrador.mas === null ? ' marcado' : '')}>
+              {borrador.mas === null && <IconoCheck tamano={14} />}
+            </span>
+          </button>
+          {FILAS_DE_COLOR.map((fila) => [
+            <span key={fila.tema} className="apariencia-colores-fila" aria-hidden="true">
+              {fila.titulo}
+            </span>,
+            ...ACENTOS.map(({ valor, nombre }) => {
+              const elegido = valor === borrador.mas && fila.tema === borrador.masEstilo;
+              return (
+                <button
+                  key={'mas' + fila.tema + valor}
+                  type="button"
+                  role="radio"
+                  aria-checked={elegido}
+                  aria-label={`${nombre}, ${fila.titulo.toLowerCase()}`}
+                  className={'apariencia-color' + (fila.tema === 'realista' ? ' realista' : '') + (elegido ? ' elegido' : '')}
+                  style={{ backgroundColor: valor }}
+                  onClick={() => elegir({ mas: valor, masEstilo: fila.tema })}
                 >
                   {elegido && <IconoCheck />}
                 </button>

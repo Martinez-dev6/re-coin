@@ -53,6 +53,7 @@
 }
 
 .apariencia-vista-banner {
+  position: relative;
   padding: 10px 16px;
   border-radius: 18px;
   background: var(--banner-bg);
@@ -123,6 +124,27 @@
 
 .apariencia-vista-flecha {
   color: var(--muted);
+}
+
+/* El "+" de la barra en la vista previa: más pequeño, a la derecha del banner. */
+.apariencia-vista-mas.boton-mas {
+  position: absolute;
+  left: auto;
+  right: 12px;
+  top: 50%;
+  width: 40px;
+  height: 40px;
+  margin: -20px 0 0;
+  border-radius: 20px;
+  box-shadow:
+    0 0 0 1px var(--mas-anillo, var(--banner-ring)),
+    0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
+/* "Igual al tema" del botón +: a todo lo ancho de la rejilla de colores. */
+.apariencia-mas-tema {
+  grid-column: 1 / -1;
+  margin: -6px -4px 0;
 }
 
 /* ---- Color principal: 10 círculos en dos filas de 5 ---- */

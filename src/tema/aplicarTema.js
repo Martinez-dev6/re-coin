@@ -183,6 +183,22 @@ export function aplicarTema(acento, oscuro, { animar = false } = {}) {
   escribirVariables(acento, oscuro);
 }
 
+// Color propio del botón "+" de la barra (Sesión 13, pedido del dueño: por ejemplo el tema negro con el
+// "+" azul). color: uno de los 10 colores o null (el del tema, plano: no pone nada); estilo: 'plano' o
+// 'realista' (con el volumen de la fila Realista de Apariencia). Solo el "+": ni la barra ni el menú.
+const VOLUMEN_MAS = 'linear-gradient(to bottom, rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0) 60%, rgba(0, 0, 0, 0.14))';
+export function variablesMas(color, estilo, oscuro) {
+  if (!ACENTOS.some((a) => a.valor === color)) return {};
+  const t = tema(color, oscuro ? 'dark' : 'light');
+  return {
+    '--mas-fondo': t.bannerBg,
+    '--mas-dibujo': t.onBanner,
+    '--mas-anillo': t.bannerRing,
+    '--mas-resplandor': t.fabGlow,
+    '--mas-brillo': estilo === 'realista' ? VOLUMEN_MAS : 'none',
+  };
+}
+
 // Los colores del tema para un color de cuenta o tarjeta, como variables CSS para un solo elemento
 // (Sesión 9: la ventana flotante de una cuenta o tarjeta va toda con su color, sin cambiar el de la
 // app). Sin color (o uno que no es de los 10), undefined: la ventana sigue con el del tema.

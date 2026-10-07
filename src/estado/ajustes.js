@@ -14,7 +14,8 @@ const CLAVE = 'sendo.ajustes';
 // el brillo). formaIconos: 'cuadrada' | 'redonda'. De entrada (decidido por el dueño): tema plano,
 // íconos planos, redondos y de color variado. Sesión 13 (lo guardado de una prueba anterior,
 // 'solido' o 'suave', vale como 'realista'). estiloTema: 'plano' | 'realista' (el color del tema con
-// brillo, prueba de la Sesión 13).
+// brillo, prueba de la Sesión 13). colorMas: color propio del botón "+" (uno de los 10, o null = el del
+// tema) y estiloMas: 'plano' | 'realista' (Sesión 13).
 // ultimaCopia: cuándo se hizo o restauró la última copia de seguridad (ms), o null.
 // avisoCopiaPospuesto: hasta cuándo no sale el aviso de copia en Inicio ("Ahora no"), o null.
 // Viven aquí y no en la base: al borrar la app se pierden junto con los datos, como debe ser.
@@ -27,6 +28,8 @@ const PREDETERMINADOS = {
   estiloIconos: 'plano',
   formaIconos: 'redonda',
   estiloTema: 'plano',
+  colorMas: null,
+  estiloMas: 'plano',
   ultimaCopia: null,
   avisoCopiaPospuesto: null,
 };

@@ -118,11 +118,13 @@
   padding: 0;
   border: 0;
   border-radius: 32px;
-  background: var(--banner-bg);
-  color: var(--on-banner);
+  /* Con su propio color si se eligió en Apariencia (--mas-…, TemaContext); si no, el del tema. */
+  background: var(--mas-fondo, var(--banner-bg));
+  background-image: var(--mas-brillo, none);
+  color: var(--mas-dibujo, var(--on-banner));
   box-shadow:
-    0 0 0 1px var(--banner-ring),
-    0 8px 18px var(--fab-glow);
+    0 0 0 1px var(--mas-anillo, var(--banner-ring)),
+    0 8px 18px var(--mas-resplandor, var(--fab-glow));
   display: flex;
   align-items: center;
   justify-content: center;
