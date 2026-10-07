@@ -42,7 +42,7 @@ export function CabeceraFormulario({ titulo, volverA, centro, children }) {
 
 // El cursor siempre al final de la cifra: el monto se escribe de izquierda a derecha.
 // Se hace un cuadro después porque el iPhone pone el cursor donde cayó el dedo.
-const cursorAlFinal = (evento) => {
+export const cursorAlFinal = (evento) => {
   const campo = evento.currentTarget;
   requestAnimationFrame(() => {
     if (document.activeElement === campo) campo.setSelectionRange(campo.value.length, campo.value.length);

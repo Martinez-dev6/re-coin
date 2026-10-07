@@ -159,8 +159,10 @@ export function horaDe(m) {
 }
 
 // Marca como pagado (o recibido) un pendiente, desde la cuenta de la que de verdad salió (o a la
-// que entró), que puede no ser la que se había puesto.
-export const marcarPagado = (id, cuentaId) => db.movimientos.update(id, { pagado: true, cuentaId });
+// que entró), que puede no ser la que se había puesto. valor: lo que de verdad se pagó o se
+// recibió, si fue distinto de lo anotado (Sesión 12, pedido del dueño); solo cambia este movimiento.
+export const marcarPagado = (id, cuentaId, valor) =>
+  db.movimientos.update(id, valor > 0 ? { pagado: true, cuentaId, valor } : { pagado: true, cuentaId });
 
 export const eliminarMovimiento = (id) => db.movimientos.delete(id);
 

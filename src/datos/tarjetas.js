@@ -168,8 +168,9 @@ export function eliminarTarjeta(id) {
 }
 
 // Paga lo que falta de una factura desde una cuenta, con fecha de hoy.
-export async function pagarFactura(tarjeta, factura, cuentaId, fecha) {
-  const valor = factura.total - factura.pagado;
+// valor: lo que se paga, si no es todo lo que falta (se cambió en "¿Ya lo pagaste?"); con menos, la
+// factura queda con el resto pendiente.
+export async function pagarFactura(tarjeta, factura, cuentaId, fecha, valor = factura.total - factura.pagado) {
   if (valor <= 0) return;
   await db.movimientos.add({
     id: nuevoId(),

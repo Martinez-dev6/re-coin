@@ -1,7 +1,7 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { eliminarCuenta } from './cuentas.js';
 import { db } from './db.js';
-import { saldosPorCuenta } from './movimientos.js';
+import { marcarPagado, saldosPorCuenta } from './movimientos.js';
 import { registrarVencidos } from './programados.js';
 
 // Hoy: lunes 5 de octubre de 2026 (solo se finge la fecha, como en programados.test.js).
@@ -63,5 +63,23 @@ describe('eliminarCuenta', () => {
   it('la tarjeta queda sin "Paga desde" y la meta sin "Se guarda en"', async () => {
     expect((await db.tarjetas.get('t')).cuentaPagoId).toBeNull();
     expect((await db.metas.get('m')).cuentaId).toBeNull();
+  });
+});
+
+describe('marcarPagado', () => {
+  beforeEach(async () => {
+    await db.delete();
+    await db.open();
+    await db.movimientos.add({ id: 'g', tipo: 'gasto', cuentaId: 'a', valor: 100, pagado: false, fecha: '2026-10-05' });
+  });
+
+  it('cambia la cuenta y, si se escribió otro valor, también el valor', async () => {
+    await marcarPagado('g', 'b', 80);
+    expect(await db.movimientos.get('g')).toMatchObject({ pagado: true, cuentaId: 'b', valor: 80 });
+  });
+
+  it('sin valor nuevo conserva el anotado', async () => {
+    await marcarPagado('g', 'a');
+    expect(await db.movimientos.get('g')).toMatchObject({ pagado: true, cuentaId: 'a', valor: 100 });
   });
 });

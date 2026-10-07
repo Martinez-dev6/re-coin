@@ -20,10 +20,25 @@
   font-weight: 600;
 }
 
-.confirmar-pago-resumen strong {
+/* El valor se cambia tocándolo (teclado numérico), pero se ve como texto: sin borde ni fondo.
+   17 px: con menos de 16, el iPhone haría zoom al escribir. */
+.confirmar-pago-valor {
   flex-shrink: 0;
+  max-width: 60%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
   font-size: 17px;
   font-weight: 700;
+  text-align: right;
+}
+
+.confirmar-pago-valor::placeholder {
+  color: var(--muted);
 }
 
 .confirmar-pago-pregunta {
