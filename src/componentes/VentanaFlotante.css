@@ -156,6 +156,8 @@
    íconos" de Apariencia (con "Color del tema", el de la app, no el de la cuenta). En
    "Predeterminado" manda la regla de cada tono (comunes.css), que pesa más que esta. */
 .ventana-flotante .campo-icono {
-  background-color: var(--icono-app-fondo, var(--icono-fondo));
-  color: var(--icono-app-texto, var(--icono-texto));
+  --ic-fondo: var(--icono-app-fondo, var(--icono-fondo));
+  --ic-dibujo: var(--icono-app-texto, var(--icono-texto));
+  --ic-suave: var(--icono-app-suave, var(--accent-soft));
+  --ic-tinta: var(--icono-app-tinta, var(--accent-text));
 }

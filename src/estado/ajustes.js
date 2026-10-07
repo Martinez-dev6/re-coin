@@ -8,8 +8,10 @@ const CLAVE = 'sendo.ajustes';
 // nombre: '' = sin nombre. foto: imagen pequeña como data URL, o null.
 // semanaEmpieza: 'lunes' | 'domingo' (calendario de Programados).
 // bloquesInicio: [{ id, visible }] en el orden en que se ven en Inicio (ver bloquesDeInicio).
-// colorIconos: 'predeterminado' (cada opción con su color suave) | 'tema' (todos con el color del
-// tema). Mi espacio → Apariencia (pedido del dueño, 2026-10-04).
+// colorIconos: 'predeterminado' (cada opción con su color) | 'tema' (todos con el color del tema).
+// Mi espacio → Apariencia (pedido del dueño, 2026-10-04).
+// estiloIconos: 'solido' (cuadro de color y dibujo blanco, como iOS 27) | 'suave' (fondo suave y
+// dibujo de color, como eran antes). formaIconos: 'cuadrada' | 'redonda'. Sesión 13.
 // ultimaCopia: cuándo se hizo o restauró la última copia de seguridad (ms), o null.
 // avisoCopiaPospuesto: hasta cuándo no sale el aviso de copia en Inicio ("Ahora no"), o null.
 // Viven aquí y no en la base: al borrar la app se pierden junto con los datos, como debe ser.
@@ -19,6 +21,8 @@ const PREDETERMINADOS = {
   semanaEmpieza: 'lunes',
   bloquesInicio: [],
   colorIconos: 'predeterminado',
+  estiloIconos: 'solido',
+  formaIconos: 'cuadrada',
   ultimaCopia: null,
   avisoCopiaPospuesto: null,
 };
@@ -63,10 +67,14 @@ function leer() {
   }
 }
 
-// El color de los íconos lo aplica el CSS según data-iconos en <html> (comunes.css): así cambia
-// en todas las pantallas a la vez, y desde antes de pintar la primera.
-const aplicarColorIconos = ({ colorIconos }) => {
-  document.documentElement.dataset.iconos = colorIconos === 'tema' ? 'tema' : 'predeterminado';
+// Color, estilo y forma de los íconos: los aplica el CSS según data-iconos, data-estilo-iconos y
+// data-forma-iconos en <html> (comunes.css): así cambian en todas las pantallas a la vez, y desde
+// antes de pintar la primera.
+const aplicarColorIconos = ({ colorIconos, estiloIconos, formaIconos }) => {
+  const raiz = document.documentElement.dataset;
+  raiz.iconos = colorIconos === 'tema' ? 'tema' : 'predeterminado';
+  raiz.estiloIconos = estiloIconos === 'suave' ? 'suave' : 'solido';
+  raiz.formaIconos = formaIconos === 'redonda' ? 'redonda' : 'cuadrada';
 };
 
 let actual = leer();

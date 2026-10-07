@@ -194,5 +194,7 @@ export function variablesDeColor(color, oscuro, acentoApp) {
     ...Object.fromEntries(VARIABLES_DE_COLOR.map((clave) => [aVariable(clave), colores[clave]])),
     '--icono-app-fondo': app.bannerBg,
     '--icono-app-texto': app.onBanner,
+    '--icono-app-suave': app.accentSoft,
+    '--icono-app-tinta': app.accentText,
   };
 }

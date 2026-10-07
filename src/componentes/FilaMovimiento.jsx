@@ -31,14 +31,14 @@ export default function FilaMovimiento({ movimiento, detalle, estado, mostrarRep
 
   const circulo =
     tipo === 'transferencia' || tipo === 'pagoTarjeta' ? (
-      <span className="circulo-categoria" style={{ backgroundColor: 'var(--icono-fondo)', color: 'var(--icono-texto)' }}>
+      <span className="circulo-categoria">
         {tipo === 'pagoTarjeta' ? <IconoTarjeta tamano={22} /> : <IconoTransferencia tamano={22} grosor={2} />}
       </span>
     ) : (
       <CirculoCategoria
         icono={categoria?.icono}
         color={categoria?.color}
-        tono={tipo === 'ingreso' ? 'var(--income-on-white)' : undefined}
+        tono={tipo === 'ingreso' ? 'ingreso' : undefined}
       />
     );
 

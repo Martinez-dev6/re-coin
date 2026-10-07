@@ -1,42 +1,44 @@
-/* Medidas de design/html/Apariencia.html */
+/* Menú → Apariencia (rehecha en la Sesión 13): vista previa, color principal, modo e íconos. */
 
-/* 10 círculos en dos filas de 5, repartidos a lo ancho. */
-.apariencia-colores {
-  display: grid;
-  grid-template-columns: repeat(5, 48px);
-  justify-content: space-between;
-  row-gap: 18px;
-  padding: 18px 14px 16px;
+.apariencia {
+  padding-bottom: 24px;
 }
 
-.apariencia-color {
-  width: 48px;
-  height: 48px;
-  padding: 0;
-  border: 0;
-  border-radius: 24px;
-  color: #ffffff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: inset 0 0 0 1px var(--sw-ring);
-  transition: box-shadow 0.15s ease;
+/* ---- Vista previa: un pedazo de Inicio con datos de muestra. Pegada bajo la cabecera (su top lo
+   pone Apariencia.jsx) para ver cada cambio mientras se eligen las opciones de abajo. ---- */
+
+.apariencia-pegada {
+  position: sticky;
+  z-index: 5;
+  margin: 0 -16px;
+  padding: 14px 16px 10px;
+  background: var(--page-bg);
 }
 
-.apariencia-color.elegido {
-  box-shadow:
-    inset 0 0 0 1px var(--sw-ring),
-    0 0 0 2px var(--surface),
-    0 0 0 4px var(--text);
+/* Sin margen arriba: se saldría de la caja pegada y dejaría ver lo de abajo. */
+.apariencia-pegada .titulo-seccion {
+  margin-top: 0;
+}
+
+/* Lo que sube por debajo se desvanece en vez de cortarse. */
+.apariencia-pegada::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 100%;
+  height: 14px;
+  background: linear-gradient(to bottom, var(--page-bg), var(--page-bg0));
+  pointer-events: none;
 }
 
 .apariencia-vista {
-  padding: 14px 14px 16px;
+  padding: 10px 14px 2px;
 }
 
 .apariencia-vista-banner {
-  padding: 14px 16px;
-  border-radius: 20px;
+  padding: 10px 16px;
+  border-radius: 18px;
   background: var(--banner-bg);
   color: var(--on-banner);
   box-shadow: 0 0 0 1px var(--banner-ring);
@@ -55,91 +57,176 @@
   letter-spacing: -0.01em;
 }
 
-.apariencia-vista-controles {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 12px;
-}
-
-.apariencia-chip {
-  display: flex;
-  align-items: center;
-  height: 34px;
-  padding: 0 14px;
-  border-radius: 17px;
-  background: var(--surface);
-  border: 1px solid var(--line);
-  color: var(--text);
-  font-size: 13px;
-  font-weight: 600;
-}
-
-.apariencia-chip.activo {
-  border: 0;
-  background: var(--banner-bg);
-  color: var(--on-banner);
-  box-shadow: 0 0 0 1px var(--banner-ring);
-  font-weight: 700;
-}
-
-.apariencia-progreso {
-  flex-grow: 1;
-  height: 8px;
-  border-radius: 4px;
-  background: var(--track);
-  overflow: hidden;
-}
-
-.apariencia-progreso span {
-  display: block;
-  width: 62%;
-  height: 100%;
-  background: var(--accent-text);
-}
-
-.apariencia-vista-separador {
-  height: 1px;
-  margin-top: 12px;
-  background: var(--divider);
-}
-
-.apariencia-cuenta {
+.apariencia-vista-fila {
   display: flex;
   align-items: center;
   gap: 12px;
-  height: 56px;
+  height: 54px;
   border-bottom: 1px solid var(--divider);
 }
 
-.apariencia-cuenta:last-child {
+.apariencia-vista-fila:last-child {
   border-bottom: 0;
 }
 
-.apariencia-cuenta-textos {
+.apariencia-vista-textos {
   flex-grow: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
 }
 
-.apariencia-cuenta-nombre {
+.apariencia-vista-nombre {
   font-size: 15px;
   font-weight: 600;
 }
 
-.apariencia-cuenta-saldo {
+.apariencia-vista-detalle {
   margin-top: 1px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.apariencia-vista-detalle.ingreso {
   font-size: 14px;
   color: var(--income);
 }
 
-.apariencia-cuenta-mas {
+.apariencia-vista-valor {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--expense);
+}
+
+.apariencia-vista-accion,
+.apariencia-vista-flecha {
+  display: flex;
+  color: var(--accent-text);
+}
+
+.apariencia-vista-flecha {
+  color: var(--muted);
+}
+
+/* ---- Color principal: 10 círculos en dos filas de 5 ---- */
+
+.apariencia-colores {
+  display: grid;
+  grid-template-columns: repeat(5, 44px);
+  justify-content: space-between;
+  row-gap: 14px;
+  padding: 16px 18px;
+}
+
+.apariencia-color {
   width: 44px;
   height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 22px;
+  color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--accent-text);
+  box-shadow: inset 0 0 0 1px var(--sw-ring);
+  transition: box-shadow 0.15s ease;
+}
+
+.apariencia-color.elegido {
+  box-shadow:
+    inset 0 0 0 1px var(--sw-ring),
+    0 0 0 2px var(--surface),
+    0 0 0 4px var(--text);
+}
+
+/* ---- Modo e íconos: opciones en un control con una píldora que se desliza ---- */
+
+.apariencia-grupo {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px;
+}
+
+.apariencia-opcion {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.apariencia-opcion-titulo {
+  margin-left: 4px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.apariencia-segmentado {
+  position: relative;
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 14px;
+  background: var(--page-bg);
+}
+
+.apariencia-segmentado-pildora {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  left: 4px;
+  width: calc((100% - 8px - (var(--n) - 1) * 4px) / var(--n));
+  border-radius: 10px;
+  background: var(--surface);
+  box-shadow:
+    0 1px 3px rgba(20, 21, 28, 0.12),
+    0 0 0 1px var(--line);
+  transform: translateX(calc(var(--i) * (100% + 4px)));
+  transition: transform 0.33s var(--curva-entrar);
+}
+
+.apariencia-segmentado > button {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
+  height: 40px;
+  padding: 0 6px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: color 0.2s ease;
+}
+
+.apariencia-segmentado > button[aria-checked='true'] {
+  color: var(--text);
+}
+
+/* Muestras de íconos dentro de las opciones (siguen las reglas de los íconos de comunes.css). */
+.icono-muestra {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.apariencia-muestras {
+  display: flex;
+  gap: 3px;
+}
+
+.apariencia-muestras .icono-muestra {
+  width: 18px;
+  height: 18px;
 }
 
 .apariencia-restablecer {
@@ -148,27 +235,8 @@
   margin-top: 8px;
 }
 
-/* ---- Color de los íconos: dos opciones, cada una con una muestra de tres íconos ---- */
-
-.apariencia-iconos {
-  padding: 0 14px;
-}
-
-.apariencia-iconos-opcion {
-  color: var(--text);
-}
-
-.apariencia-iconos-muestra {
-  display: flex;
-  gap: 4px;
-  flex-shrink: 0;
-}
-
-.apariencia-iconos-circulo {
-  width: 28px;
-  height: 28px;
-  border-radius: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+@media (prefers-reduced-motion: reduce) {
+  .apariencia-segmentado-pildora {
+    transition: none;
+  }
 }

@@ -274,7 +274,7 @@ export default function Inicio() {
                     <Deslizar posicion={posicionMes} className="inicio-pendientes">
                       <button type="button" className="tarjeta inicio-pendiente" onClick={() => navegar('/pendientes?tipo=gasto')}>
                         <div className="inicio-pendiente-cabeza">
-                          <span className="inicio-pendiente-icono">
+                          <span className="inicio-pendiente-icono gasto">
                             <IconoFlechaAbajo tamano={18} grosor={2} />
                           </span>
                           {gastosPendientes.length > 0 && (
@@ -288,7 +288,7 @@ export default function Inicio() {
                       </button>
                       <button type="button" className="tarjeta inicio-pendiente" onClick={() => navegar('/pendientes?tipo=ingreso')}>
                         <div className="inicio-pendiente-cabeza">
-                          <span className="inicio-pendiente-icono">
+                          <span className="inicio-pendiente-icono ingreso">
                             <IconoFlechaArriba tamano={18} grosor={2} />
                           </span>
                           {ingresosPendientes.length > 0 && (
@@ -315,7 +315,7 @@ export default function Inicio() {
                           onClick={() => navegar('/planes/presupuestos')}
                         >
                           <span className="inicio-alerta-icono">
-                            {p.alerta === 'excedido' ? <IconoAlerta tamano={16} /> : <IconoAviso tamano={16} />}
+                            {p.alerta === 'excedido' ? <IconoAlerta tamano={20} /> : <IconoAviso tamano={20} />}
                           </span>
                           <span className="inicio-alerta-texto">
                             <strong>{categoria(p.categoriaId)?.nombre ?? 'Presupuesto'}</strong>

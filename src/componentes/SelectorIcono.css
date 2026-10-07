@@ -13,7 +13,7 @@
   height: 56px;
   padding: 0;
   border: 0;
-  border-radius: 28%;
+  border-radius: var(--forma-icono);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -25,13 +25,22 @@
     box-shadow 0.2s ease;
 }
 
+/* El elegido, como los íconos de la app (estilo de Apariencia); el color, el de la cuenta o tarjeta
+   si tiene uno (variablesAcento). */
 .selector-icono-boton[aria-checked='true'] {
-  background-color: var(--icono-fondo);
+  background-color: var(--ic-fondo, var(--icono-fondo));
   background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0) 70%);
-  color: var(--icono-texto);
+  color: var(--ic-dibujo, var(--icono-texto));
   box-shadow:
     0 0 0 2px var(--surface),
-    0 0 0 4px var(--icono-fondo);
+    0 0 0 4px var(--ic-fondo, var(--icono-fondo));
+}
+
+:root[data-estilo-iconos='suave'] .selector-icono-boton[aria-checked='true'] {
+  background-color: var(--ic-suave, var(--accent-soft));
+  background-image: none;
+  color: var(--ic-tinta, var(--accent-text));
+  box-shadow: 0 0 0 2px var(--ic-tinta, var(--accent-text));
 }
 
 /* "Más": abre el catálogo completo. */

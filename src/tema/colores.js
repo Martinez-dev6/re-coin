@@ -32,11 +32,25 @@ export const acentoActual = (color) => (typeof color === 'string' ? (ANTERIORES[
 
 export const esAcento = (color) => ACENTOS.some((a) => a.valor === color);
 
-// Círculo del ícono de una cuenta con color propio (variables de aplicarTema.js). Sin color
-// propio (Predeterminado) no hace falta: .icono-circulo ya usa el color del tema.
+// Variables de un ícono (comunes.css): sólido (fondo y dibujo) y suave (fondo y tinta). Así el
+// mismo ícono sigue el estilo elegido en Apariencia.
+export const estiloIcono = (fondo, suave, tinta, dibujo = '#ffffff') => ({
+  '--ic-fondo': fondo,
+  '--ic-dibujo': dibujo,
+  '--ic-suave': suave,
+  '--ic-tinta': tinta,
+});
+
+// Ícono con una letra de la paleta de las categorías (--cat-X…).
+export const estiloIconoTono = (letra) => estiloIcono(`var(--cat-${letra}-solido)`, `var(--cat-${letra}-soft)`, `var(--cat-${letra})`);
+
+// Ícono de una cuenta con color propio (variables de aplicarTema.js). Sin color propio
+// (Predeterminado) no hace falta: los íconos ya usan el color del tema.
 export function estiloIconoCuenta(color) {
   const indice = ACENTOS.findIndex((a) => a.valor === color);
-  return indice < 0 ? undefined : { backgroundColor: `var(--acento${indice}-solido)`, color: `var(--acento${indice}-sobre)` };
+  return indice < 0
+    ? undefined
+    : estiloIcono(`var(--acento${indice}-solido)`, `var(--acento${indice}-suave)`, `var(--acento${indice}-texto)`, `var(--acento${indice}-sobre)`);
 }
 
 // Lo mismo como variables del tema (--accent-soft y --accent-text) para un solo elemento: lo que
@@ -48,8 +62,7 @@ export function variablesAcento(color) {
     : {
         '--accent-soft': `var(--acento${indice}-suave)`,
         '--accent-text': `var(--acento${indice}-texto)`,
-        '--icono-fondo': `var(--acento${indice}-solido)`,
-        '--icono-texto': `var(--acento${indice}-sobre)`,
+        ...estiloIconoCuenta(color),
       };
 }
 

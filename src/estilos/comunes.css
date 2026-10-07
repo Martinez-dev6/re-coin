@@ -55,16 +55,41 @@
   border-radius: 22px;
 }
 
-/* Íconos como los de Ajustes de iOS 27 (Sesión 13, pedido del dueño: antes eran círculos con el
-   color suave detrás y en oscuro se veían "neón"). Cuadro redondeado de color sólido, el dibujo en
-   blanco y un brillo suave arriba. El color va en background-color (no en background, que borraría
-   el brillo), también en los estilos en línea. El nombre "circulo" quedó de antes. */
-:is(.icono-circulo, .campo-icono, .circulo-categoria, .inicio-pendiente-icono, .inicio-vacio-icono, .inicio-alerta-icono, .inicio-balance-icono) {
-  border-radius: 28%;
-  background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0) 70%);
+/* Íconos (Sesión 13, pedido del dueño): se eligen en Menú → Apariencia. ajustes.js pone en <html>
+   data-estilo-iconos ('solido': cuadro de color con el dibujo en blanco y un brillo arriba, como
+   los de Ajustes de iOS 27; 'suave': fondo suave y el dibujo del color, como eran antes),
+   data-forma-iconos ('cuadrada' | 'redonda') y data-iconos (color: 'predeterminado' = cada opción
+   con el suyo; 'tema' = todos con el color principal).
+   Cada ícono dice sus colores con cuatro variables (sin ellas, los del tema):
+     --ic-fondo y --ic-dibujo: estilo sólido; --ic-suave y --ic-tinta: estilo suave.
+   Así un mismo ícono sirve para los dos estilos (estiloIcono() en tema/colores.js las arma). El
+   nombre "circulo" de las clases quedó de antes. */
+:root {
+  --forma-icono: 28%;
 }
 
-/* Ícono del color del tema. */
+:root[data-forma-iconos='redonda'] {
+  --forma-icono: 50%;
+}
+
+:is(.icono-circulo, .campo-icono, .circulo-categoria, .inicio-pendiente-icono, .inicio-vacio-icono, .inicio-balance-icono, .icono-muestra) {
+  border-radius: var(--forma-icono);
+  background-color: var(--ic-fondo, var(--icono-fondo));
+  background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0) 70%);
+  color: var(--ic-dibujo, var(--icono-texto));
+  transition:
+    background-color 0.25s ease,
+    color 0.25s ease,
+    border-radius 0.25s ease;
+}
+
+:root[data-estilo-iconos='suave']
+  :is(.icono-circulo, .campo-icono, .circulo-categoria, .inicio-pendiente-icono, .inicio-vacio-icono, .inicio-balance-icono, .icono-muestra) {
+  background-color: var(--ic-suave, var(--accent-soft));
+  background-image: none;
+  color: var(--ic-tinta, var(--accent-text));
+}
+
 .icono-circulo {
   width: 32px;
   height: 32px;
@@ -72,8 +97,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--icono-fondo);
-  color: var(--icono-texto);
 }
 
 .icono-circulo.grande {
@@ -81,60 +104,71 @@
   height: 40px;
 }
 
-/* Color de los íconos de las opciones (Mi espacio → Apariencia; ajustes.js pone data-iconos en
-   <html>). En "Predeterminado" cada opción con data-tono lleva su propio color suave: una letra
-   de la paleta de las categorías (--cat-X-solido, el tono de claro) o n, gris. En
-   "Color del tema" se quedan con el del tema (lo de arriba). También los íconos de los campos
-   (.campo-icono) que llevan tono, como en Reajustar saldo (pedido del dueño, 2026-10-04). */
-:root[data-iconos='predeterminado'] :is(.icono-circulo, .campo-icono)[data-tono] {
-  transition:
-    background-color 0.25s ease,
-    color 0.25s ease;
-}
-
+/* Color "Predeterminado": cada opción con data-tono lleva su color, una letra de la paleta de las
+   categorías (sólido: el tono de claro, igual en oscuro; suave: el par --cat-X / --cat-X-soft de
+   cada modo) o n, gris. Con "Color del tema" se quedan con el del tema. También los íconos de los
+   campos que llevan tono, como en Reajustar saldo (pedido del dueño, 2026-10-04). */
 :root[data-iconos='predeterminado'] :is(.icono-circulo, .campo-icono)[data-tono='a'] {
-  background-color: var(--cat-a-solido);
-  color: #ffffff;
+  --ic-fondo: var(--cat-a-solido);
+  --ic-dibujo: #ffffff;
+  --ic-suave: var(--cat-a-soft);
+  --ic-tinta: var(--cat-a);
 }
 
 :root[data-iconos='predeterminado'] :is(.icono-circulo, .campo-icono)[data-tono='b'] {
-  background-color: var(--cat-b-solido);
-  color: #ffffff;
+  --ic-fondo: var(--cat-b-solido);
+  --ic-dibujo: #ffffff;
+  --ic-suave: var(--cat-b-soft);
+  --ic-tinta: var(--cat-b);
 }
 
 :root[data-iconos='predeterminado'] :is(.icono-circulo, .campo-icono)[data-tono='c'] {
-  background-color: var(--cat-c-solido);
-  color: #ffffff;
+  --ic-fondo: var(--cat-c-solido);
+  --ic-dibujo: #ffffff;
+  --ic-suave: var(--cat-c-soft);
+  --ic-tinta: var(--cat-c);
 }
 
 :root[data-iconos='predeterminado'] :is(.icono-circulo, .campo-icono)[data-tono='d'] {
-  background-color: var(--cat-d-solido);
-  color: #ffffff;
+  --ic-fondo: var(--cat-d-solido);
+  --ic-dibujo: #ffffff;
+  --ic-suave: var(--cat-d-soft);
+  --ic-tinta: var(--cat-d);
 }
 
 :root[data-iconos='predeterminado'] :is(.icono-circulo, .campo-icono)[data-tono='e'] {
-  background-color: var(--cat-e-solido);
-  color: #ffffff;
+  --ic-fondo: var(--cat-e-solido);
+  --ic-dibujo: #ffffff;
+  --ic-suave: var(--cat-e-soft);
+  --ic-tinta: var(--cat-e);
 }
 
 :root[data-iconos='predeterminado'] :is(.icono-circulo, .campo-icono)[data-tono='f'] {
-  background-color: var(--cat-f-solido);
-  color: #ffffff;
+  --ic-fondo: var(--cat-f-solido);
+  --ic-dibujo: #ffffff;
+  --ic-suave: var(--cat-f-soft);
+  --ic-tinta: var(--cat-f);
 }
 
 :root[data-iconos='predeterminado'] :is(.icono-circulo, .campo-icono)[data-tono='g'] {
-  background-color: var(--cat-g-solido);
-  color: #ffffff;
+  --ic-fondo: var(--cat-g-solido);
+  --ic-dibujo: #ffffff;
+  --ic-suave: var(--cat-g-soft);
+  --ic-tinta: var(--cat-g);
 }
 
 :root[data-iconos='predeterminado'] :is(.icono-circulo, .campo-icono)[data-tono='h'] {
-  background-color: var(--cat-h-solido);
-  color: #ffffff;
+  --ic-fondo: var(--cat-h-solido);
+  --ic-dibujo: #ffffff;
+  --ic-suave: var(--cat-h-soft);
+  --ic-tinta: var(--cat-h);
 }
 
 :root[data-iconos='predeterminado'] :is(.icono-circulo, .campo-icono)[data-tono='n'] {
-  background-color: var(--icono-gris);
-  color: #ffffff;
+  --ic-fondo: var(--icono-gris);
+  --ic-dibujo: #ffffff;
+  --ic-suave: var(--track);
+  --ic-tinta: var(--muted);
 }
 
 /* Botón de texto con el color del tema ("Restablecer", "+ Nueva"…). */

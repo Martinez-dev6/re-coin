@@ -190,8 +190,21 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--icono-fondo);
-  color: var(--icono-texto);
+}
+
+/* Gastos en rojo e ingresos en verde (pedido del dueño, Sesión 13). */
+.inicio-pendiente-icono.gasto {
+  --ic-fondo: var(--expense-on-white);
+  --ic-dibujo: #ffffff;
+  --ic-suave: var(--expense-soft);
+  --ic-tinta: var(--expense);
+}
+
+.inicio-pendiente-icono.ingreso {
+  --ic-fondo: var(--income-on-white);
+  --ic-dibujo: #ffffff;
+  --ic-suave: color-mix(in srgb, var(--income) 14%, transparent);
+  --ic-tinta: var(--income);
 }
 
 .inicio-insignia {
@@ -323,8 +336,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--icono-fondo);
-  color: var(--icono-texto);
 }
 
 .inicio-vacio-titulo {
@@ -406,22 +417,23 @@
   border-bottom: 0;
 }
 
+/* Solo el símbolo de alerta, sin cuadro (pedido del dueño, Sesión 13): amarillo al llegar al aviso,
+   rojo al pasarse. */
 .inicio-alerta-icono {
-  width: 32px;
+  width: 24px;
   height: 32px;
   flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #ffffff;
 }
 
 .inicio-alerta.limite .inicio-alerta-icono {
-  background-color: var(--cat-p-solido);
+  color: var(--pending);
 }
 
 .inicio-alerta.excedido .inicio-alerta-icono {
-  background-color: var(--expense-on-white);
+  color: var(--expense);
 }
 
 .inicio-alerta-texto strong {
@@ -554,8 +566,10 @@
   place-items: center;
   width: 56px;
   height: 56px;
-  background-color: var(--tono-solido);
-  color: #ffffff;
+  --ic-fondo: var(--tono-solido);
+  --ic-dibujo: #ffffff;
+  --ic-suave: var(--tono-suave);
+  --ic-tinta: var(--tono);
 }
 
 .inicio-balance-cifra {
