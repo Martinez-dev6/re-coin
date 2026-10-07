@@ -6,7 +6,7 @@
   background-image: var(--brillo-banner);
   background-repeat: no-repeat;
   background-size:
-    100% 180px,
+    100% 220px,
     100% 100%;
   background-position:
     0 var(--banner-oculto, 0px),
@@ -88,10 +88,23 @@
   /* Como los círculos de Apariencia: luz arriba y sombra abajo (más marcado desde la segunda prueba:
      en los colores oscuros apenas se notaba). */
   --brillo-tema: linear-gradient(to bottom, rgba(255, 255, 255, 0.24), rgba(255, 255, 255, 0) 60%, rgba(0, 0, 0, 0.12));
-  /* Banner: luz en los primeros 180 px (arriba es del mismo tono que la franja de la barra de
-     estado, --banner-tope; en Inicio se queda arriba aunque el banner se encoja: --banner-oculto)
-     y sombra en los últimos 56. Aclarar se nota también en los colores oscuros; oscurecer no. */
-  --brillo-banner: linear-gradient(to bottom, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0)),
+  /* Banner: luz arriba y sombra en los últimos 56 px (aclarar se nota también en los colores oscuros;
+     oscurecer no). Arriba es del tono de la franja de la barra de estado (--banner-tope) y la luz se
+     apaga en curva a lo largo de 220 px, empezando casi quieta: en línea recta se veía una línea
+     donde termina la zona de la hora (captura del dueño). En Inicio la luz se queda arriba aunque el
+     banner se encoja (--banner-oculto). */
+  --brillo-banner: linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0.160) 0px,
+      rgba(255, 255, 255, 0.154) 28px,
+      rgba(255, 255, 255, 0.137) 55px,
+      rgba(255, 255, 255, 0.111) 83px,
+      rgba(255, 255, 255, 0.080) 110px,
+      rgba(255, 255, 255, 0.049) 138px,
+      rgba(255, 255, 255, 0.023) 165px,
+      rgba(255, 255, 255, 0.006) 193px,
+      rgba(255, 255, 255, 0.000) 220px
+    ),
     linear-gradient(to top, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0) 56px);
   /* Círculos para elegir un color (cuentas, tarjetas, el del Menú): con volumen. */
   --brillo-circulo: linear-gradient(to bottom, rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0) 60%, rgba(0, 0, 0, 0.14));
