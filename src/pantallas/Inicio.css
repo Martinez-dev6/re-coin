@@ -196,15 +196,11 @@
 .inicio-pendiente-icono.gasto {
   --ic-fondo: var(--expense-on-white);
   --ic-dibujo: #ffffff;
-  --ic-suave: var(--expense-soft);
-  --ic-tinta: var(--expense);
 }
 
 .inicio-pendiente-icono.ingreso {
   --ic-fondo: var(--income-on-white);
   --ic-dibujo: #ffffff;
-  --ic-suave: color-mix(in srgb, var(--income) 14%, transparent);
-  --ic-tinta: var(--income);
 }
 
 .inicio-insignia {
@@ -568,8 +564,6 @@
   height: 56px;
   --ic-fondo: var(--tono-solido);
   --ic-dibujo: #ffffff;
-  --ic-suave: var(--tono-suave);
-  --ic-tinta: var(--tono);
 }
 
 .inicio-balance-cifra {

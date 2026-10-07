@@ -40,6 +40,7 @@ const SIN_BARRA = [
   /^\/facturas\//,
   /^\/presupuestos\//,
   /^\/metas\//,
+  /^\/mi-espacio\/apariencia$/,
 ];
 
 // pestana: índice en PESTANAS (−1 si no es de ninguna). raiz: la pantalla principal de la

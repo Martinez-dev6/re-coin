@@ -51,7 +51,6 @@ export default function App() {
           <Route path="/planes" element={<Planes />} />
           <Route path="/planes/:seccion" element={<Planes />} />
           <Route path="/mi-espacio" element={<MiEspacio />} />
-          <Route path="/mi-espacio/apariencia" element={<Apariencia />} />
           <Route path="/mi-espacio/cuentas" element={<Cuentas />} />
           <Route path="/mi-espacio/tarjetas" element={<Tarjetas />} />
           <Route path="/mi-espacio/categorias" element={<Categorias />} />
@@ -68,6 +67,7 @@ export default function App() {
         {/* Sin barra inferior: detalle de un movimiento y formularios */}
         <Route path="/movimientos/:id" element={<DetalleMovimiento />} />
         <Route path="/pendientes" element={<Pendientes />} />
+        <Route path="/mi-espacio/apariencia" element={<Apariencia />} />
         <Route path="/nuevo/:pantalla" element={<FormularioMovimiento />} />
         <Route path="/cuentas/:id/reajustar" element={<ReajustarSaldo />} />
         <Route path="/categorias/:id" element={<FormularioCategoria />} />

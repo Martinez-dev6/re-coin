@@ -1,7 +1,23 @@
-/* Menú → Apariencia (rehecha en la Sesión 13): vista previa, color principal, modo e íconos. */
+/* Menú → Apariencia (rehecha en la Sesión 13): vista previa, color principal e íconos, y Aplicar fijo
+   abajo. Lo elegido es un borrador que solo se ve aquí: el color va en variables puestas en
+   .apariencia, el estilo y la forma en sus data-* (comunes.css) y el color de los íconos en la
+   vista previa (abajo). */
 
 .apariencia {
-  padding-bottom: 24px;
+  /* Espacio para el botón Aplicar fijo, como en los formularios (.formulario-contenido). */
+  padding-bottom: calc(84px + var(--safe-bottom));
+}
+
+/* Color de los íconos del borrador, solo en la vista previa: gana a la regla de <html> (comunes.css)
+   por ser más específica. Solo hace falta el tono que usa la vista previa (c). */
+.apariencia .apariencia-vista[data-iconos='tema'] .icono-circulo[data-tono] {
+  --ic-fondo: var(--icono-fondo);
+  --ic-dibujo: var(--icono-texto);
+}
+
+.apariencia .apariencia-vista[data-iconos='predeterminado'] .icono-circulo[data-tono='c'] {
+  --ic-fondo: var(--cat-c-solido);
+  --ic-dibujo: #ffffff;
 }
 
 /* ---- Vista previa: un pedazo de Inicio con datos de muestra. Pegada bajo la cabecera (su top lo

@@ -14,8 +14,8 @@ export default function CirculoCategoria({ icono, color, tono, mediano = false, 
       : color
         ? estiloIconoTono(color)
         : tono === 'ingreso'
-          ? estiloIcono('var(--income-on-white)', 'var(--track)', 'var(--income)')
-          : estiloIcono('var(--icono-gris)', 'var(--track)', 'var(--muted)');
+          ? estiloIcono('var(--income-on-white)')
+          : estiloIcono('var(--icono-gris)');
 
   return (
     <span className={'circulo-categoria' + (talla ? ' ' + talla : '')} style={estilo} aria-hidden="true">

@@ -1,10 +1,14 @@
-// Menú → Apariencia (rehecha en la Sesión 13, pedido del dueño): arriba una vista previa que cambia en
-// vivo con todo lo de abajo (es la app misma pintada con sus clases, no una imagen); debajo el color
-// principal, el modo y los íconos: estilo (sólido o suave), forma (cuadrada o redonda) y color
-// (variado o del tema).
+// Menú → Apariencia (rehecha en la Sesión 13, pedido del dueño): arriba una vista previa pegada bajo la
+// cabecera; debajo el color principal y los íconos: estilo (realista o plano), forma (cuadrada o
+// redonda) y color (variado o del tema). Lo elegido es un borrador: solo cambia esta pantalla (la
+// vista previa y las muestras). "Aplicar" hace la animación, vuelve al Menú y ahí cambia la app.
+// Salir sin aplicar no cambia nada. El modo oscuro no va aquí: está en su fila del Menú.
 import { useLayoutEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router';
+import BotonExito from '../componentes/BotonExito.jsx';
 import CabeceraSubpagina from '../componentes/CabeceraSubpagina.jsx';
 import CirculoCategoria from '../componentes/CirculoCategoria.jsx';
+import { PieFormulario } from '../componentes/Formulario.jsx';
 import {
   IconoBanco,
   IconoCheck,
@@ -16,15 +20,14 @@ import {
 } from '../componentes/iconos.jsx';
 import { cambiarAjustes, useAjustes } from '../estado/ajustes.js';
 import { ACENTO_PREDETERMINADO, ACENTOS, estiloIconoTono } from '../tema/colores.js';
+import { tema } from '../tema/tema.js';
 import { useTema } from '../tema/TemaContext.jsx';
 import { formatearPesos } from '../utilidades/formato.js';
+import { volver } from '../utilidades/navegacion.js';
+import '../componentes/Formulario.css';
 import './Apariencia.css';
 
-const MODOS = [
-  { valor: 'claro', titulo: 'Claro' },
-  { valor: 'oscuro', titulo: 'Oscuro' },
-  { valor: 'auto', titulo: 'Automático' },
-];
+const PREDETERMINADA = { acento: ACENTO_PREDETERMINADO, estilo: 'realista', forma: 'cuadrada', color: 'predeterminado' };
 
 // Tres íconos de muestra con el tono que llevan en el Menú (Apariencia, Cuentas, Tarjetas).
 const TRES = [
@@ -33,33 +36,35 @@ const TRES = [
   { Icono: IconoTarjeta, tono: 'a' },
 ];
 
-const BRILLO = 'linear-gradient(to bottom, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0) 70%)';
-
-// Las muestras de cada opción se pintan como quedaría esa opción, sin importar lo elegido en las
-// otras filas: solo cambia lo que esa fila decide.
+// Las muestras de cada opción se pintan como quedaría esa opción; las otras filas siguen lo elegido.
 const ESTILOS = [
-  {
-    valor: 'solido',
-    titulo: 'Sólido',
-    muestra: { backgroundColor: 'var(--icono-fondo)', backgroundImage: BRILLO, color: 'var(--icono-texto)' },
-  },
-  {
-    valor: 'suave',
-    titulo: 'Suave',
-    muestra: { backgroundColor: 'var(--accent-soft)', backgroundImage: 'none', color: 'var(--accent-text)' },
-  },
+  { valor: 'realista', titulo: 'Realista' },
+  { valor: 'plano', titulo: 'Plano' },
 ];
 const FORMAS = [
-  { valor: 'cuadrada', titulo: 'Cuadrada', muestra: { borderRadius: '28%' } },
-  { valor: 'redonda', titulo: 'Redonda', muestra: { borderRadius: '50%' } },
+  { valor: 'cuadrada', titulo: 'Cuadrada' },
+  { valor: 'redonda', titulo: 'Redonda' },
 ];
 const COLORES = [
   { valor: 'predeterminado', titulo: 'Variado' },
   { valor: 'tema', titulo: 'Del tema' },
 ];
 
-// Valores de muestra solo para la vista previa (no son datos reales).
-const MUESTRA = { saldo: 1284300 };
+// Colores del tema que usa esta pantalla, con el color elegido en el borrador: solo para ella (la
+// cabecera y el resto de la app siguen con el color aplicado).
+function variablesDelBorrador(acento, oscuro) {
+  const t = tema(acento, oscuro ? 'dark' : 'light');
+  return {
+    '--banner-bg': t.bannerBg,
+    '--on-banner': t.onBanner,
+    '--on-banner-muted': t.onBannerMuted,
+    '--banner-ring': t.bannerRing,
+    '--accent-text': t.accentText,
+    '--accent-soft': t.accentSoft,
+    '--icono-fondo': t.bannerBg,
+    '--icono-texto': t.onBanner,
+  };
+}
 
 // Control de opciones sobre la tarjeta, con la píldora que se desliza hasta la elegida.
 function Segmentado({ etiqueta, opciones, valor, alElegir, children }) {
@@ -87,12 +92,19 @@ function Segmentado({ etiqueta, opciones, valor, alElegir, children }) {
 }
 
 export default function Apariencia() {
-  const { acento, modo, cambiarAcento, cambiarModo, restablecerAcento } = useTema();
-  const { colorIconos, estiloIconos, formaIconos } = useAjustes();
-  const color = colorIconos === 'tema' ? 'tema' : 'predeterminado';
-  const estilo = estiloIconos === 'suave' ? 'suave' : 'solido';
-  const forma = formaIconos === 'redonda' ? 'redonda' : 'cuadrada';
-  const cambiado = acento !== ACENTO_PREDETERMINADO || color !== 'predeterminado' || estilo !== 'solido' || forma !== 'cuadrada';
+  const navegar = useNavigate();
+  const { acento, oscuro, cambiarAcento } = useTema();
+  const ajustes = useAjustes();
+  const aplicada = {
+    acento,
+    estilo: ajustes.estiloIconos === 'plano' ? 'plano' : 'realista',
+    forma: ajustes.formaIconos === 'redonda' ? 'redonda' : 'cuadrada',
+    color: ajustes.colorIconos === 'tema' ? 'tema' : 'predeterminado',
+  };
+  const [borrador, setBorrador] = useState(aplicada);
+  const elegir = (cambio) => setBorrador((b) => ({ ...b, ...cambio }));
+  const igual = (a, b) => a.acento === b.acento && a.estilo === b.estilo && a.forma === b.forma && a.color === b.color;
+  const hayCambios = !igual(borrador, aplicada);
 
   // La vista previa queda pegada bajo la cabecera mientras se baja a las opciones, así se ve cada
   // cambio sin subir. Su top es el alto de la cabecera (cambia con la zona segura del iPhone).
@@ -108,22 +120,30 @@ export default function Apariencia() {
     return () => observador.disconnect();
   }, []);
 
-  const restablecer = () => {
-    restablecerAcento();
-    cambiarAjustes({ colorIconos: 'predeterminado', estiloIconos: 'solido', formaIconos: 'cuadrada' });
+  // Al terminar la animación del botón: se vuelve al Menú y se aplica a la vez (el color cambia con
+  // su fundido mientras la pantalla se va).
+  const aplicar = () => {
+    volver(navegar, '/mi-espacio');
+    if (borrador.acento !== acento) cambiarAcento(borrador.acento);
+    cambiarAjustes({ estiloIconos: borrador.estilo, formaIconos: borrador.forma, colorIconos: borrador.color });
   };
 
   return (
     <div>
       <CabeceraSubpagina titulo="Apariencia" volverA="/mi-espacio" />
 
-      <div className="contenido apariencia">
+      <div
+        className="contenido apariencia"
+        data-estilo-iconos={borrador.estilo}
+        data-forma-iconos={borrador.forma}
+        style={variablesDelBorrador(borrador.acento, oscuro)}
+      >
         <div ref={pegada} className="apariencia-pegada" style={{ top: altoCabecera }}>
           <h2 className="titulo-seccion">Vista previa</h2>
-          <div className="tarjeta apariencia-vista" aria-hidden="true">
+          <div className="tarjeta apariencia-vista" data-iconos={borrador.color} aria-hidden="true">
             <div className="apariencia-vista-banner">
               <div className="apariencia-vista-etiqueta">Saldo disponible</div>
-              <div className="apariencia-vista-saldo">{formatearPesos(MUESTRA.saldo)}</div>
+              <div className="apariencia-vista-saldo">{formatearPesos(1284300)}</div>
             </div>
             <div className="apariencia-vista-fila">
               <span className="icono-circulo grande">
@@ -162,7 +182,7 @@ export default function Apariencia() {
         <h2 className="titulo-seccion">Color principal</h2>
         <div className="tarjeta apariencia-colores" role="radiogroup" aria-label="Color principal">
           {ACENTOS.map(({ valor, nombre }) => {
-            const elegido = valor === acento;
+            const elegido = valor === borrador.acento;
             return (
               <button
                 key={valor}
@@ -172,7 +192,7 @@ export default function Apariencia() {
                 aria-label={nombre}
                 className={'apariencia-color' + (elegido ? ' elegido' : '')}
                 style={{ background: valor }}
-                onClick={() => cambiarAcento(valor)}
+                onClick={() => elegir({ acento: valor })}
               >
                 {elegido && <IconoCheck />}
               </button>
@@ -180,18 +200,13 @@ export default function Apariencia() {
           })}
         </div>
 
-        <h2 className="titulo-seccion">Modo</h2>
-        <div className="tarjeta apariencia-grupo">
-          <Segmentado etiqueta="Modo" opciones={MODOS} valor={modo} alElegir={cambiarModo} />
-        </div>
-
         <h2 className="titulo-seccion">Íconos</h2>
         <div className="tarjeta apariencia-grupo">
           <div className="apariencia-opcion">
             <span className="apariencia-opcion-titulo">Estilo</span>
-            <Segmentado etiqueta="Estilo de los íconos" opciones={ESTILOS} valor={estilo} alElegir={(v) => cambiarAjustes({ estiloIconos: v })}>
+            <Segmentado etiqueta="Estilo de los íconos" opciones={ESTILOS} valor={borrador.estilo} alElegir={(v) => elegir({ estilo: v })}>
               {(opcion) => (
-                <span className="icono-muestra" style={opcion.muestra} aria-hidden="true">
+                <span className="icono-muestra" data-estilo-iconos={opcion.valor} aria-hidden="true">
                   <IconoPaleta tamano={13} />
                 </span>
               )}
@@ -199,9 +214,9 @@ export default function Apariencia() {
           </div>
           <div className="apariencia-opcion">
             <span className="apariencia-opcion-titulo">Forma</span>
-            <Segmentado etiqueta="Forma de los íconos" opciones={FORMAS} valor={forma} alElegir={(v) => cambiarAjustes({ formaIconos: v })}>
+            <Segmentado etiqueta="Forma de los íconos" opciones={FORMAS} valor={borrador.forma} alElegir={(v) => elegir({ forma: v })}>
               {(opcion) => (
-                <span className="icono-muestra" style={opcion.muestra} aria-hidden="true">
+                <span className="icono-muestra" data-forma-iconos={opcion.valor} aria-hidden="true">
                   <IconoPaleta tamano={13} />
                 </span>
               )}
@@ -209,7 +224,7 @@ export default function Apariencia() {
           </div>
           <div className="apariencia-opcion">
             <span className="apariencia-opcion-titulo">Color</span>
-            <Segmentado etiqueta="Color de los íconos" opciones={COLORES} valor={color} alElegir={(v) => cambiarAjustes({ colorIconos: v })}>
+            <Segmentado etiqueta="Color de los íconos" opciones={COLORES} valor={borrador.color} alElegir={(v) => elegir({ color: v })}>
               {(opcion) => (
                 <span className="apariencia-muestras" aria-hidden="true">
                   {TRES.map(({ Icono, tono }) => (
@@ -223,12 +238,18 @@ export default function Apariencia() {
           </div>
         </div>
 
-        {cambiado && (
-          <button type="button" className="boton-texto apariencia-restablecer" onClick={restablecer}>
+        {!igual(borrador, PREDETERMINADA) && (
+          <button type="button" className="boton-texto apariencia-restablecer" onClick={() => setBorrador(PREDETERMINADA)}>
             Restablecer apariencia
           </button>
         )}
       </div>
+
+      <PieFormulario>
+        <BotonExito className="boton-principal" disabled={!hayCambios} alTerminar={aplicar}>
+          Aplicar
+        </BotonExito>
+      </PieFormulario>
     </div>
   );
 }

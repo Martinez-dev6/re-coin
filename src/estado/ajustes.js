@@ -10,8 +10,9 @@ const CLAVE = 'sendo.ajustes';
 // bloquesInicio: [{ id, visible }] en el orden en que se ven en Inicio (ver bloquesDeInicio).
 // colorIconos: 'predeterminado' (cada opción con su color) | 'tema' (todos con el color del tema).
 // Mi espacio → Apariencia (pedido del dueño, 2026-10-04).
-// estiloIconos: 'solido' (cuadro de color y dibujo blanco, como iOS 27) | 'suave' (fondo suave y
-// dibujo de color, como eran antes). formaIconos: 'cuadrada' | 'redonda'. Sesión 13.
+// estiloIconos: 'realista' (cuadro de color con brillo y dibujo blanco, como iOS 27) | 'plano' (sin
+// el brillo). formaIconos: 'cuadrada' | 'redonda'. Sesión 13 (lo guardado de una prueba anterior,
+// 'solido' o 'suave', vale como 'realista').
 // ultimaCopia: cuándo se hizo o restauró la última copia de seguridad (ms), o null.
 // avisoCopiaPospuesto: hasta cuándo no sale el aviso de copia en Inicio ("Ahora no"), o null.
 // Viven aquí y no en la base: al borrar la app se pierden junto con los datos, como debe ser.
@@ -21,7 +22,7 @@ const PREDETERMINADOS = {
   semanaEmpieza: 'lunes',
   bloquesInicio: [],
   colorIconos: 'predeterminado',
-  estiloIconos: 'solido',
+  estiloIconos: 'realista',
   formaIconos: 'cuadrada',
   ultimaCopia: null,
   avisoCopiaPospuesto: null,
@@ -73,7 +74,7 @@ function leer() {
 const aplicarColorIconos = ({ colorIconos, estiloIconos, formaIconos }) => {
   const raiz = document.documentElement.dataset;
   raiz.iconos = colorIconos === 'tema' ? 'tema' : 'predeterminado';
-  raiz.estiloIconos = estiloIconos === 'suave' ? 'suave' : 'solido';
+  raiz.estiloIconos = estiloIconos === 'plano' ? 'plano' : 'realista';
   raiz.formaIconos = formaIconos === 'redonda' ? 'redonda' : 'cuadrada';
 };
 

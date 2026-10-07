@@ -81,8 +81,6 @@
 .ajustes-icono-peligro {
   --ic-fondo: var(--expense-on-white);
   --ic-dibujo: #ffffff;
-  --ic-suave: var(--expense-soft);
-  --ic-tinta: var(--expense);
 }
 
 .ajustes-panel-nota {
