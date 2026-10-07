@@ -1,6 +1,7 @@
 /* Medidas de design/html (data-nav2): curva de 134 px centrada, pestañas a 40 y 106 px de cada
    borde, "+" de 64 px que sobresale 22 px. El alto (90 px en el diseño) es --barra-nav-alto
-   (base.css): el dueño pidió la barra un poco más abajo. */
+   (base.css): el dueño pidió la barra un poco más abajo (82 px), y en la Sesión 13 los íconos 4 px
+   más arriba, más cerca del "+", para bajarla a 72 px (a prueba). */
 
 .barra-nav {
   position: fixed;
@@ -46,7 +47,7 @@
 
 .barra-nav-pestana {
   position: absolute;
-  top: 16px;
+  top: 12px;
   height: 52px;
   display: flex;
   flex-direction: column;
@@ -87,7 +88,7 @@
 /* Punto del color del tema encima de la pestaña activa. */
 .barra-nav-punto {
   position: absolute;
-  top: -11px;
+  top: -9px;
   left: 50%;
   width: 6px;
   height: 6px;

@@ -18,7 +18,7 @@
 
   /* Alto de la barra inferior. Era 90 px (diseño); el dueño la pidió un poco más abajo
      (2026-10-04). De aquí salen la barra, el menú del "+" y el espacio al final de las pantallas. */
-  --barra-nav-alto: 82px;
+  --barra-nav-alto: 72px;
 
   /* Ritmo del fondo oscurecido (paneles y menú del "+") y de la franja de la barra de
      estado. Copia el de iOS, medido cuadro a cuadro en un video del iPhone 15 Pro
