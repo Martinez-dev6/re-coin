@@ -181,11 +181,8 @@ function Campos({ meta }) {
           </p>
         )}
 
-        <h2 className="titulo-seccion">Color</h2>
-        <RejillaColores colores={COLORES_CATEGORIA} elegido={datos.color} alElegir={(color) => cambiar({ color })} />
-
         <h2 className="titulo-seccion">Ícono</h2>
-        {/* Del color elegido arriba. Una meta de antes sin color: verde con el color de los íconos Variado,
+        {/* Primero el ícono y después el color (pedido del dueño); el ícono va del color elegido abajo. Una meta de antes sin color: verde con el color de los íconos Variado,
             si no el del tema, como en Planes. */}
         <SelectorIcono
           sugeridos={ICONOS_META}
@@ -193,6 +190,9 @@ function Campos({ meta }) {
           estilo={datos.color ? estiloIconoTono(datos.color) : colorIconos === 'tema' ? undefined : estiloIconoTono('f')}
           alElegir={(icono) => cambiar({ icono })}
         />
+
+        <h2 className="titulo-seccion">Color</h2>
+        <RejillaColores colores={COLORES_CATEGORIA} elegido={datos.color} alElegir={(color) => cambiar({ color })} />
 
         {meta?.aportes.length > 0 && (
           <>

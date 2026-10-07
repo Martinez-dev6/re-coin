@@ -86,17 +86,18 @@ function Campos({ categoria, tipoInicial }) {
           </Campo>
         </div>
 
-        <h2 className="titulo-seccion">Color</h2>
-        <RejillaColores colores={COLORES_CATEGORIA} elegido={datos.color} alElegir={(color) => cambiar({ color })} />
-
         <h2 className="titulo-seccion">Ícono</h2>
-        {/* El ícono elegido va del color elegido arriba: se ve el cambio al tocar otro color. */}
+        {/* Primero el ícono y después el color, en todos los formularios (pedido del dueño): el ícono elegido
+            va del color elegido abajo y se ve cambiar al tocar otro color. */}
         <SelectorIcono
           sugeridos={ICONOS_CATEGORIA}
           elegido={datos.icono}
           estilo={estiloIconoTono(datos.color)}
           alElegir={(icono) => cambiar({ icono })}
         />
+
+        <h2 className="titulo-seccion">Color</h2>
+        <RejillaColores colores={COLORES_CATEGORIA} elegido={datos.color} alElegir={(color) => cambiar({ color })} />
 
         {categoria && (
           <button type="button" className="formulario-eliminar" onClick={() => setPanelEliminar(true)}>
