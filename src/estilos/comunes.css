@@ -55,28 +55,35 @@
   border-radius: 22px;
 }
 
-/* Círculo de ícono con el color del tema suave detrás. */
+/* Íconos como los de Ajustes de iOS 27 (Sesión 13, pedido del dueño: antes eran círculos con el
+   color suave detrás y en oscuro se veían "neón"). Cuadro redondeado de color sólido, el dibujo en
+   blanco y un brillo suave arriba. El color va en background-color (no en background, que borraría
+   el brillo), también en los estilos en línea. El nombre "circulo" quedó de antes. */
+:is(.icono-circulo, .campo-icono, .circulo-categoria, .inicio-pendiente-icono, .inicio-vacio-icono, .inicio-alerta-icono, .inicio-balance-icono) {
+  border-radius: 28%;
+  background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0) 70%);
+}
+
+/* Ícono del color del tema. */
 .icono-circulo {
   width: 32px;
   height: 32px;
   flex-shrink: 0;
-  border-radius: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--accent-soft);
-  color: var(--accent-text);
+  background-color: var(--icono-fondo);
+  color: var(--icono-texto);
 }
 
 .icono-circulo.grande {
   width: 40px;
   height: 40px;
-  border-radius: 20px;
 }
 
 /* Color de los íconos de las opciones (Mi espacio → Apariencia; ajustes.js pone data-iconos en
    <html>). En "Predeterminado" cada opción con data-tono lleva su propio color suave: una letra
-   de la paleta de las categorías (--cat-a…--cat-g, validada en claro y oscuro) o n, gris. En
+   de la paleta de las categorías (--cat-X-solido, el tono de claro) o n, gris. En
    "Color del tema" se quedan con el del tema (lo de arriba). También los íconos de los campos
    (.campo-icono) que llevan tono, como en Reajustar saldo (pedido del dueño, 2026-10-04). */
 :root[data-iconos='predeterminado'] :is(.icono-circulo, .campo-icono)[data-tono] {
@@ -86,48 +93,48 @@
 }
 
 :root[data-iconos='predeterminado'] :is(.icono-circulo, .campo-icono)[data-tono='a'] {
-  background: var(--cat-a-soft);
-  color: var(--cat-a);
+  background-color: var(--cat-a-solido);
+  color: #ffffff;
 }
 
 :root[data-iconos='predeterminado'] :is(.icono-circulo, .campo-icono)[data-tono='b'] {
-  background: var(--cat-b-soft);
-  color: var(--cat-b);
+  background-color: var(--cat-b-solido);
+  color: #ffffff;
 }
 
 :root[data-iconos='predeterminado'] :is(.icono-circulo, .campo-icono)[data-tono='c'] {
-  background: var(--cat-c-soft);
-  color: var(--cat-c);
+  background-color: var(--cat-c-solido);
+  color: #ffffff;
 }
 
 :root[data-iconos='predeterminado'] :is(.icono-circulo, .campo-icono)[data-tono='d'] {
-  background: var(--cat-d-soft);
-  color: var(--cat-d);
+  background-color: var(--cat-d-solido);
+  color: #ffffff;
 }
 
 :root[data-iconos='predeterminado'] :is(.icono-circulo, .campo-icono)[data-tono='e'] {
-  background: var(--cat-e-soft);
-  color: var(--cat-e);
+  background-color: var(--cat-e-solido);
+  color: #ffffff;
 }
 
 :root[data-iconos='predeterminado'] :is(.icono-circulo, .campo-icono)[data-tono='f'] {
-  background: var(--cat-f-soft);
-  color: var(--cat-f);
+  background-color: var(--cat-f-solido);
+  color: #ffffff;
 }
 
 :root[data-iconos='predeterminado'] :is(.icono-circulo, .campo-icono)[data-tono='g'] {
-  background: var(--cat-g-soft);
-  color: var(--cat-g);
+  background-color: var(--cat-g-solido);
+  color: #ffffff;
 }
 
 :root[data-iconos='predeterminado'] :is(.icono-circulo, .campo-icono)[data-tono='h'] {
-  background: var(--cat-h-soft);
-  color: var(--cat-h);
+  background-color: var(--cat-h-solido);
+  color: #ffffff;
 }
 
 :root[data-iconos='predeterminado'] :is(.icono-circulo, .campo-icono)[data-tono='n'] {
-  background: var(--track);
-  color: var(--muted);
+  background-color: var(--icono-gris);
+  color: #ffffff;
 }
 
 /* Botón de texto con el color del tema ("Restablecer", "+ Nueva"…). */
@@ -140,12 +147,11 @@
   color: var(--accent-text);
 }
 
-/* Círculo de 44 px de categoría / cuenta / meta en listas. */
+/* Ícono de 44 px de categoría / cuenta / meta en listas (forma y brillo arriba). */
 .circulo-categoria {
   width: 44px;
   height: 44px;
   flex-shrink: 0;
-  border-radius: 22px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -155,19 +161,16 @@
 .circulo-categoria.mediano {
   width: 40px;
   height: 40px;
-  border-radius: 20px;
 }
 
 .circulo-categoria.chico {
   width: 28px;
   height: 28px;
-  border-radius: 14px;
 }
 
 .circulo-categoria.grande {
   width: 56px;
   height: 56px;
-  border-radius: 28px;
 }
 
 /* Tarjeta de lista (radio 24, filas separadas por líneas). */

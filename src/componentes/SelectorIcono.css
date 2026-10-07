@@ -13,7 +13,7 @@
   height: 56px;
   padding: 0;
   border: 0;
-  border-radius: 28px;
+  border-radius: 28%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -26,9 +26,12 @@
 }
 
 .selector-icono-boton[aria-checked='true'] {
-  background: var(--accent-soft);
-  color: var(--accent-text);
-  box-shadow: 0 0 0 2px var(--accent-text);
+  background-color: var(--icono-fondo);
+  background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0) 70%);
+  color: var(--icono-texto);
+  box-shadow:
+    0 0 0 2px var(--surface),
+    0 0 0 4px var(--icono-fondo);
 }
 
 /* "Más": abre el catálogo completo. */
@@ -73,5 +76,4 @@ section:first-child > .selector-icono-grupo {
 .selector-icono-catalogo .selector-icono-boton {
   width: 50px;
   height: 50px;
-  border-radius: 25px;
 }

@@ -187,12 +187,11 @@
 .inicio-pendiente-icono {
   width: 36px;
   height: 36px;
-  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--accent-soft);
-  color: var(--accent-text);
+  background-color: var(--icono-fondo);
+  color: var(--icono-texto);
 }
 
 .inicio-insignia {
@@ -321,12 +320,11 @@
   width: 72px;
   height: 72px;
   margin: 0 auto;
-  border-radius: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--accent-soft);
-  color: var(--accent-text);
+  background-color: var(--icono-fondo);
+  color: var(--icono-texto);
 }
 
 .inicio-vacio-titulo {
@@ -412,20 +410,18 @@
   width: 32px;
   height: 32px;
   flex-shrink: 0;
-  border-radius: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
+  color: #ffffff;
 }
 
 .inicio-alerta.limite .inicio-alerta-icono {
-  background: color-mix(in srgb, var(--pending) 14%, transparent);
-  color: var(--pending);
+  background-color: var(--cat-p-solido);
 }
 
 .inicio-alerta.excedido .inicio-alerta-icono {
-  background: var(--expense-soft);
-  color: var(--expense);
+  background-color: var(--expense-on-white);
 }
 
 .inicio-alerta-texto strong {
@@ -484,6 +480,7 @@
 .inicio-balance {
   --tono: var(--pending);
   --tono-suave: color-mix(in srgb, var(--tono) 14%, transparent);
+  --tono-solido: var(--cat-p-solido);
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -496,11 +493,13 @@
 .inicio-balance.positivo,
 .inicio-balance-vivo.positivo {
   --tono: var(--income);
+  --tono-solido: var(--income-on-white);
 }
 
 .inicio-balance.negativo,
 .inicio-balance-vivo.negativo {
   --tono: var(--expense);
+  --tono-solido: var(--expense-on-white);
 }
 
 .inicio-balance-cabeza {
@@ -555,9 +554,8 @@
   place-items: center;
   width: 56px;
   height: 56px;
-  border-radius: 16px;
-  background: var(--tono-suave);
-  color: var(--tono);
+  background-color: var(--tono-solido);
+  color: #ffffff;
 }
 
 .inicio-balance-cifra {

@@ -52,6 +52,9 @@ function coloresExtra(oscuro) {
     const clave = 'cat' + letra.toUpperCase();
     variables[clave] = color;
     variables[clave + 'Soft'] = `rgba(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255},0.14)`;
+    // Fondo sólido de los íconos (Sesión 13): el tono de claro también en oscuro, con el dibujo en
+    // blanco (todos dan 3:1 o más con el blanco), como los íconos de Ajustes de iOS 27.
+    variables[clave + 'Solido'] = par[0];
   }
   return variables;
 }
@@ -92,6 +95,12 @@ function extras(oscuro, colores) {
     // Sombra de las tarjetas: en oscuro tema() da 'none', que no se puede animar. Se deja la
     // misma sombra y se anima solo su color (transparente en oscuro), que sí es un color.
     shadow: '0 1px 2px var(--sombra-color)',
+    // Íconos como los de Ajustes de iOS 27 (Sesión 13, pedido del dueño: los suaves se veían
+    // "neón" de noche): cuadro del color del tema, sólido, con el dibujo del color del texto del
+    // banner. Gris para lo que no tiene color.
+    iconoFondo: colores.bannerBg,
+    iconoTexto: colores.onBanner,
+    iconoGris: '#8e8e93',
     sombraColor: oscuro ? 'rgba(20,21,28,0)' : 'rgba(20,21,28,0.06)',
   };
 }
@@ -105,6 +114,8 @@ function coloresDeCuentas(oscuro) {
     const colores = tema(valor, oscuro ? 'dark' : 'light');
     variables[`acento${indice}Suave`] = colores.accentSoft;
     variables[`acento${indice}Texto`] = colores.accentText;
+    variables[`acento${indice}Solido`] = colores.bannerBg;
+    variables[`acento${indice}Sobre`] = colores.onBanner;
   });
   return variables;
 }
@@ -181,7 +192,7 @@ export function variablesDeColor(color, oscuro, acentoApp) {
   const app = tema(acentoApp, modo);
   return {
     ...Object.fromEntries(VARIABLES_DE_COLOR.map((clave) => [aVariable(clave), colores[clave]])),
-    '--icono-app-suave': app.accentSoft,
-    '--icono-app-texto': app.accentText,
+    '--icono-app-fondo': app.bannerBg,
+    '--icono-app-texto': app.onBanner,
   };
 }

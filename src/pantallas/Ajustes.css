@@ -79,8 +79,8 @@
 }
 
 .ajustes-icono-peligro {
-  background: var(--expense-soft);
-  color: var(--expense);
+  background-color: var(--expense-on-white);
+  color: #ffffff;
 }
 
 .ajustes-panel-nota {

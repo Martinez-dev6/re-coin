@@ -139,8 +139,8 @@
 }
 
 .perfil-icono-quitar {
-  background: var(--expense-soft);
-  color: var(--expense);
+  background-color: var(--expense-on-white);
+  color: #ffffff;
 }
 
 .perfil-quitar {

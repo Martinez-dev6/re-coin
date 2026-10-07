@@ -29,8 +29,8 @@ const COLOR_ICONOS = [
 ];
 const estiloMuestra = (valor, tono) =>
   valor === 'tema'
-    ? { background: 'var(--accent-soft)', color: 'var(--accent-text)' }
-    : { background: `var(--cat-${tono}-soft)`, color: `var(--cat-${tono})` };
+    ? { backgroundColor: 'var(--icono-fondo)', color: 'var(--icono-texto)' }
+    : { backgroundColor: `var(--cat-${tono}-solido)`, color: '#ffffff' };
 
 // Valores de muestra solo para la vista previa (no son datos reales).
 const MUESTRA = {
