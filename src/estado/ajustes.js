@@ -12,7 +12,8 @@ const CLAVE = 'sendo.ajustes';
 // Mi espacio → Apariencia (pedido del dueño, 2026-10-04).
 // estiloIconos: 'realista' (cuadro de color con brillo y dibujo blanco, como iOS 27) | 'plano' (sin
 // el brillo). formaIconos: 'cuadrada' | 'redonda'. Sesión 13 (lo guardado de una prueba anterior,
-// 'solido' o 'suave', vale como 'realista').
+// 'solido' o 'suave', vale como 'realista'). estiloTema: 'plano' | 'realista' (el color del tema con
+// brillo, prueba de la Sesión 13).
 // ultimaCopia: cuándo se hizo o restauró la última copia de seguridad (ms), o null.
 // avisoCopiaPospuesto: hasta cuándo no sale el aviso de copia en Inicio ("Ahora no"), o null.
 // Viven aquí y no en la base: al borrar la app se pierden junto con los datos, como debe ser.
@@ -24,6 +25,7 @@ const PREDETERMINADOS = {
   colorIconos: 'predeterminado',
   estiloIconos: 'realista',
   formaIconos: 'cuadrada',
+  estiloTema: 'plano',
   ultimaCopia: null,
   avisoCopiaPospuesto: null,
 };
@@ -71,11 +73,12 @@ function leer() {
 // Color, estilo y forma de los íconos: los aplica el CSS según data-iconos, data-estilo-iconos y
 // data-forma-iconos en <html> (comunes.css): así cambian en todas las pantallas a la vez, y desde
 // antes de pintar la primera.
-const aplicarColorIconos = ({ colorIconos, estiloIconos, formaIconos }) => {
+const aplicarColorIconos = ({ colorIconos, estiloIconos, formaIconos, estiloTema }) => {
   const raiz = document.documentElement.dataset;
   raiz.iconos = colorIconos === 'tema' ? 'tema' : 'predeterminado';
   raiz.estiloIconos = estiloIconos === 'plano' ? 'plano' : 'realista';
   raiz.formaIconos = formaIconos === 'redonda' ? 'redonda' : 'cuadrada';
+  raiz.estiloTema = estiloTema === 'realista' ? 'realista' : 'plano';
 };
 
 let actual = leer();

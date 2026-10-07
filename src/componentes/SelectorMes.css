@@ -61,6 +61,7 @@
 
 .elegir-mes-boton.elegido {
   background: var(--banner-bg);
+  background-image: var(--brillo-tema);
   color: var(--on-banner);
   box-shadow: 0 0 0 1px var(--banner-ring);
   font-weight: 700;

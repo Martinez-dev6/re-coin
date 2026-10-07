@@ -27,7 +27,13 @@ import { volver } from '../utilidades/navegacion.js';
 import '../componentes/Formulario.css';
 import './Apariencia.css';
 
-const PREDETERMINADA = { acento: ACENTO_PREDETERMINADO, estilo: 'realista', forma: 'cuadrada', color: 'predeterminado' };
+const PREDETERMINADA = { acento: ACENTO_PREDETERMINADO, tema: 'plano', estilo: 'realista', forma: 'cuadrada', color: 'predeterminado' };
+
+// Dos filas con los mismos colores: el tema liso o con brillo (prueba del dueño, Sesión 13).
+const FILAS_DE_COLOR = [
+  { tema: 'plano', titulo: 'Plano' },
+  { tema: 'realista', titulo: 'Realista' },
+];
 
 // Tres íconos de muestra con el tono que llevan en el Menú (Apariencia, Cuentas, Tarjetas).
 const TRES = [
@@ -97,13 +103,15 @@ export default function Apariencia() {
   const ajustes = useAjustes();
   const aplicada = {
     acento,
+    tema: ajustes.estiloTema === 'realista' ? 'realista' : 'plano',
     estilo: ajustes.estiloIconos === 'plano' ? 'plano' : 'realista',
     forma: ajustes.formaIconos === 'redonda' ? 'redonda' : 'cuadrada',
     color: ajustes.colorIconos === 'tema' ? 'tema' : 'predeterminado',
   };
   const [borrador, setBorrador] = useState(aplicada);
   const elegir = (cambio) => setBorrador((b) => ({ ...b, ...cambio }));
-  const igual = (a, b) => a.acento === b.acento && a.estilo === b.estilo && a.forma === b.forma && a.color === b.color;
+  const igual = (a, b) =>
+    a.acento === b.acento && a.tema === b.tema && a.estilo === b.estilo && a.forma === b.forma && a.color === b.color;
   const hayCambios = !igual(borrador, aplicada);
 
   // La vista previa queda pegada bajo la cabecera mientras se baja a las opciones, así se ve cada
@@ -129,7 +137,12 @@ export default function Apariencia() {
   const aplicar = () => {
     volver(navegar, '/mi-espacio');
     if (borrador.acento !== acento) cambiarAcento(borrador.acento);
-    cambiarAjustes({ estiloIconos: borrador.estilo, formaIconos: borrador.forma, colorIconos: borrador.color });
+    cambiarAjustes({
+      estiloTema: borrador.tema,
+      estiloIconos: borrador.estilo,
+      formaIconos: borrador.forma,
+      colorIconos: borrador.color,
+    });
   };
 
   return (
@@ -138,6 +151,7 @@ export default function Apariencia() {
 
       <div
         className="contenido apariencia"
+        data-estilo-tema={borrador.tema}
         data-estilo-iconos={borrador.estilo}
         data-forma-iconos={borrador.forma}
         style={variablesDelBorrador(borrador.acento, oscuro)}
@@ -185,23 +199,28 @@ export default function Apariencia() {
 
         <h2 className="titulo-seccion">Color principal</h2>
         <div className="tarjeta apariencia-colores" role="radiogroup" aria-label="Color principal">
-          {ACENTOS.map(({ valor, nombre }) => {
-            const elegido = valor === borrador.acento;
-            return (
-              <button
-                key={valor}
-                type="button"
-                role="radio"
-                aria-checked={elegido}
-                aria-label={nombre}
-                className={'apariencia-color' + (elegido ? ' elegido' : '')}
-                style={{ background: valor }}
-                onClick={() => elegir({ acento: valor })}
-              >
-                {elegido && <IconoCheck />}
-              </button>
-            );
-          })}
+          {FILAS_DE_COLOR.map((fila) => [
+            <span key={fila.tema} className="apariencia-colores-fila" aria-hidden="true">
+              {fila.titulo}
+            </span>,
+            ...ACENTOS.map(({ valor, nombre }) => {
+              const elegido = valor === borrador.acento && fila.tema === borrador.tema;
+              return (
+                <button
+                  key={fila.tema + valor}
+                  type="button"
+                  role="radio"
+                  aria-checked={elegido}
+                  aria-label={`${nombre}, ${fila.titulo.toLowerCase()}`}
+                  className={'apariencia-color' + (fila.tema === 'realista' ? ' realista' : '') + (elegido ? ' elegido' : '')}
+                  style={{ backgroundColor: valor }}
+                  onClick={() => elegir({ acento: valor, tema: fila.tema })}
+                >
+                  {elegido && <IconoCheck />}
+                </button>
+              );
+            }),
+          ])}
         </div>
 
         <h2 className="titulo-seccion">Íconos</h2>

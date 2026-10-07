@@ -56,6 +56,7 @@
   padding: 10px 16px;
   border-radius: 18px;
   background: var(--banner-bg);
+  background-image: var(--brillo-banner);
   color: var(--on-banner);
   box-shadow: 0 0 0 1px var(--banner-ring);
   text-align: center;
@@ -146,6 +147,23 @@
   justify-content: center;
   box-shadow: inset 0 0 0 1px var(--sw-ring);
   transition: box-shadow 0.15s ease;
+}
+
+/* Fila Realista: los mismos colores con el brillo (como quedaría el tema). */
+.apariencia-color.realista {
+  background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0) 60%, rgba(0, 0, 0, 0.14));
+}
+
+.apariencia-colores-fila {
+  grid-column: 1 / -1;
+  margin: 2px 0 -6px 2px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.apariencia-colores-fila:not(:first-child) {
+  margin-top: 6px;
 }
 
 .apariencia-color.elegido {

@@ -3,6 +3,7 @@
 /* Banner de color superior: radios inferiores de 32 px. */
 .banner {
   background: var(--banner-bg);
+  background-image: var(--brillo-banner);
   color: var(--on-banner);
   border-radius: 0 0 32px 32px;
   box-shadow: 0 0 0 1px var(--banner-ring);
@@ -64,6 +65,22 @@
    data-estilo-iconos y data-forma-iconos y gana el más cercano (la vista previa de Apariencia).
    Cada ícono dice su color con --ic-fondo y --ic-dibujo (sin ellas, el del tema; estiloIcono() en
    tema/colores.js las arma). El nombre "circulo" de las clases quedó de antes. */
+/* Color del tema realista (Sesión 13, prueba pedida por el dueño): con el mismo brillo de los íconos
+   en botones, el "+" y lo elegido (--brillo-tema). En los banners el efecto va abajo, como un borde
+   con volumen (--brillo-banner): arriba siguen del color liso de la franja de la barra de estado, que
+   así no se separa. Se elige en Apariencia con la fila Realista de los colores; ajustes.js pone
+   data-estilo-tema en <html> (la vista previa de Apariencia pone el suyo). */
+:root,
+[data-estilo-tema='plano'] {
+  --brillo-tema: none;
+  --brillo-banner: none;
+}
+
+[data-estilo-tema='realista'] {
+  --brillo-tema: linear-gradient(to bottom, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0) 70%);
+  --brillo-banner: linear-gradient(to top, rgba(0, 0, 0, 0.16), rgba(0, 0, 0, 0) 44px);
+}
+
 :root,
 [data-estilo-iconos='realista'] {
   --brillo-icono: linear-gradient(to bottom, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0) 70%);
@@ -245,6 +262,7 @@
 
 .chip[aria-pressed='true'] > span {
   background: var(--banner-bg);
+  background-image: var(--brillo-tema);
   border-color: var(--banner-bg);
   color: var(--on-banner);
   font-weight: 700;
@@ -372,6 +390,7 @@
   border: 0;
   border-radius: 27px;
   background: var(--banner-bg);
+  background-image: var(--brillo-tema);
   box-shadow: 0 0 0 1px var(--banner-ring);
   color: var(--on-banner);
   font-size: 16px;
